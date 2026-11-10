@@ -1,0 +1,139 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+:root {
+  font-family: 'DM Sans', sans-serif;
+  color: #f5f0e6;
+  background: #302c3d;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-optical-sizing: auto;
+  --color-bg: #302c3d;
+  --color-surface: #e8dfce;
+  --color-text: #f5f0e6;
+  --color-muted: #b8b0c2;
+  --color-primary: #7060ab;
+  --color-secondary: #d96c55;
+  --color-rating: #d5a64a;
+  --color-positive: #668c78;
+  --color-border: #c9bfb0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-width: 320px;
+  min-height: 100%;
+}
+
+body {
+  min-width: 320px;
+  min-height: 100vh;
+  margin: 0;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+.welcome {
+  display: grid;
+  min-height: 100vh;
+  place-content: center;
+  justify-items: center;
+  padding: 32px 24px;
+  text-align: center;
+}
+
+.welcome__mark {
+  display: grid;
+  width: 52px;
+  height: 52px;
+  margin-bottom: 42px;
+  place-items: center;
+  border: 1px solid rgb(245 240 230 / 28%);
+  border-radius: 50%;
+  color: var(--color-surface);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 19px;
+  font-weight: 600;
+}
+
+.welcome__eyebrow {
+  margin: 0 0 12px;
+  color: var(--color-muted);
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+}
+
+.welcome__title {
+  margin: 0;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: clamp(64px, 12vw, 104px);
+  font-weight: 600;
+  letter-spacing: -0.085em;
+  line-height: 1;
+}
+
+.welcome__title span {
+  color: var(--color-secondary);
+}
+
+.welcome__description {
+  max-width: 340px;
+  margin: 20px 0 0;
+  color: var(--color-muted);
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.welcome__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 54px;
+  color: var(--color-muted);
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+}
+
+.welcome__status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-positive);
+  box-shadow: 0 0 12px rgb(102 140 120 / 65%);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .welcome__mark,
+  .welcome__eyebrow,
+  .welcome__title,
+  .welcome__description,
+  .welcome__status {
+    animation: appear 650ms both;
+  }
+
+  .welcome__eyebrow { animation-delay: 80ms; }
+  .welcome__title { animation-delay: 140ms; }
+  .welcome__description { animation-delay: 210ms; }
+  .welcome__status { animation-delay: 300ms; }
+}
+
+@keyframes appear {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
