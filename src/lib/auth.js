@@ -10,7 +10,10 @@ export async function signUp({ username, displayName, email, password }) {
   const { data, error } = await client.auth.signUp({
     email,
     password,
-    options: { data: { username: username.trim(), display_name: displayName.trim() } }
+    options: {
+      data: { username: username.trim(), display_name: displayName.trim() },
+      emailRedirectTo: window.location.origin + window.location.pathname
+    }
   });
   if (error) throw error;
   return data;
