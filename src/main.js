@@ -1,4 +1,3 @@
-import './styles/main.css';
 import { supabase } from './lib/supabase.js';
 import { signIn, signOut, signUp, requestPasswordReset } from './lib/auth.js';
 
