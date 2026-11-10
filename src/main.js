@@ -79,11 +79,11 @@ function renderAuth(mode = 'login') {
     try {
       if (isSignup) {
         const result = await signUp(values);
-        if (result.data.session) renderSignedIn(result.data.user);
+        if (result.session?.user) renderSignedIn(result.user);
         else showMessage('Cadastro recebido! Confira seu e-mail para confirmar a conta.', 'success');
       } else {
         const result = await signIn(values);
-        renderSignedIn(result.data.user);
+        renderSignedIn(result.user);
       }
     } catch (error) {
       showMessage(error.message || 'Não foi possível concluir. Tente novamente.', 'error');
