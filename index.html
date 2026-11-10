@@ -17,16 +17,16 @@
       </main>
     </div>
     <script>
-      window.addEventListener('error', function () {
+      window.addEventListener('error', function (event) {
         var app = document.getElementById('app');
         if (app && app.innerText.includes('Carregando o Ludus')) {
-          app.innerHTML = '<main style="min-height:100vh;display:grid;place-items:center;padding:32px;background:#302c3d;color:#f5f0e6;font:16px system-ui,sans-serif;text-align:center"><p>Não foi possível carregar o Ludus. Verifique sua conexão e tente atualizar a página.</p></main>';
+          var failed = event.target && (event.target.src || event.target.href);\n          app.innerHTML = '<main style="min-height:100vh;display:grid;place-items:center;padding:32px;background:#302c3d;color:#f5f0e6;font:16px system-ui,sans-serif;text-align:center"><div><p>Falha ao carregar um arquivo do Ludus.</p><small style="overflow-wrap:anywhere">' + (failed || event.message || 'Erro desconhecido') + '</small></div></main>';
         }
       }, true);
-      window.addEventListener('unhandledrejection', function () {
+      window.addEventListener('unhandledrejection', function (event) {
         var app = document.getElementById('app');
         if (app && app.innerText.includes('Carregando o Ludus')) {
-          app.innerHTML = '<main style="min-height:100vh;display:grid;place-items:center;padding:32px;background:#302c3d;color:#f5f0e6;font:16px system-ui,sans-serif;text-align:center"><p>O Ludus não conseguiu iniciar. Tente atualizar a página.</p></main>';
+          app.innerHTML = '<main style="min-height:100vh;display:grid;place-items:center;padding:32px;background:#302c3d;color:#f5f0e6;font:16px system-ui,sans-serif;text-align:center"><div><p>Erro ao iniciar o Ludus.</p><small style="overflow-wrap:anywhere">' + String(event.reason || 'Erro desconhecido') + '</small></div></main>';
         }
       });
     </script>
