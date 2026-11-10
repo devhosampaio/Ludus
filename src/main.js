@@ -11,22 +11,111 @@ function showMessage(message, type = 'info') {
   target.hidden = !message;
 }
 
-function renderSignedIn(user) {
-  const name = user.user_metadata?.display_name || user.email || 'jogador';
-  app.innerHTML = [
-    '<main class="signed-shell">',
-    '<a class="brand" href="./">L<span>.</span></a>',
-    '<p class="eyebrow">SUA JORNADA COMEÇA AQUI</p>',
-    '<h1>Bem-vindo,<br><em></em>.</h1>',
-    '<p class="signed-shell__copy">Sua conta está conectada. Em breve, seu feed de jogos estará aqui.</p>',
-    '<button class="submit-button signed-shell__button" type="button" data-signout>Sair da conta <span>↗</span></button>',
-    '</main>'
-  ].join('');
-  app.querySelector('h1 em').textContent = name;
+function escapeHTML(value = '') {
+  return String(value).replace(/[&<>"']/g, (char) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  })[char]);
+}
+
+function formatDate(value) {
+  return new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'short' })
+    .format(new Date(value)).replace('.', '');
+}
+
+function statusLabel(status) {
+  return ({ playing: 'Jogando', completed: 'Zerado', abandoned: 'Abandonado' })[status] || '';
+}
+
+async function renderSignedIn(user) {
+  const fallbackName = user.user_metadata?.display_name || user.email?.split('@')[0] || 'jogador';
+  app.innerHTML = `
+    <div class="feed-shell">
+      <aside class="sidebar">
+        <a class="brand sidebar__brand" href="./" aria-label="Ludus início">L<span>.</span></a>
+        <p class="sidebar__label">ESPAÇO DE JOGO</p>
+        <nav class="side-nav" aria-label="Navegação principal">
+          <a class="side-nav__link is-active" href="#inicio"><span>⌂</span> Início</a>
+          <a class="side-nav__link" href="#explorar" data-inert-link><span>⌕</span> Explorar</a>
+          <a class="side-nav__link" href="#perfil" data-inert-link><span>◉</span> Meu perfil</a>
+        </nav>
+        <div class="sidebar__bottom">
+          <div class="sidebar-user"><span class="sidebar-user__avatar" data-avatar> L </span><span><strong data-display-name></strong><small data-username></small></span></div>
+          <button class="logout-button" type="button" data-signout>Sair da conta ↗</button>
+        </div>
+      </aside>
+      <main class="feed-main">
+        <header class="feed-topbar">
+          <div><p class="eyebrow">TERÇA-FEIRA, 10 DE NOVEMBRO</p><h1>Seu universo de jogos<span>.</span></h1></div>
+          <div class="feed-topbar__mark">LUDUS <span>01 / FEED</span></div>
+        </header>
+        <section class="feed-welcome">
+          <div><p class="eyebrow">BEM-VINDO AO LUDUS</p><h2>Todo jogo deixa<br>uma <em>história.</em></h2><p>Um espaço para registrar o que você joga e descobrir o que move outras pessoas.</p></div>
+          <div class="feed-welcome__symbol" aria-hidden="true">L<span>.</span></div>
+        </section>
+        <section class="feed-content" aria-label="Atividade da comunidade">
+          <div class="section-heading"><div><p class="eyebrow">DA COMUNIDADE</p><h2>Atividade recente</h2></div><span class="section-heading__index">01 — 20</span></div>
+          <div class="feed-list" data-feed-list><div class="feed-loading">Carregando as histórias da comunidade…</div></div>
+        </section>
+      </main>
+    </div>`;
+
+  const displayName = app.querySelector('[data-display-name]');
+  const username = app.querySelector('[data-username]');
+  const avatar = app.querySelector('[data-avatar]');
+  displayName.textContent = fallbackName;
+  avatar.textContent = fallbackName.trim().charAt(0).toUpperCase() || 'L';
+
   app.querySelector('[data-signout]').addEventListener('click', async () => {
     try { await signOut(); renderAuth('login'); }
     catch (error) { console.error('[Ludus] Falha ao sair:', error); }
   });
+
+  const profileResult = await supabase.from('profiles')
+    .select('username, display_name, avatar_url')
+    .eq('id', user.id).maybeSingle();
+
+  if (profileResult.data) {
+    displayName.textContent = profileResult.data.display_name || fallbackName;
+    username.textContent = '@' + profileResult.data.username;
+    if (profileResult.data.avatar_url) {
+      avatar.innerHTML = '<img src="' + escapeHTML(profileResult.data.avatar_url) + '" alt="">';
+    }
+  } else {
+    username.textContent = '';
+  }
+
+  const feedList = app.querySelector('[data-feed-list]');
+  const { data: reviews, error } = await supabase.from('reviews')
+    .select('id, rating, body, status, liked_game, created_at, profiles(username, display_name, avatar_url), games(title, cover_url, release_year, developer)')
+    .order('created_at', { ascending: false }).limit(20);
+
+  if (error) {
+    console.error('[Ludus] Falha ao carregar feed:', error);
+    feedList.innerHTML = '<div class="feed-empty"><span class="feed-empty__number">!</span><h3>Não foi possível carregar o feed.</h3><p>Verifique sua conexão e tente atualizar a página.</p><button type="button" class="feed-retry" data-retry> Tentar novamente ↗</button></div>';
+    feedList.querySelector('[data-retry]').addEventListener('click', () => renderSignedIn(user));
+    return;
+  }
+
+  if (!reviews?.length) {
+    feedList.innerHTML = '<div class="feed-empty"><span class="feed-empty__number">01</span><h3>O feed ainda está em silêncio.</h3><p>As primeiras histórias aparecem aqui quando alguém publicar uma avaliação. Que tal começar registrando um jogo que marcou você?</p><span class="feed-empty__note">CADA JOGO TEM UMA HISTÓRIA.</span></div>';
+    return;
+  }
+
+  feedList.innerHTML = reviews.map((review) => {
+    const author = review.profiles?.display_name || review.profiles?.username || 'jogador';
+    const handle = review.profiles?.username ? '@' + review.profiles.username : '';
+    const game = review.games?.title || 'Jogo';
+    const cover = review.games?.cover_url
+      ? '<img class="review-card__cover" src="' + escapeHTML(review.games.cover_url) + '" alt="Capa de ' + escapeHTML(game) + '" loading="lazy">'
+      : '<div class="review-card__cover review-card__cover--empty">L<span>.</span></div>';
+    const stars = '★'.repeat(review.rating) + '<span class="review-card__stars-muted">' + '★'.repeat(5 - review.rating) + '</span>';
+    return '<article class="review-card">' + cover +
+      '<div class="review-card__body"><div class="review-card__meta"><strong>' + escapeHTML(author) + '</strong><span>' + escapeHTML(handle) + '</span><time>' + formatDate(review.created_at) + '</time></div>' +
+      '<h3>' + escapeHTML(game) + '</h3><div class="review-card__details"><span class="review-card__stars" aria-label="Nota ' + review.rating + ' de 5">' + stars + '</span>' +
+      (review.status ? '<span class="review-card__status">' + statusLabel(review.status) + '</span>' : '') +
+      (review.liked_game ? '<span class="review-card__liked">♥ Gostei</span>' : '') + '</div>' +
+      (review.body ? '<p class="review-card__text">' + escapeHTML(review.body) + '</p>' : '') + '</div></article>';
+  }).join('');
 }
 
 function renderAuth(mode = 'login') {
@@ -113,9 +202,7 @@ function renderAuth(mode = 'login') {
 if (!supabase) {
   app.innerHTML = '<main class="setup-shell"><a class="brand" href="./">L<span>.</span></a><p class="eyebrow">CONFIGURAÇÃO NECESSÁRIA</p><h1>Estamos preparando<br><em>o Ludus.</em></h1><p>As credenciais públicas do Supabase ainda não foram carregadas nesta publicação.</p></main>';
 } else {
-  // Mostra a interface imediatamente; a restauração da sessão não deve bloquear a página.
   renderAuth('login');
-
   let authReady = false;
   supabase.auth.onAuthStateChange((event, session) => {
     authReady = true;
