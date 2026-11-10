@@ -45,7 +45,7 @@ async function renderSignedIn(user) {
       </aside>
       <main class="feed-main">
         <header class="feed-topbar">
-          <div><p class="eyebrow">TERÇA-FEIRA, 10 DE NOVEMBRO</p><h1>Seu universo de jogos<span>.</span></h1></div>
+          <div><p class="eyebrow" data-today></p><h1>Seu universo de jogos<span>.</span></h1></div>
           <div class="feed-topbar__mark">LUDUS <span>01 / FEED</span></div>
         </header>
         <section class="feed-welcome">
@@ -59,6 +59,7 @@ async function renderSignedIn(user) {
       </main>
     </div>`;
 
+  app.querySelector('[data-today]').textContent = new Intl.DateTimeFormat('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' }).format(new Date()).toUpperCase();
   const displayName = app.querySelector('[data-display-name]');
   const username = app.querySelector('[data-username]');
   const avatar = app.querySelector('[data-avatar]');
