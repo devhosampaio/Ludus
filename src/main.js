@@ -114,12 +114,29 @@ function renderAuth(mode = 'login') {
 if (!supabase) {
   app.innerHTML = '<main class="setup-shell"><a class="brand" href="./">L<span>.</span></a><p class="eyebrow">CONFIGURAÇÃO NECESSÁRIA</p><h1>Estamos preparando<br><em>o Ludus.</em></h1><p>As credenciais públicas do Supabase ainda não foram carregadas nesta publicação.</p></main>';
 } else {
-  supabase.auth.getSession().then(({ data: { session } }) => {
-    if (session?.user) renderSignedIn(session.user);
-    else renderAuth('login');
-  });
+  // Mostra a interface imediatamente; a restauração da sessão não deve bloquear a página.
+  renderAuth('login');
+
+  let authReady = false;
   supabase.auth.onAuthStateChange((event, session) => {
+    authReady = true;
     if (event === 'SIGNED_IN' && session?.user) renderSignedIn(session.user);
     if (event === 'SIGNED_OUT') renderAuth('login');
+    if (event === 'INITIAL_SESSION' && session?.user) renderSignedIn(session.user);
+  });
+
+  Promise.race([
+    supabase.auth.getSession(),
+    new Promise((_, reject) => setTimeout(() => reject(new Error('A conexão com o serviço de autenticação demorou demais. Verifique sua internet e tente novamente.')), 8000))
+  ]).then(({ data: { session } }) => {
+    if (!authReady && session?.user) renderSignedIn(session.user);
+  }).catch((error) => {
+    console.error('[Ludus] Não foi possível restaurar a sessão:', error);
+    const message = document.querySelector('[data-message]');
+    if (message) {
+      message.textContent = 'Não foi possível verificar sua sessão agora. Você ainda pode tentar entrar novamente.';
+      message.dataset.type = 'error';
+      message.hidden = false;
+    }
   });
 }
