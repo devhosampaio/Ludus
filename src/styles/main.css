@@ -266,18 +266,21 @@ button:disabled { cursor: wait; opacity: .65; }
 .review-card__text { max-width: 650px; margin: 14px 0 0; color: #c4bdcc; font-size: 12px; line-height: 1.8; white-space: pre-wrap; overflow-wrap: anywhere; }
 @media (max-width: 760px) {
   .feed-shell { grid-template-columns: 1fr; }
-  .sidebar { position: relative; height: auto; flex-direction: row; align-items: center; justify-content: space-between; padding: 17px 22px; border-right: 0; border-bottom: 1px solid rgb(201 191 176 / 18%); }
-  .sidebar__brand { margin: 0; font-size: 34px; }
+  .sidebar { position: relative; height: auto; flex-direction: row; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 14px; border-right: 0; border-bottom: 1px solid rgb(201 191 176 / 18%); }
+  .sidebar__brand { margin: 0; font-size: 28px; line-height: 1; }
   .sidebar__label, .sidebar__bottom { display: none; }
-  .side-nav { display: flex; gap: 3px; }
-  .side-nav__link { gap: 5px; padding: 9px 10px; font-size: 11px; }
-  .side-nav__link span { width: auto; font-size: 15px; }
+  .side-nav { display: flex; align-items: center; gap: 2px; }
+  .side-nav__link { gap: 4px; padding: 7px 8px; font-size: 10px; white-space: nowrap; }
+  .side-nav__link span { width: auto; font-size: 13px; }
   .feed-main { padding: 30px 22px 60px; }
   .feed-welcome { min-height: 220px; margin: 24px 0 42px; }
   .feed-welcome__symbol { right: -5%; opacity: .75; }
 }
 @media (max-width: 420px) {
-  .side-nav__link { padding: 8px; font-size: 10px; }
+  .sidebar { padding: 9px 10px; gap: 6px; }
+  .sidebar__brand { font-size: 26px; }
+  .side-nav__link { gap: 3px; padding: 6px 5px; font-size: 9px; }
+  .side-nav__link span { font-size: 12px; }
   .feed-topbar__mark { display: none; }
   .feed-welcome { padding: 28px 22px; }
   .review-card { grid-template-columns: 76px minmax(0, 1fr); gap: 14px; }
