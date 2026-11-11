@@ -1375,7 +1375,7 @@ button:disabled { cursor: wait; opacity: .65; }
 }
 
 
-/* Capas com contorno e acabamento translúcido ao passar o mouse */
+/* Capa com acabamento de plástico: reflexo de luz, sem desfoque */
 .review-card__cover-wrap {
   position: relative;
   width: 100%;
@@ -1394,24 +1394,31 @@ button:disabled { cursor: wait; opacity: .65; }
   inset: 0;
   content: "";
   pointer-events: none;
-  opacity: 0;
-  transition: opacity .28s ease;
 }
 .review-card__cover-wrap::before {
-  background: linear-gradient(125deg, rgb(255 255 255 / 38%) 0%, rgb(255 255 255 / 10%) 24%, transparent 48%, rgb(255 255 255 / 13%) 72%, transparent 100%);
+  background: linear-gradient(112deg, transparent 28%, rgb(255 255 255 / 4%) 39%, rgb(255 255 255 / 52%) 47%, rgb(255 255 255 / 15%) 51%, transparent 61%);
+  transform: translateX(-115%);
+  transition: transform .72s cubic-bezier(.2,.65,.25,1);
   mix-blend-mode: screen;
 }
 .review-card__cover-wrap::after {
-  background: linear-gradient(145deg, rgb(255 255 255 / 20%), transparent 42%, rgb(112 96 171 / 18%));
-  backdrop-filter: blur(1.2px) saturate(1.2);
+  opacity: 0;
+  background:
+    linear-gradient(145deg, rgb(255 255 255 / 25%), transparent 23%),
+    linear-gradient(325deg, transparent 65%, rgb(255 255 255 / 13%) 100%),
+    linear-gradient(90deg, rgb(255 255 255 / 8%), transparent 18%, transparent 82%, rgb(255 255 255 / 8%));
+  box-shadow: inset 1px 1px 1px rgb(255 255 255 / 32%), inset -1px -1px 1px rgb(255 255 255 / 12%);
+  transition: opacity .3s ease;
 }
-.review-card__cover-wrap:hover::before,
+.review-card__cover-wrap:hover::before {
+  transform: translateX(115%);
+}
 .review-card__cover-wrap:hover::after {
   opacity: 1;
 }
 .review-card__cover-wrap:hover {
-  border-color: rgb(245 240 230 / 78%);
-  box-shadow: 0 5px 18px rgb(0 0 0 / 22%), inset 0 0 0 1px rgb(255 255 255 / 16%);
+  border-color: rgb(245 240 230 / 82%);
+  box-shadow: 0 5px 18px rgb(0 0 0 / 22%), inset 0 0 0 1px rgb(255 255 255 / 18%);
 }
 .review-card__cover {
   display: block;
@@ -1422,8 +1429,8 @@ button:disabled { cursor: wait; opacity: .65; }
   transition: transform .35s ease, filter .35s ease;
 }
 .review-card__cover-wrap:hover .review-card__cover {
-  transform: scale(1.025);
-  filter: brightness(1.08) saturate(1.08);
+  transform: scale(1.012);
+  filter: brightness(1.035) saturate(1.04);
 }
 .review-card__cover--empty {
   width: 100%;
@@ -1554,4 +1561,42 @@ button:disabled { cursor: wait; opacity: .65; }
 @media (max-width: 420px) {
   .review-card__body h3 { font-size: 18px; }
   .review-card__year { font-size: 1em; }
+}
+
+
+/* Leitura do feed: tipografia ligeiramente maior e mais confortável */
+.review-card__meta { font-size: 12px; }
+.review-card__meta .review-card__author { font-size: 12px; font-weight: 600; }
+.review-card__meta time { font-size: 11px; }
+.review-card__body h3 { font-size: 22px; font-weight: 700; }
+.review-card__year {
+  font-size: 1em;
+  font-weight: 300;
+  opacity: .78;
+}
+.review-card__details { gap: 13px; }
+.review-card__stars { font-size: 14px; }
+.review-card__status, .review-card__liked { font-size: 12px; }
+.review-card__text {
+  grid-column: 1 / -1;
+  width: 100%;
+  max-width: none;
+  margin: 4px 0 0;
+  padding: 0;
+  text-align: justify;
+  text-justify: inter-word;
+  font-size: 14px;
+  line-height: 1.85;
+}
+.review-card__like, .review-card__comments-toggle {
+  font-size: 12px;
+}
+.review-card__like-count, .review-card__comment-count { font-size: 12px; }
+.feed-tabs__button { font-size: 13px; }
+@media (max-width: 420px) {
+  .review-card__body h3 { font-size: 19px; }
+  .review-card__year { font-size: 1em; font-weight: 300; }
+  .review-card__text { font-size: 13px; }
+  .review-card__meta { font-size: 11px; }
+  .review-card__meta .review-card__author { font-size: 11px; }
 }
