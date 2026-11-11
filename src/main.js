@@ -149,6 +149,30 @@ async function setupNotifications(user) {
 }
 
 
+async function fetchAllPages(buildQuery) {
+  const rows = [];
+  for (let offset = 0; ; offset += 1000) {
+    const { data, error } = await buildQuery().range(offset, offset + 999);
+    if (error) return { data: rows, error };
+    rows.push(...(data || []));
+    if (!data || data.length < 1000) return { data: rows, error: null };
+  }
+}
+
+async function fetchReviewRows(table, columns, reviewIds) {
+  const batches = [];
+  for (let index = 0; index < reviewIds.length; index += 100) {
+    batches.push(reviewIds.slice(index, index + 100));
+  }
+  const results = await Promise.all(batches.map((ids) =>
+    fetchAllPages(() => supabase.from(table).select(columns).in('review_id', ids))
+  ));
+  return {
+    data: results.flatMap((result) => result.data || []),
+    error: results.find((result) => result.error)?.error || null
+  };
+}
+
 async function renderSignedIn(user) {
   activeUser = user;
   const fallbackName = user.user_metadata?.display_name || user.email?.split('@')[0] || 'jogador';
@@ -294,9 +318,9 @@ async function renderSignedIn(user) {
   setupNotifications(user);
 
   const feedList = app.querySelector('[data-feed-list]');
-  const { data: reviews, error } = await supabase.from('reviews')
+  const { data: reviews, error } = await fetchAllPages(() => supabase.from('reviews')
     .select('id, user_id, game_id, rating, body, status, liked_game, created_at, profiles!reviews_user_id_fkey(username, display_name, avatar_url), games!reviews_game_id_fkey(title, cover_url, release_year, developer)')
-    .order('created_at', { ascending: false }).limit(1000);
+    .order('created_at', { ascending: false }));
 
   if (error) {
     console.error('[Ludus] Falha ao carregar feed:', error);
@@ -307,7 +331,7 @@ async function renderSignedIn(user) {
 
   const reviewIds = reviews.map((review) => review.id);
   const { data: likes, error: likesError } = reviewIds.length
-    ? await supabase.from('review_likes').select('review_id, user_id').in('review_id', reviewIds)
+    ? await fetchReviewRows('review_likes', 'review_id, user_id', reviewIds)
     : { data: [], error: null };
   if (likesError) console.error('[Ludus] Falha ao carregar curtidas:', likesError);
   const likeRows = likes || [];
@@ -317,7 +341,7 @@ async function renderSignedIn(user) {
   }, {});
   const likedReviewIds = new Set(likeRows.filter((like) => like.user_id === user.id).map((like) => like.review_id));
   const { data: commentRows, error: commentsCountError } = reviewIds.length
-    ? await supabase.from('review_comments').select('review_id').in('review_id', reviewIds)
+    ? await fetchReviewRows('review_comments', 'review_id', reviewIds)
     : { data: [], error: null };
   if (commentsCountError) console.error('[Ludus] Falha ao carregar contagem de comentários:', commentsCountError);
   const commentCounts = (commentRows || []).reduce((counts, comment) => {
