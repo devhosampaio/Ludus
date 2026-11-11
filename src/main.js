@@ -196,7 +196,7 @@ async function renderSignedIn(user) {
           <details class="account-menu" data-account-details>
             <summary class="sidebar-user" data-account-menu>
               <span class="sidebar-user__avatar" data-avatar> L </span>
-              <span class="sidebar-user__identity"><strong data-display-name></strong><small data-username></small></span>
+              <span class="sidebar-user__identity"><strong data-username></strong></span>
               <svg class="sidebar-user__chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"></path></svg>
             </summary>
             <div class="account-menu__panel" data-account-panel>
@@ -218,10 +218,9 @@ async function renderSignedIn(user) {
       </main>
     </div>`;
 
-  const displayName = app.querySelector('[data-display-name]');
   const username = app.querySelector('[data-username]');
   const avatar = app.querySelector('[data-avatar]');
-  displayName.textContent = fallbackName;
+  username.textContent = fallbackName;
   avatar.innerHTML = profilePlaceholderMarkup();
 
   const profileResult = await supabase.from('profiles')
@@ -229,9 +228,7 @@ async function renderSignedIn(user) {
     .eq('id', user.id).maybeSingle();
 
   if (profileResult.data) {
-    const fullName = profileResult.data.display_name || fallbackName;
-    displayName.textContent = fullName.trim().split(/\s+/).slice(0, 2).join(' ');
-    username.textContent = profileResult.data.username;
+    username.textContent = profileResult.data.username || fallbackName;
     if (profileResult.data.avatar_url) {
       avatar.innerHTML = '<img src="' + escapeHTML(profileResult.data.avatar_url) + '" alt="">';
     }
