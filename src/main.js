@@ -157,7 +157,6 @@ async function renderSignedIn(user) {
     <div class="feed-shell">
       <header class="sidebar">
         <a class="brand sidebar__brand" href="./" aria-label="Ludus início">L<span>.</span></a>
-        <a class="brand sidebar__brand" href="./" aria-label="Ludus início">L<span>.</span></a>
         <nav class="side-nav" aria-label="Navegação principal">
           <a class="side-nav__link is-active" href="#inicio">Início</a>
         </nav>
@@ -265,7 +264,7 @@ async function renderSignedIn(user) {
     searchTimer = window.setTimeout(async () => {
       const safeQuery = query.replace(/[,%()]/g, ' ').trim();
       const [players, games] = await Promise.all([
-        supabase.from('profiles').select('username, display_name, avatar_url').ilike('username', '%' + safeQuery + '%').limit(5),
+        supabase.from('profiles').select('username, display_name, avatar_url').or('username.ilike.%' + safeQuery + '%,display_name.ilike.%' + safeQuery + '%').limit(5),
         supabase.from('games').select('title').ilike('title', '%' + safeQuery + '%').limit(5)
       ]);
       if (headerSearch.value.trim() !== query) return;
