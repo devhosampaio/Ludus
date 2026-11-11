@@ -1899,3 +1899,45 @@ button:disabled { cursor: wait; opacity: .65; }
   .review-card__text { grid-column: 1 / -1; grid-row: 2; }
   .review-card > .review-card__actions { grid-column: 1 / -1; grid-row: 3; }
 }
+
+
+/* Interações maiores e organizadas lado a lado */
+.review-card > .review-card__actions .review-card__social-actions {
+  display: flex;
+  width: auto;
+  max-width: 100%;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 18px;
+}
+.review-card > .review-card__actions .review-card__like,
+.review-card > .review-card__actions .review-card__comments-toggle {
+  display: inline-flex;
+  min-height: 36px;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 0;
+  white-space: nowrap;
+  font-size: 13px;
+}
+.review-card > .review-card__actions .review-card__like svg,
+.review-card > .review-card__actions .review-card__comments-toggle svg {
+  width: 17px;
+  height: 17px;
+}
+.review-card > .review-card__actions .review-card__like-count,
+.review-card > .review-card__actions .review-card__comment-count {
+  margin-left: -12px;
+  font-size: 12px;
+}
+@media (max-width: 420px) {
+  .review-card > .review-card__actions .review-card__social-actions {
+    gap: 12px;
+  }
+  .review-card > .review-card__actions .review-card__like,
+  .review-card > .review-card__actions .review-card__comments-toggle {
+    gap: 6px;
+    font-size: 12px;
+  }
+}
