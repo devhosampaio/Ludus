@@ -2,6 +2,7 @@ import { supabase } from './lib/supabase.js';
 import { signIn, signOut, signUp, requestPasswordReset } from './lib/auth.js';
 
 const app = document.querySelector('#app');
+document.title = 'Ludus | Rede Social dos Gamers';
 let activeUser = null;
 
 function showMessage(message, type = 'info') {
@@ -295,39 +296,50 @@ async function renderSignedIn(user) {
       searchResults.hidden = false;
     }, 220);
   });
-  // Abertura dos dois controles pelo mesmo listener delegado em captura.
-  // Assim, elementos internos (SVG/ícones) e mudanças de layout não interrompem o clique.
-  app.addEventListener('click', async (event) => {
+  searchToggle.addEventListener('click', (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    const isOpen = !searchWrap.classList.contains('is-open');
+    searchWrap.classList.toggle('is-open', isOpen);
+    searchToggle.setAttribute('aria-expanded', String(isOpen));
+    if (isOpen) {
+      headerSearch.focus();
+    } else {
+      headerSearch.value = '';
+      searchResults.hidden = true;
+      searchResults.innerHTML = '';
+    }
+  });
+
+  const notificationRoot = app.querySelector('[data-notifications]');
+  const notificationsButton = notificationRoot?.querySelector('[data-notifications-toggle]');
+  const notificationPanel = notificationRoot?.querySelector('[data-notifications-panel]');
+  notificationsButton?.addEventListener('click', async (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    if (!notificationPanel) return;
+    const opening = notificationPanel.hidden;
+    notificationPanel.hidden = !opening;
+    notificationsButton.setAttribute('aria-expanded', String(opening));
+    if (opening) await notificationRoot._refreshNotifications?.();
+  });
+
+  document.addEventListener('click', (event) => {
     if (!(event.target instanceof Element)) return;
-
-    const searchButton = event.target.closest('[data-search-toggle]');
-    if (searchButton) {
-      event.preventDefault();
-      const isOpen = searchWrap.classList.toggle('is-open');
-      searchButton.setAttribute('aria-expanded', String(isOpen));
-      if (isOpen) {
-        headerSearch.focus();
-      } else {
-        headerSearch.value = '';
-        searchResults.hidden = true;
-        searchResults.innerHTML = '';
-      }
-      return;
+    if (notificationRoot && !notificationRoot.contains(event.target) && notificationPanel && !notificationPanel.hidden) {
+      notificationPanel.hidden = true;
+      notificationsButton?.setAttribute('aria-expanded', 'false');
     }
-
-    const notificationsButton = event.target.closest('[data-notifications-toggle]');
-    if (notificationsButton) {
-      event.preventDefault();
-      event.stopPropagation();
-      const notificationRoot = notificationsButton.closest('[data-notifications]');
-      const notificationPanel = notificationRoot?.querySelector('[data-notifications-panel]');
-      if (!notificationPanel) return;
-      const opening = notificationPanel.hidden;
-      notificationPanel.hidden = !opening;
-      notificationsButton.setAttribute('aria-expanded', String(opening));
-      if (opening) await notificationRoot._refreshNotifications?.();
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      if (notificationPanel) notificationPanel.hidden = true;
+      notificationsButton?.setAttribute('aria-expanded', 'false');
+      searchWrap.classList.remove('is-open');
+      searchToggle.setAttribute('aria-expanded', 'false');
+      searchResults.hidden = true;
     }
-  }, true);
+  });
 
   searchResults.addEventListener('click', (event) => {
     const player = event.target.closest('[data-search-profile]');
