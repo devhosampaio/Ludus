@@ -2340,3 +2340,24 @@ button:disabled { cursor: wait; opacity: .65; }
   background: #494257;
   color: #f5f0e6;
 }
+
+
+/* Garante que o botão de busca permaneça clicável acima do campo expansível */
+.header-actions {
+  position: relative;
+  z-index: 30;
+}
+.header-search {
+  position: relative;
+  z-index: 31;
+  isolation: isolate;
+}
+.header-search__toggle {
+  position: relative;
+  z-index: 2;
+  pointer-events: auto;
+  touch-action: manipulation;
+}
+.header-search.is-open {
+  z-index: 32;
+}
