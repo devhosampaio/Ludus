@@ -349,8 +349,8 @@ async function renderSignedIn(user) {
     return counts;
   }, {});
 
-  const { data: followedProfiles, error: followedError } = await supabase.from('follows')
-    .select('following_id').eq('follower_id', user.id);
+  const { data: followedProfiles, error: followedError } = await fetchAllPages(() => supabase.from('follows')
+    .select('following_id').eq('follower_id', user.id));
   if (followedError) console.error('[Ludus] Falha ao carregar quem você segue:', followedError);
   const followedIds = new Set((followedProfiles || []).map((item) => item.following_id));
   const feedTabs = app.querySelector('[data-feed-mode="popular"]').closest('.feed-tabs');
