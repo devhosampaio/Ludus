@@ -398,8 +398,8 @@ async function renderSignedIn(user) {
         '<h3>' + escapeHTML(game) + (gameYear ? ' <small class="review-card__year">(' + escapeHTML(gameYear) + ')</small>' : '') + '</h3><div class="review-card__details"><span class="review-card__stars" aria-label="Nota ' + review.rating + ' de 5">' + stars + '</span>' +
         (review.status ? '<span class="review-card__status">' + statusLabel(review.status) + '</span>' : '') +
         (review.liked_game ? '<span class="review-card__liked"><svg class="ui-icon ui-icon--heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 8.8c0 5.1-8.8 11-8.8 11s-8.8-5.9-8.8-11A4.8 4.8 0 0 1 12 6.4a4.8 4.8 0 0 1 8.8 2.4Z"></path></svg> Gostei</span>' : '') + '</div>' +
-        (review.body ? '<p class="review-card__text">' + escapeHTML(review.body) + '</p>' : '') +
-        '<div class="review-card__actions">' + (review.user_id === user.id ? '<button class="review-card__edit" type="button" data-edit-review>Editar</button>' : '') + '<div class="review-card__social-actions"><button class="review-card__like' + (isLiked ? ' is-liked' : '') + '" type="button" data-like-review aria-pressed="' + isLiked + '"><svg class="ui-icon ui-icon--heart" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" stroke="none" d="M12 21s-8.8-5.9-8.8-12.2A4.8 4.8 0 0 1 12 6.4a4.8 4.8 0 0 1 8.8 2.4C20.8 15.1 12 21 12 21Z"></path></svg><span data-like-label>Curtir review</span></button><span class="review-card__like-count" data-like-count>' + (likeCounts[review.id] || 0) + '</span><button class="review-card__comments-toggle" type="button" data-comments-toggle aria-expanded="false"><svg class="ui-icon ui-icon--comment" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" stroke="none" d="M4 3.5h16A2.5 2.5 0 0 1 22.5 6v9a2.5 2.5 0 0 1-2.5 2.5h-8l-5.8 4v-4H4A2.5 2.5 0 0 1 1.5 15V6A2.5 2.5 0 0 1 4 3.5Z"></path></svg><span>Comentar review</span></button><span class="review-card__comment-count" data-comment-count>' + (commentCounts[review.id] || 0) + '</span></div></div><section class="review-comments" data-comments-panel hidden></section></div></article>';
+        '<div class="review-card__actions">' + (review.user_id === user.id ? '<button class="review-card__edit" type="button" data-edit-review>Editar</button>' : '') + '<div class="review-card__social-actions"><button class="review-card__like' + (isLiked ? ' is-liked' : '') + '" type="button" data-like-review aria-pressed="' + isLiked + '"><svg class="ui-icon ui-icon--heart" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" stroke="none" d="M12 21s-8.8-5.9-8.8-12.2A4.8 4.8 0 0 1 12 6.4a4.8 4.8 0 0 1 8.8 2.4C20.8 15.1 12 21 12 21Z"></path></svg><span data-like-label>Curtir review</span></button><span class="review-card__like-count" data-like-count>' + (likeCounts[review.id] || 0) + '</span><button class="review-card__comments-toggle" type="button" data-comments-toggle aria-expanded="false"><svg class="ui-icon ui-icon--comment" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" stroke="none" d="M4 3.5h16A2.5 2.5 0 0 1 22.5 6v9a2.5 2.5 0 0 1-2.5 2.5h-8l-5.8 4v-4H4A2.5 2.5 0 0 1 1.5 15V6A2.5 2.5 0 0 1 4 3.5Z"></path></svg><span>Comentar review</span></button><span class="review-card__comment-count" data-comment-count>' + (commentCounts[review.id] || 0) + '</span></div></div><section class="review-comments" data-comments-panel hidden></section></div>' +
+        (review.body ? '<p class="review-card__text">' + escapeHTML(review.body) + '</p>' : '') + '</article>';
     }).join('');
   };
 
@@ -483,22 +483,26 @@ async function renderSignedIn(user) {
     const reviewId = card?.dataset.reviewId;
     if (!reviewId) return;
     const wasLiked = button.getAttribute('aria-pressed') === 'true';
+    const count = card.querySelector('[data-like-count]');
+    if (!count) return;
     button.disabled = true;
-    const result = wasLiked
-      ? await supabase.from('review_likes').delete().eq('review_id', reviewId).eq('user_id', user.id)
-      : await supabase.from('review_likes').insert({ review_id: reviewId, user_id: user.id });
-    if (result.error) {
-      console.error('[Ludus] Falha ao atualizar curtida:', result.error);
+    button.setAttribute('aria-busy', 'true');
+    try {
+      const result = wasLiked
+        ? await supabase.from('review_likes').delete().eq('review_id', reviewId).eq('user_id', user.id)
+        : await supabase.from('review_likes').insert({ review_id: reviewId, user_id: user.id });
+      if (result.error) throw result.error;
+      const nextLiked = !wasLiked;
+      count.textContent = String(Math.max(0, Number(count.textContent) + (nextLiked ? 1 : -1)));
+      button.setAttribute('aria-pressed', String(nextLiked));
+      button.classList.toggle('is-liked', nextLiked);
+      button.querySelector('[data-like-label]').textContent = 'Curtir review';
+    } catch (error) {
+      console.error('[Ludus] Falha ao atualizar curtida:', error);
+    } finally {
       button.disabled = false;
-      return;
+      button.removeAttribute('aria-busy');
     }
-    const count = button.querySelector('[data-like-count]');
-    const nextLiked = !wasLiked;
-    count.textContent = String(Math.max(0, Number(count.textContent) + (nextLiked ? 1 : -1)));
-    button.setAttribute('aria-pressed', String(nextLiked));
-    button.classList.toggle('is-liked', nextLiked);
-    button.querySelector('[data-like-label]').textContent = 'Curtir review';
-    button.disabled = false;
   });
 }
 
