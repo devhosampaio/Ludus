@@ -28,12 +28,18 @@ button:disabled { cursor: wait; opacity: .65; }
   background: var(--color-bg);
 }
 .auth-intro {
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   min-height: 100vh;
+  overflow: hidden;
+  isolation: isolate;
   padding: clamp(32px, 6vw, 84px);
-  background: #282433;
+  background:
+    linear-gradient(90deg, rgb(24 21 31 / 76%) 0%, rgb(24 21 31 / 38%) 58%, rgb(24 21 31 / 24%) 100%),
+    linear-gradient(0deg, rgb(24 21 31 / 58%) 0%, transparent 48%, rgb(24 21 31 / 24%) 100%),
+    url('https://www.rockstargames.com/VI/_next/static/media/Vice_City_Postcard_landscape.0v2njmlk2n-qm.jpg?akim=1&imdensity=1&imwidth=3840') center / cover no-repeat;
 }
 .brand {
   display: inline-block;
