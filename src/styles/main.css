@@ -549,3 +549,68 @@ button:disabled { cursor: wait; opacity: .65; }
   .profile-editor__actions { display: grid; grid-template-columns: 1fr 1fr; }
   .profile-editor__actions button { padding: 0 10px; }
 }
+
+
+/* Review comments */
+.review-card__comments-toggle {
+  border: 0;
+  padding: 7px 0;
+  background: transparent;
+  color: #746b80;
+  font: 600 10px 'DM Sans', sans-serif;
+  cursor: pointer;
+}
+.review-card__comments-toggle:hover { color: var(--color-secondary); }
+.review-card__comments-toggle span {
+  display: inline-grid;
+  min-width: 18px;
+  height: 18px;
+  place-items: center;
+  margin-left: 3px;
+  border: 1px solid #c9bfb0;
+  border-radius: 50%;
+  font-size: 9px;
+}
+.review-comments {
+  grid-column: 1 / -1;
+  margin: 16px 0 0;
+  padding: 16px 0 0;
+  border-top: 1px solid #d5cbbb;
+}
+.review-comments[hidden] { display: none; }
+.review-comments__list { display: grid; gap: 13px; }
+.review-comment { padding: 0 0 11px; border-bottom: 1px solid #ded5c8; }
+.review-comment__meta { display: flex; align-items: baseline; flex-wrap: wrap; gap: 7px; }
+.review-comment__meta strong { color: #393344; font-size: 11px; }
+.review-comment__meta span, .review-comment__meta time { color: #8b8290; font-size: 9px; }
+.review-comment__meta button { margin-left: auto; border: 0; background: transparent; color: #a05a50; font-size: 9px; cursor: pointer; }
+.review-comment p { margin: 5px 0 0; color: #514b5d; font-size: 12px; line-height: 1.65; white-space: pre-wrap; overflow-wrap: anywhere; }
+.review-comments__empty, .review-comments__loading { margin: 0 0 12px; color: #81798a; font-size: 11px; }
+.review-comments__form { display: flex; align-items: stretch; gap: 8px; margin-top: 14px; }
+.review-comments__form textarea {
+  flex: 1;
+  min-width: 0;
+  min-height: 42px;
+  padding: 10px;
+  border: 1px solid #c9bfb0;
+  border-radius: 0;
+  background: #f2ecdf;
+  color: #302c3d;
+  font: 11px 'DM Sans', sans-serif;
+  resize: vertical;
+}
+.review-comments__form button {
+  align-self: stretch;
+  padding: 0 13px;
+  border: 0;
+  background: #7060ab;
+  color: white;
+  font: 600 10px 'DM Sans', sans-serif;
+  cursor: pointer;
+}
+.review-comments__form button:disabled { opacity: .55; }
+@media (max-width: 520px) {
+  .review-comments { margin-top: 12px; padding-top: 12px; }
+  .review-comments__form { flex-direction: column; }
+  .review-comments__form button { min-height: 40px; }
+}
