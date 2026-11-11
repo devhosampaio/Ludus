@@ -58,7 +58,7 @@ Deno.serve(async (req: Request) => {
     const { data: profile, error: profileError } = await admin
       .from("profiles")
       .select("id")
-      .ilike("username", username)
+      .eq("username", username)
       .maybeSingle();
 
     if (profileError || !profile) {
