@@ -155,7 +155,7 @@ async function renderSignedIn(user) {
   const fallbackName = user.user_metadata?.display_name || user.email?.split('@')[0] || 'jogador';
   app.innerHTML = `
     <div class="feed-shell">
-      <aside class="sidebar">
+      <header class="sidebar">
         <a class="brand sidebar__brand" href="./" aria-label="Ludus início">L<span>.</span></a>
         <p class="sidebar__label">ESPAÇO DE JOGO</p>
         <nav class="side-nav" aria-label="Navegação principal">
@@ -167,7 +167,7 @@ async function renderSignedIn(user) {
           <div class="sidebar-user"><span class="sidebar-user__avatar" data-avatar> L </span><span><strong data-display-name></strong><small data-username></small></span></div>
           <button class="logout-button" type="button" data-signout>Sair da conta ↗</button>
         </div>
-      </aside>
+      </header>
       <main class="feed-main">
         <header class="feed-topbar">
           <div><p class="eyebrow" data-today></p><h1>Seu universo de jogos<span>.</span></h1></div>
