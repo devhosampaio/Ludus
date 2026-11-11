@@ -2464,3 +2464,42 @@ button:disabled { cursor: wait; opacity: .65; }
   .notifications__panel { right: -4px; }
   .header-search__results { right: -42px; }
 }
+
+
+/* Correções finais do cabeçalho: largura integral e controles clicáveis */
+html { scrollbar-gutter: auto !important; }
+body, #app, .feed-shell { overflow-x: clip; }
+.sidebar {
+  width: 100vw !important;
+  max-width: none !important;
+  margin-right: calc(100% - 100vw) !important;
+}
+.header-actions {
+  position: relative !important;
+  z-index: 120 !important;
+  display: flex !important;
+  align-items: center;
+  overflow: visible !important;
+  pointer-events: auto !important;
+}
+.header-search,
+.header-actions .notifications {
+  position: relative !important;
+  z-index: 121 !important;
+  flex: 0 0 auto;
+  overflow: visible !important;
+  pointer-events: auto !important;
+}
+.header-search__toggle,
+.notifications__trigger {
+  position: relative !important;
+  z-index: 122 !important;
+  display: grid !important;
+  place-items: center;
+  pointer-events: auto !important;
+  cursor: pointer !important;
+}
+.header-search__results,
+.notifications__panel {
+  z-index: 130 !important;
+}
