@@ -2563,3 +2563,151 @@ body, #app, .feed-shell { overflow-x: clip; }
 .header-search__result--player:last-child {
   border-bottom: 0 !important;
 }
+
+
+/* Página temporária de jogo: estrutura semelhante ao perfil */
+.game-page__hero {
+  position: relative;
+  overflow: hidden;
+  padding: 0 0 26px;
+  border-bottom: 1px solid rgb(232 223 206 / 18%);
+}
+.game-page__backdrop {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 260px;
+  background-position: center 35%;
+  background-size: cover;
+  opacity: .42;
+  pointer-events: none;
+}
+.game-page__identity {
+  position: relative;
+  display: grid;
+  grid-template-columns: 170px minmax(0, 1fr);
+  align-items: end;
+  gap: 28px;
+  padding: 54px 28px 0;
+}
+.game-page__cover {
+  display: block;
+  width: 170px;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  border: 1px solid rgb(232 223 206 / 40%);
+  border-radius: 4px;
+  background: #211e2b;
+  box-shadow: 0 14px 34px rgb(0 0 0 / 30%);
+}
+.game-page__cover--empty {
+  display: grid;
+  place-items: center;
+  color: #302c3d;
+  background: #e8dfce;
+  font: 700 42px 'Space Grotesk', sans-serif;
+}
+.game-page__details { min-width: 0; padding-bottom: 5px; }
+.game-page__details .eyebrow {
+  margin: 0 0 9px;
+  color: #d96c55;
+  font: 9px 'DM Mono', monospace;
+  letter-spacing: .16em;
+}
+.game-page__details h1 {
+  margin: 0;
+  color: #f5f0e6;
+  font: 600 clamp(27px, 4vw, 43px)/1.08 'Space Grotesk', sans-serif;
+  letter-spacing: -.045em;
+}
+.game-page__subline {
+  margin: 10px 0 0;
+  color: #c9bfb0;
+  font-size: 12px;
+}
+.game-page__tags, .game-page__platforms {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 13px;
+}
+.game-page__tags span, .game-page__platforms span {
+  padding: 5px 8px;
+  border: 1px solid rgb(232 223 206 / 20%);
+  border-radius: 3px;
+  color: #c9bfb0;
+  font: 9px 'DM Mono', monospace;
+}
+.game-page__platforms span { color: #a9a1b3; }
+.game-page__rate {
+  min-height: 42px;
+  padding: 0 17px;
+  margin-top: 20px;
+  border: 1px solid #d96c55;
+  border-radius: 4px;
+  background: #d96c55;
+  color: #211e2b;
+  font: 600 11px 'DM Sans', sans-serif;
+  cursor: pointer;
+}
+.game-page__rate:hover { background: #e78069; border-color: #e78069; }
+.game-page__description {
+  position: relative;
+  max-width: 760px;
+  margin: 22px 28px 0;
+  color: #c9bfb0;
+  font-size: 12px;
+  line-height: 1.75;
+  white-space: pre-line;
+}
+.game-page__reviews { margin-top: 36px; }
+.game-page__review {
+  display: flex;
+  gap: 13px;
+  padding: 17px 0;
+  border-bottom: 1px solid rgb(232 223 206 / 15%);
+}
+.game-page__review > img, .game-page__review-avatar {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #777783;
+}
+.game-page__review-avatar svg { width: 21px; height: 21px; fill: #e8dfce; stroke: none; }
+.game-page__review-content { min-width: 0; flex: 1; }
+.game-page__review-heading { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.game-page__review-heading strong { color: #f5f0e6; font-size: 12px; }
+.game-page__review-heading > span { color: #d5a64a; font-size: 13px; letter-spacing: 1px; }
+.game-page__review-meta { margin-top: 4px; color: #a9a1b3; font-size: 10px; }
+.game-page__review-content p { margin: 9px 0 0; color: #c9bfb0; font-size: 12px; line-height: 1.65; white-space: pre-line; }
+@media (max-width: 760px) {
+  /* No mobile, a busca fica à esquerda e as notificações à direita.
+     Assim, a expansão da busca não desloca o sino. */
+  .header-actions .header-search { order: 1 !important; }
+  .header-actions .notifications { order: 2 !important; }
+  .game-page__identity {
+    grid-template-columns: 104px minmax(0, 1fr);
+    align-items: end;
+    gap: 15px;
+    padding: 42px 16px 0;
+  }
+  .game-page__cover { width: 104px; }
+  .game-page__details h1 { font-size: clamp(21px, 6vw, 30px); }
+  .game-page__details .eyebrow { font-size: 8px; }
+  .game-page__rate { min-height: 38px; padding: 0 11px; margin-top: 14px; font-size: 10px; }
+  .game-page__tags, .game-page__platforms { gap: 5px; margin-top: 9px; }
+  .game-page__tags span, .game-page__platforms span { padding: 4px 6px; font-size: 8px; }
+  .game-page__description { margin: 18px 16px 0; }
+}
+@media (max-width: 420px) {
+  .game-page__identity { grid-template-columns: 88px minmax(0, 1fr); gap: 12px; padding: 35px 10px 0; }
+  .game-page__cover { width: 88px; }
+  .game-page__details h1 { font-size: 20px; }
+  .game-page__subline { font-size: 10px; }
+  .game-page__rate { font-size: 9px; }
+  .game-page__description { margin-right: 10px; margin-left: 10px; }
+}
