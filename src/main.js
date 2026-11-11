@@ -368,7 +368,7 @@ async function renderSignedIn(user) {
     } else if (game) {
       searchResults.hidden = true;
       headerSearch.blur();
-      navigateToGame(game.dataset.searchGameId);
+      navigateToGame(user, game.dataset.searchGameId);
     } else if (steamGridGame) {
       steamGridGame.disabled = true;
       steamGridGame.classList.add('is-loading');
@@ -383,13 +383,18 @@ async function renderSignedIn(user) {
       }
       searchResults.hidden = true;
       headerSearch.blur();
-      navigateToGame(data.game.id);
+      navigateToGame(user, data.game.id);
     }
   });
 
   const routeUsername = getProfileUsernameFromLocation();
   if (routeUsername) {
     await renderProfilePage(user, routeUsername);
+    return;
+  }
+  const routeGameId = getGameIdFromLocation();
+  if (routeGameId) {
+    await renderGamePage(user, routeGameId);
     return;
   }
 
@@ -674,12 +679,92 @@ function getProfileUsernameFromLocation() {
   return match ? decodeURIComponent(match[1]) : null;
 }
 
-function navigateToGame(gameId) {
+function getGameIdFromLocation() {
+  const match = window.location.hash.match(/^#\\/jogo\\/([^/?#]+)/);
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
+function navigateToGame(currentUser, gameId) {
   if (!gameId) return;
   const nextHash = '#/jogo/' + encodeURIComponent(gameId);
   if (window.location.hash !== nextHash) {
     window.history.pushState({ page: 'game', gameId }, '', nextHash);
   }
+  renderGamePage(currentUser, gameId);
+}
+
+async function renderGamePage(currentUser, gameId) {
+  const requestId = (renderGamePage.requestId || 0) + 1;
+  renderGamePage.requestId = requestId;
+  app.innerHTML = `
+    <main class="profile-page game-page">
+      <header class="profile-page__topbar">
+        <a class="brand" href="#inicio" data-game-back aria-label="Ludus início">L<span>.</span></a>
+        <div class="profile-page__topbar-label"><span>CATÁLOGO / JOGOS</span><strong>JOGO</strong></div>
+        ${notificationControlMarkup()}
+        <button class="profile-page__back" type="button" data-game-back>← <span>Voltar ao feed</span></button>
+      </header>
+      <div class="profile-page__content">
+        <div class="profile-page__loading">Carregando jogo…</div>
+      </div>
+    </main>`;
+  app.querySelectorAll('[data-game-back]').forEach((button) => {
+    button.addEventListener('click', () => navigateToFeed(currentUser));
+  });
+  setupNotifications(currentUser);
+
+  const { data: game, error } = await supabase.from('games')
+    .select('id, steamgriddb_id, title, cover_url, hero_url, release_year, developer, description, platforms, genres')
+    .eq('id', gameId).maybeSingle();
+  if (requestId !== renderGamePage.requestId) return;
+  const content = app.querySelector('.profile-page__content');
+  if (error || !game) {
+    content.innerHTML = '<div class="profile-page__empty"><p class="eyebrow">JOGO INDISPONÍVEL</p><h1>Não encontramos este jogo no catálogo.</h1><button type="button" class="profile-page__back" data-game-back>← Voltar ao feed</button></div>';
+    content.querySelector('[data-game-back]')?.addEventListener('click', () => navigateToFeed(currentUser));
+    return;
+  }
+
+  const [ownReviewResult, reviewsResult] = await Promise.all([
+    supabase.from('reviews').select('id, game_id, rating, body, status, liked_game, games!reviews_game_id_fkey(title, cover_url, release_year)')
+      .eq('user_id', currentUser.id).eq('game_id', game.id).maybeSingle(),
+    supabase.from('reviews')
+      .select('id, rating, body, status, liked_game, created_at, profiles!reviews_user_id_fkey(username, display_name, avatar_url)')
+      .eq('game_id', game.id).order('created_at', { ascending: false }).limit(30)
+  ]);
+  if (requestId !== renderGamePage.requestId) return;
+
+  const bannerStyle = game.hero_url
+    ? 'style="background-image:linear-gradient(90deg, rgb(48 44 61 / 18%), #302c3d 100%),url(&quot;' + escapeHTML(game.hero_url) + '&quot;)"'
+    : '';
+  const cover = game.cover_url
+    ? '<img class="game-page__cover" src="' + escapeHTML(game.cover_url) + '" alt="">'
+    : '<div class="game-page__cover game-page__cover--empty">L.</div>';
+  const genres = (game.genres || []).slice(0, 5).map((item) => '<span>' + escapeHTML(item) + '</span>').join('');
+  const platforms = (game.platforms || []).slice(0, 5).map((item) => '<span>' + escapeHTML(item) + '</span>').join('');
+  const reviewCards = (reviewsResult.data || []).map((review) => {
+    const profile = review.profiles || {};
+    const author = profile.display_name || profile.username || 'Jogador';
+    const avatar = profile.avatar_url
+      ? '<img src="' + escapeHTML(profile.avatar_url) + '" alt="">'
+      : '<span class="game-page__review-avatar">' + profilePlaceholderMarkup() + '</span>';
+    return '<article class="game-page__review">' + avatar + '<div class="game-page__review-content"><div class="game-page__review-heading"><strong>' + escapeHTML(author) + '</strong><span>' + '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating) + '</span></div><div class="game-page__review-meta">' + statusLabel(review.status) + ' · ' + formatDate(review.created_at) + '</div>' + (review.body ? '<p>' + escapeHTML(review.body) + '</p>' : '') + '</div></article>';
+  }).join('');
+
+  content.innerHTML =
+    '<section class="game-page__hero"><div class="game-page__backdrop" ' + bannerStyle + '></div><div class="game-page__identity">' + cover +
+    '<div class="game-page__details"><p class="eyebrow">JOGO DO CATÁLOGO LUDUS</p><h1>' + escapeHTML(game.title) + '</h1>' +
+    '<p class="game-page__subline">' + [game.release_year, game.developer].filter(Boolean).map(escapeHTML).join(' · ') + '</p>' +
+    (genres ? '<div class="game-page__tags">' + genres + '</div>' : '') +
+    (platforms ? '<div class="game-page__platforms">' + platforms + '</div>' : '') +
+    '<button class="game-page__rate" type="button" data-rate-game>' + (ownReviewResult.data ? 'Editar minha avaliação' : 'Avaliar este jogo') + ' ↗</button></div></div>' +
+    (game.description ? '<p class="game-page__description">' + escapeHTML(game.description) + '</p>' : '') +
+    '</section>' +
+    '<section class="profile-page__reviews game-page__reviews"><div class="profile-page__section-heading"><div><p class="eyebrow">COMUNIDADE LUDUS</p><h2>Avaliações</h2></div><span>' + (reviewsResult.data || []).length.toString().padStart(2, '0') + '</span></div>' +
+    (reviewsResult.error ? '<p class="profile-page__empty">Não foi possível carregar as avaliações.</p>' : reviewCards || '<p class="profile-page__empty">Este jogo ainda não recebeu avaliações. Seja o primeiro!</p>') + '</section>';
+
+  app.querySelector('[data-rate-game]')?.addEventListener('click', () => {
+    openReviewComposer(currentUser, ownReviewResult.data || null, game);
+  });
 }
 
 function navigateToProfile(currentUser, username) {
@@ -1175,7 +1260,8 @@ if (!supabase) {
 window.addEventListener('hashchange', () => {
   if (!activeUser) return;
   const username = getProfileUsernameFromLocation();
+  const gameId = getGameIdFromLocation();
   if (username) renderProfilePage(activeUser, username);
-  else if (/^#\/jogo\//.test(window.location.hash)) return;
+  else if (gameId) renderGamePage(activeUser, gameId);
   else renderSignedIn(activeUser);
 });
