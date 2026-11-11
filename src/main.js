@@ -190,7 +190,6 @@ async function renderSignedIn(user) {
           <div class="header-search__results" data-header-search-results hidden></div>
         </div>
         <div class="header-actions">
-          <button class="record-button" type="button" data-open-composer>+ Fazer review</button>
           ${notificationControlMarkup()}
         </div>
         <div class="sidebar__bottom">
@@ -219,7 +218,6 @@ async function renderSignedIn(user) {
       </main>
     </div>`;
 
-  app.querySelector('[data-open-composer]').addEventListener('click', () => openReviewComposer(user));
   const displayName = app.querySelector('[data-display-name]');
   const username = app.querySelector('[data-username]');
   const avatar = app.querySelector('[data-avatar]');
@@ -278,7 +276,7 @@ async function renderSignedIn(user) {
       const safeQuery = query.replace(/[,%()]/g, ' ').trim();
       const [players, games] = await Promise.all([
         supabase.from('profiles').select('username, display_name, avatar_url').or('username.ilike.%' + safeQuery + '%,display_name.ilike.%' + safeQuery + '%').limit(5),
-        supabase.from('games').select('title').ilike('title', '%' + safeQuery + '%').limit(5)
+        supabase.from('games').select('id, title').ilike('title', '%' + safeQuery + '%').limit(5)
       ]);
       if (headerSearch.value.trim() !== query) return;
       const playerItems = (players.data || []).map((profile) =>
@@ -286,9 +284,9 @@ async function renderSignedIn(user) {
         (profile.avatar_url ? '<img src="' + escapeHTML(profile.avatar_url) + '" alt="">' : '<span class="header-search__avatar">' + profilePlaceholderMarkup() + '</span>') +
         '<span><strong>' + escapeHTML(profile.display_name || profile.username) + '</strong><small>' + escapeHTML(profile.username) + '</small></span><em>JOGADOR</em></button>'
       ).join('');
-      const uniqueGames = [...new Set((games.data || []).map((game) => game.title))];
-      const gameItems = uniqueGames.map((title) =>
-        '<button type="button" class="header-search__result header-search__result--game" data-search-game="' + escapeHTML(title) + '"><span class="header-search__game-icon">◈</span><span><strong>' + escapeHTML(title) + '</strong><small>Ver avaliações no feed</small></span><em>JOGO</em></button>'
+      const uniqueGames = [...new Map((games.data || []).map((game) => [game.id, game])).values()];
+      const gameItems = uniqueGames.map((game) =>
+        '<button type="button" class="header-search__result header-search__result--game" data-search-game-id="' + escapeHTML(game.id) + '"><span class="header-search__game-icon">◈</span><span><strong>' + escapeHTML(game.title) + '</strong><small>Abrir página do jogo</small></span><em>JOGO</em></button>'
       ).join('');
       searchResults.innerHTML = (playerItems || gameItems)
         ? '<p class="header-search__label">JOGADORES</p>' + (playerItems || '<small class="header-search__empty">Nenhum jogador encontrado</small>') +
@@ -299,17 +297,14 @@ async function renderSignedIn(user) {
   });
   searchResults.addEventListener('click', (event) => {
     const player = event.target.closest('[data-search-profile]');
-    const game = event.target.closest('[data-search-game]');
+    const game = event.target.closest('[data-search-game-id]');
     if (player) {
       searchResults.hidden = true;
       navigateToProfile(user, player.dataset.searchProfile);
     } else if (game) {
-      const title = game.dataset.searchGame.toLocaleLowerCase();
-      app.querySelectorAll('.review-card').forEach((card) => {
-        card.hidden = !card.querySelector('h3')?.textContent.toLocaleLowerCase().includes(title);
-      });
       searchResults.hidden = true;
-      headerSearch.value = game.dataset.searchGame;
+      headerSearch.blur();
+      navigateToGame(game.dataset.searchGameId);
     }
   });
 
@@ -600,6 +595,14 @@ async function loadReviewComments(user, card) {
 function getProfileUsernameFromLocation() {
   const match = window.location.hash.match(/^#\/perfil\/([^/?#]+)/);
   return match ? decodeURIComponent(match[1]) : null;
+}
+
+function navigateToGame(gameId) {
+  if (!gameId) return;
+  const nextHash = '#/jogo/' + encodeURIComponent(gameId);
+  if (window.location.hash !== nextHash) {
+    window.history.pushState({ page: 'game', gameId }, '', nextHash);
+  }
 }
 
 function navigateToProfile(currentUser, username) {
@@ -1096,5 +1099,6 @@ window.addEventListener('hashchange', () => {
   if (!activeUser) return;
   const username = getProfileUsernameFromLocation();
   if (username) renderProfilePage(activeUser, username);
+  else if (/^#\\/jogo\\//.test(window.location.hash)) return;
   else renderSignedIn(activeUser);
 });
