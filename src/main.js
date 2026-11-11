@@ -579,7 +579,7 @@ async function loadReviewComments(user, card) {
   panel.innerHTML = '<div class="review-comments__list">' +
     (rows.length ? rows.map((comment) => {
       const name = comment.profiles?.display_name || comment.profiles?.username || 'jogador';
-      return '<article class="review-comment"><div class="review-comment__meta"><strong>' + escapeHTML(name) + '</strong><span>@' + escapeHTML(comment.profiles?.username || 'jogador') + '</span><time>' + formatDate(comment.created_at) + '</time>' +
+      return '<article class="review-comment"><div class="review-comment__meta"><strong>' + escapeHTML(name) + '</strong><span>' + escapeHTML(comment.profiles?.username || 'jogador') + '</span><time>' + formatDate(comment.created_at) + '</time>' +
         (comment.user_id === user.id ? '<button type="button" data-delete-comment="' + comment.id + '" aria-label="Excluir comentário">Excluir</button>' : '') +
         '</div><p>' + escapeHTML(comment.body) + '</p></article>';
     }).join('') : '<p class="review-comments__empty">Ainda não há comentários. Comece a conversa.</p>') +
@@ -669,7 +669,7 @@ async function renderProfilePage(currentUser, username) {
   app.querySelector('.profile-page__content').innerHTML =
     '<section class="profile-page__hero"><div class="profile-page__banner">' + banner + '</div>' +
     '<div class="profile-page__identity"><div class="profile-page__avatar">' + avatar + '</div>' +
-    '<div class="profile-page__heading"><p class="eyebrow">JOGADOR LUDUS</p><h1>' + escapeHTML(displayName) + '</h1><span>@' + escapeHTML(profile.username) + '</span></div>' +
+    '<div class="profile-page__heading"><p class="eyebrow">JOGADOR LUDUS</p><h1>' + escapeHTML(displayName) + '</h1><span>' + escapeHTML(profile.username) + '</span></div>' +
     (profile.id !== currentUser.id ? '<button class="profile-follow' + (isFollowing ? ' is-following' : '') + '" type="button" data-profile-follow>' + (isFollowing ? 'Seguindo' : 'Seguir') + '</button>' : '<button class="profile-panel__you profile-edit-trigger" type="button" data-edit-profile>Editar perfil ↗</button>') +
     '</div>' + (profile.bio ? '<p class="profile-page__bio">' + escapeHTML(profile.bio) + '</p>' : '') +
     '<div class="profile-page__stats"><div><strong data-followers-count>' + (followers.count || 0) + '</strong><span>Seguidores</span></div><div><strong>' + (following.count || 0) + '</strong><span>Seguindo</span></div><div><strong>' + ((reviewsResult.data || []).length) + '</strong><span>Avaliações recentes</span></div></div></section>' +
