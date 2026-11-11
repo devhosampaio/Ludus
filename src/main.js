@@ -92,15 +92,7 @@ async function setupNotifications(user) {
         '<span class="notifications__item-dot" aria-hidden="true"></span><span class="notifications__item-content"><span><strong>' + escapeHTML(actor) + '</strong> ' + message + '</span><time>' + formatDate(item.created_at) + '</time></span></button>';
     }).join('');
   };
-
-  toggleButton.addEventListener('click', async (event) => {
-    event.preventDefault();
-    event.stopPropagation();
-    const opening = panel.hidden;
-    panel.hidden = !opening;
-    toggleButton.setAttribute('aria-expanded', String(opening));
-    if (opening) await refresh();
-  });
+  root._refreshNotifications = refresh;
 
   root.addEventListener('click', async (event) => {
     const readAll = event.target.closest('[data-notifications-read-all]');
@@ -264,16 +256,6 @@ async function renderSignedIn(user) {
   const searchResults = app.querySelector('[data-header-search-results]');
   const searchWrap = app.querySelector('.header-search');
   const searchToggle = app.querySelector('[data-search-toggle]');
-  searchToggle.addEventListener('click', () => {
-    const isOpen = searchWrap.classList.toggle('is-open');
-    searchToggle.setAttribute('aria-expanded', String(isOpen));
-    if (isOpen) headerSearch.focus();
-    else {
-      headerSearch.value = '';
-      searchResults.hidden = true;
-      searchResults.innerHTML = '';
-    }
-  });
   document.addEventListener('click', (event) => {
     if (!searchWrap.contains(event.target) && searchWrap.classList.contains('is-open')) {
       searchWrap.classList.remove('is-open');
@@ -313,6 +295,40 @@ async function renderSignedIn(user) {
       searchResults.hidden = false;
     }, 220);
   });
+  // Abertura dos dois controles pelo mesmo listener delegado em captura.
+  // Assim, elementos internos (SVG/ícones) e mudanças de layout não interrompem o clique.
+  app.addEventListener('click', async (event) => {
+    if (!(event.target instanceof Element)) return;
+
+    const searchButton = event.target.closest('[data-search-toggle]');
+    if (searchButton) {
+      event.preventDefault();
+      const isOpen = searchWrap.classList.toggle('is-open');
+      searchButton.setAttribute('aria-expanded', String(isOpen));
+      if (isOpen) {
+        headerSearch.focus();
+      } else {
+        headerSearch.value = '';
+        searchResults.hidden = true;
+        searchResults.innerHTML = '';
+      }
+      return;
+    }
+
+    const notificationsButton = event.target.closest('[data-notifications-toggle]');
+    if (notificationsButton) {
+      event.preventDefault();
+      event.stopPropagation();
+      const notificationRoot = notificationsButton.closest('[data-notifications]');
+      const notificationPanel = notificationRoot?.querySelector('[data-notifications-panel]');
+      if (!notificationPanel) return;
+      const opening = notificationPanel.hidden;
+      notificationPanel.hidden = !opening;
+      notificationsButton.setAttribute('aria-expanded', String(opening));
+      if (opening) await notificationRoot._refreshNotifications?.();
+    }
+  }, true);
+
   searchResults.addEventListener('click', (event) => {
     const player = event.target.closest('[data-search-profile]');
     const game = event.target.closest('[data-search-game-id]');
