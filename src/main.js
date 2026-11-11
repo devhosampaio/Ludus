@@ -88,7 +88,7 @@ async function renderSignedIn(user) {
 
   const feedList = app.querySelector('[data-feed-list]');
   const { data: reviews, error } = await supabase.from('reviews')
-    .select('id, rating, body, status, liked_game, created_at, profiles!reviews_user_id_fkey(username, display_name, avatar_url), games!reviews_game_id_fkey(title, cover_url, release_year, developer)')
+    .select('id, user_id, game_id, rating, body, status, liked_game, created_at, profiles!reviews_user_id_fkey(username, display_name, avatar_url), games!reviews_game_id_fkey(title, cover_url, release_year, developer)')
     .order('created_at', { ascending: false }).limit(20);
 
   if (error) {
@@ -130,10 +130,17 @@ async function renderSignedIn(user) {
       (review.status ? '<span class="review-card__status">' + statusLabel(review.status) + '</span>' : '') +
       (review.liked_game ? '<span class="review-card__liked">♥ Gostei</span>' : '') + '</div>' +
       (review.body ? '<p class="review-card__text">' + escapeHTML(review.body) + '</p>' : '') +
-      '<div class="review-card__actions"><button class="review-card__like' + (isLiked ? ' is-liked' : '') + '" type="button" data-like-review aria-pressed="' + isLiked + '"><span aria-hidden="true">♥</span> <span data-like-label>' + (isLiked ? 'Curtido' : 'Curtir') + '</span> <span class="review-card__like-count" data-like-count>' + (likeCounts[review.id] || 0) + '</span></button></div></div></article>';
+      '<div class="review-card__actions">' + (review.user_id === user.id ? '<button class="review-card__edit" type="button" data-edit-review>Editar</button>' : '') + '<button class="review-card__like' + (isLiked ? ' is-liked' : '') + '" type="button" data-like-review aria-pressed="' + isLiked + '"><span aria-hidden="true">♥</span> <span data-like-label>' + (isLiked ? 'Curtido' : 'Curtir') + '</span> <span class="review-card__like-count" data-like-count>' + (likeCounts[review.id] || 0) + '</span></button></div></div></article>';
   }).join('');
 
   feedList.addEventListener('click', async (event) => {
+    const editButton = event.target.closest('[data-edit-review]');
+    if (editButton) {
+      const card = editButton.closest('[data-review-id]');
+      const review = reviews.find((item) => item.id === card?.dataset.reviewId);
+      if (review && review.user_id === user.id) openReviewComposer(user, review);
+      return;
+    }
     const button = event.target.closest('[data-like-review]');
     if (!button || button.disabled) return;
     const card = button.closest('[data-review-id]');
@@ -159,7 +166,7 @@ async function renderSignedIn(user) {
   });
 }
 
-async function openReviewComposer(user) {
+async function openReviewComposer(user, existingReview = null) {
   const existing = app.querySelector('.composer-overlay');
   existing?.remove();
   const overlay = document.createElement('div');
@@ -167,10 +174,10 @@ async function openReviewComposer(user) {
   overlay.innerHTML = `
     <section class="composer" role="dialog" aria-modal="true" aria-labelledby="composer-title">
       <button class="composer__close" type="button" aria-label="Fechar" data-close>×</button>
-      <p class="eyebrow">SUA PRÓXIMA HISTÓRIA</p>
-      <h2 id="composer-title">Registrar um jogo<span>.</span></h2>
-      <label class="composer__label" for="game-search">Qual jogo você jogou?</label>
-      <input class="composer__search" id="game-search" type="search" placeholder="Buscar pelo nome do jogo…" autocomplete="off">
+      <p class="eyebrow">${existingReview ? 'SUA HISTÓRIA' : 'SUA PRÓXIMA HISTÓRIA'}</p>
+      <h2 id="composer-title">${existingReview ? 'Editar avaliação' : 'Registrar um jogo'}<span>.</span></h2>
+      <label class="composer__label" for="game-search" ${existingReview ? 'hidden' : ''}>Qual jogo você jogou?</label>
+      <input class="composer__search" id="game-search" type="search" placeholder="Buscar pelo nome do jogo…" autocomplete="off" ${existingReview ? 'hidden disabled' : ''}>
       <div class="composer__results" data-game-results aria-live="polite"></div>
       <div class="composer__selected" data-selected hidden></div>
       <form class="composer__form" data-review-form hidden>
@@ -196,8 +203,20 @@ async function openReviewComposer(user) {
   const results = overlay.querySelector('[data-game-results]');
   const selected = overlay.querySelector('[data-selected]');
   const form = overlay.querySelector('[data-review-form]');
-  let selectedGame = null;
+  let selectedGame = existingReview ? { id: existingReview.game_id, ...(existingReview.games || {}) } : null;
   let timer;
+  if (existingReview) {
+    const game = existingReview.games || {};
+    selected.hidden = false;
+    selected.innerHTML = (game.cover_url ? '<img src="' + escapeHTML(game.cover_url) + '" alt="">' : '<span class="composer__cover-empty">L.</span>') +
+      '<span><strong>' + escapeHTML(game.title || 'Jogo') + (game.release_year ? ' <small class="review-card__year">(' + escapeHTML(game.release_year) + ')</small>' : '') + '</strong><small>Jogo da avaliação</small></span>';
+    form.hidden = false;
+    form.elements.rating.value = String(existingReview.rating);
+    form.elements.status.value = existingReview.status || 'playing';
+    form.elements.liked_game.checked = Boolean(existingReview.liked_game);
+    form.elements.body.value = existingReview.body || '';
+    form.querySelector('[type="submit"]').textContent = 'Salvar alterações ↗';
+  }
 
   const close = () => overlay.remove();
   overlay.querySelector('[data-close]').addEventListener('click', close);
@@ -262,23 +281,25 @@ async function openReviewComposer(user) {
     const message = form.querySelector('[data-composer-message]');
     const values = Object.fromEntries(new FormData(form));
     submit.disabled = true;
-    submit.textContent = 'Publicando…';
+    submit.textContent = existingReview ? 'Salvando…' : 'Publicando…';
     message.textContent = '';
-    const { error } = await supabase.from('reviews').insert({
-      user_id: user.id,
-      game_id: selectedGame.id,
+    const reviewData = {
       rating: Number(values.rating),
       status: values.status,
       liked_game: form.elements.liked_game.checked,
       body: String(values.body || '').trim(),
-    });
+    };
+    const result = existingReview
+      ? await supabase.from('reviews').update(reviewData).eq('id', existingReview.id).eq('user_id', user.id)
+      : await supabase.from('reviews').insert({ ...reviewData, user_id: user.id, game_id: selectedGame.id });
+    const { error } = result;
     if (error) {
       console.error('[Ludus] Falha ao salvar avaliação:', error);
       message.textContent = error.code === '23505'
-        ? 'Você já publicou uma avaliação deste jogo. A edição estará disponível em breve.'
-        : 'Não foi possível publicar. Verifique sua conexão e tente novamente.';
+        ? 'Você já publicou uma avaliação deste jogo.'
+        : 'Não foi possível ' + (existingReview ? 'salvar as alterações' : 'publicar') + '. Verifique sua conexão e tente novamente.';
       submit.disabled = false;
-      submit.textContent = 'Publicar avaliação ↗';
+      submit.textContent = existingReview ? 'Salvar alterações ↗' : 'Publicar avaliação ↗';
       return;
     }
     close();
