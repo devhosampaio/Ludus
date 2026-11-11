@@ -1529,3 +1529,29 @@ button:disabled { cursor: wait; opacity: .65; }
   border-radius: 0;
   font: inherit;
 }
+
+
+/* Review: comentário abaixo da capa e do conteúdo, ocupando toda a largura */
+.review-card__text {
+  grid-column: 1 / -1;
+  width: 100%;
+  max-width: none;
+  margin: 2px 0 0;
+  padding: 0;
+  text-align: justify;
+  text-justify: inter-word;
+}
+
+/* Título do jogo com maior destaque; ano acompanha o mesmo tamanho */
+.review-card__body h3 { font-size: 21px; font-weight: 700; }
+.review-card__year {
+  font-family: inherit;
+  font-size: 1em;
+  font-weight: 700;
+  letter-spacing: inherit;
+  vertical-align: baseline;
+}
+@media (max-width: 420px) {
+  .review-card__body h3 { font-size: 18px; }
+  .review-card__year { font-size: 1em; }
+}
