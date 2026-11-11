@@ -680,8 +680,8 @@ function getProfileUsernameFromLocation() {
 }
 
 function getGameIdFromLocation() {
-  const match = window.location.hash.match(/^#\\/jogo\\/([^/?#]+)/);
-  return match ? decodeURIComponent(match[1]) : null;
+  const parts = window.location.hash.split('/');
+  return parts[1] === 'jogo' && parts[2] ? decodeURIComponent(parts[2]) : null;
 }
 
 function navigateToGame(currentUser, gameId) {
