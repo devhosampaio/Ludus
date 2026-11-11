@@ -25,6 +25,22 @@ export async function signIn({ email, password }) {
   return data;
 }
 
+export async function signInWithUsername({ username, password }) {
+  const client = requireClient();
+  const { data, error } = await client.functions.invoke('username-login', {
+    body: { username: username.trim(), password }
+  });
+  if (error || !data?.session) {
+    throw new Error(data?.error || 'Usuário ou senha incorretos.');
+  }
+  const { data: sessionData, error: sessionError } = await client.auth.setSession({
+    access_token: data.session.access_token,
+    refresh_token: data.session.refresh_token
+  });
+  if (sessionError) throw sessionError;
+  return sessionData;
+}
+
 export async function signOut() {
   const { error } = await requireClient().auth.signOut();
   if (error) throw error;
