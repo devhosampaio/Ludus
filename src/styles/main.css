@@ -453,3 +453,99 @@ button:disabled { cursor: wait; opacity: .65; }
   .profile-page__bio { margin-right: 12px; margin-left: 12px; }
   .profile-page__stats { margin-right: 12px; margin-left: 12px; }
 }
+
+
+/* Profile editor */
+.profile-edit-trigger {
+  min-height: 38px;
+  padding: 0 14px;
+  border: 1px solid #b9ad9d;
+  background: transparent;
+  color: #514b5d;
+  font: 600 11px 'DM Sans', sans-serif;
+  cursor: pointer;
+}
+.profile-edit-trigger:hover { border-color: var(--color-secondary); color: var(--color-secondary); }
+.profile-editor-overlay {
+  position: fixed;
+  z-index: 40;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  overflow-y: auto;
+  padding: 18px;
+  background: rgb(18 16 24 / 82%);
+}
+.profile-editor {
+  position: relative;
+  width: min(100%, 620px);
+  max-height: calc(100dvh - 36px);
+  overflow-y: auto;
+  padding: 38px;
+  background: var(--color-surface);
+  color: #302c3d;
+}
+.profile-editor__close {
+  position: absolute;
+  top: 12px;
+  right: 17px;
+  border: 0;
+  background: transparent;
+  color: #625a6c;
+  font-size: 28px;
+}
+.profile-editor .eyebrow { margin-bottom: 8px; color: #81798a; }
+.profile-editor h2 {
+  margin: 0 0 26px;
+  font: 600 31px 'Space Grotesk', sans-serif;
+  letter-spacing: -.06em;
+}
+.profile-editor h2 span { color: var(--color-secondary); }
+.profile-editor__form { display: grid; gap: 17px; }
+.profile-editor__field { display: grid; gap: 7px; }
+.profile-editor__field > span, .profile-editor__upload > span {
+  color: #4d4759;
+  font-size: 12px;
+  font-weight: 600;
+}
+.profile-editor__field input, .profile-editor__field textarea {
+  width: 100%;
+  min-height: 44px;
+  padding: 11px 12px;
+  border: 1px solid #c9bfb0;
+  border-radius: 0;
+  outline: none;
+  background: #f2ecdf;
+  color: #302c3d;
+  font: 13px 'DM Sans', sans-serif;
+}
+.profile-editor__field textarea { resize: vertical; line-height: 1.6; }
+.profile-editor__field input:focus, .profile-editor__field textarea:focus { border-color: var(--color-primary); }
+.profile-editor__field small, .profile-editor__upload small { color: #81798a; font-size: 10px; line-height: 1.5; }
+.profile-editor__username { display: flex; align-items: center; border: 1px solid #c9bfb0; background: #f2ecdf; }
+.profile-editor__username b { padding-left: 12px; color: #81798a; font-size: 13px; }
+.profile-editor__username input { border: 0; background: transparent; }
+.profile-editor__username:focus-within { outline: 1px solid var(--color-primary); }
+.profile-editor__uploads { display: grid; grid-template-columns: 1fr 1.5fr; gap: 16px; }
+.profile-editor__upload { display: grid; align-content: start; gap: 8px; min-width: 0; }
+.profile-editor__upload input { width: 100%; max-width: 100%; color: #625a6c; font-size: 10px; }
+.profile-editor__preview { display: grid; place-items: center; overflow: hidden; background: #d5cbbb; color: #81798a; font-size: 10px; }
+.profile-editor__preview img { width: 100%; height: 100%; object-fit: cover; }
+.profile-editor__preview--avatar { width: 88px; height: 88px; border-radius: 50%; }
+.profile-editor__preview--avatar span { font: 600 27px 'Space Grotesk', sans-serif; }
+.profile-editor__preview--banner { width: 100%; aspect-ratio: 16 / 5; }
+.profile-editor__message { min-height: 16px; margin: 0; color: #a0443a; font-size: 11px; line-height: 1.5; }
+.profile-editor__actions { display: flex; justify-content: flex-end; gap: 10px; }
+.profile-editor__actions button { min-height: 44px; padding: 0 16px; border: 1px solid #c9bfb0; background: transparent; color: #514b5d; font-size: 11px; }
+.profile-editor__actions button[type="submit"] { border-color: #7060ab; background: #7060ab; color: #fff; font-weight: 600; }
+@media (max-width: 520px) {
+  .profile-editor-overlay { align-items: end; padding: 0; }
+  .profile-editor { width: 100%; max-height: 94dvh; padding: 30px 20px max(24px, env(safe-area-inset-bottom)); }
+  .profile-editor h2 { font-size: 27px; }
+  .profile-editor__uploads { grid-template-columns: 1fr; }
+  .profile-editor__upload { grid-template-columns: 1fr; }
+  .profile-editor__preview--avatar { width: 76px; height: 76px; }
+  .profile-editor__preview--banner { max-height: 130px; }
+  .profile-editor__actions { display: grid; grid-template-columns: 1fr 1fr; }
+  .profile-editor__actions button { padding: 0 10px; }
+}
