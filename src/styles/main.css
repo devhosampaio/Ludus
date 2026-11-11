@@ -23,7 +23,7 @@ button:disabled { cursor: wait; opacity: .65; }
 
 .auth-shell {
   display: grid;
-  grid-template-columns: minmax(0, 1.05fr) minmax(420px, .95fr);
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr);
   min-height: 100vh;
   background: var(--color-bg);
 }
@@ -91,7 +91,9 @@ button:disabled { cursor: wait; opacity: .65; }
   font: 10px 'DM Mono', monospace;
   letter-spacing: .12em;
 }
-.auth-panel {
+ .auth-panel {
+  width: 100%;
+  min-width: 0;
   display: grid;
   place-items: center;
   padding: 56px clamp(28px, 6vw, 88px);
@@ -111,7 +113,7 @@ button:disabled { cursor: wait; opacity: .65; }
   grid-template-columns: 1fr 1fr;
   gap: 4px;
   padding: 4px;
-  margin-bottom: 0;
+  margin-bottom: 30px;
   background: #dcd2c1;
 }
 .auth-tabs__button {
@@ -162,7 +164,10 @@ button:disabled { cursor: wait; opacity: .65; }
   transition: background .2s ease;
 }
 .submit-button:hover { background: #5e4e99; }
-.submit-button span { font-size: 18px; }
+ .submit-button svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; } 
+.auth-consents { display: grid; gap: 12px; margin-top: 2px; }
+.auth-consent { display: flex; align-items: center; gap: 10px; color: #625b6c; font-size: 12px; line-height: 1.45; cursor: pointer; }
+.auth-consent input { width: 16px; height: 16px; flex: 0 0 16px; margin: 0; accent-color: #7060ab; cursor: pointer; }
 .form-message {
   margin: 0;
   padding: 12px;
