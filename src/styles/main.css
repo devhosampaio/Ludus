@@ -344,3 +344,8 @@ button:disabled { cursor: wait; opacity: .65; }
 .review-card__like > span:first-child { font-size: 14px; }
 .review-card__like-count { color: #827b90; font: 10px 'DM Mono', monospace; }
 .review-card__like:disabled { opacity: .55; cursor: wait; }
+
+
+/* Review editing */
+.review-card__edit { margin-right: 10px; padding: 6px 0; border: 0; background: transparent; color: #b8b0c2; font: 11px 'DM Sans', sans-serif; }
+.review-card__edit:hover { color: var(--color-surface); }
