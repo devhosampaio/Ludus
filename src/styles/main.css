@@ -349,3 +349,5 @@ button:disabled { cursor: wait; opacity: .65; }
 /* Review editing */
 .review-card__edit { margin-right: 10px; padding: 6px 0; border: 0; background: transparent; color: #b8b0c2; font: 11px 'DM Sans', sans-serif; }
 .review-card__edit:hover { color: var(--color-surface); }
+
+.review-card__edit:focus-visible, .review-card__like:focus-visible { outline: 2px solid var(--color-secondary); outline-offset: 4px; }
