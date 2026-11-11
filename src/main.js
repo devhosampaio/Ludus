@@ -750,7 +750,7 @@ async function openReviewComposer(user, existingReview = null) {
 function renderAuth(mode = 'login') {
   const isSignup = mode === 'signup';
   const fields = isSignup
-    ? '<label class="field"><span>Nome de usuário</span><input name="username" type="text" minlength="3" maxlength="16" pattern="[A-Za-z0-9._-]+" placeholder="seu.nome" autocomplete="username" required><small>3 a 24 caracteres. Use letras, números ou _</small></label><label class="field"><span>Como podemos chamar você?</span><input name="displayName" type="text" maxlength="60" placeholder="Seu nome" autocomplete="name" required></label>'
+    ? '<label class="field"><span>Nome de usuário</span><input name="username" type="text" minlength="3" maxlength="16" pattern="[A-Za-z0-9._-]+" placeholder="seu.nome" autocomplete="username" required><small>3 a 16 caracteres. Use letras, números, pontos, _ ou -</small></label><label class="field"><span>Como podemos chamar você?</span><input name="displayName" type="text" maxlength="60" placeholder="Seu nome" autocomplete="name" required></label>'
     : '';
   const passwordAutocomplete = isSignup ? 'new-password' : 'current-password';
 
