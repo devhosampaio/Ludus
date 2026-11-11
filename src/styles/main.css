@@ -1941,3 +1941,47 @@ button:disabled { cursor: wait; opacity: .65; }
     font-size: 12px;
   }
 }
+
+
+/* Feed: cartões discretos, interações em destaque e separador do título */
+.review-card {
+  padding: 20px 16px !important;
+  border: 1px solid rgb(0 0 0 / 12%) !important;
+  border-bottom: 1px solid rgb(0 0 0 / 12%) !important;
+  border-radius: 7px !important;
+  background: rgb(20 17 29 / 30%) !important;
+  box-shadow: none !important;
+}
+.review-card > .review-card__actions .review-card__like,
+.review-card > .review-card__actions .review-card__comments-toggle {
+  min-height: 38px;
+  padding: 8px 12px;
+  border: 1px solid rgb(232 223 206 / 12%);
+  border-radius: 6px;
+  background: rgb(232 223 206 / 9%);
+  color: #e8dfce;
+  transition: background .18s ease, border-color .18s ease, color .18s ease;
+}
+.review-card > .review-card__actions .review-card__like:hover,
+.review-card > .review-card__actions .review-card__comments-toggle:hover {
+  background: rgb(232 223 206 / 16%);
+  border-color: rgb(232 223 206 / 24%);
+}
+.review-card > .review-card__actions .review-card__like.is-liked {
+  color: var(--color-secondary);
+  background: rgb(217 108 85 / 12%);
+  border-color: rgb(217 108 85 / 30%);
+}
+.section-heading {
+  padding-bottom: 15px;
+  margin-bottom: 18px;
+  border-bottom: 1px solid rgb(201 191 176 / 30%);
+}
+.feed-list { border-top: 0; }
+@media (max-width: 420px) {
+  .review-card { padding: 16px 10px !important; }
+  .review-card > .review-card__actions .review-card__like,
+  .review-card > .review-card__actions .review-card__comments-toggle {
+    padding: 7px 9px;
+  }
+}
