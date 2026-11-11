@@ -756,15 +756,5 @@ button:disabled { cursor: wait; opacity: .65; }
 .terms-modal__close { position: absolute; top: 12px; right: 16px; padding: 2px 6px; border: 0; background: transparent; color: #625b6c; font-size: 28px; }
 @media (max-width: 520px) { .terms-modal__dialog { padding: 32px 24px; } }
 
-/* Cadastro compacto: mantém o formulário completo visível em telas desktop */
+/* Largura consistente entre login e cadastro */
 .auth-panel__inner { width: min(100%, 460px); }
-.auth-form:has([name="confirmPassword"]) { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 16px; row-gap: 12px; }
-.auth-form:has([name="confirmPassword"]) > .field:nth-child(5),
-.auth-form:has([name="confirmPassword"]) > .auth-consents,
-.auth-form:has([name="confirmPassword"]) > .submit-button,
-.auth-form:has([name="confirmPassword"]) > .form-message { grid-column: 1 / -1; }
-@media (max-width: 820px) {
-  .auth-panel__inner { width: min(100%, 460px); }
-  .auth-form:has([name="confirmPassword"]) { grid-template-columns: 1fr; }
-  .auth-form:has([name="confirmPassword"]) > * { grid-column: 1; }
-}
