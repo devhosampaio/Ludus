@@ -157,15 +157,29 @@ async function renderSignedIn(user) {
     <div class="feed-shell">
       <header class="sidebar">
         <a class="brand sidebar__brand" href="./" aria-label="Ludus início">L<span>.</span></a>
-        <p class="sidebar__label">ESPAÇO DE JOGO</p>
+        <a class="brand sidebar__brand" href="./" aria-label="Ludus início">L<span>.</span></a>
         <nav class="side-nav" aria-label="Navegação principal">
-          <a class="side-nav__link is-active" href="#inicio"><span class="ui-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m3 10 9-7 9 7"></path><path d="M5 9v12h14V9M9 21v-7h6v7"></path></svg></span> Início</a>
-          <a class="side-nav__link" href="#explorar" data-inert-link><span class="ui-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.8"></circle><path d="m16 16 5 5"></path></svg></span> Explorar</a>
-          <a class="side-nav__link" href="#perfil" data-open-own-profile><span class="ui-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"></circle><path d="M4.5 21a7.5 7.5 0 0 1 15 0"></path></svg></span> Meu perfil</a>
+          <a class="side-nav__link is-active" href="#inicio">Início</a>
         </nav>
+        <div class="header-search">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"></circle><path d="m16 16 5 5"></path></svg>
+          <input type="search" data-header-search placeholder="Buscar jogos ou jogadores..." autocomplete="off" aria-label="Buscar jogos ou jogadores">
+          <div class="header-search__results" data-header-search-results hidden></div>
+        </div>
         <div class="sidebar__bottom">
-          <div class="sidebar-user"><span class="sidebar-user__avatar" data-avatar> L </span><span><strong data-display-name></strong><small data-username></small></span></div>
-          <button class="logout-button" type="button" data-signout>Sair da conta ↗</button>
+          <div class="account-menu">
+            <button class="sidebar-user" type="button" data-account-menu aria-expanded="false" aria-haspopup="true">
+              <span class="sidebar-user__avatar" data-avatar> L </span>
+              <span class="sidebar-user__identity"><strong data-display-name></strong><small data-username></small></span>
+              <svg class="sidebar-user__chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"></path></svg>
+            </button>
+            <div class="account-menu__panel" data-account-panel>
+              <button type="button" data-open-own-profile>Ver perfil</button>
+              <button type="button" data-account-settings>Configurações da conta</button>
+              <div></div>
+              <button type="button" data-signout>Encerrar sessão <span>↗</span></button>
+            </div>
+          </div>
         </div>
       </header>
       <main class="feed-main">
@@ -185,10 +199,6 @@ async function renderSignedIn(user) {
     </div>`;
 
   app.querySelector('[data-open-composer]').addEventListener('click', () => openReviewComposer(user));
-  app.querySelector('[data-open-own-profile]').addEventListener('click', (event) => {
-    event.preventDefault();
-    if (profileResult.data?.username) navigateToProfile(user, profileResult.data.username);
-  });
   app.querySelector('[data-today]').textContent = new Intl.DateTimeFormat('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' }).format(new Date()).toUpperCase();
   const displayName = app.querySelector('[data-display-name]');
   const username = app.querySelector('[data-username]');
@@ -196,17 +206,13 @@ async function renderSignedIn(user) {
   displayName.textContent = fallbackName;
   avatar.textContent = fallbackName.trim().charAt(0).toUpperCase() || 'L';
 
-  app.querySelector('[data-signout]').addEventListener('click', async () => {
-    try { await signOut(); renderAuth('login'); }
-    catch (error) { console.error('[Ludus] Falha ao sair:', error); }
-  });
-
   const profileResult = await supabase.from('profiles')
     .select('username, display_name, avatar_url')
     .eq('id', user.id).maybeSingle();
 
   if (profileResult.data) {
-    displayName.textContent = profileResult.data.display_name || fallbackName;
+    const fullName = profileResult.data.display_name || fallbackName;
+    displayName.textContent = fullName.trim().split(/\s+/).slice(0, 2).join(' ');
     username.textContent = '@' + profileResult.data.username;
     if (profileResult.data.avatar_url) {
       avatar.innerHTML = '<img src="' + escapeHTML(profileResult.data.avatar_url) + '" alt="">';
@@ -214,6 +220,86 @@ async function renderSignedIn(user) {
   } else {
     username.textContent = '';
   }
+
+  const accountButton = app.querySelector('[data-account-menu]');
+  const accountPanel = app.querySelector('[data-account-panel]');
+  const closeAccountMenu = () => {
+    accountPanel.classList.remove('is-open');
+    accountButton.setAttribute('aria-expanded', 'false');
+  };
+  accountButton.addEventListener('click', () => {
+    const isOpen = accountPanel.classList.toggle('is-open');
+    accountButton.setAttribute('aria-expanded', String(isOpen));
+  });
+  document.addEventListener('click', (event) => {
+    if (!event.target.closest('.account-menu')) closeAccountMenu();
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') closeAccountMenu();
+  });
+  app.querySelector('[data-open-own-profile]').addEventListener('click', () => {
+    closeAccountMenu();
+    if (profileResult.data?.username) navigateToProfile(user, profileResult.data.username);
+  });
+  app.querySelector('[data-account-settings]').addEventListener('click', () => {
+    closeAccountMenu();
+    if (profileResult.data) openProfileEditor(user, profileResult.data);
+  });
+  app.querySelector('[data-signout]').addEventListener('click', async () => {
+    try { await signOut(); renderAuth('login'); }
+    catch (error) { console.error('[Ludus] Falha ao sair:', error); }
+  });
+
+  const headerSearch = app.querySelector('[data-header-search]');
+  const searchResults = app.querySelector('[data-header-search-results]');
+  let searchTimer;
+  headerSearch.addEventListener('input', () => {
+    window.clearTimeout(searchTimer);
+    const query = headerSearch.value.trim();
+    if (query.length < 2) {
+      searchResults.hidden = true;
+      searchResults.innerHTML = '';
+      app.querySelectorAll('.review-card').forEach((card) => { card.hidden = false; });
+      return;
+    }
+    searchTimer = window.setTimeout(async () => {
+      const safeQuery = query.replace(/[,%()]/g, ' ').trim();
+      const [players, games] = await Promise.all([
+        supabase.from('profiles').select('username, display_name, avatar_url').ilike('username', '%' + safeQuery + '%').limit(5),
+        supabase.from('games').select('title').ilike('title', '%' + safeQuery + '%').limit(5)
+      ]);
+      if (headerSearch.value.trim() !== query) return;
+      const playerItems = (players.data || []).map((profile) =>
+        '<button type="button" class="header-search__result" data-search-profile="' + escapeHTML(profile.username) + '">' +
+        (profile.avatar_url ? '<img src="' + escapeHTML(profile.avatar_url) + '" alt="">' : '<span class="header-search__avatar">L.</span>') +
+        '<span><strong>' + escapeHTML(profile.display_name || profile.username) + '</strong><small>@' + escapeHTML(profile.username) + '</small></span><em>JOGADOR</em></button>'
+      ).join('');
+      const uniqueGames = [...new Set((games.data || []).map((game) => game.title))];
+      const gameItems = uniqueGames.map((title) =>
+        '<button type="button" class="header-search__result header-search__result--game" data-search-game="' + escapeHTML(title) + '"><span class="header-search__game-icon">◈</span><span><strong>' + escapeHTML(title) + '</strong><small>Ver avaliações no feed</small></span><em>JOGO</em></button>'
+      ).join('');
+      searchResults.innerHTML = (playerItems || gameItems)
+        ? '<p class="header-search__label">JOGADORES</p>' + (playerItems || '<small class="header-search__empty">Nenhum jogador encontrado</small>') +
+          '<p class="header-search__label">JOGOS</p>' + (gameItems || '<small class="header-search__empty">Nenhum jogo encontrado</small>')
+        : '<p class="header-search__empty">Nenhum resultado encontrado.</p>';
+      searchResults.hidden = false;
+    }, 220);
+  });
+  searchResults.addEventListener('click', (event) => {
+    const player = event.target.closest('[data-search-profile]');
+    const game = event.target.closest('[data-search-game]');
+    if (player) {
+      searchResults.hidden = true;
+      navigateToProfile(user, player.dataset.searchProfile);
+    } else if (game) {
+      const title = game.dataset.searchGame.toLocaleLowerCase();
+      app.querySelectorAll('.review-card').forEach((card) => {
+        card.hidden = !card.querySelector('h3')?.textContent.toLocaleLowerCase().includes(title);
+      });
+      searchResults.hidden = true;
+      headerSearch.value = game.dataset.searchGame;
+    }
+  });
 
   const routeUsername = getProfileUsernameFromLocation();
   if (routeUsername) {
