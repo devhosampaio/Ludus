@@ -1221,3 +1221,11 @@ button:disabled { cursor: wait; opacity: .65; }
   .sidebar__bottom > .notifications { margin-right: 0; }
   .sidebar-user { padding: 0 0 6px !important; }
 }
+
+
+/* Espaços reservados para anúncios: mantém a largura, sem caixas visíveis */
+.feed-ad {
+  border: 0;
+  background: transparent;
+  padding: 0;
+}
