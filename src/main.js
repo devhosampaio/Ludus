@@ -1099,6 +1099,6 @@ window.addEventListener('hashchange', () => {
   if (!activeUser) return;
   const username = getProfileUsernameFromLocation();
   if (username) renderProfilePage(activeUser, username);
-  else if (/^#\\/jogo\\//.test(window.location.hash)) return;
+  else if (/^#\/jogo\//.test(window.location.hash)) return;
   else renderSignedIn(activeUser);
 });
