@@ -2320,3 +2320,23 @@ button:disabled { cursor: wait; opacity: .65; }
   border: 0 !important;
   box-shadow: none !important;
 }
+
+
+/* Ajustes solicitados: reviews sem contorno e seletor de feed escuro */
+.review-card {
+  border: 0 !important;
+  border-bottom: 0 !important;
+}
+.feed-tabs {
+  background: #211e2b !important;
+}
+.feed-tabs__button {
+  color: #aaa3b5;
+}
+.feed-tabs__button:hover {
+  color: #f5f0e6;
+}
+.feed-tabs__button.is-active {
+  background: #494257;
+  color: #f5f0e6;
+}
