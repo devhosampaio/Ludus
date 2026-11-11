@@ -525,7 +525,7 @@ async function openProfileEditor(user, profile) {
       <h2 id="profile-editor-title">Editar perfil<span>.</span></h2>
       <form class="profile-editor__form" data-profile-form>
         <label class="profile-editor__field"><span>Nome de exibição</span><input name="display_name" type="text" maxlength="60" required value="${escapeHTML(profile.display_name || '')}"></label>
-        <label class="profile-editor__field"><span>Nome de usuário</span><div class="profile-editor__username"><b>@</b><input name="username" type="text" minlength="3" maxlength="16" pattern="[A-Za-z0-9._-]+" required value="${escapeHTML(profile.username || '')}" autocomplete="username"></div><small>3 a 16 caracteres: letras, números, pontos, _ ou -</small></label>
+        <label class="profile-editor__field"><span>Nome de usuário</span><div class="profile-editor__username"><b>@</b><input name="username" type="text" minlength="3" maxlength="16" pattern="[A-Za-z0-9._-]+" required value="${escapeHTML(profile.username || '')}" autocomplete="username"></div><small>Utilize letras, números e caracteres especiais</small></label>
         <label class="profile-editor__field"><span>Biografia</span><textarea name="bio" maxlength="240" rows="3" placeholder="Conte um pouco sobre você…">${escapeHTML(profile.bio || '')}</textarea><small>Até 240 caracteres</small></label>
         <div class="profile-editor__uploads">
           <label class="profile-editor__upload"><span>Foto de perfil</span><div class="profile-editor__preview profile-editor__preview--avatar" data-avatar-preview>${profile.avatar_url ? '<img src="' + escapeHTML(profile.avatar_url) + '" alt="">' : '<span>' + escapeHTML((profile.display_name || profile.username || 'L').charAt(0).toUpperCase()) + '</span>'}</div><input type="file" name="avatar" accept="image/png,image/jpeg,image/webp,image/gif"><small>PNG, JPG, WEBP ou GIF · até 5 MB</small></label>
@@ -561,7 +561,7 @@ async function openProfileEditor(user, profile) {
     const username = form.elements.username.value.trim();
     const bio = form.elements.bio.value.trim();
     if (!/^[a-zA-Z0-9._-]{3,16}$/.test(username)) {
-      message.textContent = 'O nome de usuário deve ter de 3 a 16 caracteres. Use letras, números, pontos, _ ou -.';
+      message.textContent = 'O nome de usuário deve ter de 3 a 16 caracteres. Utilize letras, números e caracteres especiais.';
       return;
     }
     for (const field of ['avatar', 'banner']) {
