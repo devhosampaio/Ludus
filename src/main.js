@@ -36,7 +36,7 @@ async function renderSignedIn(user) {
         <nav class="side-nav" aria-label="Navegação principal">
           <a class="side-nav__link is-active" href="#inicio"><span>⌂</span> Início</a>
           <a class="side-nav__link" href="#explorar" data-inert-link><span>⌕</span> Explorar</a>
-          <a class="side-nav__link" href="#perfil" data-inert-link><span>◉</span> Meu perfil</a>
+          <a class="side-nav__link" href="#perfil" data-open-own-profile><span>◉</span> Meu perfil</a>
         </nav>
         <div class="sidebar__bottom">
           <div class="sidebar-user"><span class="sidebar-user__avatar" data-avatar> L </span><span><strong data-display-name></strong><small data-username></small></span></div>
@@ -60,6 +60,10 @@ async function renderSignedIn(user) {
     </div>`;
 
   app.querySelector('[data-open-composer]').addEventListener('click', () => openReviewComposer(user));
+  app.querySelector('[data-open-own-profile]').addEventListener('click', (event) => {
+    event.preventDefault();
+    if (profileResult.data?.username) openProfileModal(user, profileResult.data.username);
+  });
   app.querySelector('[data-today]').textContent = new Intl.DateTimeFormat('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' }).format(new Date()).toUpperCase();
   const displayName = app.querySelector('[data-display-name]');
   const username = app.querySelector('[data-username]');
@@ -125,7 +129,7 @@ async function renderSignedIn(user) {
     const stars = '★'.repeat(review.rating) + '<span class="review-card__stars-muted">' + '★'.repeat(5 - review.rating) + '</span>';
     const isLiked = likedReviewIds.has(review.id);
     return '<article class="review-card" data-review-id="' + review.id + '">' + cover +
-      '<div class="review-card__body"><div class="review-card__meta"><strong>' + escapeHTML(author) + '</strong><span>' + escapeHTML(handle) + '</span><time>' + formatDate(review.created_at) + '</time></div>' +
+      '<div class="review-card__body"><div class="review-card__meta"><button class="review-card__author" type="button" data-profile-username="' + escapeHTML(review.profiles?.username || '') + '">' + escapeHTML(author) + '</button><span>' + escapeHTML(handle) + '</span><time>' + formatDate(review.created_at) + '</time></div>' +
       '<h3>' + escapeHTML(game) + (gameYear ? ' <small class="review-card__year">(' + escapeHTML(gameYear) + ')</small>' : '') + '</h3><div class="review-card__details"><span class="review-card__stars" aria-label="Nota ' + review.rating + ' de 5">' + stars + '</span>' +
       (review.status ? '<span class="review-card__status">' + statusLabel(review.status) + '</span>' : '') +
       (review.liked_game ? '<span class="review-card__liked">♥ Gostei</span>' : '') + '</div>' +
@@ -134,6 +138,11 @@ async function renderSignedIn(user) {
   }).join('');
 
   feedList.addEventListener('click', async (event) => {
+    const profileButton = event.target.closest('[data-profile-username]');
+    if (profileButton?.dataset.profileUsername) {
+      openProfileModal(user, profileButton.dataset.profileUsername);
+      return;
+    }
     const editButton = event.target.closest('[data-edit-review]');
     if (editButton) {
       const card = editButton.closest('[data-review-id]');
@@ -164,6 +173,89 @@ async function renderSignedIn(user) {
     button.querySelector('[data-like-label]').textContent = nextLiked ? 'Curtido' : 'Curtir';
     button.disabled = false;
   });
+}
+
+
+async function openProfileModal(currentUser, username) {
+  app.querySelector('.profile-overlay')?.remove();
+  const overlay = document.createElement('div');
+  overlay.className = 'profile-overlay';
+  overlay.innerHTML = '<section class="profile-panel" role="dialog" aria-modal="true" aria-label="Perfil do jogador"><button class="profile-panel__close" type="button" data-profile-close aria-label="Fechar">×</button><div class="profile-panel__loading">Carregando perfil…</div></section>';
+  app.append(overlay);
+  const close = () => overlay.remove();
+  overlay.querySelector('[data-profile-close]').addEventListener('click', close);
+  overlay.addEventListener('click', (event) => { if (event.target === overlay) close(); });
+
+  const { data: profile, error: profileError } = await supabase.from('profiles')
+    .select('id, username, display_name, bio, avatar_url, banner_url')
+    .eq('username', username).maybeSingle();
+  if (!overlay.isConnected) return;
+  if (profileError || !profile) {
+    overlay.querySelector('.profile-panel__loading').textContent = 'Não foi possível encontrar este perfil.';
+    return;
+  }
+
+  const [followers, following, followState, reviewsResult] = await Promise.all([
+    supabase.from('follows').select('follower_id', { count: 'exact', head: true }).eq('following_id', profile.id),
+    supabase.from('follows').select('following_id', { count: 'exact', head: true }).eq('follower_id', profile.id),
+    currentUser.id === profile.id
+      ? Promise.resolve({ data: null })
+      : supabase.from('follows').select('follower_id').eq('follower_id', currentUser.id).eq('following_id', profile.id).maybeSingle(),
+    supabase.from('reviews')
+      .select('id, rating, body, status, liked_game, created_at, games!reviews_game_id_fkey(title, cover_url, release_year)')
+      .eq('user_id', profile.id).order('created_at', { ascending: false }).limit(20)
+  ]);
+  if (!overlay.isConnected) return;
+  let isFollowing = Boolean(followState.data);
+  const displayName = profile.display_name || profile.username;
+  const avatar = profile.avatar_url
+    ? '<img src="' + escapeHTML(profile.avatar_url) + '" alt="">'
+    : '<span>' + escapeHTML(displayName.trim().charAt(0).toUpperCase() || 'L') + '</span>';
+  const banner = profile.banner_url
+    ? '<img class="profile-panel__banner-image" src="' + escapeHTML(profile.banner_url) + '" alt="">'
+    : '<div class="profile-panel__banner-empty"></div>';
+  const reviewCards = (reviewsResult.data || []).map((review) => {
+    const game = review.games?.title || 'Jogo';
+    const year = review.games?.release_year ? ' (' + escapeHTML(review.games.release_year) + ')' : '';
+    const cover = review.games?.cover_url
+      ? '<img class="profile-review__cover" src="' + escapeHTML(review.games.cover_url) + '" alt="">'
+      : '<div class="profile-review__cover profile-review__cover--empty">L.</div>';
+    return '<article class="profile-review">' + cover + '<div><strong>' + escapeHTML(game) + year + '</strong><div class="profile-review__meta"><span class="profile-review__stars">' + '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating) + '</span><span>' + statusLabel(review.status) + '</span><time>' + formatDate(review.created_at) + '</time></div>' + (review.body ? '<p>' + escapeHTML(review.body) + '</p>' : '') + (review.liked_game ? '<small>♥ Gostei deste jogo</small>' : '') + '</div></article>';
+  }).join('');
+  overlay.querySelector('.profile-panel').innerHTML =
+    '<button class="profile-panel__close" type="button" data-profile-close aria-label="Fechar">×</button>' +
+    '<div class="profile-panel__banner">' + banner + '</div>' +
+    '<div class="profile-panel__content"><div class="profile-panel__identity"><div class="profile-panel__avatar">' + avatar + '</div>' +
+    '<div class="profile-panel__heading"><p class="eyebrow">JOGADOR LUDUS</p><h2>' + escapeHTML(displayName) + '</h2><span>@' + escapeHTML(profile.username) + '</span></div>' +
+    (profile.id !== currentUser.id ? '<button class="profile-follow' + (isFollowing ? ' is-following' : '') + '" type="button" data-profile-follow>' + (isFollowing ? 'Seguindo' : 'Seguir') + '</button>' : '<span class="profile-panel__you">Seu perfil</span>') +
+    '</div>' + (profile.bio ? '<p class="profile-panel__bio">' + escapeHTML(profile.bio) + '</p>' : '') +
+    '<div class="profile-panel__stats"><div><strong data-followers-count>' + (followers.count || 0) + '</strong><span>Seguidores</span></div><div><strong>' + (following.count || 0) + '</strong><span>Seguindo</span></div><div><strong>' + ((reviewsResult.data || []).length) + '</strong><span>Avaliações recentes</span></div></div>' +
+    '<div class="profile-panel__reviews"><div class="profile-panel__section"><p class="eyebrow">HISTÓRICO</p><h3>Avaliações</h3></div>' +
+    (reviewsResult.error ? '<p class="profile-panel__empty">Não foi possível carregar as avaliações.</p>' : reviewCards || '<p class="profile-panel__empty">Este jogador ainda não publicou avaliações.</p>') + '</div></div>';
+  overlay.querySelector('[data-profile-close]').addEventListener('click', close);
+
+  const followButton = overlay.querySelector('[data-profile-follow]');
+  if (followButton) {
+    followButton.addEventListener('click', async () => {
+      if (followButton.disabled) return;
+      followButton.disabled = true;
+      const result = isFollowing
+        ? await supabase.from('follows').delete().eq('follower_id', currentUser.id).eq('following_id', profile.id)
+        : await supabase.from('follows').insert({ follower_id: currentUser.id, following_id: profile.id });
+      if (result.error) {
+        console.error('[Ludus] Falha ao atualizar relacionamento:', result.error);
+        followButton.textContent = 'Tente novamente';
+        followButton.disabled = false;
+        return;
+      }
+      isFollowing = !isFollowing;
+      followButton.textContent = isFollowing ? 'Seguindo' : 'Seguir';
+      followButton.classList.toggle('is-following', isFollowing);
+      followButton.disabled = false;
+      const count = overlay.querySelector('[data-followers-count]');
+      count.textContent = String(Math.max(0, Number(count.textContent) + (isFollowing ? 1 : -1)));
+    });
+  }
 }
 
 async function openReviewComposer(user, existingReview = null) {
