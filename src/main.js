@@ -224,14 +224,19 @@ async function renderSignedIn(user) {
   const accountPanel = app.querySelector('[data-account-panel]');
   const closeAccountMenu = () => {
     accountPanel.classList.remove('is-open');
+    accountPanel.setAttribute('aria-hidden', 'true');
     accountButton.setAttribute('aria-expanded', 'false');
   };
-  accountButton.addEventListener('click', () => {
+  accountButton.addEventListener('click', (event) => {
+    event.preventDefault();
+    event.stopPropagation();
     const isOpen = accountPanel.classList.toggle('is-open');
     accountButton.setAttribute('aria-expanded', String(isOpen));
+    accountPanel.setAttribute('aria-hidden', String(!isOpen));
   });
+  accountPanel.addEventListener('click', (event) => event.stopPropagation());
   document.addEventListener('click', (event) => {
-    if (!event.target.closest('.account-menu')) closeAccountMenu();
+    if (!(event.target instanceof Element) || !event.target.closest('.account-menu')) closeAccountMenu();
   });
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') closeAccountMenu();
