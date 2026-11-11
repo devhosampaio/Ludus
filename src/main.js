@@ -525,7 +525,7 @@ async function openProfileEditor(user, profile) {
       <h2 id="profile-editor-title">Editar perfil<span>.</span></h2>
       <form class="profile-editor__form" data-profile-form>
         <label class="profile-editor__field"><span>Nome de exibição</span><input name="display_name" type="text" maxlength="60" required value="${escapeHTML(profile.display_name || '')}"></label>
-        <label class="profile-editor__field"><span>Nome de usuário</span><div class="profile-editor__username"><b>@</b><input name="username" type="text" minlength="3" maxlength="24" pattern="[A-Za-z0-9_]+" required value="${escapeHTML(profile.username || '')}" autocomplete="username"></div><small>3 a 24 caracteres: letras, números ou _</small></label>
+        <label class="profile-editor__field"><span>Nome de usuário</span><div class="profile-editor__username"><b>@</b><input name="username" type="text" minlength="3" maxlength="16" pattern="[A-Za-z0-9._-]+" required value="${escapeHTML(profile.username || '')}" autocomplete="username"></div><small>3 a 16 caracteres: letras, números, pontos, _ ou -</small></label>
         <label class="profile-editor__field"><span>Biografia</span><textarea name="bio" maxlength="240" rows="3" placeholder="Conte um pouco sobre você…">${escapeHTML(profile.bio || '')}</textarea><small>Até 240 caracteres</small></label>
         <div class="profile-editor__uploads">
           <label class="profile-editor__upload"><span>Foto de perfil</span><div class="profile-editor__preview profile-editor__preview--avatar" data-avatar-preview>${profile.avatar_url ? '<img src="' + escapeHTML(profile.avatar_url) + '" alt="">' : '<span>' + escapeHTML((profile.display_name || profile.username || 'L').charAt(0).toUpperCase()) + '</span>'}</div><input type="file" name="avatar" accept="image/png,image/jpeg,image/webp,image/gif"><small>PNG, JPG, WEBP ou GIF · até 5 MB</small></label>
@@ -558,10 +558,10 @@ async function openProfileEditor(user, profile) {
     event.preventDefault();
     const submit = form.querySelector('[type="submit"]');
     const displayName = form.elements.display_name.value.trim();
-    const username = form.elements.username.value.trim().toLowerCase();
+    const username = form.elements.username.value.trim();
     const bio = form.elements.bio.value.trim();
-    if (!/^[a-zA-Z0-9_]{3,24}$/.test(username)) {
-      message.textContent = 'O nome de usuário deve ter de 3 a 24 caracteres, usando letras, números ou _.';
+    if (!/^[a-zA-Z0-9._-]{3,16}$/.test(username)) {
+      message.textContent = 'O nome de usuário deve ter de 3 a 16 caracteres. Use letras, números, pontos, _ ou -.';
       return;
     }
     for (const field of ['avatar', 'banner']) {
@@ -750,7 +750,7 @@ async function openReviewComposer(user, existingReview = null) {
 function renderAuth(mode = 'login') {
   const isSignup = mode === 'signup';
   const fields = isSignup
-    ? '<label class="field"><span>Nome de usuário</span><input name="username" type="text" minlength="3" maxlength="24" pattern="[A-Za-z0-9_]+" placeholder="seu_usuario" autocomplete="username" required><small>3 a 24 caracteres. Use letras, números ou _</small></label><label class="field"><span>Como podemos chamar você?</span><input name="displayName" type="text" maxlength="60" placeholder="Seu nome" autocomplete="name" required></label>'
+    ? '<label class="field"><span>Nome de usuário</span><input name="username" type="text" minlength="3" maxlength="16" pattern="[A-Za-z0-9._-]+" placeholder="seu.nome" autocomplete="username" required><small>3 a 24 caracteres. Use letras, números ou _</small></label><label class="field"><span>Como podemos chamar você?</span><input name="displayName" type="text" maxlength="60" placeholder="Seu nome" autocomplete="name" required></label>'
     : '';
   const passwordAutocomplete = isSignup ? 'new-password' : 'current-password';
 
@@ -772,7 +772,8 @@ function renderAuth(mode = 'login') {
     '<label class="field"><span>E-mail</span><input name="email" type="email" placeholder="voce@email.com" autocomplete="email" required></label>',
     '<label class="field"><span>Senha</span><input name="password" type="password" minlength="6" placeholder="Mínimo de 6 caracteres" autocomplete="' + passwordAutocomplete + '" required></label>',
     (!isSignup ? '<button class="text-button" type="button" data-reset>Esqueceu sua senha?</button>' : ''),
-    '<button class="submit-button" type="submit">' + (isSignup ? 'Criar minha conta' : 'Entrar') + ' <span>↗</span></button>',
+    (isSignup ? '<div class="auth-consents"><label class="auth-consent"><input type="checkbox" name="age_confirmed" required><span>Tenho mais de 16 anos</span></label><label class="auth-consent"><input type="checkbox" name="terms_accepted" required><span>Concordo com os termos de serviço</span></label></div>' : ''),
+    '<button class="submit-button" type="submit">' + (isSignup ? 'Criar minha conta <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/><path d="m13 5 6 7-6 7"/></svg>' : 'Entrar <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3h5a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-5"/><path d="M3 12h12m-5-5 5 5-5 5"/></svg>') + '</button>',
     '<p class="form-message" data-message role="status" aria-live="polite" hidden></p></form>',
     '<p class="auth-panel__legal">Ao continuar, você concorda em usar o Ludus com respeito à comunidade.</p>',
     '</div></section></main>'
