@@ -1311,3 +1311,12 @@ button:disabled { cursor: wait; opacity: .65; }
   .feed-tabs { width: 100%; margin-bottom: 19px; }
   .feed-tabs__button { padding: 11px 6px; font-size: 11px; }
 }
+
+
+/* Mini perfil sem linha decorativa inferior */
+.sidebar-user,
+.sidebar-user:hover,
+.sidebar-user:focus-visible {
+  border-bottom: 0 !important;
+  padding-bottom: 0 !important;
+}
