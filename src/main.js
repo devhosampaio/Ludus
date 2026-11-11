@@ -547,12 +547,6 @@ if (!supabase) {
 }
 
 
-window.addEventListener('popstate', () => {
-  if (!activeUser) return;
-  const username = getProfileUsernameFromLocation();
-  if (username) renderProfilePage(activeUser, username);
-  else renderSignedIn(activeUser);
-});
 window.addEventListener('hashchange', () => {
   if (!activeUser) return;
   const username = getProfileUsernameFromLocation();
