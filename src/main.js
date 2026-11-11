@@ -294,22 +294,21 @@ async function renderSignedIn(user) {
       const safeQuery = query.replace(/[,%()]/g, ' ').trim();
       const [players, games] = await Promise.all([
         supabase.from('profiles').select('username, display_name, avatar_url').or('username.ilike.%' + safeQuery + '%,display_name.ilike.%' + safeQuery + '%').limit(5),
-        supabase.from('games').select('id, title').ilike('title', '%' + safeQuery + '%').limit(5)
+        supabase.from('games').select('id, title, release_year, cover_url').ilike('title', '%' + safeQuery + '%').limit(5)
       ]);
       if (headerSearch.value.trim() !== query) return;
       const playerItems = (players.data || []).map((profile) =>
-        '<button type="button" class="header-search__result" data-search-profile="' + escapeHTML(profile.username) + '">' +
+        '<button type="button" class="header-search__result header-search__result--player" data-search-profile="' + escapeHTML(profile.username) + '">' +
         (profile.avatar_url ? '<img src="' + escapeHTML(profile.avatar_url) + '" alt="">' : '<span class="header-search__avatar">' + profilePlaceholderMarkup() + '</span>') +
-        '<span><strong>' + escapeHTML(profile.display_name || profile.username) + '</strong><small>' + escapeHTML(profile.username) + '</small></span><em>JOGADOR</em></button>'
+        '<strong>' + escapeHTML(profile.username) + '</strong></button>'
       ).join('');
       const uniqueGames = [...new Map((games.data || []).map((game) => [game.id, game])).values()];
       const gameItems = uniqueGames.map((game) =>
-        '<button type="button" class="header-search__result header-search__result--game" data-search-game-id="' + escapeHTML(game.id) + '"><span class="header-search__game-icon">◈</span><span><strong>' + escapeHTML(game.title) + '</strong><small>Abrir página do jogo</small></span><em>JOGO</em></button>'
+        '<button type="button" class="header-search__result header-search__result--game" data-search-game-id="' + escapeHTML(game.id) + '">' +
+        (game.cover_url ? '<span class="header-search__game-banner" style="background-image:linear-gradient(90deg, transparent 55%, #fff 100%),url(&quot;' + escapeHTML(game.cover_url) + '&quot;)"></span>' : '<span class="header-search__game-banner header-search__game-banner--empty"></span>') +
+        '<strong>' + escapeHTML(game.title) + (game.release_year ? ' <small>(' + escapeHTML(game.release_year) + ')</small>' : '') + '</strong></button>'
       ).join('');
-      searchResults.innerHTML = (playerItems || gameItems)
-        ? '<p class="header-search__label">JOGADORES</p>' + (playerItems || '<small class="header-search__empty">Nenhum jogador encontrado</small>') +
-          '<p class="header-search__label">JOGOS</p>' + (gameItems || '<small class="header-search__empty">Nenhum jogo encontrado</small>')
-        : '<p class="header-search__empty">Nenhum resultado encontrado.</p>';
+      searchResults.innerHTML = playerItems + gameItems || '<p class="header-search__empty">Nenhum resultado encontrado.</p>';
       searchResults.hidden = false;
     }, 220);
   });
