@@ -305,7 +305,7 @@ button:disabled { cursor: wait; opacity: .65; }
 .composer__search:focus, .composer__field select:focus, .composer__form textarea:focus { border-color: var(--color-primary); }
 .composer__results { display: grid; margin-top: 8px; }
 .composer__result { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 8px; border: 0; border-bottom: 1px solid #d5cbbb; background: transparent; color: #302c3d; text-align: left; font-size: 12px; }
-.composer__result-info { display: grid; gap: 4px; }
+.composer__result-info { display: flex; align-items: baseline; flex-wrap: wrap; gap: 0 5px; min-width: 0; }
 .composer__result-info strong { font-size: 12px; font-weight: 600; }
 .composer__result-info small { color: #81798a; font: 10px 'DM Mono', monospace; }
 .composer__result > span:last-child { color: #7060ab; white-space: nowrap; font-size: 10px; }
