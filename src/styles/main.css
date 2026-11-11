@@ -335,3 +335,12 @@ button:disabled { cursor: wait; opacity: .65; }
   .composer__form { grid-template-columns: 1fr; }
   .composer__liked, .composer__form > label[for="review-body"], .composer__form textarea, .composer__message, .composer__submit { grid-column: 1; }
 }
+
+
+/* Review likes */
+.review-card__actions { display: flex; align-items: center; margin-top: 14px; }
+.review-card__like { display: inline-flex; align-items: center; gap: 6px; padding: 6px 0; border: 0; background: transparent; color: #a9a1b3; font: 11px 'DM Sans', sans-serif; cursor: pointer; transition: color .18s ease; }
+.review-card__like:hover, .review-card__like.is-liked { color: var(--color-secondary); }
+.review-card__like > span:first-child { font-size: 14px; }
+.review-card__like-count { color: #827b90; font: 10px 'DM Mono', monospace; }
+.review-card__like:disabled { opacity: .55; cursor: wait; }
