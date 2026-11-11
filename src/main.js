@@ -1111,9 +1111,7 @@ async function openReviewComposer(user, existingReview = null, preselectedGame =
       return;
     }
     close();
-    const gameRouteId = getGameIdFromLocation();
-    if (gameRouteId) await renderGamePage(user, gameRouteId);
-    else await renderSignedIn(user);
+    navigateToFeed(user);
   });
 }
 
