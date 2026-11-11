@@ -49,7 +49,6 @@ async function setupNotifications(user) {
     notificationChannel = null;
   }
 
-  const trigger = root.querySelector('[data-notifications-toggle]');
   const panel = root.querySelector('[data-notifications-panel]');
   const list = root.querySelector('[data-notifications-list]');
   const badge = root.querySelector('[data-notification-count]');
@@ -157,9 +156,6 @@ async function renderSignedIn(user) {
     <div class="feed-shell">
       <header class="sidebar">
         <a class="brand sidebar__brand" href="./" aria-label="Ludus início">L<span>.</span></a>
-        <nav class="side-nav" aria-label="Navegação principal">
-          <a class="side-nav__link is-active" href="#inicio">Início</a>
-        </nav>
         <div class="header-search">
           <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"></circle><path d="m16 16 5 5"></path></svg>
           <input type="search" data-header-search placeholder="Buscar jogos ou jogadores..." autocomplete="off" aria-label="Buscar jogos ou jogadores">
@@ -167,9 +163,9 @@ async function renderSignedIn(user) {
         </div>
         <div class="header-actions">
           <button class="record-button" type="button" data-open-composer>+ Fazer review</button>
+          ${notificationControlMarkup()}
         </div>
         <div class="sidebar__bottom">
-          ${notificationControlMarkup()}
           <details class="account-menu" data-account-details>
             <summary class="sidebar-user" data-account-menu>
               <span class="sidebar-user__avatar" data-avatar> L </span>
