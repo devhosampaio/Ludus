@@ -405,12 +405,13 @@ async function renderSignedIn(user) {
         (isOwner ? '<button type="button" data-review-action="edit">Editar review</button><button type="button" class="is-danger" data-review-action="delete">Excluir review</button>' : '<button type="button" data-review-action="report">Denunciar review</button>') + '</div></details>';
       const socialActions = '<div class="review-card__social-actions"><button class="review-card__like' + (isLiked ? ' is-liked' : '') + '" type="button" data-like-review aria-pressed="' + isLiked + '"><svg class="ui-icon ui-icon--heart" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" stroke="none" d="M12 21s-8.8-5.9-8.8-12.2A4.8 4.8 0 0 1 12 6.4a4.8 4.8 0 0 1 8.8 2.4C20.8 15.1 12 21 12 21Z"></path></svg><span data-like-label>Curtir review</span></button><span class="review-card__like-count" data-like-count>' + (likeCounts[review.id] || 0) + '</span><button class="review-card__comments-toggle" type="button" data-comments-toggle aria-expanded="false"><svg class="ui-icon ui-icon--comment" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" stroke="none" d="M4 3.5h16A2.5 2.5 0 0 1 22.5 6v9a2.5 2.5 0 0 1-2.5 2.5h-8l-5.8 4v-4H4A2.5 2.5 0 0 1 1.5 15V6A2.5 2.5 0 0 1 4 3.5Z"></path></svg><span>Comentar review</span></button><span class="review-card__comment-count" data-comment-count>' + (commentCounts[review.id] || 0) + '</span></div>';
       return '<article class="review-card" data-review-id="' + review.id + '">' +
-        '<div class="review-card__cover-column">' + cover + '<div class="review-card__actions">' + socialActions + '</div></div>' +
+        '<div class="review-card__cover-column">' + cover + '</div>' +
         '<div class="review-card__body"><div class="review-card__meta"><button class="review-card__author" type="button" data-profile-username="' + escapeHTML(username) + '"><span class="review-card__author-avatar">' + avatarMarkup + '</span><span>' + escapeHTML(author) + '</span></button><time>' + formatDate(review.created_at) + '</time></div>' + menuMarkup +
         '<h3>' + escapeHTML(game) + (gameYear ? ' <small class="review-card__year">' + escapeHTML(gameYear) + '</small>' : '') + '</h3><div class="review-card__details"><span class="review-card__stars" aria-label="Nota ' + review.rating + ' de 5">' + stars + '</span>' +
         (review.status ? '<span class="review-card__status">' + statusLabel(review.status) + '</span>' : '') +
         (review.liked_game ? '<span class="review-card__liked"><svg class="ui-icon ui-icon--heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 8.8c0 5.1-8.8 11-8.8 11s-8.8-5.9-8.8-11A4.8 4.8 0 0 1 12 6.4a4.8 4.8 0 0 1 8.8 2.4Z"></path></svg> Gostei</span>' : '') + '</div><section class="review-comments" data-comments-panel hidden></section></div>' +
-        (review.body ? '<p class="review-card__text">' + escapeHTML(review.body) + '</p>' : '') + '</article>';
+        (review.body ? '<p class="review-card__text">' + escapeHTML(review.body) + '</p>' : '') +
+        '<div class="review-card__actions">' + socialActions + '</div></article>';
     }).join('');
   };
 
