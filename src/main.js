@@ -804,17 +804,19 @@ function renderAuth(mode = 'login') {
   });
 
   const termsModal = app.querySelector('[data-terms-modal]');
-  app.querySelector('[data-terms-open]')?.addEventListener('click', () => {
+  app.querySelector('[data-terms-open]')?.addEventListener('click', (event) => {
+    event.preventDefault();
+    event.stopPropagation();
     termsModal.hidden = false;
     termsModal.querySelector('[data-terms-close]').focus();
+  });
+  termsModal?.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') termsModal.hidden = true;
   });
   termsModal?.querySelectorAll('[data-terms-close]').forEach((button) => {
     button.addEventListener('click', () => { termsModal.hidden = true; });
   });
   termsModal?.querySelector('.terms-modal__dialog')?.addEventListener('click', (event) => event.stopPropagation());
-  document.addEventListener('keydown', function closeTermsOnEscape(event) {
-    if (event.key === 'Escape' && termsModal && !termsModal.hidden) termsModal.hidden = true;
-  }, { once: true });
 
   app.querySelector('#auth-form').addEventListener('submit', async (event) => {
     event.preventDefault();
