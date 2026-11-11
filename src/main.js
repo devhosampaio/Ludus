@@ -184,12 +184,14 @@ async function renderSignedIn(user) {
     <div class="feed-shell">
       <header class="sidebar">
         <a class="brand sidebar__brand" href="./" aria-label="Ludus início">L<span>.</span></a>
-        <div class="header-search">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"></circle><path d="m16 16 5 5"></path></svg>
-          <input type="search" data-header-search placeholder="Buscar jogos ou jogadores..." autocomplete="off" aria-label="Buscar jogos ou jogadores">
-          <div class="header-search__results" data-header-search-results hidden></div>
-        </div>
         <div class="header-actions">
+          <div class="header-search">
+            <button class="header-search__toggle" type="button" data-search-toggle aria-label="Abrir busca" aria-expanded="false" title="Buscar">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"></circle><path d="m16 16 5 5"></path></svg>
+            </button>
+            <input type="search" data-header-search placeholder="Buscar..." autocomplete="off" aria-label="Buscar jogos ou jogadores">
+            <div class="header-search__results" data-header-search-results hidden></div>
+          </div>
           ${notificationControlMarkup()}
         </div>
         <div class="sidebar__bottom">
@@ -259,6 +261,25 @@ async function renderSignedIn(user) {
 
   const headerSearch = app.querySelector('[data-header-search]');
   const searchResults = app.querySelector('[data-header-search-results]');
+  const searchWrap = app.querySelector('.header-search');
+  const searchToggle = app.querySelector('[data-search-toggle]');
+  searchToggle.addEventListener('click', () => {
+    const isOpen = searchWrap.classList.toggle('is-open');
+    searchToggle.setAttribute('aria-expanded', String(isOpen));
+    if (isOpen) headerSearch.focus();
+    else {
+      headerSearch.value = '';
+      searchResults.hidden = true;
+      searchResults.innerHTML = '';
+    }
+  });
+  document.addEventListener('click', (event) => {
+    if (!searchWrap.contains(event.target) && searchWrap.classList.contains('is-open')) {
+      searchWrap.classList.remove('is-open');
+      searchToggle.setAttribute('aria-expanded', 'false');
+      searchResults.hidden = true;
+    }
+  });
   let searchTimer;
   headerSearch.addEventListener('input', () => {
     window.clearTimeout(searchTimer);
