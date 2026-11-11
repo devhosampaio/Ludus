@@ -206,7 +206,7 @@ async function renderSignedIn(user) {
   avatar.textContent = fallbackName.trim().charAt(0).toUpperCase() || 'L';
 
   const profileResult = await supabase.from('profiles')
-    .select('username, display_name, avatar_url')
+    .select('username, display_name, avatar_url, banner_url, bio')
     .eq('id', user.id).maybeSingle();
 
   if (profileResult.data) {
@@ -254,7 +254,7 @@ async function renderSignedIn(user) {
   let searchTimer;
   headerSearch.addEventListener('input', () => {
     window.clearTimeout(searchTimer);
-    const query = headerSearch.value.trim();
+    const query = headerSearch.value.trim().replace(/^@/, '');
     if (query.length < 2) {
       searchResults.hidden = true;
       searchResults.innerHTML = '';
