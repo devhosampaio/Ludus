@@ -166,19 +166,19 @@ async function renderSignedIn(user) {
           <div class="header-search__results" data-header-search-results hidden></div>
         </div>
         <div class="sidebar__bottom">
-          <div class="account-menu">
-            <button class="sidebar-user" type="button" data-account-menu aria-expanded="false" aria-haspopup="true">
+          <details class="account-menu" data-account-details>
+            <summary class="sidebar-user" data-account-menu>
               <span class="sidebar-user__avatar" data-avatar> L </span>
               <span class="sidebar-user__identity"><strong data-display-name></strong><small data-username></small></span>
               <svg class="sidebar-user__chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"></path></svg>
-            </button>
+            </summary>
             <div class="account-menu__panel" data-account-panel>
               <button type="button" data-open-own-profile>Ver perfil</button>
               <button type="button" data-account-settings>Configurações da conta</button>
               <div></div>
               <button type="button" data-signout>Encerrar sessão <span>↗</span></button>
             </div>
-          </div>
+          </details>
         </div>
       </header>
       <main class="feed-main">
@@ -220,23 +220,10 @@ async function renderSignedIn(user) {
     username.textContent = '';
   }
 
-  const accountButton = app.querySelector('[data-account-menu]');
-  const accountPanel = app.querySelector('[data-account-panel]');
-  const closeAccountMenu = () => {
-    accountPanel.classList.remove('is-open');
-    accountPanel.setAttribute('aria-hidden', 'true');
-    accountButton.setAttribute('aria-expanded', 'false');
-  };
-  accountButton.addEventListener('click', (event) => {
-    event.preventDefault();
-    event.stopPropagation();
-    const isOpen = accountPanel.classList.toggle('is-open');
-    accountButton.setAttribute('aria-expanded', String(isOpen));
-    accountPanel.setAttribute('aria-hidden', String(!isOpen));
-  });
-  accountPanel.addEventListener('click', (event) => event.stopPropagation());
+  const accountDetails = app.querySelector('[data-account-details]');
+  const closeAccountMenu = () => { accountDetails.open = false; };
   document.addEventListener('click', (event) => {
-    if (!(event.target instanceof Element) || !event.target.closest('.account-menu')) closeAccountMenu();
+    if (!(event.target instanceof Element) || !event.target.closest('[data-account-details]')) closeAccountMenu();
   });
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') closeAccountMenu();
