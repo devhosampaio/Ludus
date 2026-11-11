@@ -157,7 +157,7 @@ async function renderSignedIn(user) {
     button.querySelector('[data-like-label]').textContent = nextLiked ? 'Curtido' : 'Curtir';
     button.disabled = false;
   });
-
+}
 
 async function openReviewComposer(user) {
   const existing = app.querySelector('.composer-overlay');
