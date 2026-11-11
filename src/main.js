@@ -265,7 +265,7 @@ async function renderProfilePage(currentUser, username) {
     '<section class="profile-page__hero"><div class="profile-page__banner">' + banner + '</div>' +
     '<div class="profile-page__identity"><div class="profile-page__avatar">' + avatar + '</div>' +
     '<div class="profile-page__heading"><p class="eyebrow">JOGADOR LUDUS</p><h1>' + escapeHTML(displayName) + '</h1><span>@' + escapeHTML(profile.username) + '</span></div>' +
-    (profile.id !== currentUser.id ? '<button class="profile-follow' + (isFollowing ? ' is-following' : '') + '" type="button" data-profile-follow>' + (isFollowing ? 'Seguindo' : 'Seguir') + '</button>' : '<span class="profile-panel__you">Seu perfil</span>') +
+    (profile.id !== currentUser.id ? '<button class="profile-follow' + (isFollowing ? ' is-following' : '') + '" type="button" data-profile-follow>' + (isFollowing ? 'Seguindo' : 'Seguir') + '</button>' : '<button class="profile-panel__you profile-edit-trigger" type="button" data-edit-profile>Editar perfil ↗</button>') +
     '</div>' + (profile.bio ? '<p class="profile-page__bio">' + escapeHTML(profile.bio) + '</p>' : '') +
     '<div class="profile-page__stats"><div><strong data-followers-count>' + (followers.count || 0) + '</strong><span>Seguidores</span></div><div><strong>' + (following.count || 0) + '</strong><span>Seguindo</span></div><div><strong>' + ((reviewsResult.data || []).length) + '</strong><span>Avaliações recentes</span></div></div></section>' +
     '<section class="profile-page__reviews"><div class="profile-page__section-heading"><div><p class="eyebrow">HISTÓRICO DO JOGADOR</p><h2>Avaliações</h2></div><span>' + ((reviewsResult.data || []).length).toString().padStart(2, '0') + ' / 20</span></div>' +
@@ -293,8 +293,101 @@ async function renderProfilePage(currentUser, username) {
       count.textContent = String(Math.max(0, Number(count.textContent) + (isFollowing ? 1 : -1)));
     });
   }
+
+  const editProfileButton = app.querySelector('[data-edit-profile]');
+  editProfileButton?.addEventListener('click', () => openProfileEditor(currentUser, profile));
 }
 
+async function openProfileEditor(user, profile) {
+  app.querySelector('.profile-editor-overlay')?.remove();
+  const overlay = document.createElement('div');
+  overlay.className = 'profile-editor-overlay';
+  overlay.innerHTML = `
+    <section class="profile-editor" role="dialog" aria-modal="true" aria-labelledby="profile-editor-title">
+      <button class="profile-editor__close" type="button" data-close aria-label="Fechar">×</button>
+      <p class="eyebrow">SUA IDENTIDADE NO LUDUS</p>
+      <h2 id="profile-editor-title">Editar perfil<span>.</span></h2>
+      <form class="profile-editor__form" data-profile-form>
+        <label class="profile-editor__field"><span>Nome de exibição</span><input name="display_name" type="text" maxlength="60" required value="${escapeHTML(profile.display_name || '')}"></label>
+        <label class="profile-editor__field"><span>Nome de usuário</span><div class="profile-editor__username"><b>@</b><input name="username" type="text" minlength="3" maxlength="24" pattern="[A-Za-z0-9_]+" required value="${escapeHTML(profile.username || '')}" autocomplete="username"></div><small>3 a 24 caracteres: letras, números ou _</small></label>
+        <label class="profile-editor__field"><span>Biografia</span><textarea name="bio" maxlength="240" rows="3" placeholder="Conte um pouco sobre você…">${escapeHTML(profile.bio || '')}</textarea><small>Até 240 caracteres</small></label>
+        <div class="profile-editor__uploads">
+          <label class="profile-editor__upload"><span>Foto de perfil</span><div class="profile-editor__preview profile-editor__preview--avatar" data-avatar-preview>${profile.avatar_url ? '<img src="' + escapeHTML(profile.avatar_url) + '" alt="">' : '<span>' + escapeHTML((profile.display_name || profile.username || 'L').charAt(0).toUpperCase()) + '</span>'}</div><input type="file" name="avatar" accept="image/png,image/jpeg,image/webp,image/gif"><small>PNG, JPG, WEBP ou GIF · até 5 MB</small></label>
+          <label class="profile-editor__upload"><span>Imagem de capa</span><div class="profile-editor__preview profile-editor__preview--banner" data-banner-preview>${profile.banner_url ? '<img src="' + escapeHTML(profile.banner_url) + '" alt="">' : '<span>Prévia da capa</span>'}</div><input type="file" name="banner" accept="image/png,image/jpeg,image/webp,image/gif"><small>PNG, JPG, WEBP ou GIF · até 5 MB</small></label>
+        </div>
+        <p class="profile-editor__message" data-editor-message role="status"></p>
+        <div class="profile-editor__actions"><button type="button" data-cancel>Cancelar</button><button type="submit">Salvar perfil ↗</button></div>
+      </form>
+    </section>`;
+  app.append(overlay);
+  const form = overlay.querySelector('[data-profile-form]');
+  const message = overlay.querySelector('[data-editor-message]');
+  const close = () => overlay.remove();
+  overlay.querySelector('[data-close]').addEventListener('click', close);
+  overlay.querySelector('[data-cancel]').addEventListener('click', close);
+  overlay.addEventListener('click', (event) => { if (event.target === overlay) close(); });
+
+  for (const [field, previewSelector] of [['avatar', '[data-avatar-preview]'], ['banner', '[data-banner-preview]']]) {
+    const input = form.elements[field];
+    input.addEventListener('change', () => {
+      const file = input.files?.[0];
+      if (!file) return;
+      const preview = form.querySelector(previewSelector);
+      const objectUrl = URL.createObjectURL(file);
+      preview.innerHTML = '<img src="' + objectUrl + '" alt="Prévia">';
+    });
+  }
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const submit = form.querySelector('[type="submit"]');
+    const displayName = form.elements.display_name.value.trim();
+    const username = form.elements.username.value.trim().toLowerCase();
+    const bio = form.elements.bio.value.trim();
+    if (!/^[a-zA-Z0-9_]{3,24}$/.test(username)) {
+      message.textContent = 'O nome de usuário deve ter de 3 a 24 caracteres, usando letras, números ou _.';
+      return;
+    }
+    for (const field of ['avatar', 'banner']) {
+      const file = form.elements[field].files?.[0];
+      if (file && (!['image/jpeg', 'image/png', 'image/webp', 'image/gif'].includes(file.type) || file.size > 5 * 1024 * 1024)) {
+        message.textContent = 'Escolha imagens JPG, PNG, WEBP ou GIF de até 5 MB.';
+        return;
+      }
+    }
+
+    submit.disabled = true;
+    submit.textContent = 'Salvando…';
+    message.textContent = '';
+    try {
+      const updates = { display_name: displayName, username, bio };
+      for (const field of ['avatar', 'banner']) {
+        const file = form.elements[field].files?.[0];
+        if (!file) continue;
+        const extension = ({ 'image/jpeg': 'jpg', 'image/png': 'png', 'image/webp': 'webp', 'image/gif': 'gif' })[file.type];
+        const path = user.id + '/' + field + '-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8) + '.' + extension;
+        const { error: uploadError } = await supabase.storage.from('profile-media').upload(path, file, {
+          cacheControl: '3600', contentType: file.type, upsert: false
+        });
+        if (uploadError) throw uploadError;
+        const { data } = supabase.storage.from('profile-media').getPublicUrl(path);
+        updates[field === 'avatar' ? 'avatar_url' : 'banner_url'] = data.publicUrl;
+      }
+
+      const { error: updateError } = await supabase.from('profiles').update(updates).eq('id', user.id);
+      if (updateError) throw updateError;
+      close();
+      await renderProfilePage(user, username);
+    } catch (error) {
+      console.error('[Ludus] Falha ao atualizar perfil:', error);
+      message.textContent = error.code === '23505'
+        ? 'Esse nome de usuário já está em uso. Escolha outro.'
+        : 'Não foi possível salvar. Verifique sua conexão e tente novamente.';
+      submit.disabled = false;
+      submit.textContent = 'Salvar perfil ↗';
+    }
+  });
+}
 
 async function openReviewComposer(user, existingReview = null) {
   const existing = app.querySelector('.composer-overlay');
