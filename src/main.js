@@ -273,7 +273,7 @@ async function openReviewComposer(user) {
       body: String(values.body || '').trim(),
     });
     if (error) {
-      console.error('[Ludus] Falha ao publicar avaliação:', error);
+      console.error('[Ludus] Falha ao salvar avaliação:', error);
       message.textContent = error.code === '23505'
         ? 'Você já publicou uma avaliação deste jogo. A edição estará disponível em breve.'
         : 'Não foi possível publicar. Verifique sua conexão e tente novamente.';
