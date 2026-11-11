@@ -377,6 +377,7 @@ async function openProfileEditor(user, profile) {
       const { error: updateError } = await supabase.from('profiles').update(updates).eq('id', user.id);
       if (updateError) throw updateError;
       close();
+      window.history.replaceState({ page: 'profile' }, '', '#/perfil/' + encodeURIComponent(username));
       await renderProfilePage(user, username);
     } catch (error) {
       console.error('[Ludus] Falha ao atualizar perfil:', error);
