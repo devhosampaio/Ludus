@@ -2,6 +2,7 @@ import { supabase } from './lib/supabase.js';
 import { signIn, signOut, signUp, requestPasswordReset } from './lib/auth.js';
 
 const app = document.querySelector('#app');
+let activeUser = null;
 
 function showMessage(message, type = 'info') {
   const target = document.querySelector('[data-message]');
@@ -27,6 +28,7 @@ function statusLabel(status) {
 }
 
 async function renderSignedIn(user) {
+  activeUser = user;
   const fallbackName = user.user_metadata?.display_name || user.email?.split('@')[0] || 'jogador';
   app.innerHTML = `
     <div class="feed-shell">
@@ -62,7 +64,7 @@ async function renderSignedIn(user) {
   app.querySelector('[data-open-composer]').addEventListener('click', () => openReviewComposer(user));
   app.querySelector('[data-open-own-profile]').addEventListener('click', (event) => {
     event.preventDefault();
-    if (profileResult.data?.username) openProfileModal(user, profileResult.data.username);
+    if (profileResult.data?.username) navigateToProfile(user, profileResult.data.username);
   });
   app.querySelector('[data-today]').textContent = new Intl.DateTimeFormat('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' }).format(new Date()).toUpperCase();
   const displayName = app.querySelector('[data-display-name]');
@@ -88,6 +90,12 @@ async function renderSignedIn(user) {
     }
   } else {
     username.textContent = '';
+  }
+
+  const routeUsername = getProfileUsernameFromLocation();
+  if (routeUsername) {
+    await renderProfilePage(user, routeUsername);
+    return;
   }
 
   const feedList = app.querySelector('[data-feed-list]');
@@ -140,7 +148,7 @@ async function renderSignedIn(user) {
   feedList.addEventListener('click', async (event) => {
     const profileButton = event.target.closest('[data-profile-username]');
     if (profileButton?.dataset.profileUsername) {
-      openProfileModal(user, profileButton.dataset.profileUsername);
+      navigateToProfile(user, profileButton.dataset.profileUsername);
       return;
     }
     const editButton = event.target.closest('[data-edit-review]');
@@ -176,22 +184,52 @@ async function renderSignedIn(user) {
 }
 
 
-async function openProfileModal(currentUser, username) {
-  app.querySelector('.profile-overlay')?.remove();
-  const overlay = document.createElement('div');
-  overlay.className = 'profile-overlay';
-  overlay.innerHTML = '<section class="profile-panel" role="dialog" aria-modal="true" aria-label="Perfil do jogador"><button class="profile-panel__close" type="button" data-profile-close aria-label="Fechar">×</button><div class="profile-panel__loading">Carregando perfil…</div></section>';
-  app.append(overlay);
-  const close = () => overlay.remove();
-  overlay.querySelector('[data-profile-close]').addEventListener('click', close);
-  overlay.addEventListener('click', (event) => { if (event.target === overlay) close(); });
+function getProfileUsernameFromLocation() {
+  const match = window.location.hash.match(/^#\/perfil\/([^/?#]+)/);
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
+function navigateToProfile(currentUser, username) {
+  if (!username) return;
+  const nextHash = '#/perfil/' + encodeURIComponent(username);
+  if (window.location.hash !== nextHash) {
+    window.history.pushState({ page: 'profile' }, '', nextHash);
+  }
+  renderProfilePage(currentUser, username);
+}
+
+function navigateToFeed(currentUser) {
+  if (window.location.hash !== '#inicio') {
+    window.history.pushState({ page: 'feed' }, '', '#inicio');
+  }
+  renderSignedIn(currentUser);
+}
+
+async function renderProfilePage(currentUser, username) {
+  const requestId = (renderProfilePage.requestId || 0) + 1;
+  renderProfilePage.requestId = requestId;
+  app.innerHTML = `
+    <main class="profile-page">
+      <header class="profile-page__topbar">
+        <a class="brand" href="#inicio" data-profile-back aria-label="Ludus início">L<span>.</span></a>
+        <div class="profile-page__topbar-label"><span>COMUNIDADE / JOGADORES</span><strong>PERFIL</strong></div>
+        <button class="profile-page__back" type="button" data-profile-back>← <span>Voltar ao feed</span></button>
+      </header>
+      <div class="profile-page__content">
+        <div class="profile-page__loading">Carregando perfil…</div>
+      </div>
+    </main>`;
+  app.querySelectorAll('[data-profile-back]').forEach((button) => {
+    button.addEventListener('click', () => navigateToFeed(currentUser));
+  });
 
   const { data: profile, error: profileError } = await supabase.from('profiles')
     .select('id, username, display_name, bio, avatar_url, banner_url')
     .eq('username', username).maybeSingle();
-  if (!overlay.isConnected) return;
+  if (requestId !== renderProfilePage.requestId) return;
   if (profileError || !profile) {
-    overlay.querySelector('.profile-panel__loading').textContent = 'Não foi possível encontrar este perfil.';
+    app.querySelector('.profile-page__content').innerHTML = '<div class="profile-page__empty"><p class="eyebrow">PERFIL INDISPONÍVEL</p><h1>Não encontramos este jogador.</h1><button type="button" class="profile-page__back" data-profile-back>← Voltar ao feed</button></div>';
+    app.querySelector('[data-profile-back]')?.addEventListener('click', () => navigateToFeed(currentUser));
     return;
   }
 
@@ -205,15 +243,15 @@ async function openProfileModal(currentUser, username) {
       .select('id, rating, body, status, liked_game, created_at, games!reviews_game_id_fkey(title, cover_url, release_year)')
       .eq('user_id', profile.id).order('created_at', { ascending: false }).limit(20)
   ]);
-  if (!overlay.isConnected) return;
+  if (requestId !== renderProfilePage.requestId) return;
   let isFollowing = Boolean(followState.data);
   const displayName = profile.display_name || profile.username;
   const avatar = profile.avatar_url
     ? '<img src="' + escapeHTML(profile.avatar_url) + '" alt="">'
     : '<span>' + escapeHTML(displayName.trim().charAt(0).toUpperCase() || 'L') + '</span>';
   const banner = profile.banner_url
-    ? '<img class="profile-panel__banner-image" src="' + escapeHTML(profile.banner_url) + '" alt="">'
-    : '<div class="profile-panel__banner-empty"></div>';
+    ? '<img class="profile-page__banner-image" src="' + escapeHTML(profile.banner_url) + '" alt="">'
+    : '<div class="profile-page__banner-empty"></div>';
   const reviewCards = (reviewsResult.data || []).map((review) => {
     const game = review.games?.title || 'Jogo';
     const year = review.games?.release_year ? ' (' + escapeHTML(review.games.release_year) + ')' : '';
@@ -222,19 +260,18 @@ async function openProfileModal(currentUser, username) {
       : '<div class="profile-review__cover profile-review__cover--empty">L.</div>';
     return '<article class="profile-review">' + cover + '<div><strong>' + escapeHTML(game) + year + '</strong><div class="profile-review__meta"><span class="profile-review__stars">' + '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating) + '</span><span>' + statusLabel(review.status) + '</span><time>' + formatDate(review.created_at) + '</time></div>' + (review.body ? '<p>' + escapeHTML(review.body) + '</p>' : '') + (review.liked_game ? '<small>♥ Gostei deste jogo</small>' : '') + '</div></article>';
   }).join('');
-  overlay.querySelector('.profile-panel').innerHTML =
-    '<button class="profile-panel__close" type="button" data-profile-close aria-label="Fechar">×</button>' +
-    '<div class="profile-panel__banner">' + banner + '</div>' +
-    '<div class="profile-panel__content"><div class="profile-panel__identity"><div class="profile-panel__avatar">' + avatar + '</div>' +
-    '<div class="profile-panel__heading"><p class="eyebrow">JOGADOR LUDUS</p><h2>' + escapeHTML(displayName) + '</h2><span>@' + escapeHTML(profile.username) + '</span></div>' +
-    (profile.id !== currentUser.id ? '<button class="profile-follow' + (isFollowing ? ' is-following' : '') + '" type="button" data-profile-follow>' + (isFollowing ? 'Seguindo' : 'Seguir') + '</button>' : '<span class="profile-panel__you">Seu perfil</span>') +
-    '</div>' + (profile.bio ? '<p class="profile-panel__bio">' + escapeHTML(profile.bio) + '</p>' : '') +
-    '<div class="profile-panel__stats"><div><strong data-followers-count>' + (followers.count || 0) + '</strong><span>Seguidores</span></div><div><strong>' + (following.count || 0) + '</strong><span>Seguindo</span></div><div><strong>' + ((reviewsResult.data || []).length) + '</strong><span>Avaliações recentes</span></div></div>' +
-    '<div class="profile-panel__reviews"><div class="profile-panel__section"><p class="eyebrow">HISTÓRICO</p><h3>Avaliações</h3></div>' +
-    (reviewsResult.error ? '<p class="profile-panel__empty">Não foi possível carregar as avaliações.</p>' : reviewCards || '<p class="profile-panel__empty">Este jogador ainda não publicou avaliações.</p>') + '</div></div>';
-  overlay.querySelector('[data-profile-close]').addEventListener('click', close);
 
-  const followButton = overlay.querySelector('[data-profile-follow]');
+  app.querySelector('.profile-page__content').innerHTML =
+    '<section class="profile-page__hero"><div class="profile-page__banner">' + banner + '</div>' +
+    '<div class="profile-page__identity"><div class="profile-page__avatar">' + avatar + '</div>' +
+    '<div class="profile-page__heading"><p class="eyebrow">JOGADOR LUDUS</p><h1>' + escapeHTML(displayName) + '</h1><span>@' + escapeHTML(profile.username) + '</span></div>' +
+    (profile.id !== currentUser.id ? '<button class="profile-follow' + (isFollowing ? ' is-following' : '') + '" type="button" data-profile-follow>' + (isFollowing ? 'Seguindo' : 'Seguir') + '</button>' : '<span class="profile-panel__you">Seu perfil</span>') +
+    '</div>' + (profile.bio ? '<p class="profile-page__bio">' + escapeHTML(profile.bio) + '</p>' : '') +
+    '<div class="profile-page__stats"><div><strong data-followers-count>' + (followers.count || 0) + '</strong><span>Seguidores</span></div><div><strong>' + (following.count || 0) + '</strong><span>Seguindo</span></div><div><strong>' + ((reviewsResult.data || []).length) + '</strong><span>Avaliações recentes</span></div></div></section>' +
+    '<section class="profile-page__reviews"><div class="profile-page__section-heading"><div><p class="eyebrow">HISTÓRICO DO JOGADOR</p><h2>Avaliações</h2></div><span>' + ((reviewsResult.data || []).length).toString().padStart(2, '0') + ' / 20</span></div>' +
+    (reviewsResult.error ? '<p class="profile-page__empty">Não foi possível carregar as avaliações.</p>' : reviewCards || '<p class="profile-page__empty">Este jogador ainda não publicou avaliações.</p>') + '</section>';
+
+  const followButton = app.querySelector('[data-profile-follow]');
   if (followButton) {
     followButton.addEventListener('click', async () => {
       if (followButton.disabled) return;
@@ -252,11 +289,12 @@ async function openProfileModal(currentUser, username) {
       followButton.textContent = isFollowing ? 'Seguindo' : 'Seguir';
       followButton.classList.toggle('is-following', isFollowing);
       followButton.disabled = false;
-      const count = overlay.querySelector('[data-followers-count]');
+      const count = app.querySelector('[data-followers-count]');
       count.textContent = String(Math.max(0, Number(count.textContent) + (isFollowing ? 1 : -1)));
     });
   }
 }
+
 
 async function openReviewComposer(user, existingReview = null) {
   const existing = app.querySelector('.composer-overlay');
@@ -488,7 +526,7 @@ if (!supabase) {
   supabase.auth.onAuthStateChange((event, session) => {
     authReady = true;
     if (event === 'SIGNED_IN' && session?.user) renderSignedIn(session.user);
-    if (event === 'SIGNED_OUT') renderAuth('login');
+    if (event === 'SIGNED_OUT') { activeUser = null; renderAuth('login'); }
     if (event === 'INITIAL_SESSION' && session?.user) renderSignedIn(session.user);
   });
 
@@ -507,3 +545,17 @@ if (!supabase) {
     }
   });
 }
+
+
+window.addEventListener('popstate', () => {
+  if (!activeUser) return;
+  const username = getProfileUsernameFromLocation();
+  if (username) renderProfilePage(activeUser, username);
+  else renderSignedIn(activeUser);
+});
+window.addEventListener('hashchange', () => {
+  if (!activeUser) return;
+  const username = getProfileUsernameFromLocation();
+  if (username) renderProfilePage(activeUser, username);
+  else renderSignedIn(activeUser);
+});
