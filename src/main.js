@@ -212,7 +212,7 @@ async function renderSignedIn(user) {
       <main class="feed-main">
         <aside class="feed-ad feed-ad--left" aria-label="Espaço reservado para publicidade"></aside>
         <section class="feed-content" aria-label="Atividade da comunidade">
-          <div class="section-heading"><div class="feed-heading__inner"><div class="feed-tabs" role="tablist" aria-label="Ordenar atividade"><button class="feed-tabs__button is-active" type="button" role="tab" aria-selected="true" data-feed-mode="popular">Popular</button><button class="feed-tabs__button" type="button" role="tab" aria-selected="false" data-feed-mode="following">Seguindo</button><button class="feed-tabs__button" type="button" role="tab" aria-selected="false" data-feed-mode="recent">Mais recentes</button></div><h2>Atividade recente</h2></div></div>
+          <div class="section-heading"><div class="feed-heading__inner"><div class="feed-tabs" role="tablist" aria-label="Ordenar atividade"><button class="feed-tabs__button is-active" type="button" role="tab" aria-selected="true" data-feed-mode="popular">Para você</button><button class="feed-tabs__button" type="button" role="tab" aria-selected="false" data-feed-mode="following">Seguindo</button><button class="feed-tabs__button" type="button" role="tab" aria-selected="false" data-feed-mode="recent">Mais recentes</button></div><h2 data-feed-title>Para você</h2></div></div>
           <div class="feed-list" data-feed-list><div class="feed-loading">Carregando as histórias da comunidade…</div></div>
         </section>
         <aside class="feed-ad feed-ad--right" aria-label="Espaço reservado para publicidade"></aside>
@@ -372,6 +372,10 @@ async function renderSignedIn(user) {
     } else {
       visibleReviews.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
     }
+
+    const feedTitle = app.querySelector('[data-feed-title]');
+    const activeTab = feedTabs.querySelector('[data-feed-mode="' + mode + '"]');
+    if (feedTitle && activeTab) feedTitle.textContent = activeTab.textContent.trim();
 
     feedTabs.querySelectorAll('[data-feed-mode]').forEach((button) => {
       const active = button.dataset.feedMode === mode;
