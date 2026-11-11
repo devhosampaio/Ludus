@@ -393,8 +393,11 @@ async function renderSignedIn(user) {
         : '<div class="review-card__cover review-card__cover--empty">L<span>.</span></div>') + '</div>';
       const stars = '★'.repeat(review.rating) + '<span class="review-card__stars-muted">' + '★'.repeat(5 - review.rating) + '</span>';
       const isLiked = likedReviewIds.has(review.id);
+      const avatarMarkup = review.profiles?.avatar_url
+        ? '<img src="' + escapeHTML(review.profiles.avatar_url) + '" alt="" loading="lazy">'
+        : '<span>' + escapeHTML(username.charAt(0).toUpperCase() || 'L') + '</span>';
       return '<article class="review-card" data-review-id="' + review.id + '">' + cover +
-        '<div class="review-card__body"><div class="review-card__meta"><button class="review-card__author" type="button" data-profile-username="' + escapeHTML(username) + '">' + escapeHTML(author) + '</button><time>' + formatDate(review.created_at) + '</time></div>' +
+        '<div class="review-card__body"><div class="review-card__meta"><button class="review-card__author" type="button" data-profile-username="' + escapeHTML(username) + '"><span class="review-card__author-avatar">' + avatarMarkup + '</span><span>' + escapeHTML(author) + '</span></button><time>' + formatDate(review.created_at) + '</time></div>' +
         '<h3>' + escapeHTML(game) + (gameYear ? ' <small class="review-card__year">' + escapeHTML(gameYear) + '</small>' : '') + '</h3><div class="review-card__details"><span class="review-card__stars" aria-label="Nota ' + review.rating + ' de 5">' + stars + '</span>' +
         (review.status ? '<span class="review-card__status">' + statusLabel(review.status) + '</span>' : '') +
         (review.liked_game ? '<span class="review-card__liked"><svg class="ui-icon ui-icon--heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 8.8c0 5.1-8.8 11-8.8 11s-8.8-5.9-8.8-11A4.8 4.8 0 0 1 12 6.4a4.8 4.8 0 0 1 8.8 2.4Z"></path></svg> Gostei</span>' : '') + '</div>' +
