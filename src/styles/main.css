@@ -1840,3 +1840,62 @@ button:disabled { cursor: wait; opacity: .65; }
   .review-card__body { padding-right: 25px; }
   .review-menu > summary { width: 26px; height: 26px; }
 }
+
+
+/* Capa sem efeito de vidro: destaque apenas pelo contorno */
+.review-card__cover-wrap::before,
+.review-card__cover-wrap::after {
+  content: none !important;
+  display: none !important;
+  animation: none !important;
+  transition: none !important;
+}
+.review-card__cover-wrap,
+.review-card__cover-wrap:hover {
+  transition: border-width .16s ease, border-color .16s ease, box-shadow .16s ease;
+}
+.review-card__cover-wrap:hover {
+  border-width: 3px !important;
+  border-style: solid;
+  border-color: #f5f0e6 !important;
+  box-shadow: 0 0 0 1px rgb(245 240 230 / 16%);
+}
+.review-card__cover-wrap:hover .review-card__cover {
+  transform: none !important;
+  filter: none !important;
+}
+
+/* A resenha vem primeiro; as interações ficam logo abaixo dela */
+.review-card__cover-column {
+  grid-column: 1;
+  grid-row: 1;
+}
+.review-card__body {
+  grid-column: 2;
+  grid-row: 1;
+}
+.review-card__text {
+  grid-column: 1 / -1;
+  grid-row: 2;
+  width: 100%;
+  margin: 2px 0 0;
+}
+.review-card > .review-card__actions {
+  grid-column: 1 / -1;
+  grid-row: 3;
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: flex-start;
+  margin: 0;
+  padding: 0;
+}
+.review-card > .review-card__actions .review-card__social-actions {
+  justify-content: flex-start;
+}
+@media (max-width: 760px) {
+  .review-card__cover-column { grid-column: 1; grid-row: 1; }
+  .review-card__body { grid-column: 2; grid-row: 1; }
+  .review-card__text { grid-column: 1 / -1; grid-row: 2; }
+  .review-card > .review-card__actions { grid-column: 1 / -1; grid-row: 3; }
+}
