@@ -614,3 +614,70 @@ button:disabled { cursor: wait; opacity: .65; }
   .review-comments__form { flex-direction: column; }
   .review-comments__form button { min-height: 40px; }
 }
+
+
+/* Notifications */
+.feed-topbar, .profile-page__topbar { position: relative; z-index: 10; }
+.notifications { position: relative; z-index: 35; flex: 0 0 auto; }
+.notifications__trigger {
+  position: relative;
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border: 1px solid rgb(232 223 206 / 28%);
+  background: transparent;
+  color: var(--color-surface);
+  cursor: pointer;
+}
+.notifications__trigger:hover, .notifications__trigger[aria-expanded="true"] { border-color: var(--color-secondary); color: var(--color-secondary); }
+.notifications__trigger svg { width: 19px; height: 19px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.notifications__count {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  display: grid;
+  min-width: 18px;
+  height: 18px;
+  place-items: center;
+  padding: 0 4px;
+  border: 2px solid var(--color-bg);
+  border-radius: 20px;
+  background: var(--color-secondary);
+  color: #fff;
+  font: 9px 'DM Mono', monospace;
+}
+.notifications__panel {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  width: min(360px, calc(100vw - 28px));
+  overflow: hidden;
+  border: 1px solid #d4cbbb;
+  background: var(--color-surface);
+  color: #302c3d;
+  box-shadow: 0 18px 48px rgb(0 0 0 / 28%);
+}
+.notifications__header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 17px; border-bottom: 1px solid #d5cbbb; }
+.notifications__header strong { font: 600 14px 'Space Grotesk', sans-serif; }
+.notifications__header button { padding: 4px 0; border: 0; background: transparent; color: #7060ab; font-size: 10px; cursor: pointer; }
+.notifications__header button:disabled { opacity: .5; }
+.notifications__list { max-height: 360px; overflow-y: auto; }
+.notifications__empty { margin: 0; padding: 24px 18px; color: #81798a; font-size: 11px; line-height: 1.7; }
+.notifications__item { display: flex; width: 100%; align-items: flex-start; gap: 11px; padding: 14px 17px; border: 0; border-bottom: 1px solid #d5cbbb; background: transparent; color: #625b6c; text-align: left; cursor: pointer; }
+.notifications__item:hover { background: #ded5c6; }
+.notifications__item.is-unread { background: #f1eadc; }
+.notifications__item-dot { width: 7px; height: 7px; flex: 0 0 7px; margin-top: 5px; border-radius: 50%; background: transparent; }
+.notifications__item.is-unread .notifications__item-dot { background: var(--color-secondary); }
+.notifications__item-content { display: grid; min-width: 0; gap: 5px; font-size: 11px; line-height: 1.5; }
+.notifications__item-content strong { color: #302c3d; font-weight: 700; }
+.notifications__item-content time { color: #938b9b; font: 9px 'DM Mono', monospace; }
+.notifications__item:disabled { opacity: .65; cursor: wait; }
+@media (max-width: 600px) {
+  .feed-topbar__actions { gap: 9px; }
+  .notifications__trigger { width: 38px; height: 38px; }
+  .profile-page__topbar { gap: 9px; }
+}
+@media (max-width: 360px) {
+  .notifications__trigger { width: 34px; height: 36px; }
+}
