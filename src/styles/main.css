@@ -1677,3 +1677,166 @@ button:disabled { cursor: wait; opacity: .65; }
     flex-basis: 26px;
   }
 }
+
+
+/* Reviews: actions below the cover and compact contextual menu */
+.review-card {
+  grid-template-columns: 120px minmax(0, 1fr);
+  column-gap: 22px;
+  row-gap: 12px;
+}
+.review-card__cover-column {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 9px;
+}
+.review-card__cover-column .review-card__cover-wrap {
+  width: 100%;
+}
+.review-card__cover-column .review-card__actions {
+  display: block;
+  width: 100%;
+  margin: 0;
+}
+.review-card__cover-column .review-card__social-actions {
+  display: flex;
+  width: 100%;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 4px 8px;
+}
+.review-card__cover-column .review-card__like,
+.review-card__cover-column .review-card__comments-toggle {
+  min-height: 28px;
+  gap: 5px;
+  font-size: 10px;
+}
+.review-card__cover-column .review-card__like-count,
+.review-card__cover-column .review-card__comment-count {
+  font-size: 10px;
+}
+.review-card__body {
+  position: relative;
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  padding-right: 34px;
+}
+.review-card__meta {
+  padding-right: 2px;
+}
+.review-menu {
+  position: absolute;
+  z-index: 15;
+  top: -5px;
+  right: 0;
+}
+.review-menu > summary {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border-radius: 50%;
+  color: #c9bfb0;
+  cursor: pointer;
+  list-style: none;
+  transition: background .18s ease, color .18s ease;
+}
+.review-menu > summary::-webkit-details-marker { display: none; }
+.review-menu > summary::marker { content: ""; }
+.review-menu > summary:hover,
+.review-menu[open] > summary {
+  background: rgb(232 223 206 / 10%);
+  color: #fff;
+}
+.review-menu > summary svg {
+  width: 19px;
+  height: 19px;
+  fill: currentColor;
+}
+.review-menu__panel {
+  position: absolute;
+  top: calc(100% + 5px);
+  right: 0;
+  display: grid;
+  width: 174px;
+  padding: 5px;
+  border: 1px solid rgb(201 191 176 / 25%);
+  border-radius: 5px;
+  background: #282433;
+  box-shadow: 0 12px 30px rgb(0 0 0 / 32%);
+}
+.review-menu__panel button {
+  padding: 10px 9px;
+  border: 0;
+  border-radius: 3px;
+  background: transparent;
+  color: #e8dfce;
+  font: 500 11px 'DM Sans', sans-serif;
+  text-align: left;
+  cursor: pointer;
+}
+.review-menu__panel button:hover { background: rgb(232 223 206 / 9%); color: #fff; }
+.review-menu__panel button.is-danger { color: #e58b7b; }
+.review-menu__panel button.is-danger:hover { background: rgb(217 108 85 / 12%); }
+.review-card__author {
+  font-weight: 750;
+}
+.review-card__author-avatar {
+  width: 29px;
+  height: 29px;
+  flex-basis: 29px;
+  border-radius: 50%;
+  background: #777783;
+  color: #f5f0e6;
+}
+.review-card__author-avatar svg,
+.sidebar-user__avatar svg,
+.header-search__avatar svg {
+  width: 68%;
+  height: 68%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.sidebar-user__avatar {
+  border-radius: 50% !important;
+  overflow: hidden;
+  background: #777783;
+  color: #f5f0e6;
+}
+.sidebar-user__avatar img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.header-search__avatar {
+  overflow: hidden;
+  border-radius: 50%;
+  background: #777783;
+}
+.header-search__avatar svg { width: 70%; height: 70%; }
+@media (max-width: 760px) {
+  .review-card {
+    grid-template-columns: 92px minmax(0, 1fr);
+    column-gap: 14px;
+    row-gap: 10px;
+  }
+  .review-card__cover-column { grid-column: 1; }
+  .review-card__body { grid-column: 2; padding-right: 28px; }
+  .review-card__cover-column .review-card__social-actions { gap: 2px 5px; }
+  .review-card__cover-column .review-card__like,
+  .review-card__cover-column .review-card__comments-toggle { font-size: 9px; }
+}
+@media (max-width: 420px) {
+  .review-card { grid-template-columns: 84px minmax(0, 1fr); column-gap: 12px; }
+  .review-card__body { padding-right: 25px; }
+  .review-menu > summary { width: 26px; height: 26px; }
+}
