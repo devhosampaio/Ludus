@@ -304,8 +304,12 @@ button:disabled { cursor: wait; opacity: .65; }
 .composer__search, .composer__field select, .composer__form textarea { width: 100%; min-height: 44px; padding: 11px 12px; border: 1px solid #c9bfb0; border-radius: 0; outline: none; background: #f2ecdf; color: #302c3d; font: inherit; font-size: 13px; }
 .composer__search:focus, .composer__field select:focus, .composer__form textarea:focus { border-color: var(--color-primary); }
 .composer__results { display: grid; margin-top: 8px; }
-.composer__result { display: flex; justify-content: space-between; gap: 12px; padding: 12px 8px; border: 0; border-bottom: 1px solid #d5cbbb; background: transparent; color: #302c3d; text-align: left; font-size: 12px; }
-.composer__result span:last-child { color: #7060ab; white-space: nowrap; }
+.composer__result { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 8px; border: 0; border-bottom: 1px solid #d5cbbb; background: transparent; color: #302c3d; text-align: left; font-size: 12px; }
+.composer__result-info { display: grid; gap: 4px; }
+.composer__result-info strong { font-size: 12px; font-weight: 600; }
+.composer__result-info small { color: #81798a; font: 10px 'DM Mono', monospace; }
+.composer__result > span:last-child { color: #7060ab; white-space: nowrap; font-size: 10px; }
+.review-card__year { display: inline-block; margin-left: 5px; color: #a9a1b3; font: 10px 'DM Mono', monospace; letter-spacing: 0; vertical-align: middle; }
 .composer__hint { margin: 10px 0; color: #777080; font-size: 12px; line-height: 1.6; }
 .composer__selected { display: flex; align-items: center; gap: 13px; margin: 18px 0; padding: 12px; background: #ded5c6; }
 .composer__selected img, .composer__cover-empty { width: 48px; height: 64px; object-fit: cover; background: #302c3d; }
