@@ -270,7 +270,7 @@ async function openReviewComposer(user) {
       rating: Number(values.rating),
       status: values.status,
       liked_game: form.elements.liked_game.checked,
-      body: String(values.body || '').trim() || null,
+      body: String(values.body || '').trim(),
     });
     if (error) {
       console.error('[Ludus] Falha ao publicar avaliação:', error);
