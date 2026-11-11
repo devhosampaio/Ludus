@@ -970,7 +970,7 @@ async function openProfileEditor(user, profile) {
   });
 }
 
-async function openReviewComposer(user, existingReview = null) {
+async function openReviewComposer(user, existingReview = null, preselectedGame = null) {
   const existing = app.querySelector('.composer-overlay');
   existing?.remove();
   const overlay = document.createElement('div');
@@ -980,8 +980,8 @@ async function openReviewComposer(user, existingReview = null) {
       <button class="composer__close" type="button" aria-label="Fechar" data-close>×</button>
       <p class="eyebrow">${existingReview ? 'SUA HISTÓRIA' : 'SUA PRÓXIMA HISTÓRIA'}</p>
       <h2 id="composer-title">${existingReview ? 'Editar avaliação' : 'Registrar um jogo'}<span>.</span></h2>
-      <label class="composer__label" for="game-search" ${existingReview ? 'hidden' : ''}>Qual jogo você jogou?</label>
-      <input class="composer__search" id="game-search" type="search" placeholder="Buscar pelo nome do jogo…" autocomplete="off" ${existingReview ? 'hidden disabled' : ''}>
+      <label class="composer__label" for="game-search" ${(existingReview || preselectedGame) ? 'hidden' : ''}>Qual jogo você jogou?</label>
+      <input class="composer__search" id="game-search" type="search" placeholder="Buscar pelo nome do jogo…" autocomplete="off" ${(existingReview || preselectedGame) ? 'hidden disabled' : ''}>
       <div class="composer__results" data-game-results aria-live="polite"></div>
       <div class="composer__selected" data-selected hidden></div>
       <form class="composer__form" data-review-form hidden>
@@ -1007,19 +1007,23 @@ async function openReviewComposer(user, existingReview = null) {
   const results = overlay.querySelector('[data-game-results]');
   const selected = overlay.querySelector('[data-selected]');
   const form = overlay.querySelector('[data-review-form]');
-  let selectedGame = existingReview ? { id: existingReview.game_id, ...(existingReview.games || {}) } : null;
+  let selectedGame = existingReview
+    ? { id: existingReview.game_id, ...(existingReview.games || {}) }
+    : preselectedGame ? { ...preselectedGame } : null;
   let timer;
-  if (existingReview) {
-    const game = existingReview.games || {};
+  if (existingReview || preselectedGame) {
+    const game = existingReview?.games || preselectedGame || {};
     selected.hidden = false;
     selected.innerHTML = (game.cover_url ? '<img src="' + escapeHTML(game.cover_url) + '" alt="">' : '<span class="composer__cover-empty">L.</span>') +
-      '<span><strong>' + escapeHTML(game.title || 'Jogo') + (game.release_year ? ' <small class="review-card__year">(' + escapeHTML(game.release_year) + ')</small>' : '') + '</strong><small>Jogo da avaliação</small></span>';
+      '<span><strong>' + escapeHTML(game.title || 'Jogo') + (game.release_year ? ' <small class="review-card__year">(' + escapeHTML(game.release_year) + ')</small>' : '') + '</strong><small>' + (existingReview ? 'Jogo da avaliação' : 'Jogo selecionado') + '</small></span>';
     form.hidden = false;
-    form.elements.rating.value = String(existingReview.rating);
-    form.elements.status.value = existingReview.status || 'playing';
-    form.elements.liked_game.checked = Boolean(existingReview.liked_game);
-    form.elements.body.value = existingReview.body || '';
-    form.querySelector('[type="submit"]').textContent = 'Salvar alterações ↗';
+    if (existingReview) {
+      form.elements.rating.value = String(existingReview.rating);
+      form.elements.status.value = existingReview.status || 'playing';
+      form.elements.liked_game.checked = Boolean(existingReview.liked_game);
+      form.elements.body.value = existingReview.body || '';
+      form.querySelector('[type="submit"]').textContent = 'Salvar alterações ↗';
+    }
   }
 
   const close = () => overlay.remove();
@@ -1107,7 +1111,9 @@ async function openReviewComposer(user, existingReview = null) {
       return;
     }
     close();
-    await renderSignedIn(user);
+    const gameRouteId = getGameIdFromLocation();
+    if (gameRouteId) await renderGamePage(user, gameRouteId);
+    else await renderSignedIn(user);
   });
 }
 
