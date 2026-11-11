@@ -52,7 +52,24 @@ Deno.serve(async (req: Request) => {
       }
       const result = await response.json();
       const games = Array.isArray(result.data) ? result.data.slice(0, 8) : [];
-      return json({ data: games });
+      const withArtwork = await Promise.all(games.map(async (game: { id: number; name: string; release_date?: number }) => {
+        let coverUrl: string | null = null;
+        try {
+          const artworkResponse = await fetch(
+            `https://www.steamgriddb.com/api/v2/grids/game/${game.id}?dimensions=600x900&types=static&limit=1`,
+            { headers: { Authorization: "Bearer " + apiKey } },
+          );
+          if (artworkResponse.ok) {
+            const artwork = await artworkResponse.json();
+            coverUrl = artwork.data?.[0]?.thumb ?? artwork.data?.[0]?.url ?? null;
+          }
+        } catch (artworkError) {
+          console.warn("[steamgriddb] Não foi possível carregar a capa:", game.id);
+        }
+        const releaseYear = game.release_date ? new Date(game.release_date * 1000).getUTCFullYear() : null;
+        return { ...game, cover_url: coverUrl, release_year: releaseYear };
+      }));
+      return json({ data: withArtwork });
     }
 
     if (action === "save") {
