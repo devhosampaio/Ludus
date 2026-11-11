@@ -681,3 +681,31 @@ button:disabled { cursor: wait; opacity: .65; }
 @media (max-width: 360px) {
   .notifications__trigger { width: 34px; height: 36px; }
 }
+
+
+/* Consistent vector icon system */
+.ui-icon {
+  display: inline-flex;
+  width: 17px;
+  height: 17px;
+  flex: 0 0 17px;
+  align-items: center;
+  justify-content: center;
+  vertical-align: -3px;
+  color: currentColor;
+}
+.ui-icon svg, svg.ui-icon {
+  display: block;
+  width: 100%;
+  height: 100%;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.ui-icon--heart { width: 15px; height: 15px; flex-basis: 15px; }
+.review-card__liked, .profile-review__liked { display: inline-flex; align-items: center; gap: 5px; }
+.side-nav__link .ui-icon { width: 18px; height: 18px; flex-basis: 18px; color: var(--color-secondary); }
+.side-nav__link .ui-icon svg { width: 18px; height: 18px; }
+.review-card__like .ui-icon { margin-right: 2px; }
