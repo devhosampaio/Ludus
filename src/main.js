@@ -49,15 +49,24 @@ async function setupNotifications(user) {
   const root = app.querySelector('[data-notifications]');
   if (!root) return;
 
-  if (notificationChannel) {
-    await supabase.removeChannel(notificationChannel);
-    notificationChannel = null;
-  }
-
   const panel = root.querySelector('[data-notifications-panel]');
   const toggleButton = root.querySelector('[data-notifications-toggle]');
   const list = root.querySelector('[data-notifications-list]');
   const badge = root.querySelector('[data-notification-count]');
+
+  toggleButton?.addEventListener('click', async (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    const opening = panel.hidden;
+    panel.hidden = !opening;
+    toggleButton.setAttribute('aria-expanded', String(opening));
+    if (opening) await root._refreshNotifications?.();
+  });
+
+  if (notificationChannel) {
+    await supabase.removeChannel(notificationChannel);
+    notificationChannel = null;
+  }
 
   const refresh = async () => {
     const { data, error } = await supabase.from('notifications')
@@ -214,6 +223,32 @@ async function renderSignedIn(user) {
       </main>
     </div>`;
 
+  const earlySearchWrap = app.querySelector('.header-search');
+  const earlySearchToggle = app.querySelector('[data-search-toggle]');
+  const earlySearchInput = app.querySelector('[data-header-search]');
+  const earlySearchResults = app.querySelector('[data-header-search-results]');
+  earlySearchToggle.addEventListener('click', (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    const opening = !earlySearchWrap.classList.contains('is-open');
+    earlySearchWrap.classList.toggle('is-open', opening);
+    earlySearchToggle.setAttribute('aria-expanded', String(opening));
+    if (opening) earlySearchInput.focus();
+    else {
+      earlySearchInput.value = '';
+      earlySearchResults.hidden = true;
+      earlySearchResults.innerHTML = '';
+    }
+  });
+  document.addEventListener('click', (event) => {
+    if (!earlySearchWrap.contains(event.target) && earlySearchWrap.classList.contains('is-open')) {
+      earlySearchWrap.classList.remove('is-open');
+      earlySearchToggle.setAttribute('aria-expanded', 'false');
+      earlySearchResults.hidden = true;
+    }
+  });
+  setupNotifications(user);
+
   const username = app.querySelector('[data-username]');
   const avatar = app.querySelector('[data-avatar]');
   username.textContent = fallbackName;
@@ -257,13 +292,6 @@ async function renderSignedIn(user) {
   const searchResults = app.querySelector('[data-header-search-results]');
   const searchWrap = app.querySelector('.header-search');
   const searchToggle = app.querySelector('[data-search-toggle]');
-  document.addEventListener('click', (event) => {
-    if (!searchWrap.contains(event.target) && searchWrap.classList.contains('is-open')) {
-      searchWrap.classList.remove('is-open');
-      searchToggle.setAttribute('aria-expanded', 'false');
-      searchResults.hidden = true;
-    }
-  });
   let searchTimer;
   headerSearch.addEventListener('input', () => {
     window.clearTimeout(searchTimer);
@@ -309,33 +337,9 @@ async function renderSignedIn(user) {
       searchResults.hidden = false;
     }, 220);
   });
-  searchToggle.addEventListener('click', (event) => {
-    event.preventDefault();
-    event.stopPropagation();
-    const isOpen = !searchWrap.classList.contains('is-open');
-    searchWrap.classList.toggle('is-open', isOpen);
-    searchToggle.setAttribute('aria-expanded', String(isOpen));
-    if (isOpen) {
-      headerSearch.focus();
-    } else {
-      headerSearch.value = '';
-      searchResults.hidden = true;
-      searchResults.innerHTML = '';
-    }
-  });
-
   const notificationRoot = app.querySelector('[data-notifications]');
   const notificationsButton = notificationRoot?.querySelector('[data-notifications-toggle]');
   const notificationPanel = notificationRoot?.querySelector('[data-notifications-panel]');
-  notificationsButton?.addEventListener('click', async (event) => {
-    event.preventDefault();
-    event.stopPropagation();
-    if (!notificationPanel) return;
-    const opening = notificationPanel.hidden;
-    notificationPanel.hidden = !opening;
-    notificationsButton.setAttribute('aria-expanded', String(opening));
-    if (opening) await notificationRoot._refreshNotifications?.();
-  });
 
   document.addEventListener('click', (event) => {
     if (!(event.target instanceof Element)) return;
@@ -388,8 +392,6 @@ async function renderSignedIn(user) {
     await renderProfilePage(user, routeUsername);
     return;
   }
-
-  setupNotifications(user);
 
   const feedList = app.querySelector('[data-feed-list]');
   const { data: reviews, error } = await fetchAllPages(() => supabase.from('reviews')
