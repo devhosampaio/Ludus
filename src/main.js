@@ -114,7 +114,7 @@ async function renderSignedIn(user) {
     const stars = '★'.repeat(review.rating) + '<span class="review-card__stars-muted">' + '★'.repeat(5 - review.rating) + '</span>';
     return '<article class="review-card">' + cover +
       '<div class="review-card__body"><div class="review-card__meta"><strong>' + escapeHTML(author) + '</strong><span>' + escapeHTML(handle) + '</span><time>' + formatDate(review.created_at) + '</time></div>' +
-      '<h3>' + escapeHTML(game) + (gameYear ? ' <small class="review-card__year">' + escapeHTML(gameYear) + '</small>' : '') + '</h3><div class="review-card__details"><span class="review-card__stars" aria-label="Nota ' + review.rating + ' de 5">' + stars + '</span>' +
+      '<h3>' + escapeHTML(game) + (gameYear ? ' <small class="review-card__year">(' + escapeHTML(gameYear) + ')</small>' : '') + '</h3><div class="review-card__details"><span class="review-card__stars" aria-label="Nota ' + review.rating + ' de 5">' + stars + '</span>' +
       (review.status ? '<span class="review-card__status">' + statusLabel(review.status) + '</span>' : '') +
       (review.liked_game ? '<span class="review-card__liked">♥ Gostei</span>' : '') + '</div>' +
       (review.body ? '<p class="review-card__text">' + escapeHTML(review.body) + '</p>' : '') + '</div></article>';
@@ -190,7 +190,7 @@ async function openReviewComposer(user) {
         const releaseYear = Number.isFinite(releaseDate) && releaseDate > 0
           ? new Date(releaseDate * 1000).getUTCFullYear() : null;
         return '<button class="composer__result" type="button" data-game-id="' + Number(game.id) + '" data-game-name="' + escapeHTML(game.name) + '" data-game-year="' + (releaseYear || '') + '">' +
-          '<span class="composer__result-info"><strong>' + escapeHTML(game.name) + '</strong><small>' + (releaseYear || 'Ano não informado') + '</small></span><span>Selecionar ↗</span></button>';
+          '<span class="composer__result-info"><strong>' + escapeHTML(game.name) + '</strong><small>(' + (releaseYear || 'Ano não informado') + ')</small></span><span>Selecionar ↗</span></button>';
       }).join('');
     }, 350);
   });
@@ -210,7 +210,7 @@ async function openReviewComposer(user) {
     results.innerHTML = '';
     selected.hidden = false;
     selected.innerHTML = (selectedGame.cover_url ? '<img src="' + escapeHTML(selectedGame.cover_url) + '" alt="">' : '<span class="composer__cover-empty">L.</span>') +
-      '<span><strong>' + escapeHTML(selectedGame.title) + '</strong><small>' + (selectedGame.release_year ? escapeHTML(selectedGame.release_year) + ' · ' : '') + 'Jogo selecionado</small></span>' +
+      '<span><strong>' + escapeHTML(selectedGame.title) + (selectedGame.release_year ? ' <small class="review-card__year">(' + escapeHTML(selectedGame.release_year) + ')</small>' : '') + '</strong><small>Jogo selecionado</small></span>' +
       '<button type="button" data-change-game>Trocar</button>';
     selected.querySelector('[data-change-game]').addEventListener('click', () => {
       selectedGame = null; selected.hidden = true; form.hidden = true; search.focus();
