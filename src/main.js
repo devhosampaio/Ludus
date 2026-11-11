@@ -18,6 +18,10 @@ function escapeHTML(value = '') {
   })[char]);
 }
 
+function profilePlaceholderMarkup() {
+  return '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4.1"></circle><path d="M4.5 21a7.5 7.5 0 0 1 15 0"></path></svg>';
+}
+
 function formatDate(value) {
   return new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'short' })
     .format(new Date(value)).replace('.', '');
@@ -220,7 +224,7 @@ async function renderSignedIn(user) {
   const username = app.querySelector('[data-username]');
   const avatar = app.querySelector('[data-avatar]');
   displayName.textContent = fallbackName;
-  avatar.textContent = fallbackName.trim().charAt(0).toUpperCase() || 'L';
+  avatar.innerHTML = profilePlaceholderMarkup();
 
   const profileResult = await supabase.from('profiles')
     .select('username, display_name, avatar_url, banner_url, bio')
@@ -229,7 +233,7 @@ async function renderSignedIn(user) {
   if (profileResult.data) {
     const fullName = profileResult.data.display_name || fallbackName;
     displayName.textContent = fullName.trim().split(/\s+/).slice(0, 2).join(' ');
-    username.textContent = '@' + profileResult.data.username;
+    username.textContent = profileResult.data.username;
     if (profileResult.data.avatar_url) {
       avatar.innerHTML = '<img src="' + escapeHTML(profileResult.data.avatar_url) + '" alt="">';
     }
@@ -279,8 +283,8 @@ async function renderSignedIn(user) {
       if (headerSearch.value.trim() !== query) return;
       const playerItems = (players.data || []).map((profile) =>
         '<button type="button" class="header-search__result" data-search-profile="' + escapeHTML(profile.username) + '">' +
-        (profile.avatar_url ? '<img src="' + escapeHTML(profile.avatar_url) + '" alt="">' : '<span class="header-search__avatar">L.</span>') +
-        '<span><strong>' + escapeHTML(profile.display_name || profile.username) + '</strong><small>@' + escapeHTML(profile.username) + '</small></span><em>JOGADOR</em></button>'
+        (profile.avatar_url ? '<img src="' + escapeHTML(profile.avatar_url) + '" alt="">' : '<span class="header-search__avatar">' + profilePlaceholderMarkup() + '</span>') +
+        '<span><strong>' + escapeHTML(profile.display_name || profile.username) + '</strong><small>' + escapeHTML(profile.username) + '</small></span><em>JOGADOR</em></button>'
       ).join('');
       const uniqueGames = [...new Set((games.data || []).map((game) => game.title))];
       const gameItems = uniqueGames.map((title) =>
@@ -385,7 +389,7 @@ async function renderSignedIn(user) {
 
     feedList.innerHTML = visibleReviews.map((review) => {
       const username = review.profiles?.username || 'jogador';
-      const author = '@' + username;
+      const author = username;
       const game = review.games?.title || 'Jogo';
       const gameYear = review.games?.release_year ? String(review.games.release_year) : '';
       const cover = '<div class="review-card__cover-wrap">' + (review.games?.cover_url
@@ -395,13 +399,18 @@ async function renderSignedIn(user) {
       const isLiked = likedReviewIds.has(review.id);
       const avatarMarkup = review.profiles?.avatar_url
         ? '<img src="' + escapeHTML(review.profiles.avatar_url) + '" alt="" loading="lazy">'
-        : '<span>' + escapeHTML(username.charAt(0).toUpperCase() || 'L') + '</span>';
-      return '<article class="review-card" data-review-id="' + review.id + '">' + cover +
-        '<div class="review-card__body"><div class="review-card__meta"><button class="review-card__author" type="button" data-profile-username="' + escapeHTML(username) + '"><span class="review-card__author-avatar">' + avatarMarkup + '</span><span>' + escapeHTML(author) + '</span></button><time>' + formatDate(review.created_at) + '</time></div>' +
+        : profilePlaceholderMarkup();
+      const isOwner = review.user_id === user.id;
+      const menuMarkup = '<details class="review-menu"><summary aria-label="Mais opções da review" title="Mais opções"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="5" cy="12" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="19" cy="12" r="1.6"></circle></svg></summary><div class="review-menu__panel">' +
+        (isOwner ? '<button type="button" data-review-action="edit">Editar review</button><button type="button" class="is-danger" data-review-action="delete">Excluir review</button>' : '') +
+        '<button type="button" data-review-action="report">Denunciar review</button></div></details>';
+      const socialActions = '<div class="review-card__social-actions"><button class="review-card__like' + (isLiked ? ' is-liked' : '') + '" type="button" data-like-review aria-pressed="' + isLiked + '"><svg class="ui-icon ui-icon--heart" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" stroke="none" d="M12 21s-8.8-5.9-8.8-12.2A4.8 4.8 0 0 1 12 6.4a4.8 4.8 0 0 1 8.8 2.4C20.8 15.1 12 21 12 21Z"></path></svg><span data-like-label>Curtir review</span></button><span class="review-card__like-count" data-like-count>' + (likeCounts[review.id] || 0) + '</span><button class="review-card__comments-toggle" type="button" data-comments-toggle aria-expanded="false"><svg class="ui-icon ui-icon--comment" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" stroke="none" d="M4 3.5h16A2.5 2.5 0 0 1 22.5 6v9a2.5 2.5 0 0 1-2.5 2.5h-8l-5.8 4v-4H4A2.5 2.5 0 0 1 1.5 15V6A2.5 2.5 0 0 1 4 3.5Z"></path></svg><span>Comentar review</span></button><span class="review-card__comment-count" data-comment-count>' + (commentCounts[review.id] || 0) + '</span></div>';
+      return '<article class="review-card" data-review-id="' + review.id + '">' +
+        '<div class="review-card__cover-column">' + cover + '<div class="review-card__actions">' + socialActions + '</div></div>' +
+        '<div class="review-card__body"><div class="review-card__meta"><button class="review-card__author" type="button" data-profile-username="' + escapeHTML(username) + '"><span class="review-card__author-avatar">' + avatarMarkup + '</span><span>' + escapeHTML(author) + '</span></button><time>' + formatDate(review.created_at) + '</time></div>' + menuMarkup +
         '<h3>' + escapeHTML(game) + (gameYear ? ' <small class="review-card__year">' + escapeHTML(gameYear) + '</small>' : '') + '</h3><div class="review-card__details"><span class="review-card__stars" aria-label="Nota ' + review.rating + ' de 5">' + stars + '</span>' +
         (review.status ? '<span class="review-card__status">' + statusLabel(review.status) + '</span>' : '') +
-        (review.liked_game ? '<span class="review-card__liked"><svg class="ui-icon ui-icon--heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 8.8c0 5.1-8.8 11-8.8 11s-8.8-5.9-8.8-11A4.8 4.8 0 0 1 12 6.4a4.8 4.8 0 0 1 8.8 2.4Z"></path></svg> Gostei</span>' : '') + '</div>' +
-        '<div class="review-card__actions">' + (review.user_id === user.id ? '<button class="review-card__edit" type="button" data-edit-review>Editar</button>' : '') + '<div class="review-card__social-actions"><button class="review-card__like' + (isLiked ? ' is-liked' : '') + '" type="button" data-like-review aria-pressed="' + isLiked + '"><svg class="ui-icon ui-icon--heart" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" stroke="none" d="M12 21s-8.8-5.9-8.8-12.2A4.8 4.8 0 0 1 12 6.4a4.8 4.8 0 0 1 8.8 2.4C20.8 15.1 12 21 12 21Z"></path></svg><span data-like-label>Curtir review</span></button><span class="review-card__like-count" data-like-count>' + (likeCounts[review.id] || 0) + '</span><button class="review-card__comments-toggle" type="button" data-comments-toggle aria-expanded="false"><svg class="ui-icon ui-icon--comment" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" stroke="none" d="M4 3.5h16A2.5 2.5 0 0 1 22.5 6v9a2.5 2.5 0 0 1-2.5 2.5h-8l-5.8 4v-4H4A2.5 2.5 0 0 1 1.5 15V6A2.5 2.5 0 0 1 4 3.5Z"></path></svg><span>Comentar review</span></button><span class="review-card__comment-count" data-comment-count>' + (commentCounts[review.id] || 0) + '</span></div></div><section class="review-comments" data-comments-panel hidden></section></div>' +
+        (review.liked_game ? '<span class="review-card__liked"><svg class="ui-icon ui-icon--heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 8.8c0 5.1-8.8 11-8.8 11s-8.8-5.9-8.8-11A4.8 4.8 0 0 1 12 6.4a4.8 4.8 0 0 1 8.8 2.4Z"></path></svg> Gostei</span>' : '') + '</div><section class="review-comments" data-comments-panel hidden></section></div>' +
         (review.body ? '<p class="review-card__text">' + escapeHTML(review.body) + '</p>' : '') + '</article>';
     }).join('');
   };
@@ -438,6 +447,48 @@ async function renderSignedIn(user) {
   });
 
   feedList.addEventListener('click', async (event) => {
+    const reviewAction = event.target.closest('[data-review-action]');
+    if (reviewAction) {
+      const card = reviewAction.closest('[data-review-id]');
+      const review = reviews.find((item) => item.id === card?.dataset.reviewId);
+      const action = reviewAction.dataset.reviewAction;
+      const menu = reviewAction.closest('.review-menu');
+      if (!review || !card) return;
+      menu.open = false;
+      if (action === 'edit' && review.user_id === user.id) {
+        openReviewComposer(user, review);
+      } else if (action === 'delete' && review.user_id === user.id) {
+        if (!window.confirm('Tem certeza de que deseja excluir esta review? Essa ação não pode ser desfeita.')) return;
+        reviewAction.disabled = true;
+        const { error: deleteError } = await supabase.from('reviews').delete().eq('id', review.id).eq('user_id', user.id);
+        if (deleteError) {
+          console.error('[Ludus] Falha ao excluir review:', deleteError);
+          reviewAction.disabled = false;
+          window.alert('Não foi possível excluir a review. Tente novamente.');
+          return;
+        }
+        const index = reviews.findIndex((item) => item.id === review.id);
+        if (index >= 0) reviews.splice(index, 1);
+        card.remove();
+      } else if (action === 'report' && review.user_id !== user.id) {
+        const reason = window.prompt('Por que deseja denunciar esta review?\\n1 — Spam\\n2 — Assédio ou discurso de ódio\\n3 — Spoiler sem aviso\\n4 — Conteúdo impróprio\\n5 — Outro');
+        if (reason === null) return;
+        const reasons = { '1': 'spam', '2': 'harassment', '3': 'spoiler', '4': 'inappropriate', '5': 'other' };
+        if (!reasons[reason.trim()]) { window.alert('Escolha uma opção de 1 a 5.'); return; }
+        const details = window.prompt('Deseja adicionar algum detalhe? (opcional)') || '';
+        const { error: reportError } = await supabase.from('review_reports').insert({
+          reporter_id: user.id, review_id: review.id, reason: reasons[reason.trim()], details: details.slice(0, 1000)
+        });
+        if (reportError) {
+          console.error('[Ludus] Falha ao denunciar review:', reportError);
+          window.alert(reportError.code === '23505' ? 'Você já denunciou esta review.' : 'Não foi possível enviar a denúncia. Tente novamente.');
+          return;
+        }
+        window.alert('Denúncia enviada. Obrigado por ajudar a manter a comunidade segura.');
+      }
+      return;
+    }
+
     const profileButton = event.target.closest('[data-profile-username]');
     if (profileButton?.dataset.profileUsername) {
       navigateToProfile(user, profileButton.dataset.profileUsername);
@@ -471,13 +522,6 @@ async function renderSignedIn(user) {
       await loadReviewComments(user, card);
       const count = card.querySelector('[data-comment-count]');
       count.textContent = String(Math.max(0, Number(count.textContent) - 1));
-      return;
-    }
-    const editButton = event.target.closest('[data-edit-review]');
-    if (editButton) {
-      const card = editButton.closest('[data-review-id]');
-      const review = reviews.find((item) => item.id === card?.dataset.reviewId);
-      if (review && review.user_id === user.id) openReviewComposer(user, review);
       return;
     }
     const button = event.target.closest('[data-like-review]');
@@ -671,7 +715,7 @@ async function openProfileEditor(user, profile) {
       <h2 id="profile-editor-title">Editar perfil<span>.</span></h2>
       <form class="profile-editor__form" data-profile-form>
         <label class="profile-editor__field"><span>Nome de exibição</span><input name="display_name" type="text" maxlength="60" required value="${escapeHTML(profile.display_name || '')}"></label>
-        <label class="profile-editor__field"><span>Nome de usuário</span><div class="profile-editor__username"><b>@</b><input name="username" type="text" minlength="3" maxlength="16" pattern="[A-Za-z0-9._-]+" required value="${escapeHTML(profile.username || '')}" autocomplete="username"></div><small>Utilize letras, números e caracteres especiais</small></label>
+        <label class="profile-editor__field"><span>Nome de usuário</span><div class="profile-editor__username"><input name="username" type="text" minlength="3" maxlength="16" pattern="[A-Za-z0-9._-]+" required value="${escapeHTML(profile.username || '')}" autocomplete="username"></div><small>Utilize letras, números e caracteres especiais</small></label>
         <label class="profile-editor__field"><span>Biografia</span><textarea name="bio" maxlength="240" rows="3" placeholder="Conte um pouco sobre você…">${escapeHTML(profile.bio || '')}</textarea><small>Até 240 caracteres</small></label>
         <div class="profile-editor__uploads">
           <label class="profile-editor__upload"><span>Foto de perfil</span><div class="profile-editor__preview profile-editor__preview--avatar" data-avatar-preview>${profile.avatar_url ? '<img src="' + escapeHTML(profile.avatar_url) + '" alt="">' : '<span>' + escapeHTML((profile.display_name || profile.username || 'L').charAt(0).toUpperCase()) + '</span>'}</div><input type="file" name="avatar" accept="image/png,image/jpeg,image/webp,image/gif"><small>PNG, JPG, WEBP ou GIF · até 5 MB</small></label>
@@ -915,7 +959,7 @@ function renderAuth(mode = 'login') {
     '<button class="auth-tabs__button ' + (!isSignup ? 'is-active' : '') + '" type="button" data-mode="login">Entrar</button>',
     '<button class="auth-tabs__button ' + (isSignup ? 'is-active' : '') + '" type="button" data-mode="signup">Criar conta</button></div>',
     '<form class="auth-form" id="auth-form">' + fields,
-    '<label class="field"><span>' + (isSignup ? 'E-mail' : 'E-mail ou nome de usuário') + '</span><input name="' + (isSignup ? 'email' : 'identifier') + '" type="' + (isSignup ? 'email' : 'text') + '" placeholder="' + (isSignup ? 'voce@email.com' : 'E-mail ou @usuário') + '" autocomplete="' + (isSignup ? 'email' : 'username') + '" required></label>',
+    '<label class="field"><span>' + (isSignup ? 'E-mail' : 'E-mail ou nome de usuário') + '</span><input name="' + (isSignup ? 'email' : 'identifier') + '" type="' + (isSignup ? 'email' : 'text') + '" placeholder="' + (isSignup ? 'voce@email.com' : 'E-mail ou usuário') + '" autocomplete="' + (isSignup ? 'email' : 'username') + '" required></label>',
     '<label class="field"><span>Senha</span><div class="password-field"><input name="password" type="password" minlength="6" placeholder="Mínimo de 6 caracteres" autocomplete="' + passwordAutocomplete + '" required><button class="password-toggle" type="button" data-password-toggle aria-label="Mostrar senha" title="Mostrar senha"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button></div></label>',
     (!isSignup ? '<button class="text-button" type="button" data-reset>Esqueceu sua senha?</button>' : ''),
     (isSignup ? '<div class="auth-consents"><label class="auth-consent"><input type="checkbox" name="age_confirmed" required><span>Tenho mais de 16 anos</span></label><label class="auth-consent"><input type="checkbox" name="terms_accepted" required><span>Concordo com os <button class="terms-link" type="button" data-terms-open>termos de serviço</button></span></label></div>' : ''),
