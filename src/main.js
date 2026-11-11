@@ -750,7 +750,7 @@ async function openReviewComposer(user, existingReview = null) {
 function renderAuth(mode = 'login') {
   const isSignup = mode === 'signup';
   const fields = isSignup
-    ? '<label class="field"><span>Nome de usuário</span><input name="username" type="text" minlength="3" maxlength="16" pattern="[A-Za-z0-9._-]+" placeholder="seu.nome" autocomplete="username" required><small>3 a 16 caracteres. Use letras, números, pontos, _ ou -</small></label><label class="field"><span>Como podemos chamar você?</span><input name="displayName" type="text" maxlength="60" placeholder="Seu nome" autocomplete="name" required></label>'
+    ? '<label class="field"><span>Nome de usuário</span><input name="username" type="text" minlength="3" maxlength="16" pattern="[A-Za-z0-9._-]+" placeholder="seu.nome" autocomplete="username" required><small>Utilize letras, números e caracteres especiais</small></label><label class="field"><span>Como podemos chamar você?</span><input name="displayName" type="text" maxlength="60" placeholder="Seu nome" autocomplete="name" required></label>'
     : '';
   const passwordAutocomplete = isSignup ? 'new-password' : 'current-password';
 
@@ -769,18 +769,52 @@ function renderAuth(mode = 'login') {
     '<button class="auth-tabs__button ' + (!isSignup ? 'is-active' : '') + '" type="button" data-mode="login">Entrar</button>',
     '<button class="auth-tabs__button ' + (isSignup ? 'is-active' : '') + '" type="button" data-mode="signup">Criar conta</button></div>',
     '<form class="auth-form" id="auth-form">' + fields,
-    '<label class="field"><span>E-mail</span><input name="email" type="email" placeholder="voce@email.com" autocomplete="email" required></label>',
-    '<label class="field"><span>Senha</span><input name="password" type="password" minlength="6" placeholder="Mínimo de 6 caracteres" autocomplete="' + passwordAutocomplete + '" required></label>',
+    '<label class="field"><span>' + (isSignup ? 'E-mail' : 'E-mail ou nome de usuário') + '</span><input name="' + (isSignup ? 'email' : 'identifier') + '" type="' + (isSignup ? 'email' : 'text') + '" placeholder="' + (isSignup ? 'voce@email.com' : 'E-mail ou @usuário') + '" autocomplete="' + (isSignup ? 'email' : 'username') + '" required></label>',
+    '<label class="field"><span>Senha</span><div class="password-field"><input name="password" type="password" minlength="6" placeholder="Mínimo de 6 caracteres" autocomplete="' + passwordAutocomplete + '" required><button class="password-toggle" type="button" data-password-toggle aria-label="Mostrar senha" title="Mostrar senha"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button></div></label>',
+    (isSignup ? '<label class="field"><span>Confirme sua senha</span><div class="password-field"><input name="confirmPassword" type="password" minlength="6" placeholder="Digite a senha novamente" autocomplete="new-password" required><button class="password-toggle" type="button" data-password-toggle aria-label="Mostrar senha" title="Mostrar senha"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button></div></label>' : ''),
     (!isSignup ? '<button class="text-button" type="button" data-reset>Esqueceu sua senha?</button>' : ''),
-    (isSignup ? '<div class="auth-consents"><label class="auth-consent"><input type="checkbox" name="age_confirmed" required><span>Tenho mais de 16 anos</span></label><label class="auth-consent"><input type="checkbox" name="terms_accepted" required><span>Concordo com os termos de serviço</span></label></div>' : ''),
+    (isSignup ? '<div class="auth-consents"><label class="auth-consent"><input type="checkbox" name="age_confirmed" required><span>Tenho mais de 16 anos</span></label><label class="auth-consent"><input type="checkbox" name="terms_accepted" required><span>Concordo com os <button class="terms-link" type="button" data-terms-open>termos de serviço</button></span></label></div>' : ''),
     '<button class="submit-button" type="submit">' + (isSignup ? 'Criar minha conta <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/><path d="m13 5 6 7-6 7"/></svg>' : 'Entrar <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3h5a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-5"/><path d="M3 12h12m-5-5 5 5-5 5"/></svg>') + '</button>',
     '<p class="form-message" data-message role="status" aria-live="polite" hidden></p></form>',
+    '<div class="terms-modal" data-terms-modal hidden><div class="terms-modal__backdrop" data-terms-close></div><section class="terms-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="terms-title"><button class="terms-modal__close" type="button" data-terms-close aria-label="Fechar">×</button><p class="eyebrow">LUDUS · COMUNIDADE</p><h3 id="terms-title">Termos de serviço</h3><p>Este é um texto provisório. Os termos oficiais de serviço do Ludus ainda serão publicados.</p><p>Ao utilizar a plataforma, esperamos que todas as pessoas tratem a comunidade com respeito, não publiquem conteúdo ilegal ou ofensivo e respeitem os direitos de terceiros.</p><p>As funcionalidades, regras de convivência, privacidade e condições de uso serão detalhadas nesta página quando os termos oficiais forem definidos.</p><p class="terms-modal__note">VERSÃO PLACEHOLDER — NÃO É O TEXTO FINAL</p></section></div>',
     '</div></section></main>'
   ].join('');
 
   app.querySelectorAll('[data-mode]').forEach((button) => {
     button.addEventListener('click', () => renderAuth(button.dataset.mode));
   });
+
+  app.querySelectorAll('[data-password-toggle]').forEach((button) => {
+    const input = button.parentElement.querySelector('input');
+    const updateVisibility = () => {
+      button.hidden = document.activeElement !== input;
+    };
+    input.addEventListener('focus', () => { button.hidden = false; });
+    input.addEventListener('blur', () => { window.setTimeout(updateVisibility, 120); });
+    button.addEventListener('mousedown', (event) => event.preventDefault());
+    button.addEventListener('click', () => {
+      const reveal = input.type === 'password';
+      input.type = reveal ? 'text' : 'password';
+      button.classList.toggle('is-visible', reveal);
+      button.setAttribute('aria-label', reveal ? 'Ocultar senha' : 'Mostrar senha');
+      button.title = reveal ? 'Ocultar senha' : 'Mostrar senha';
+      input.focus();
+    });
+    button.hidden = true;
+  });
+
+  const termsModal = app.querySelector('[data-terms-modal]');
+  app.querySelector('[data-terms-open]')?.addEventListener('click', () => {
+    termsModal.hidden = false;
+    termsModal.querySelector('[data-terms-close]').focus();
+  });
+  termsModal?.querySelectorAll('[data-terms-close]').forEach((button) => {
+    button.addEventListener('click', () => { termsModal.hidden = true; });
+  });
+  termsModal?.querySelector('.terms-modal__dialog')?.addEventListener('click', (event) => event.stopPropagation());
+  document.addEventListener('keydown', function closeTermsOnEscape(event) {
+    if (event.key === 'Escape' && termsModal && !termsModal.hidden) termsModal.hidden = true;
+  }, { once: true });
 
   app.querySelector('#auth-form').addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -793,25 +827,31 @@ function renderAuth(mode = 'login') {
 
     try {
       if (isSignup) {
+        if (values.password !== values.confirmPassword) {
+          throw new Error('As senhas não coincidem.');
+        }
         const result = await signUp(values);
         if (result.session?.user) renderSignedIn(result.user);
         else showMessage('Cadastro recebido! Confira seu e-mail para confirmar a conta.', 'success');
       } else {
-        const result = await signIn(values);
+        const identifier = values.identifier.trim();
+        const result = identifier.includes('@')
+          ? await signIn({ email: identifier, password: values.password })
+          : await signInWithUsername({ username: identifier.replace(/^@/, ''), password: values.password });
         renderSignedIn(result.user);
       }
     } catch (error) {
       showMessage(error.message || 'Não foi possível concluir. Tente novamente.', 'error');
       submit.disabled = false;
-      submit.textContent = isSignup ? 'Criar minha conta ↗' : 'Entrar ↗';
+      submit.innerHTML = isSignup ? 'Criar minha conta <span aria-hidden="true">＋</span>' : 'Entrar <span aria-hidden="true">↗</span>';
     }
   });
 
   const resetButton = app.querySelector('[data-reset]');
   resetButton?.addEventListener('click', async () => {
-    const email = app.querySelector('[name="email"]').value.trim();
-    if (!email) {
-      showMessage('Informe seu e-mail acima para receber o link de recuperação.', 'error');
+    const email = app.querySelector('[name="identifier"]').value.trim();
+    if (!email || !email.includes('@')) {
+      showMessage('Informe seu e-mail para receber o link de recuperação.', 'error');
       return;
     }
     resetButton.disabled = true;
