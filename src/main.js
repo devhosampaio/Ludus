@@ -107,13 +107,14 @@ async function renderSignedIn(user) {
     const author = review.profiles?.display_name || review.profiles?.username || 'jogador';
     const handle = review.profiles?.username ? '@' + review.profiles.username : '';
     const game = review.games?.title || 'Jogo';
+    const gameYear = review.games?.release_year ? String(review.games.release_year) : '';
     const cover = review.games?.cover_url
       ? '<img class="review-card__cover" src="' + escapeHTML(review.games.cover_url) + '" alt="Capa de ' + escapeHTML(game) + '" loading="lazy">'
       : '<div class="review-card__cover review-card__cover--empty">L<span>.</span></div>';
     const stars = '★'.repeat(review.rating) + '<span class="review-card__stars-muted">' + '★'.repeat(5 - review.rating) + '</span>';
     return '<article class="review-card">' + cover +
       '<div class="review-card__body"><div class="review-card__meta"><strong>' + escapeHTML(author) + '</strong><span>' + escapeHTML(handle) + '</span><time>' + formatDate(review.created_at) + '</time></div>' +
-      '<h3>' + escapeHTML(game) + '</h3><div class="review-card__details"><span class="review-card__stars" aria-label="Nota ' + review.rating + ' de 5">' + stars + '</span>' +
+      '<h3>' + escapeHTML(game) + (gameYear ? ' <small class="review-card__year">' + escapeHTML(gameYear) + '</small>' : '') + '</h3><div class="review-card__details"><span class="review-card__stars" aria-label="Nota ' + review.rating + ' de 5">' + stars + '</span>' +
       (review.status ? '<span class="review-card__status">' + statusLabel(review.status) + '</span>' : '') +
       (review.liked_game ? '<span class="review-card__liked">♥ Gostei</span>' : '') + '</div>' +
       (review.body ? '<p class="review-card__text">' + escapeHTML(review.body) + '</p>' : '') + '</div></article>';
@@ -184,10 +185,13 @@ async function openReviewComposer(user) {
         return;
       }
       if (!data?.data?.length) { results.innerHTML = '<p class="composer__hint">Nenhum jogo encontrado. Tente outro nome.</p>'; return; }
-      results.innerHTML = data.data.map((game) =>
-        '<button class="composer__result" type="button" data-game-id="' + Number(game.id) + '" data-game-name="' + escapeHTML(game.name) + '">' +
-        '<span>' + escapeHTML(game.name) + '</span><span>Selecionar ↗</span></button>'
-      ).join('');
+      results.innerHTML = data.data.map((game) => {
+        const releaseDate = Number(game.release_date);
+        const releaseYear = Number.isFinite(releaseDate) && releaseDate > 0
+          ? new Date(releaseDate * 1000).getUTCFullYear() : null;
+        return '<button class="composer__result" type="button" data-game-id="' + Number(game.id) + '" data-game-name="' + escapeHTML(game.name) + '" data-game-year="' + (releaseYear || '') + '">' +
+          '<span class="composer__result-info"><strong>' + escapeHTML(game.name) + '</strong><small>' + (releaseYear || 'Ano não informado') + '</small></span><span>Selecionar ↗</span></button>';
+      }).join('');
     }, 350);
   });
 
@@ -196,7 +200,7 @@ async function openReviewComposer(user) {
     if (!button) return;
     results.innerHTML = '<p class="composer__hint">Preparando jogo…</p>';
     const { data, error } = await supabase.functions.invoke('steamgriddb', {
-      body: { action: 'save', game: { id: Number(button.dataset.gameId), name: button.dataset.gameName } }
+      body: { action: 'save', game: { id: Number(button.dataset.gameId), name: button.dataset.gameName, release_year: Number(button.dataset.gameYear) || null } }
     });
     if (error || data?.error || !data?.game) {
       results.innerHTML = '<p class="composer__hint">' + escapeHTML(data?.error || 'Não foi possível selecionar esse jogo.') + '</p>';
@@ -206,7 +210,7 @@ async function openReviewComposer(user) {
     results.innerHTML = '';
     selected.hidden = false;
     selected.innerHTML = (selectedGame.cover_url ? '<img src="' + escapeHTML(selectedGame.cover_url) + '" alt="">' : '<span class="composer__cover-empty">L.</span>') +
-      '<span><strong>' + escapeHTML(selectedGame.title) + '</strong><small>Jogo selecionado</small></span>' +
+      '<span><strong>' + escapeHTML(selectedGame.title) + '</strong><small>' + (selectedGame.release_year ? escapeHTML(selectedGame.release_year) + ' · ' : '') + 'Jogo selecionado</small></span>' +
       '<button type="button" data-change-game>Trocar</button>';
     selected.querySelector('[data-change-game]').addEventListener('click', () => {
       selectedGame = null; selected.hidden = true; form.hidden = true; search.focus();
