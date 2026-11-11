@@ -2050,3 +2050,22 @@ button:disabled { cursor: wait; opacity: .65; }
     height: 22px;
   }
 }
+
+
+/* Ajustes finais do feed: curtida roxa sem fundo e título discreto */
+.review-card > .review-card__actions .review-card__like,
+.review-card > .review-card__actions .review-card__like:hover,
+.review-card > .review-card__actions .review-card__like.is-liked {
+  border: 0 !important;
+  background: transparent !important;
+}
+.review-card > .review-card__actions .review-card__like.is-liked,
+.review-card > .review-card__actions .review-card__like.is-liked > svg {
+  color: #7060ab !important;
+}
+.section-heading h2 {
+  font-size: 18px;
+  font-weight: 300;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
