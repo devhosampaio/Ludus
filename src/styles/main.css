@@ -351,3 +351,8 @@ button:disabled { cursor: wait; opacity: .65; }
 .review-card__edit:hover { color: var(--color-surface); }
 
 .review-card__edit:focus-visible, .review-card__like:focus-visible { outline: 2px solid var(--color-secondary); outline-offset: 4px; }
+
+
+/* Ação de edição visível e confortável também em telas pequenas */
+.review-card__edit { display: inline-flex; align-items: center; min-height: 36px; cursor: pointer; font-weight: 600; }
+.review-card__edit:active { opacity: .75; }
