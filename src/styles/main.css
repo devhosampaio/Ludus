@@ -1116,3 +1116,22 @@ button:disabled { cursor: wait; opacity: .65; }
   .sidebar__bottom { display: flex !important; }
   .account-menu__panel { top: calc(100% + 10px); right: 0; }
 }
+
+
+/* Native account menu: details/summary for dependable click behavior */
+.account-menu { position: relative; }
+.account-menu > summary { list-style: none; }
+.account-menu > summary::-webkit-details-marker { display: none; }
+.account-menu > summary::marker { content: ""; }
+.account-menu[open] .account-menu__panel {
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  transform: translateY(0) !important;
+}
+.account-menu:not([open]) .account-menu__panel {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+.account-menu[open] .sidebar-user__chevron { transform: rotate(180deg); }
