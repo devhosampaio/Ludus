@@ -2361,3 +2361,20 @@ button:disabled { cursor: wait; opacity: .65; }
 .header-search.is-open {
   z-index: 32;
 }
+
+
+/* Mantém o controle de notificações acima da área expansível da busca */
+.header-actions .notifications {
+  position: relative;
+  z-index: 40;
+  flex: 0 0 auto;
+}
+.header-actions .notifications__trigger {
+  position: relative;
+  z-index: 41;
+  pointer-events: auto;
+  touch-action: manipulation;
+}
+.header-actions .notifications__panel {
+  z-index: 42;
+}
