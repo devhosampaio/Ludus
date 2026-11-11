@@ -165,6 +165,10 @@ async function renderSignedIn(user) {
           <input type="search" data-header-search placeholder="Buscar jogos ou jogadores..." autocomplete="off" aria-label="Buscar jogos ou jogadores">
           <div class="header-search__results" data-header-search-results hidden></div>
         </div>
+        <div class="header-actions">
+          <button class="record-button" type="button" data-open-composer>+ Registrar jogo</button>
+          ${notificationControlMarkup()}
+        </div>
         <div class="sidebar__bottom">
           <details class="account-menu" data-account-details>
             <summary class="sidebar-user" data-account-menu>
@@ -182,14 +186,6 @@ async function renderSignedIn(user) {
         </div>
       </header>
       <main class="feed-main">
-        <header class="feed-topbar">
-          <div><p class="eyebrow" data-today></p><h1>Seu universo de jogos<span>.</span></h1></div>
-          <div class="feed-topbar__actions">${notificationControlMarkup()}<button class="record-button" type="button" data-open-composer>+ Registrar jogo</button><div class="feed-topbar__mark">LUDUS <span>01 / FEED</span></div></div>
-        </header>
-        <section class="feed-welcome">
-          <div><p class="eyebrow">BEM-VINDO AO LUDUS</p><h2>Todo jogo deixa<br>uma <em>história.</em></h2><p>Um espaço para registrar o que você joga e descobrir o que move outras pessoas.</p></div>
-          <div class="feed-welcome__symbol" aria-hidden="true">L<span>.</span></div>
-        </section>
         <section class="feed-content" aria-label="Atividade da comunidade">
           <div class="section-heading"><div><p class="eyebrow">DA COMUNIDADE</p><h2>Atividade recente</h2></div><span class="section-heading__index">01 — 20</span></div>
           <div class="feed-list" data-feed-list><div class="feed-loading">Carregando as histórias da comunidade…</div></div>
@@ -198,7 +194,6 @@ async function renderSignedIn(user) {
     </div>`;
 
   app.querySelector('[data-open-composer]').addEventListener('click', () => openReviewComposer(user));
-  app.querySelector('[data-today]').textContent = new Intl.DateTimeFormat('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' }).format(new Date()).toUpperCase();
   const displayName = app.querySelector('[data-display-name]');
   const username = app.querySelector('[data-username]');
   const avatar = app.querySelector('[data-avatar]');
