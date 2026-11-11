@@ -497,7 +497,7 @@ async function renderSignedIn(user) {
     count.textContent = String(Math.max(0, Number(count.textContent) + (nextLiked ? 1 : -1)));
     button.setAttribute('aria-pressed', String(nextLiked));
     button.classList.toggle('is-liked', nextLiked);
-    button.querySelector('[data-like-label]').textContent = nextLiked ? 'Curtido' : 'Curtir';
+    button.querySelector('[data-like-label]').textContent = 'Curtir review';
     button.disabled = false;
   });
 }
