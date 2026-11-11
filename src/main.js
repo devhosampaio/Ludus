@@ -771,7 +771,6 @@ function renderAuth(mode = 'login') {
     '<form class="auth-form" id="auth-form">' + fields,
     '<label class="field"><span>' + (isSignup ? 'E-mail' : 'E-mail ou nome de usuário') + '</span><input name="' + (isSignup ? 'email' : 'identifier') + '" type="' + (isSignup ? 'email' : 'text') + '" placeholder="' + (isSignup ? 'voce@email.com' : 'E-mail ou @usuário') + '" autocomplete="' + (isSignup ? 'email' : 'username') + '" required></label>',
     '<label class="field"><span>Senha</span><div class="password-field"><input name="password" type="password" minlength="6" placeholder="Mínimo de 6 caracteres" autocomplete="' + passwordAutocomplete + '" required><button class="password-toggle" type="button" data-password-toggle aria-label="Mostrar senha" title="Mostrar senha"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button></div></label>',
-    (isSignup ? '<label class="field"><span>Confirme sua senha</span><div class="password-field"><input name="confirmPassword" type="password" minlength="6" placeholder="Digite a senha novamente" autocomplete="new-password" required><button class="password-toggle" type="button" data-password-toggle aria-label="Mostrar senha" title="Mostrar senha"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button></div></label>' : ''),
     (!isSignup ? '<button class="text-button" type="button" data-reset>Esqueceu sua senha?</button>' : ''),
     (isSignup ? '<div class="auth-consents"><label class="auth-consent"><input type="checkbox" name="age_confirmed" required><span>Tenho mais de 16 anos</span></label><label class="auth-consent"><input type="checkbox" name="terms_accepted" required><span>Concordo com os <button class="terms-link" type="button" data-terms-open>termos de serviço</button></span></label></div>' : ''),
     '<button class="submit-button" type="submit">' + (isSignup ? 'Criar minha conta <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/><path d="m13 5 6 7-6 7"/></svg>' : 'Entrar <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3h5a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-5"/><path d="M3 12h12m-5-5 5 5-5 5"/></svg>') + '</button>',
@@ -829,9 +828,6 @@ function renderAuth(mode = 'login') {
 
     try {
       if (isSignup) {
-        if (values.password !== values.confirmPassword) {
-          throw new Error('As senhas não coincidem.');
-        }
         const result = await signUp(values);
         if (result.session?.user) renderSignedIn(result.user);
         else showMessage('Cadastro recebido! Confira seu e-mail para confirmar a conta.', 'success');
