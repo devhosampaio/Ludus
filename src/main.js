@@ -88,7 +88,7 @@ async function renderSignedIn(user) {
 
   const feedList = app.querySelector('[data-feed-list]');
   const { data: reviews, error } = await supabase.from('reviews')
-    .select('id, rating, body, status, liked_game, created_at, profiles(username, display_name, avatar_url), games(title, cover_url, release_year, developer)')
+    .select('id, rating, body, status, liked_game, created_at, profiles!reviews_user_id_fkey(username, display_name, avatar_url), games!reviews_game_id_fkey(title, cover_url, release_year, developer)')
     .order('created_at', { ascending: false }).limit(20);
 
   if (error) {
