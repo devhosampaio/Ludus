@@ -384,8 +384,8 @@ async function renderSignedIn(user) {
     }
 
     feedList.innerHTML = visibleReviews.map((review) => {
-      const author = review.profiles?.display_name || review.profiles?.username || 'jogador';
-      const handle = review.profiles?.username ? '@' + review.profiles.username : '';
+      const username = review.profiles?.username || 'jogador';
+      const author = '@' + username;
       const game = review.games?.title || 'Jogo';
       const gameYear = review.games?.release_year ? String(review.games.release_year) : '';
       const cover = '<div class="review-card__cover-wrap">' + (review.games?.cover_url
@@ -394,8 +394,8 @@ async function renderSignedIn(user) {
       const stars = '★'.repeat(review.rating) + '<span class="review-card__stars-muted">' + '★'.repeat(5 - review.rating) + '</span>';
       const isLiked = likedReviewIds.has(review.id);
       return '<article class="review-card" data-review-id="' + review.id + '">' + cover +
-        '<div class="review-card__body"><div class="review-card__meta"><button class="review-card__author" type="button" data-profile-username="' + escapeHTML(review.profiles?.username || '') + '">' + escapeHTML(author) + '</button><span>' + escapeHTML(handle) + '</span><time>' + formatDate(review.created_at) + '</time></div>' +
-        '<h3>' + escapeHTML(game) + (gameYear ? ' <small class="review-card__year">(' + escapeHTML(gameYear) + ')</small>' : '') + '</h3><div class="review-card__details"><span class="review-card__stars" aria-label="Nota ' + review.rating + ' de 5">' + stars + '</span>' +
+        '<div class="review-card__body"><div class="review-card__meta"><button class="review-card__author" type="button" data-profile-username="' + escapeHTML(username) + '">' + escapeHTML(author) + '</button><time>' + formatDate(review.created_at) + '</time></div>' +
+        '<h3>' + escapeHTML(game) + (gameYear ? ' <small class="review-card__year">' + escapeHTML(gameYear) + '</small>' : '') + '</h3><div class="review-card__details"><span class="review-card__stars" aria-label="Nota ' + review.rating + ' de 5">' + stars + '</span>' +
         (review.status ? '<span class="review-card__status">' + statusLabel(review.status) + '</span>' : '') +
         (review.liked_game ? '<span class="review-card__liked"><svg class="ui-icon ui-icon--heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 8.8c0 5.1-8.8 11-8.8 11s-8.8-5.9-8.8-11A4.8 4.8 0 0 1 12 6.4a4.8 4.8 0 0 1 8.8 2.4Z"></path></svg> Gostei</span>' : '') + '</div>' +
         '<div class="review-card__actions">' + (review.user_id === user.id ? '<button class="review-card__edit" type="button" data-edit-review>Editar</button>' : '') + '<div class="review-card__social-actions"><button class="review-card__like' + (isLiked ? ' is-liked' : '') + '" type="button" data-like-review aria-pressed="' + isLiked + '"><svg class="ui-icon ui-icon--heart" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" stroke="none" d="M12 21s-8.8-5.9-8.8-12.2A4.8 4.8 0 0 1 12 6.4a4.8 4.8 0 0 1 8.8 2.4C20.8 15.1 12 21 12 21Z"></path></svg><span data-like-label>Curtir review</span></button><span class="review-card__like-count" data-like-count>' + (likeCounts[review.id] || 0) + '</span><button class="review-card__comments-toggle" type="button" data-comments-toggle aria-expanded="false"><svg class="ui-icon ui-icon--comment" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" stroke="none" d="M4 3.5h16A2.5 2.5 0 0 1 22.5 6v9a2.5 2.5 0 0 1-2.5 2.5h-8l-5.8 4v-4H4A2.5 2.5 0 0 1 1.5 15V6A2.5 2.5 0 0 1 4 3.5Z"></path></svg><span>Comentar review</span></button><span class="review-card__comment-count" data-comment-count>' + (commentCounts[review.id] || 0) + '</span></div></div><section class="review-comments" data-comments-panel hidden></section></div>' +
@@ -487,10 +487,13 @@ async function renderSignedIn(user) {
     if (!count) return;
     button.disabled = true;
     button.setAttribute('aria-busy', 'true');
+    const controller = new AbortController();
+    const timeoutId = window.setTimeout(() => controller.abort(), 10000);
     try {
-      const result = wasLiked
-        ? await supabase.from('review_likes').delete().eq('review_id', reviewId).eq('user_id', user.id)
-        : await supabase.from('review_likes').insert({ review_id: reviewId, user_id: user.id });
+      const request = wasLiked
+        ? supabase.from('review_likes').delete().eq('review_id', reviewId).eq('user_id', user.id).abortSignal(controller.signal)
+        : supabase.from('review_likes').insert({ review_id: reviewId, user_id: user.id }).abortSignal(controller.signal);
+      const result = await request;
       if (result.error) throw result.error;
       const nextLiked = !wasLiked;
       count.textContent = String(Math.max(0, Number(count.textContent) + (nextLiked ? 1 : -1)));
@@ -499,7 +502,11 @@ async function renderSignedIn(user) {
       button.querySelector('[data-like-label]').textContent = 'Curtir review';
     } catch (error) {
       console.error('[Ludus] Falha ao atualizar curtida:', error);
+      if (controller.signal.aborted) {
+        console.warn('[Ludus] A requisição de curtida excedeu 10 segundos e foi cancelada.');
+      }
     } finally {
+      window.clearTimeout(timeoutId);
       button.disabled = false;
       button.removeAttribute('aria-busy');
     }
