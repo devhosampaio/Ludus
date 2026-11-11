@@ -186,12 +186,12 @@ async function renderSignedIn(user) {
         </div>
       </header>
       <main class="feed-main">
-        <aside class="feed-ad feed-ad--left" aria-label="Espaço reservado para publicidade"><span>ESPAÇO PUBLICITÁRIO</span><strong>AD<br>SPACE</strong><small>FORMATO VERTICAL</small></aside>
+        <aside class="feed-ad feed-ad--left" aria-label="Espaço reservado para publicidade"></aside>
         <section class="feed-content" aria-label="Atividade da comunidade">
           <div class="section-heading"><div><p class="eyebrow">DA COMUNIDADE</p><h2>Atividade recente</h2></div></div>
           <div class="feed-list" data-feed-list><div class="feed-loading">Carregando as histórias da comunidade…</div></div>
         </section>
-        <aside class="feed-ad feed-ad--right" aria-label="Espaço reservado para publicidade"><span>ESPAÇO PUBLICITÁRIO</span><strong>AD<br>SPACE</strong><small>FORMATO VERTICAL</small></aside>
+        <aside class="feed-ad feed-ad--right" aria-label="Espaço reservado para publicidade"></aside>
       </main>
     </div>`;
 
