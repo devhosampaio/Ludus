@@ -184,7 +184,7 @@ async function renderSignedIn(user) {
       <main class="feed-main">
         <aside class="feed-ad feed-ad--left" aria-label="Espaço reservado para publicidade"></aside>
         <section class="feed-content" aria-label="Atividade da comunidade">
-          <div class="section-heading"><div><p class="eyebrow">DA COMUNIDADE</p><h2>Atividade recente</h2></div></div>
+          <div class="section-heading"><div class="feed-heading__inner"><div class="feed-tabs" role="tablist" aria-label="Ordenar atividade"><button class="feed-tabs__button is-active" type="button" role="tab" aria-selected="true" data-feed-mode="popular">Popular</button><button class="feed-tabs__button" type="button" role="tab" aria-selected="false" data-feed-mode="following">Seguindo</button><button class="feed-tabs__button" type="button" role="tab" aria-selected="false" data-feed-mode="recent">Mais recentes</button></div><h2>Atividade recente</h2></div></div>
           <div class="feed-list" data-feed-list><div class="feed-loading">Carregando as histórias da comunidade…</div></div>
         </section>
         <aside class="feed-ad feed-ad--right" aria-label="Espaço reservado para publicidade"></aside>
@@ -296,7 +296,7 @@ async function renderSignedIn(user) {
   const feedList = app.querySelector('[data-feed-list]');
   const { data: reviews, error } = await supabase.from('reviews')
     .select('id, user_id, game_id, rating, body, status, liked_game, created_at, profiles!reviews_user_id_fkey(username, display_name, avatar_url), games!reviews_game_id_fkey(title, cover_url, release_year, developer)')
-    .order('created_at', { ascending: false }).limit(20);
+    .order('created_at', { ascending: false }).limit(1000);
 
   if (error) {
     console.error('[Ludus] Falha ao carregar feed:', error);
@@ -305,14 +305,10 @@ async function renderSignedIn(user) {
     return;
   }
 
-  if (!reviews?.length) {
-    feedList.innerHTML = '<div class="feed-empty"><span class="feed-empty__number">01</span><h3>O feed ainda está em silêncio.</h3><p>As primeiras histórias aparecem aqui quando alguém publicar uma avaliação. Que tal começar registrando um jogo que marcou você?</p><span class="feed-empty__note">CADA JOGO TEM UMA HISTÓRIA.</span></div>';
-    return;
-  }
-
   const reviewIds = reviews.map((review) => review.id);
-  const { data: likes, error: likesError } = await supabase.from('review_likes')
-    .select('review_id, user_id').in('review_id', reviewIds);
+  const { data: likes, error: likesError } = reviewIds.length
+    ? await supabase.from('review_likes').select('review_id, user_id').in('review_id', reviewIds)
+    : { data: [], error: null };
   if (likesError) console.error('[Ludus] Falha ao carregar curtidas:', likesError);
   const likeRows = likes || [];
   const likeCounts = likeRows.reduce((counts, like) => {
@@ -320,32 +316,74 @@ async function renderSignedIn(user) {
     return counts;
   }, {});
   const likedReviewIds = new Set(likeRows.filter((like) => like.user_id === user.id).map((like) => like.review_id));
-  const { data: commentRows, error: commentsCountError } = await supabase.from('review_comments')
-    .select('review_id').in('review_id', reviewIds);
+  const { data: commentRows, error: commentsCountError } = reviewIds.length
+    ? await supabase.from('review_comments').select('review_id').in('review_id', reviewIds)
+    : { data: [], error: null };
   if (commentsCountError) console.error('[Ludus] Falha ao carregar contagem de comentários:', commentsCountError);
   const commentCounts = (commentRows || []).reduce((counts, comment) => {
     counts[comment.review_id] = (counts[comment.review_id] || 0) + 1;
     return counts;
   }, {});
 
-  feedList.innerHTML = reviews.map((review) => {
-    const author = review.profiles?.display_name || review.profiles?.username || 'jogador';
-    const handle = review.profiles?.username ? '@' + review.profiles.username : '';
-    const game = review.games?.title || 'Jogo';
-    const gameYear = review.games?.release_year ? String(review.games.release_year) : '';
-    const cover = review.games?.cover_url
-      ? '<img class="review-card__cover" src="' + escapeHTML(review.games.cover_url) + '" alt="Capa de ' + escapeHTML(game) + '" loading="lazy">'
-      : '<div class="review-card__cover review-card__cover--empty">L<span>.</span></div>';
-    const stars = '★'.repeat(review.rating) + '<span class="review-card__stars-muted">' + '★'.repeat(5 - review.rating) + '</span>';
-    const isLiked = likedReviewIds.has(review.id);
-    return '<article class="review-card" data-review-id="' + review.id + '">' + cover +
-      '<div class="review-card__body"><div class="review-card__meta"><button class="review-card__author" type="button" data-profile-username="' + escapeHTML(review.profiles?.username || '') + '">' + escapeHTML(author) + '</button><span>' + escapeHTML(handle) + '</span><time>' + formatDate(review.created_at) + '</time></div>' +
-      '<h3>' + escapeHTML(game) + (gameYear ? ' <small class="review-card__year">(' + escapeHTML(gameYear) + ')</small>' : '') + '</h3><div class="review-card__details"><span class="review-card__stars" aria-label="Nota ' + review.rating + ' de 5">' + stars + '</span>' +
-      (review.status ? '<span class="review-card__status">' + statusLabel(review.status) + '</span>' : '') +
-      (review.liked_game ? '<span class="review-card__liked"><svg class="ui-icon ui-icon--heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 8.8c0 5.1-8.8 11-8.8 11s-8.8-5.9-8.8-11A4.8 4.8 0 0 1 12 6.4a4.8 4.8 0 0 1 8.8 2.4Z"></path></svg> Gostei</span>' : '') + '</div>' +
-      (review.body ? '<p class="review-card__text">' + escapeHTML(review.body) + '</p>' : '') +
-      '<div class="review-card__actions">' + (review.user_id === user.id ? '<button class="review-card__edit" type="button" data-edit-review>Editar</button>' : '') + '<button class="review-card__like' + (isLiked ? ' is-liked' : '') + '" type="button" data-like-review aria-pressed="' + isLiked + '"><svg class="ui-icon ui-icon--heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 8.8c0 5.1-8.8 11-8.8 11s-8.8-5.9-8.8-11A4.8 4.8 0 0 1 12 6.4a4.8 4.8 0 0 1 8.8 2.4Z"></path></svg> <span data-like-label>' + (isLiked ? 'Curtido' : 'Curtir') + '</span> <span class="review-card__like-count" data-like-count>' + (likeCounts[review.id] || 0) + '</span></button><button class="review-card__comments-toggle" type="button" data-comments-toggle aria-expanded="false">Conversar <span data-comment-count>' + (commentCounts[review.id] || 0) + '</span></button></div><section class="review-comments" data-comments-panel hidden></section></div></article>';
-  }).join('');
+  const { data: followedProfiles, error: followedError } = await supabase.from('follows')
+    .select('following_id').eq('follower_id', user.id);
+  if (followedError) console.error('[Ludus] Falha ao carregar quem você segue:', followedError);
+  const followedIds = new Set((followedProfiles || []).map((item) => item.following_id));
+  const feedTabs = app.querySelector('[data-feed-mode="popular"]').closest('.feed-tabs');
+
+  const renderFeed = (mode = 'popular') => {
+    let visibleReviews = [...(reviews || [])];
+    if (mode === 'following') {
+      visibleReviews = visibleReviews.filter((review) => followedIds.has(review.user_id));
+    } else if (mode === 'popular') {
+      visibleReviews.sort((a, b) => {
+        const scoreA = (likeCounts[a.id] || 0) + (commentCounts[a.id] || 0);
+        const scoreB = (likeCounts[b.id] || 0) + (commentCounts[b.id] || 0);
+        return scoreB - scoreA || new Date(b.created_at) - new Date(a.created_at);
+      });
+    } else {
+      visibleReviews.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    }
+
+    feedTabs.querySelectorAll('[data-feed-mode]').forEach((button) => {
+      const active = button.dataset.feedMode === mode;
+      button.classList.toggle('is-active', active);
+      button.setAttribute('aria-selected', String(active));
+    });
+
+    if (!visibleReviews.length) {
+      const message = mode === 'following'
+        ? 'As avaliações de quem você segue aparecerão aqui.'
+        : 'Ainda não há avaliações publicadas pela comunidade.';
+      feedList.innerHTML = '<div class="feed-empty"><span class="feed-empty__number">01</span><h3>O feed ainda está em silêncio.</h3><p>' + message + '</p><span class="feed-empty__note">CADA JOGO TEM UMA HISTÓRIA.</span></div>';
+      return;
+    }
+
+    feedList.innerHTML = visibleReviews.map((review) => {
+      const author = review.profiles?.display_name || review.profiles?.username || 'jogador';
+      const handle = review.profiles?.username ? '@' + review.profiles.username : '';
+      const game = review.games?.title || 'Jogo';
+      const gameYear = review.games?.release_year ? String(review.games.release_year) : '';
+      const cover = review.games?.cover_url
+        ? '<img class="review-card__cover" src="' + escapeHTML(review.games.cover_url) + '" alt="Capa de ' + escapeHTML(game) + '" loading="lazy">'
+        : '<div class="review-card__cover review-card__cover--empty">L<span>.</span></div>';
+      const stars = '★'.repeat(review.rating) + '<span class="review-card__stars-muted">' + '★'.repeat(5 - review.rating) + '</span>';
+      const isLiked = likedReviewIds.has(review.id);
+      return '<article class="review-card" data-review-id="' + review.id + '">' + cover +
+        '<div class="review-card__body"><div class="review-card__meta"><button class="review-card__author" type="button" data-profile-username="' + escapeHTML(review.profiles?.username || '') + '">' + escapeHTML(author) + '</button><span>' + escapeHTML(handle) + '</span><time>' + formatDate(review.created_at) + '</time></div>' +
+        '<h3>' + escapeHTML(game) + (gameYear ? ' <small class="review-card__year">(' + escapeHTML(gameYear) + ')</small>' : '') + '</h3><div class="review-card__details"><span class="review-card__stars" aria-label="Nota ' + review.rating + ' de 5">' + stars + '</span>' +
+        (review.status ? '<span class="review-card__status">' + statusLabel(review.status) + '</span>' : '') +
+        (review.liked_game ? '<span class="review-card__liked"><svg class="ui-icon ui-icon--heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 8.8c0 5.1-8.8 11-8.8 11s-8.8-5.9-8.8-11A4.8 4.8 0 0 1 12 6.4a4.8 4.8 0 0 1 8.8 2.4Z"></path></svg> Gostei</span>' : '') + '</div>' +
+        (review.body ? '<p class="review-card__text">' + escapeHTML(review.body) + '</p>' : '') +
+        '<div class="review-card__actions">' + (review.user_id === user.id ? '<button class="review-card__edit" type="button" data-edit-review>Editar</button>' : '') + '<button class="review-card__like' + (isLiked ? ' is-liked' : '') + '" type="button" data-like-review aria-pressed="' + isLiked + '"><svg class="ui-icon ui-icon--heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 8.8c0 5.1-8.8 11-8.8 11s-8.8-5.9-8.8-11A4.8 4.8 0 0 1 12 6.4a4.8 4.8 0 0 1 8.8 2.4Z"></path></svg> <span data-like-label>' + (isLiked ? 'Curtido' : 'Curtir') + '</span> <span class="review-card__like-count" data-like-count>' + (likeCounts[review.id] || 0) + '</span></button><button class="review-card__comments-toggle" type="button" data-comments-toggle aria-expanded="false">Conversar <span data-comment-count>' + (commentCounts[review.id] || 0) + '</span></button></div><section class="review-comments" data-comments-panel hidden></section></div></article>';
+    }).join('');
+  };
+
+  feedTabs.addEventListener('click', (event) => {
+    const button = event.target.closest('[data-feed-mode]');
+    if (button) renderFeed(button.dataset.feedMode);
+  });
+  renderFeed('popular');
 
   feedList.addEventListener('submit', async (event) => {
     const form = event.target.closest('[data-comment-form]');
