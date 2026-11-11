@@ -54,6 +54,7 @@ async function setupNotifications(user) {
   }
 
   const panel = root.querySelector('[data-notifications-panel]');
+  const toggleButton = root.querySelector('[data-notifications-toggle]');
   const list = root.querySelector('[data-notifications-list]');
   const badge = root.querySelector('[data-notification-count]');
 
@@ -92,16 +93,16 @@ async function setupNotifications(user) {
     }).join('');
   };
 
-  root.addEventListener('click', async (event) => {
-    const toggle = event.target.closest('[data-notifications-toggle]');
-    if (toggle) {
-      const opening = panel.hidden;
-      panel.hidden = !opening;
-      toggle.setAttribute('aria-expanded', String(opening));
-      if (opening) await refresh();
-      return;
-    }
+  toggleButton.addEventListener('click', async (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    const opening = panel.hidden;
+    panel.hidden = !opening;
+    toggleButton.setAttribute('aria-expanded', String(opening));
+    if (opening) await refresh();
+  });
 
+  root.addEventListener('click', async (event) => {
     const readAll = event.target.closest('[data-notifications-read-all]');
     if (readAll) {
       readAll.disabled = true;
