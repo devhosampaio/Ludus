@@ -1135,3 +1135,32 @@ button:disabled { cursor: wait; opacity: .65; }
   pointer-events: none !important;
 }
 .account-menu[open] .sidebar-user__chevron { transform: rotate(180deg); }
+
+
+/* Header actions: register game and notifications live in the top navigation */
+.header-actions {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 14px;
+  margin-left: auto;
+}
+.header-actions .record-button {
+  min-height: 40px;
+  padding: 0 16px;
+  white-space: nowrap;
+}
+.header-actions .notifications { position: relative; }
+.header-actions .notifications__trigger { width: 40px; height: 40px; }
+.feed-main { padding-top: 34px; }
+@media (max-width: 760px) {
+  .header-actions { order: 2; gap: 8px; margin-left: auto; }
+  .header-actions .record-button { min-height: 36px; padding: 0 10px; font-size: 10px; }
+  .header-actions .notifications__trigger { width: 36px; height: 36px; }
+  .sidebar__bottom { order: 3; }
+  .header-search { order: 4; }
+}
+@media (max-width: 420px) {
+  .header-actions { gap: 5px; }
+  .header-actions .record-button { padding: 0 8px; font-size: 9px; }
+}
