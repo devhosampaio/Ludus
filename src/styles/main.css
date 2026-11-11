@@ -2378,3 +2378,89 @@ button:disabled { cursor: wait; opacity: .65; }
 .header-actions .notifications__panel {
   z-index: 42;
 }
+
+
+/* Sistema unificado de menus flutuantes */
+:root {
+  --ludus-popover-bg: #302c3d;
+  --ludus-popover-border: rgb(201 191 176 / 24%);
+  --ludus-popover-text: #f5f0e6;
+  --ludus-popover-muted: #c9bfb0;
+  --ludus-popover-shadow: 0 14px 36px rgb(0 0 0 / 30%);
+  --ludus-popover-radius: 6px;
+  --ludus-popover-offset: 8px;
+}
+.account-menu__panel,
+.review-menu__panel,
+.header-search__results,
+.notifications__panel {
+  box-sizing: border-box;
+  width: 260px;
+  max-width: calc(100vw - 24px);
+  border: 1px solid var(--ludus-popover-border) !important;
+  border-radius: var(--ludus-popover-radius) !important;
+  background: var(--ludus-popover-bg) !important;
+  color: var(--ludus-popover-text) !important;
+  box-shadow: var(--ludus-popover-shadow) !important;
+}
+.account-menu__panel,
+.review-menu__panel,
+.header-search__results,
+.notifications__panel {
+  top: calc(100% + var(--ludus-popover-offset));
+  right: 0;
+  left: auto;
+}
+.account-menu__panel { width: 260px; padding: 7px !important; }
+.review-menu__panel { width: 220px; padding: 7px; }
+.header-search__results {
+  width: 320px;
+  max-width: min(320px, calc(100vw - 24px));
+  padding: 7px;
+}
+.notifications__panel { width: 320px; max-width: min(320px, calc(100vw - 24px)); }
+.account-menu__panel button,
+.review-menu__panel button {
+  min-height: 40px;
+  padding: 9px 11px;
+  border-radius: 4px;
+  color: var(--ludus-popover-text) !important;
+  font-size: 12px;
+}
+.account-menu__panel button:hover,
+.review-menu__panel button:hover,
+.account-menu__panel button:focus-visible,
+.review-menu__panel button:focus-visible {
+  background: rgb(232 223 206 / 9%) !important;
+}
+.notifications__header {
+  min-height: 48px;
+  padding: 12px 14px;
+  border-bottom-color: var(--ludus-popover-border);
+}
+.notifications__header strong { color: var(--ludus-popover-text); font-size: 13px; }
+.notifications__header button { color: #b7a8ed; }
+.notifications__list { max-height: 360px; }
+.notifications__empty { padding: 22px 16px; color: var(--ludus-popover-muted); }
+.notifications__item {
+  min-height: 58px;
+  padding: 11px 14px;
+  border-bottom-color: var(--ludus-popover-border);
+  color: var(--ludus-popover-muted);
+}
+.notifications__item:hover,
+.notifications__item.is-unread { background: rgb(232 223 206 / 8%); }
+.notifications__item-content strong { color: var(--ludus-popover-text); }
+.notifications__item-content time { color: #a9a1b3; }
+.header-search__result { background: transparent !important; color: var(--ludus-popover-text) !important; }
+.header-search__result:hover { background: rgb(232 223 206 / 9%) !important; }
+.header-search__result--game strong small { color: var(--ludus-popover-muted) !important; }
+.header-search__game-banner::after {
+  background: linear-gradient(90deg, transparent 45%, #302c3d 100%) !important;
+}
+@media (max-width: 420px) {
+  .account-menu__panel,
+  .review-menu__panel { max-width: calc(100vw - 24px); }
+  .notifications__panel { right: -4px; }
+  .header-search__results { right: -42px; }
+}
