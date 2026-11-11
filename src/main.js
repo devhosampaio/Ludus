@@ -448,7 +448,8 @@ async function renderSignedIn(user) {
       return;
     }
     const count = card.querySelector('[data-comment-count]');
-    count.textContent = String(Number(count.textContent) + 1);
+    const nextCommentCount = Number(count.textContent || 0) + 1;
+    count.textContent = nextCommentCount ? String(nextCommentCount) : '';
     await loadReviewComments(user, card);
   });
 
@@ -527,7 +528,8 @@ async function renderSignedIn(user) {
       const card = deleteComment.closest('[data-review-id]');
       await loadReviewComments(user, card);
       const count = card.querySelector('[data-comment-count]');
-      count.textContent = String(Math.max(0, Number(count.textContent) - 1));
+      const nextCommentCount = Math.max(0, Number(count.textContent || 0) - 1);
+      count.textContent = nextCommentCount ? String(nextCommentCount) : '';
       return;
     }
     const button = event.target.closest('[data-like-review]');
@@ -549,7 +551,8 @@ async function renderSignedIn(user) {
       const result = await request;
       if (result.error) throw result.error;
       const nextLiked = !wasLiked;
-      count.textContent = String(Math.max(0, Number(count.textContent) + (nextLiked ? 1 : -1)));
+      const nextLikeCount = Math.max(0, Number(count.textContent || 0) + (nextLiked ? 1 : -1));
+      count.textContent = nextLikeCount ? String(nextLikeCount) : '';
       button.setAttribute('aria-pressed', String(nextLiked));
       button.classList.toggle('is-liked', nextLiked);
       count.textContent = String(Math.max(0, Number(count.textContent || 0)));
