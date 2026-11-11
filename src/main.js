@@ -166,10 +166,10 @@ async function renderSignedIn(user) {
           <div class="header-search__results" data-header-search-results hidden></div>
         </div>
         <div class="header-actions">
-          <button class="record-button" type="button" data-open-composer>+ Registrar jogo</button>
-          ${notificationControlMarkup()}
+          <button class="record-button" type="button" data-open-composer>+ Fazer review</button>
         </div>
         <div class="sidebar__bottom">
+          ${notificationControlMarkup()}
           <details class="account-menu" data-account-details>
             <summary class="sidebar-user" data-account-menu>
               <span class="sidebar-user__avatar" data-avatar> L </span>
@@ -186,10 +186,12 @@ async function renderSignedIn(user) {
         </div>
       </header>
       <main class="feed-main">
+        <aside class="feed-ad feed-ad--left" aria-label="Espaço reservado para publicidade"><span>ESPAÇO PUBLICITÁRIO</span><strong>AD<br>SPACE</strong><small>FORMATO VERTICAL</small></aside>
         <section class="feed-content" aria-label="Atividade da comunidade">
-          <div class="section-heading"><div><p class="eyebrow">DA COMUNIDADE</p><h2>Atividade recente</h2></div><span class="section-heading__index">01 — 20</span></div>
+          <div class="section-heading"><div><p class="eyebrow">DA COMUNIDADE</p><h2>Atividade recente</h2></div></div>
           <div class="feed-list" data-feed-list><div class="feed-loading">Carregando as histórias da comunidade…</div></div>
         </section>
+        <aside class="feed-ad feed-ad--right" aria-label="Espaço reservado para publicidade"><span>ESPAÇO PUBLICITÁRIO</span><strong>AD<br>SPACE</strong><small>FORMATO VERTICAL</small></aside>
       </main>
     </div>`;
 
