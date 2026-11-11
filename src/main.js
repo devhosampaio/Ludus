@@ -354,7 +354,7 @@ async function renderSignedIn(user) {
     }
   });
 
-  searchResults.addEventListener('click', (event) => {
+  searchResults.addEventListener('click', async (event) => {
     const player = event.target.closest('[data-search-profile]');
     const game = event.target.closest('[data-search-game-id]');
     const steamGridGame = event.target.closest('[data-search-steamgrid-id]');
