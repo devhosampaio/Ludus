@@ -276,20 +276,33 @@ async function renderSignedIn(user) {
     }
     searchTimer = window.setTimeout(async () => {
       const safeQuery = query.replace(/[,%()]/g, ' ').trim();
-      const [players, games] = await Promise.all([
+      const [players, games, steamGrid] = await Promise.all([
         supabase.from('profiles').select('username, display_name, avatar_url').or('username.ilike.%' + safeQuery + '%,display_name.ilike.%' + safeQuery + '%').limit(5),
-        supabase.from('games').select('id, title, release_year, cover_url').ilike('title', '%' + safeQuery + '%').limit(5)
+        supabase.from('games').select('id, title, release_year, cover_url').ilike('title', '%' + safeQuery + '%').limit(5),
+        supabase.functions.invoke('steamgriddb', { body: { action: 'search', query: safeQuery } })
       ]);
-      if (headerSearch.value.trim() !== query) return;
+      if (headerSearch.value.trim().replace(/^@/, '') !== query) return;
       const playerItems = (players.data || []).map((profile) =>
         '<button type="button" class="header-search__result header-search__result--player" data-search-profile="' + escapeHTML(profile.username) + '">' +
         (profile.avatar_url ? '<img src="' + escapeHTML(profile.avatar_url) + '" alt="">' : '<span class="header-search__avatar">' + profilePlaceholderMarkup() + '</span>') +
         '<strong>' + escapeHTML(profile.username) + '</strong></button>'
       ).join('');
-      const uniqueGames = [...new Map((games.data || []).map((game) => [game.id, game])).values()];
-      const gameItems = uniqueGames.map((game) =>
-        '<button type="button" class="header-search__result header-search__result--game" data-search-game-id="' + escapeHTML(game.id) + '">' +
-        (game.cover_url ? '<span class="header-search__game-banner" style="background-image:linear-gradient(90deg, transparent 55%, #302c3d 100%),url(&quot;' + escapeHTML(game.cover_url) + '&quot;)"></span>' : '<span class="header-search__game-banner header-search__game-banner--empty"></span>') +
+      const localGames = (games.data || []).map((game) => ({ ...game, source: 'local' }));
+      const localTitles = new Set(localGames.map((game) => game.title.trim().toLocaleLowerCase()));
+      const externalGames = (steamGrid.data?.data || [])
+        .filter((game) => !localTitles.has(String(game.name || '').trim().toLocaleLowerCase()))
+        .map((game) => ({
+          id: game.id,
+          title: game.name,
+          release_year: game.release_year || null,
+          cover_url: game.cover_url || null,
+          source: 'steamgrid'
+        }));
+      const uniqueGames = [...new Map([...localGames, ...externalGames].map((game) => [game.source + ':' + game.id, game])).values()];
+      const gameItems = uniqueGames.slice(0, 8).map((game) =>
+        '<button type="button" class="header-search__result header-search__result--game" ' +
+        (game.source === 'steamgrid' ? 'data-search-steamgrid-id="' + escapeHTML(game.id) + '" data-search-steamgrid-name="' + escapeHTML(game.title) + '"' : 'data-search-game-id="' + escapeHTML(game.id) + '"') + '>' +
+        (game.cover_url ? '<span class="header-search__game-banner" style="background-image:linear-gradient(90deg, transparent 45%, #302c3d 100%),url(&quot;' + escapeHTML(game.cover_url) + '&quot;)"></span>' : '<span class="header-search__game-banner header-search__game-banner--empty"></span>') +
         '<strong>' + escapeHTML(game.title) + (game.release_year ? ' <small>(' + escapeHTML(game.release_year) + ')</small>' : '') + '</strong></button>'
       ).join('');
       searchResults.innerHTML = playerItems + gameItems || '<p class="header-search__empty">Nenhum resultado encontrado.</p>';
@@ -344,6 +357,7 @@ async function renderSignedIn(user) {
   searchResults.addEventListener('click', (event) => {
     const player = event.target.closest('[data-search-profile]');
     const game = event.target.closest('[data-search-game-id]');
+    const steamGridGame = event.target.closest('[data-search-steamgrid-id]');
     if (player) {
       searchResults.hidden = true;
       navigateToProfile(user, player.dataset.searchProfile);
@@ -351,6 +365,21 @@ async function renderSignedIn(user) {
       searchResults.hidden = true;
       headerSearch.blur();
       navigateToGame(game.dataset.searchGameId);
+    } else if (steamGridGame) {
+      steamGridGame.disabled = true;
+      steamGridGame.classList.add('is-loading');
+      const { data, error } = await supabase.functions.invoke('steamgriddb', {
+        body: { action: 'save', game: { id: steamGridGame.dataset.searchSteamgridId, name: steamGridGame.dataset.searchSteamgridName } }
+      });
+      if (error || !data?.game?.id) {
+        console.error('[Ludus] Não foi possível adicionar o jogo encontrado:', error || data?.error);
+        steamGridGame.disabled = false;
+        steamGridGame.classList.remove('is-loading');
+        return;
+      }
+      searchResults.hidden = true;
+      headerSearch.blur();
+      navigateToGame(data.game.id);
     }
   });
 
