@@ -288,7 +288,7 @@ async function renderSignedIn(user) {
       const uniqueGames = [...new Map((games.data || []).map((game) => [game.id, game])).values()];
       const gameItems = uniqueGames.map((game) =>
         '<button type="button" class="header-search__result header-search__result--game" data-search-game-id="' + escapeHTML(game.id) + '">' +
-        (game.cover_url ? '<span class="header-search__game-banner" style="background-image:linear-gradient(90deg, transparent 55%, #fff 100%),url(&quot;' + escapeHTML(game.cover_url) + '&quot;)"></span>' : '<span class="header-search__game-banner header-search__game-banner--empty"></span>') +
+        (game.cover_url ? '<span class="header-search__game-banner" style="background-image:linear-gradient(90deg, transparent 55%, #302c3d 100%),url(&quot;' + escapeHTML(game.cover_url) + '&quot;)"></span>' : '<span class="header-search__game-banner header-search__game-banner--empty"></span>') +
         '<strong>' + escapeHTML(game.title) + (game.release_year ? ' <small>(' + escapeHTML(game.release_year) + ')</small>' : '') + '</strong></button>'
       ).join('');
       searchResults.innerHTML = playerItems + gameItems || '<p class="header-search__empty">Nenhum resultado encontrado.</p>';
