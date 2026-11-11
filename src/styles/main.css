@@ -1321,3 +1321,55 @@ button:disabled { cursor: wait; opacity: .65; }
   border-bottom: 0 !important;
   padding-bottom: 0 !important;
 }
+
+
+/* Refinamento visual: header limpo, cantos suaves e reviews sem cartões */
+.sidebar {
+  border-bottom: 0 !important;
+}
+.header-search {
+  border: 0 !important;
+  border-radius: 5px;
+  background: rgb(232 223 206 / 7%);
+}
+.header-search:focus-within {
+  background: rgb(232 223 206 / 10%);
+}
+.notifications__trigger,
+.notifications__trigger:hover,
+.notifications__trigger[aria-expanded="true"] {
+  border: 0 !important;
+  border-radius: 5px;
+}
+.record-button,
+.feed-tabs,
+.feed-tabs__button,
+.sidebar-user,
+.account-menu__panel,
+.header-search__results,
+.composer,
+.composer__search,
+.composer__field select,
+.composer__form textarea,
+.composer__submit,
+.composer__close,
+.feed-retry,
+.profile-page__button,
+.profile-edit__button {
+  border-radius: 5px;
+}
+.sidebar-user__avatar,
+.review-card__cover,
+.header-search__result img,
+.header-search__avatar,
+.header-search__game-icon {
+  border-radius: 3px;
+}
+.review-card {
+  padding: 20px 0;
+  border: 0 !important;
+  border-bottom: 1px solid rgb(201 191 176 / 24%) !important;
+  border-radius: 0;
+  background: transparent !important;
+  box-shadow: none !important;
+}
