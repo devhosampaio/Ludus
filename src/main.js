@@ -46,7 +46,7 @@ async function renderSignedIn(user) {
       <main class="feed-main">
         <header class="feed-topbar">
           <div><p class="eyebrow" data-today></p><h1>Seu universo de jogos<span>.</span></h1></div>
-          <div class="feed-topbar__mark">LUDUS <span>01 / FEED</span></div>
+          <div class="feed-topbar__actions"><button class="record-button" type="button" data-open-composer>+ Registrar jogo</button><div class="feed-topbar__mark">LUDUS <span>01 / FEED</span></div></div>
         </header>
         <section class="feed-welcome">
           <div><p class="eyebrow">BEM-VINDO AO LUDUS</p><h2>Todo jogo deixa<br>uma <em>história.</em></h2><p>Um espaço para registrar o que você joga e descobrir o que move outras pessoas.</p></div>
@@ -59,6 +59,7 @@ async function renderSignedIn(user) {
       </main>
     </div>`;
 
+  app.querySelector('[data-open-composer]').addEventListener('click', () => openReviewComposer(user));
   app.querySelector('[data-today]').textContent = new Intl.DateTimeFormat('pt-BR', { weekday: 'long', day: '2-digit', month: 'long' }).format(new Date()).toUpperCase();
   const displayName = app.querySelector('[data-display-name]');
   const username = app.querySelector('[data-username]');
@@ -117,6 +118,131 @@ async function renderSignedIn(user) {
       (review.liked_game ? '<span class="review-card__liked">♥ Gostei</span>' : '') + '</div>' +
       (review.body ? '<p class="review-card__text">' + escapeHTML(review.body) + '</p>' : '') + '</div></article>';
   }).join('');
+}
+
+
+async function openReviewComposer(user) {
+  const existing = app.querySelector('.composer-overlay');
+  existing?.remove();
+  const overlay = document.createElement('div');
+  overlay.className = 'composer-overlay';
+  overlay.innerHTML = `
+    <section class="composer" role="dialog" aria-modal="true" aria-labelledby="composer-title">
+      <button class="composer__close" type="button" aria-label="Fechar" data-close>×</button>
+      <p class="eyebrow">SUA PRÓXIMA HISTÓRIA</p>
+      <h2 id="composer-title">Registrar um jogo<span>.</span></h2>
+      <label class="composer__label" for="game-search">Qual jogo você jogou?</label>
+      <input class="composer__search" id="game-search" type="search" placeholder="Buscar pelo nome do jogo…" autocomplete="off">
+      <div class="composer__results" data-game-results aria-live="polite"></div>
+      <div class="composer__selected" data-selected hidden></div>
+      <form class="composer__form" data-review-form hidden>
+        <div class="composer__field">
+          <label for="review-rating">Sua nota</label>
+          <select id="review-rating" name="rating" required>
+            <option value="5">5 — Obra-prima</option><option value="4">4 — Muito bom</option><option value="3">3 — Bom</option><option value="2">2 — Regular</option><option value="1">1 — Não gostei</option>
+          </select>
+        </div>
+        <div class="composer__field">
+          <label for="review-status">Status</label>
+          <select id="review-status" name="status"><option value="playing">Jogando</option><option value="completed">Zerado</option><option value="abandoned">Abandonado</option></select>
+        </div>
+        <label class="composer__liked"><input type="checkbox" name="liked_game"> <span>♥ Gostei deste jogo</span></label>
+        <label class="composer__field" for="review-body">O que achou? <small>Opcional · até 5.000 caracteres</small></label>
+        <textarea id="review-body" name="body" maxlength="5000" rows="4" placeholder="Conte um pouco sobre sua experiência…"></textarea>
+        <p class="composer__message" data-composer-message role="status"></p>
+        <button class="composer__submit" type="submit">Publicar avaliação ↗</button>
+      </form>
+    </section>`;
+  app.append(overlay);
+  const search = overlay.querySelector('#game-search');
+  const results = overlay.querySelector('[data-game-results]');
+  const selected = overlay.querySelector('[data-selected]');
+  const form = overlay.querySelector('[data-review-form]');
+  let selectedGame = null;
+  let timer;
+
+  const close = () => overlay.remove();
+  overlay.querySelector('[data-close]').addEventListener('click', close);
+  overlay.addEventListener('click', (event) => { if (event.target === overlay) close(); });
+  document.addEventListener('keydown', function escape(event) {
+    if (event.key === 'Escape' && app.contains(overlay)) { close(); document.removeEventListener('keydown', escape); }
+  });
+
+  search.addEventListener('input', () => {
+    clearTimeout(timer);
+    selectedGame = null;
+    selected.hidden = true;
+    form.hidden = true;
+    const query = search.value.trim();
+    if (query.length < 2) { results.innerHTML = ''; return; }
+    results.innerHTML = '<p class="composer__hint">Buscando jogos…</p>';
+    timer = setTimeout(async () => {
+      const { data, error } = await supabase.functions.invoke('steamgriddb', { body: { action: 'search', query } });
+      if (search.value.trim() !== query) return;
+      if (error || data?.error) {
+        results.innerHTML = '<p class="composer__hint">Não foi possível buscar jogos. ' + escapeHTML(data?.error || '') + '</p>';
+        return;
+      }
+      if (!data?.data?.length) { results.innerHTML = '<p class="composer__hint">Nenhum jogo encontrado. Tente outro nome.</p>'; return; }
+      results.innerHTML = data.data.map((game) =>
+        '<button class="composer__result" type="button" data-game-id="' + Number(game.id) + '" data-game-name="' + escapeHTML(game.name) + '">' +
+        '<span>' + escapeHTML(game.name) + '</span><span>Selecionar ↗</span></button>'
+      ).join('');
+    }, 350);
+  });
+
+  results.addEventListener('click', async (event) => {
+    const button = event.target.closest('[data-game-id]');
+    if (!button) return;
+    results.innerHTML = '<p class="composer__hint">Preparando jogo…</p>';
+    const { data, error } = await supabase.functions.invoke('steamgriddb', {
+      body: { action: 'save', game: { id: Number(button.dataset.gameId), name: button.dataset.gameName } }
+    });
+    if (error || data?.error || !data?.game) {
+      results.innerHTML = '<p class="composer__hint">' + escapeHTML(data?.error || 'Não foi possível selecionar esse jogo.') + '</p>';
+      return;
+    }
+    selectedGame = data.game;
+    results.innerHTML = '';
+    selected.hidden = false;
+    selected.innerHTML = (selectedGame.cover_url ? '<img src="' + escapeHTML(selectedGame.cover_url) + '" alt="">' : '<span class="composer__cover-empty">L.</span>') +
+      '<span><strong>' + escapeHTML(selectedGame.title) + '</strong><small>Jogo selecionado</small></span>' +
+      '<button type="button" data-change-game>Trocar</button>';
+    selected.querySelector('[data-change-game]').addEventListener('click', () => {
+      selectedGame = null; selected.hidden = true; form.hidden = true; search.focus();
+    });
+    form.hidden = false;
+  });
+
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    if (!selectedGame) return;
+    const submit = form.querySelector('[type="submit"]');
+    const message = form.querySelector('[data-composer-message]');
+    const values = Object.fromEntries(new FormData(form));
+    submit.disabled = true;
+    submit.textContent = 'Publicando…';
+    message.textContent = '';
+    const { error } = await supabase.from('reviews').insert({
+      user_id: user.id,
+      game_id: selectedGame.id,
+      rating: Number(values.rating),
+      status: values.status,
+      liked_game: form.elements.liked_game.checked,
+      body: String(values.body || '').trim() || null,
+    });
+    if (error) {
+      console.error('[Ludus] Falha ao publicar avaliação:', error);
+      message.textContent = error.code === '23505'
+        ? 'Você já publicou uma avaliação deste jogo. A edição estará disponível em breve.'
+        : 'Não foi possível publicar. Verifique sua conexão e tente novamente.';
+      submit.disabled = false;
+      submit.textContent = 'Publicar avaliação ↗';
+      return;
+    }
+    close();
+    await renderSignedIn(user);
+  });
 }
 
 function renderAuth(mode = 'login') {
