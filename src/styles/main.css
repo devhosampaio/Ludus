@@ -735,3 +735,23 @@ button:disabled { cursor: wait; opacity: .65; }
 .side-nav__link .ui-icon { width: 18px; height: 18px; flex-basis: 18px; color: var(--color-secondary); }
 .side-nav__link .ui-icon svg { width: 18px; height: 18px; }
 .review-card__like .ui-icon { margin-right: 2px; }
+
+
+/* Password visibility and terms dialog */
+.password-field { position: relative; display: flex; align-items: center; }
+.password-field input { padding-right: 48px; }
+.password-toggle { position: absolute; right: 10px; display: grid; width: 30px; height: 30px; place-items: center; padding: 0; border: 0; background: transparent; color: #81798a; }
+.password-toggle[hidden] { display: none; }
+.password-toggle svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.password-toggle:hover, .password-toggle.is-visible { color: #7060ab; }
+.terms-link { display: inline; padding: 0; border: 0; background: transparent; color: #7060ab; font: inherit; text-decoration: underline; text-underline-offset: 2px; }
+.terms-modal[hidden] { display: none; }
+.terms-modal { position: fixed; z-index: 100; inset: 0; display: grid; place-items: center; padding: 22px; }
+.terms-modal__backdrop { position: absolute; inset: 0; background: rgb(24 21 31 / 78%); }
+.terms-modal__dialog { position: relative; z-index: 1; width: min(100%, 520px); max-height: min(80vh, 620px); overflow-y: auto; padding: 38px; background: #e8dfce; color: #302c3d; box-shadow: 0 20px 80px rgb(0 0 0 / 30%); }
+.terms-modal__dialog .eyebrow { color: #81798a; }
+.terms-modal__dialog h3 { margin: 0 0 20px; font: 600 30px/1.1 'Space Grotesk', sans-serif; letter-spacing: -.05em; }
+.terms-modal__dialog p:not(.eyebrow) { color: #625b6c; font-size: 13px; line-height: 1.8; }
+.terms-modal__dialog .terms-modal__note { margin-top: 24px; color: #a0443a; font: 9px 'DM Mono', monospace; letter-spacing: .12em; }
+.terms-modal__close { position: absolute; top: 12px; right: 16px; padding: 2px 6px; border: 0; background: transparent; color: #625b6c; font-size: 28px; }
+@media (max-width: 520px) { .terms-modal__dialog { padding: 32px 24px; } }
