@@ -27,6 +27,129 @@ function statusLabel(status) {
   return ({ playing: 'Jogando', completed: 'Zerado', abandoned: 'Abandonado' })[status] || '';
 }
 
+
+let notificationChannel = null;
+
+function notificationControlMarkup() {
+  return '<div class="notifications" data-notifications>' +
+    '<button class="notifications__trigger" type="button" data-notifications-toggle aria-label="Notificações" aria-expanded="false" title="Notificações">' +
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"></path><path d="M10 21h4"></path></svg>' +
+    '<span class="notifications__count" data-notification-count hidden>0</span></button>' +
+    '<section class="notifications__panel" data-notifications-panel hidden>' +
+    '<header class="notifications__header"><strong>Notificações</strong><button type="button" data-notifications-read-all>Marcar todas como lidas</button></header>' +
+    '<div class="notifications__list" data-notifications-list><p class="notifications__empty">Carregando…</p></div></section></div>';
+}
+
+async function setupNotifications(user) {
+  const root = app.querySelector('[data-notifications]');
+  if (!root) return;
+
+  if (notificationChannel) {
+    await supabase.removeChannel(notificationChannel);
+    notificationChannel = null;
+  }
+
+  const trigger = root.querySelector('[data-notifications-toggle]');
+  const panel = root.querySelector('[data-notifications-panel]');
+  const list = root.querySelector('[data-notifications-list]');
+  const badge = root.querySelector('[data-notification-count]');
+
+  const refresh = async () => {
+    const { data, error } = await supabase.from('notifications')
+      .select('id, type, actor_id, review_id, created_at, read_at, profiles!notifications_actor_id_fkey(username, display_name)')
+      .order('created_at', { ascending: false })
+      .limit(30);
+
+    if (error) {
+      console.error('[Ludus] Falha ao carregar notificações:', error);
+      list.innerHTML = '<p class="notifications__empty">Não foi possível carregar as notificações.</p>';
+      return;
+    }
+
+    const rows = data || [];
+    const unreadCount = rows.filter((item) => !item.read_at).length;
+    badge.textContent = unreadCount > 99 ? '99+' : String(unreadCount);
+    badge.hidden = unreadCount === 0;
+
+    if (!rows.length) {
+      list.innerHTML = '<p class="notifications__empty">Tudo tranquilo por aqui. Suas novidades aparecerão aqui.</p>';
+      return;
+    }
+
+    list.innerHTML = rows.map((item) => {
+      const actor = item.profiles?.display_name || item.profiles?.username || 'Alguém';
+      const username = item.profiles?.username || '';
+      const message = item.type === 'review_liked'
+        ? 'curtiu sua avaliação.'
+        : item.type === 'review_commented'
+          ? 'comentou sua avaliação.'
+          : 'começou a seguir você.';
+      return '<button class="notifications__item' + (item.read_at ? '' : ' is-unread') + '" type="button" data-notification-id="' + item.id + '" data-notification-type="' + item.type + '" data-review-id="' + (item.review_id || '') + '" data-actor-username="' + escapeHTML(username) + '">' +
+        '<span class="notifications__item-dot" aria-hidden="true"></span><span class="notifications__item-content"><span><strong>' + escapeHTML(actor) + '</strong> ' + message + '</span><time>' + formatDate(item.created_at) + '</time></span></button>';
+    }).join('');
+  };
+
+  root.addEventListener('click', async (event) => {
+    const toggle = event.target.closest('[data-notifications-toggle]');
+    if (toggle) {
+      const opening = panel.hidden;
+      panel.hidden = !opening;
+      toggle.setAttribute('aria-expanded', String(opening));
+      if (opening) await refresh();
+      return;
+    }
+
+    const readAll = event.target.closest('[data-notifications-read-all]');
+    if (readAll) {
+      readAll.disabled = true;
+      const { error } = await supabase.from('notifications').update({ read_at: new Date().toISOString() })
+        .eq('recipient_id', user.id).is('read_at', null);
+      if (error) console.error('[Ludus] Falha ao marcar notificações como lidas:', error);
+      await refresh();
+      readAll.disabled = false;
+      return;
+    }
+
+    const item = event.target.closest('[data-notification-id]');
+    if (!item) return;
+    item.disabled = true;
+    const { error } = await supabase.from('notifications').update({ read_at: new Date().toISOString() })
+      .eq('id', item.dataset.notificationId).eq('recipient_id', user.id);
+    if (error) {
+      console.error('[Ludus] Falha ao marcar notificação como lida:', error);
+      item.disabled = false;
+      return;
+    }
+
+    const type = item.dataset.notificationType;
+    const reviewId = item.dataset.reviewId;
+    const actorUsername = item.dataset.actorUsername;
+    if (type === 'new_follower' && actorUsername) {
+      navigateToProfile(user, actorUsername);
+    } else {
+      navigateToFeed(user);
+      if (reviewId) {
+        window.setTimeout(() => {
+          const reviewCard = document.querySelector('[data-review-id="' + reviewId + '"]');
+          reviewCard?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 550);
+      }
+    }
+  });
+
+  notificationChannel = supabase.channel('notifications:' + user.id)
+    .on('postgres_changes', {
+      event: 'INSERT',
+      schema: 'public',
+      table: 'notifications',
+      filter: 'recipient_id=eq.' + user.id
+    }, () => refresh())
+    .subscribe();
+
+  await refresh();
+}
+
+
 async function renderSignedIn(user) {
   activeUser = user;
   const fallbackName = user.user_metadata?.display_name || user.email?.split('@')[0] || 'jogador';
@@ -48,7 +171,7 @@ async function renderSignedIn(user) {
       <main class="feed-main">
         <header class="feed-topbar">
           <div><p class="eyebrow" data-today></p><h1>Seu universo de jogos<span>.</span></h1></div>
-          <div class="feed-topbar__actions"><button class="record-button" type="button" data-open-composer>+ Registrar jogo</button><div class="feed-topbar__mark">LUDUS <span>01 / FEED</span></div></div>
+          <div class="feed-topbar__actions">${notificationControlMarkup()}<button class="record-button" type="button" data-open-composer>+ Registrar jogo</button><div class="feed-topbar__mark">LUDUS <span>01 / FEED</span></div></div>
         </header>
         <section class="feed-welcome">
           <div><p class="eyebrow">BEM-VINDO AO LUDUS</p><h2>Todo jogo deixa<br>uma <em>história.</em></h2><p>Um espaço para registrar o que você joga e descobrir o que move outras pessoas.</p></div>
@@ -97,6 +220,8 @@ async function renderSignedIn(user) {
     await renderProfilePage(user, routeUsername);
     return;
   }
+
+  setupNotifications(user);
 
   const feedList = app.querySelector('[data-feed-list]');
   const { data: reviews, error } = await supabase.from('reviews')
@@ -302,6 +427,7 @@ async function renderProfilePage(currentUser, username) {
       <header class="profile-page__topbar">
         <a class="brand" href="#inicio" data-profile-back aria-label="Ludus início">L<span>.</span></a>
         <div class="profile-page__topbar-label"><span>COMUNIDADE / JOGADORES</span><strong>PERFIL</strong></div>
+        ${notificationControlMarkup()}
         <button class="profile-page__back" type="button" data-profile-back>← <span>Voltar ao feed</span></button>
       </header>
       <div class="profile-page__content">
@@ -311,6 +437,7 @@ async function renderProfilePage(currentUser, username) {
   app.querySelectorAll('[data-profile-back]').forEach((button) => {
     button.addEventListener('click', () => navigateToFeed(currentUser));
   });
+  setupNotifications(currentUser);
 
   const { data: profile, error: profileError } = await supabase.from('profiles')
     .select('id, username, display_name, bio, avatar_url, banner_url')
