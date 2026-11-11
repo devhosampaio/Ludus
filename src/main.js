@@ -103,6 +103,17 @@ async function renderSignedIn(user) {
     return;
   }
 
+  const reviewIds = reviews.map((review) => review.id);
+  const { data: likes, error: likesError } = await supabase.from('review_likes')
+    .select('review_id, user_id').in('review_id', reviewIds);
+  if (likesError) console.error('[Ludus] Falha ao carregar curtidas:', likesError);
+  const likeRows = likes || [];
+  const likeCounts = likeRows.reduce((counts, like) => {
+    counts[like.review_id] = (counts[like.review_id] || 0) + 1;
+    return counts;
+  }, {});
+  const likedReviewIds = new Set(likeRows.filter((like) => like.user_id === user.id).map((like) => like.review_id));
+
   feedList.innerHTML = reviews.map((review) => {
     const author = review.profiles?.display_name || review.profiles?.username || 'jogador';
     const handle = review.profiles?.username ? '@' + review.profiles.username : '';
@@ -112,14 +123,40 @@ async function renderSignedIn(user) {
       ? '<img class="review-card__cover" src="' + escapeHTML(review.games.cover_url) + '" alt="Capa de ' + escapeHTML(game) + '" loading="lazy">'
       : '<div class="review-card__cover review-card__cover--empty">L<span>.</span></div>';
     const stars = '★'.repeat(review.rating) + '<span class="review-card__stars-muted">' + '★'.repeat(5 - review.rating) + '</span>';
-    return '<article class="review-card">' + cover +
+    const isLiked = likedReviewIds.has(review.id);
+    return '<article class="review-card" data-review-id="' + review.id + '">' + cover +
       '<div class="review-card__body"><div class="review-card__meta"><strong>' + escapeHTML(author) + '</strong><span>' + escapeHTML(handle) + '</span><time>' + formatDate(review.created_at) + '</time></div>' +
       '<h3>' + escapeHTML(game) + (gameYear ? ' <small class="review-card__year">(' + escapeHTML(gameYear) + ')</small>' : '') + '</h3><div class="review-card__details"><span class="review-card__stars" aria-label="Nota ' + review.rating + ' de 5">' + stars + '</span>' +
       (review.status ? '<span class="review-card__status">' + statusLabel(review.status) + '</span>' : '') +
       (review.liked_game ? '<span class="review-card__liked">♥ Gostei</span>' : '') + '</div>' +
-      (review.body ? '<p class="review-card__text">' + escapeHTML(review.body) + '</p>' : '') + '</div></article>';
+      (review.body ? '<p class="review-card__text">' + escapeHTML(review.body) + '</p>' : '') +
+      '<div class="review-card__actions"><button class="review-card__like' + (isLiked ? ' is-liked' : '') + '" type="button" data-like-review aria-pressed="' + isLiked + '"><span aria-hidden="true">♥</span> <span data-like-label>' + (isLiked ? 'Curtido' : 'Curtir') + '</span> <span class="review-card__like-count" data-like-count>' + (likeCounts[review.id] || 0) + '</span></button></div></div></article>';
   }).join('');
-}
+
+  feedList.addEventListener('click', async (event) => {
+    const button = event.target.closest('[data-like-review]');
+    if (!button || button.disabled) return;
+    const card = button.closest('[data-review-id]');
+    const reviewId = card?.dataset.reviewId;
+    if (!reviewId) return;
+    const wasLiked = button.getAttribute('aria-pressed') === 'true';
+    button.disabled = true;
+    const result = wasLiked
+      ? await supabase.from('review_likes').delete().eq('review_id', reviewId).eq('user_id', user.id)
+      : await supabase.from('review_likes').insert({ review_id: reviewId, user_id: user.id });
+    if (result.error) {
+      console.error('[Ludus] Falha ao atualizar curtida:', result.error);
+      button.disabled = false;
+      return;
+    }
+    const count = button.querySelector('[data-like-count]');
+    const nextLiked = !wasLiked;
+    count.textContent = String(Math.max(0, Number(count.textContent) + (nextLiked ? 1 : -1)));
+    button.setAttribute('aria-pressed', String(nextLiked));
+    button.classList.toggle('is-liked', nextLiked);
+    button.querySelector('[data-like-label]').textContent = nextLiked ? 'Curtido' : 'Curtir';
+    button.disabled = false;
+  });
 
 
 async function openReviewComposer(user) {
