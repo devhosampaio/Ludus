@@ -159,9 +159,9 @@ async function renderSignedIn(user) {
         <a class="brand sidebar__brand" href="./" aria-label="Ludus início">L<span>.</span></a>
         <p class="sidebar__label">ESPAÇO DE JOGO</p>
         <nav class="side-nav" aria-label="Navegação principal">
-          <a class="side-nav__link is-active" href="#inicio"><span>⌂</span> Início</a>
-          <a class="side-nav__link" href="#explorar" data-inert-link><span>⌕</span> Explorar</a>
-          <a class="side-nav__link" href="#perfil" data-open-own-profile><span>◉</span> Meu perfil</a>
+          <a class="side-nav__link is-active" href="#inicio"><span class="ui-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m3 10 9-7 9 7"></path><path d="M5 9v12h14V9M9 21v-7h6v7"></path></svg></span> Início</a>
+          <a class="side-nav__link" href="#explorar" data-inert-link><span class="ui-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="6.8"></circle><path d="m16 16 5 5"></path></svg></span> Explorar</a>
+          <a class="side-nav__link" href="#perfil" data-open-own-profile><span class="ui-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"></circle><path d="M4.5 21a7.5 7.5 0 0 1 15 0"></path></svg></span> Meu perfil</a>
         </nav>
         <div class="sidebar__bottom">
           <div class="sidebar-user"><span class="sidebar-user__avatar" data-avatar> L </span><span><strong data-display-name></strong><small data-username></small></span></div>
@@ -272,9 +272,9 @@ async function renderSignedIn(user) {
       '<div class="review-card__body"><div class="review-card__meta"><button class="review-card__author" type="button" data-profile-username="' + escapeHTML(review.profiles?.username || '') + '">' + escapeHTML(author) + '</button><span>' + escapeHTML(handle) + '</span><time>' + formatDate(review.created_at) + '</time></div>' +
       '<h3>' + escapeHTML(game) + (gameYear ? ' <small class="review-card__year">(' + escapeHTML(gameYear) + ')</small>' : '') + '</h3><div class="review-card__details"><span class="review-card__stars" aria-label="Nota ' + review.rating + ' de 5">' + stars + '</span>' +
       (review.status ? '<span class="review-card__status">' + statusLabel(review.status) + '</span>' : '') +
-      (review.liked_game ? '<span class="review-card__liked">♥ Gostei</span>' : '') + '</div>' +
+      (review.liked_game ? '<span class="review-card__liked"><svg class="ui-icon ui-icon--heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 8.8c0 5.1-8.8 11-8.8 11s-8.8-5.9-8.8-11A4.8 4.8 0 0 1 12 6.4a4.8 4.8 0 0 1 8.8 2.4Z"></path></svg> Gostei</span>' : '') + '</div>' +
       (review.body ? '<p class="review-card__text">' + escapeHTML(review.body) + '</p>' : '') +
-      '<div class="review-card__actions">' + (review.user_id === user.id ? '<button class="review-card__edit" type="button" data-edit-review>Editar</button>' : '') + '<button class="review-card__like' + (isLiked ? ' is-liked' : '') + '" type="button" data-like-review aria-pressed="' + isLiked + '"><span aria-hidden="true">♥</span> <span data-like-label>' + (isLiked ? 'Curtido' : 'Curtir') + '</span> <span class="review-card__like-count" data-like-count>' + (likeCounts[review.id] || 0) + '</span></button><button class="review-card__comments-toggle" type="button" data-comments-toggle aria-expanded="false">Conversar <span data-comment-count>' + (commentCounts[review.id] || 0) + '</span></button></div><section class="review-comments" data-comments-panel hidden></section></div></article>';
+      '<div class="review-card__actions">' + (review.user_id === user.id ? '<button class="review-card__edit" type="button" data-edit-review>Editar</button>' : '') + '<button class="review-card__like' + (isLiked ? ' is-liked' : '') + '" type="button" data-like-review aria-pressed="' + isLiked + '"><svg class="ui-icon ui-icon--heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 8.8c0 5.1-8.8 11-8.8 11s-8.8-5.9-8.8-11A4.8 4.8 0 0 1 12 6.4a4.8 4.8 0 0 1 8.8 2.4Z"></path></svg> <span data-like-label>' + (isLiked ? 'Curtido' : 'Curtir') + '</span> <span class="review-card__like-count" data-like-count>' + (likeCounts[review.id] || 0) + '</span></button><button class="review-card__comments-toggle" type="button" data-comments-toggle aria-expanded="false">Conversar <span data-comment-count>' + (commentCounts[review.id] || 0) + '</span></button></div><section class="review-comments" data-comments-panel hidden></section></div></article>';
   }).join('');
 
   feedList.addEventListener('submit', async (event) => {
@@ -474,7 +474,7 @@ async function renderProfilePage(currentUser, username) {
     const cover = review.games?.cover_url
       ? '<img class="profile-review__cover" src="' + escapeHTML(review.games.cover_url) + '" alt="">'
       : '<div class="profile-review__cover profile-review__cover--empty">L.</div>';
-    return '<article class="profile-review">' + cover + '<div><strong>' + escapeHTML(game) + year + '</strong><div class="profile-review__meta"><span class="profile-review__stars">' + '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating) + '</span><span>' + statusLabel(review.status) + '</span><time>' + formatDate(review.created_at) + '</time></div>' + (review.body ? '<p>' + escapeHTML(review.body) + '</p>' : '') + (review.liked_game ? '<small>♥ Gostei deste jogo</small>' : '') + '</div></article>';
+    return '<article class="profile-review">' + cover + '<div><strong>' + escapeHTML(game) + year + '</strong><div class="profile-review__meta"><span class="profile-review__stars">' + '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating) + '</span><span>' + statusLabel(review.status) + '</span><time>' + formatDate(review.created_at) + '</time></div>' + (review.body ? '<p>' + escapeHTML(review.body) + '</p>' : '') + (review.liked_game ? '<small class="profile-review__liked"><svg class="ui-icon ui-icon--heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 8.8c0 5.1-8.8 11-8.8 11s-8.8-5.9-8.8-11A4.8 4.8 0 0 1 12 6.4a4.8 4.8 0 0 1 8.8 2.4Z"></path></svg> Gostei deste jogo</small>' : '') + '</div></article>';
   }).join('');
 
   app.querySelector('.profile-page__content').innerHTML =
@@ -631,7 +631,7 @@ async function openReviewComposer(user, existingReview = null) {
           <label for="review-status">Status</label>
           <select id="review-status" name="status"><option value="playing">Jogando</option><option value="completed">Zerado</option><option value="abandoned">Abandonado</option></select>
         </div>
-        <label class="composer__liked"><input type="checkbox" name="liked_game"> <span>♥ Gostei deste jogo</span></label>
+        <label class="composer__liked"><input type="checkbox" name="liked_game"> <span><svg class="ui-icon ui-icon--heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 8.8c0 5.1-8.8 11-8.8 11s-8.8-5.9-8.8-11A4.8 4.8 0 0 1 12 6.4a4.8 4.8 0 0 1 8.8 2.4Z"></path></svg> Gostei deste jogo</span></label>
         <label class="composer__field" for="review-body">O que achou? <small>Opcional · até 5.000 caracteres</small></label>
         <textarea id="review-body" name="body" maxlength="5000" rows="4" placeholder="Conte um pouco sobre sua experiência…"></textarea>
         <p class="composer__message" data-composer-message role="status"></p>
