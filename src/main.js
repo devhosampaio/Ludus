@@ -1537,7 +1537,7 @@ function renderAuth(mode = 'welcome') {
     '<div class="auth-modal-backdrop" data-auth-close></div>',
     '<section class="auth-modal" role="dialog" aria-modal="true" aria-label="' + (isSignup ? 'Criar conta' : 'Entrar no Ludus') + '" tabindex="-1">',
     '<section class="auth-panel"><div class="auth-panel__inner">',
-    '<div class="auth-panel__heading"><p class="eyebrow">' + (isSignup ? 'COMECE SUA JORNADA' : 'BEM-VINDO DE VOLTA') + '</p>',
+    '<div class="auth-panel__heading">' + (isSignup ? '<p class="eyebrow">COMECE SUA JORNADA</p>' : ''),
     '<h2>' + (isSignup ? 'Crie sua conta.' : 'Entre no Ludus.') + '</h2>',
     '</div>',
     '<div class="auth-tabs" role="group" aria-label="Acesso à conta">',
