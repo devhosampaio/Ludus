@@ -3501,3 +3501,11 @@ body, #app, .feed-shell { overflow-x: clip; }
   .review-card__header { padding-right: 32px; }
   .review-card__top-chip .review-card__body { padding-right: 0; }
 }
+
+
+/* Direção visual experimental: geometria rígida e cantos retos em toda a interface */
+*,
+*::before,
+*::after {
+  border-radius: 0 !important;
+}
