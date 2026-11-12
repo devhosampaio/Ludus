@@ -1404,12 +1404,18 @@ button:disabled { cursor: wait; opacity: .65; }
   mix-blend-mode: screen;
 }
 .review-card__cover-wrap::after {
-  opacity: 0;
+  /* Moldura e lombada discretas: a arte passa a parecer inserida numa caixa */
+  opacity: .82;
   background:
-    linear-gradient(145deg, rgb(255 255 255 / 25%), transparent 23%),
-    linear-gradient(325deg, transparent 65%, rgb(255 255 255 / 13%) 100%),
-    linear-gradient(90deg, rgb(255 255 255 / 8%), transparent 18%, transparent 82%, rgb(255 255 255 / 8%));
-  box-shadow: inset 1px 1px 1px rgb(255 255 255 / 32%), inset -1px -1px 1px rgb(255 255 255 / 12%);
+    linear-gradient(180deg, rgb(24 22 31 / 94%) 0 7px, rgb(232 223 206 / 42%) 7px 8px, transparent 8px),
+    linear-gradient(90deg, rgb(24 22 31 / 58%) 0 5px, transparent 5px),
+    linear-gradient(145deg, rgb(255 255 255 / 16%), transparent 23%),
+    linear-gradient(325deg, transparent 65%, rgb(255 255 255 / 9%) 100%),
+    linear-gradient(90deg, rgb(255 255 255 / 7%), transparent 18%, transparent 82%, rgb(255 255 255 / 7%));
+  box-shadow:
+    inset 1px 1px 1px rgb(255 255 255 / 32%),
+    inset -1px -1px 1px rgb(255 255 255 / 12%),
+    inset 0 0 0 1px rgb(20 18 27 / 24%);
   transition: opacity .3s ease;
 }
 .review-card__cover-wrap:hover::before {
