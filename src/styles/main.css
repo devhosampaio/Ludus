@@ -3691,3 +3691,5 @@ html body #app .review-card__header .review-card__author-avatar img {
   .composer__selected .composer__game-info > strong { font-size: 15px; }
   .composer__star { width: 32px !important; min-width: 32px !important; }
 }
+
+.composer__selected[hidden] { display: none !important; }
