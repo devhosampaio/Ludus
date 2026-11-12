@@ -4474,3 +4474,17 @@ html body #app .review-card__header .review-card__author-avatar img {
     border-radius: 50px !important;
   }
 }
+
+
+/* Painel de autenticação: espaço para o formulário completo de cadastro */
+@media (min-width: 821px) {
+  html body #app .auth-panel {
+    width: 86%;
+    height: 88%;
+    max-height: calc(100svh - 48px);
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 32px clamp(24px, 4vw, 64px);
+    border-radius: 50px !important;
+  }
+}
