@@ -3281,3 +3281,38 @@ body, #app, .feed-shell { overflow-x: clip; }
     flex-direction: row !important;
   }
 }
+
+
+/* Discussão em página própria: visual editorial e comentários fora dos cartões do feed */
+.review-card__comments-toggle {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  color: #a9a1b3 !important;
+  cursor: pointer !important;
+  pointer-events: auto !important;
+}
+.review-card__comments-toggle:hover { color: #f5f0e6 !important; }
+.review-card__comments-toggle > span {
+  display: inline !important;
+  min-width: 0 !important;
+  height: auto !important;
+  margin: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  font: 11px 'DM Sans', sans-serif !important;
+}
+.review-detail-page .profile-page__content { width: 100%; }
+.review-detail { max-width: 850px; }
+.review-detail__discussion { max-width: 760px; margin: 0 auto; }
+.review-detail__discussion h2 {
+  padding-bottom: 15px;
+  border-bottom: 1px solid rgb(232 223 206 / 18%);
+}
+.review-detail__comment,
+.review-comment { border-bottom: 1px solid rgb(232 223 206 / 14%) !important; }
+.review-comment__body { font-size: 13px !important; line-height: 1.75 !important; }
