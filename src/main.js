@@ -883,9 +883,11 @@ async function renderReviewPage(currentUser, reviewId) {
   if (error || !review) { content.innerHTML = '<div class="profile-page__empty"><h1>Não encontramos esta avaliação.</h1></div>'; return; }
   const game = review.games || {}, profile = review.profiles || {};
   const avatar = profile.avatar_url ? '<img src="' + escapeHTML(profile.avatar_url) + '" alt="">' : profilePlaceholderMarkup();
-  const { data: comments, error: commentsError } = await supabase.from('review_comments')
-    .select('id, user_id, body, created_at, parent_comment_id, profiles!review_comments_user_id_fkey(username, avatar_url)')
-    .eq('review_id', review.id).order('created_at', { ascending: true }).limit(1000);
+  const { data: comments, error: commentsError } = await fetchAllPages(() =>
+    supabase.from('review_comments')
+      .select('id, user_id, body, created_at, parent_comment_id, profiles!review_comments_user_id_fkey(username, avatar_url)')
+      .eq('review_id', review.id).order('created_at', { ascending: true })
+  );
   if (requestId !== renderReviewPage.requestId) return;
   const commentRows = comments || [];
   const { data: commentLikes, error: commentLikesError } = await fetchCommentLikeRows(commentRows.map((comment) => comment.id));
