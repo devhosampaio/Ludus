@@ -210,7 +210,7 @@ function renderReviewCommentMarkup(comment, user, likes, childrenByParent, neste
       : '<button type="button" data-comment-action="report">Denunciar comentário</button>') +
     '</div></details>';
   return '<article class="review-comment' + (nested ? ' review-comment--reply' : '') + '" data-comment-id="' + comment.id + '">' +
-    '<div class="review-comment__meta" data-comment-thread-row><span class="review-comment__avatar">' + avatar + '</span>' +
+    '<div class="review-comment__meta"><span class="review-comment__avatar">' + avatar + '</span>' +
     '<button class="review-comment__author" type="button" data-profile-username="' + escapeHTML(username) + '">' + escapeHTML(username) + '</button>' +
     '<time>' + formatDate(comment.created_at) + '</time>' + menu + '</div>' +
     '<p class="review-comment__body">' + escapeHTML(comment.body) + '</p>' +
@@ -219,7 +219,7 @@ function renderReviewCommentMarkup(comment, user, likes, childrenByParent, neste
     '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 21s-8.8-5.9-8.8-12.2A4.8 4.8 0 0 1 12 6.4a4.8 4.8 0 0 1 8.8 2.4C20.8 15.1 12 21 12 21Z"></path></svg><span data-comment-like-count>' + (commentLikes.length || '') + '</span></button>' +
     '<button type="button" class="review-comment__reply" data-reply-comment>Responder</button></div>' +
     '<form class="review-comment__reply-form" data-reply-form data-parent-comment-id="' + comment.id + '" hidden><textarea rows="2" maxlength="1000" placeholder="Responder a ' + escapeHTML(username) + '..." required></textarea><button type="submit">Enviar resposta</button></form>' +
-    (children.length ? '<div class="review-comment__replies">' + children.map((child) => renderReviewCommentMarkup(child, user, likes, childrenByParent, true)).join('') + '</div>' : '') +
+    (children.length ? '<button type="button" class="review-comment__replies-toggle" data-toggle-replies data-reply-count="' + children.length + '" aria-expanded="false"><span>Exibir respostas (' + children.length + ')</span></button><div class="review-comment__replies" hidden>' + children.map((child) => renderReviewCommentMarkup(child, user, likes, childrenByParent, true)).join('') + '</div>' : '') +
     '</article>';
 }
 
@@ -680,16 +680,21 @@ async function renderSignedIn(user) {
       }
       return;
     }
+    const repliesToggle = event.target.closest('[data-toggle-replies]');
+    if (repliesToggle) {
+      const comment = repliesToggle.closest('[data-comment-id]');
+      const replies = comment?.querySelector(':scope > .review-comment__replies');
+      if (replies) {
+        replies.hidden = !replies.hidden;
+        repliesToggle.setAttribute('aria-expanded', String(!replies.hidden));
+        repliesToggle.querySelector('span').textContent = (replies.hidden ? 'Exibir respostas (' : 'Ocultar respostas (') + repliesToggle.dataset.replyCount + ')';
+      }
+      return;
+    }
     const viewAll = event.target.closest('[data-view-all-comments]');
     if (viewAll) {
       const reviewCard = viewAll.closest('[data-review-id]');
       if (reviewCard) navigateToReview(user, reviewCard.dataset.reviewId);
-      return;
-    }
-    const threadRow = event.target.closest('[data-comment-thread-row]');
-    if (threadRow && event.target === threadRow) {
-      const comment = threadRow.closest('[data-comment-id]');
-      if (comment?.querySelector('.review-comment__replies')) comment.classList.toggle('is-thread-collapsed');
       return;
     }
     const commentAction = event.target.closest('[data-comment-action]');
@@ -937,10 +942,15 @@ async function renderReviewPage(currentUser, reviewId) {
       if (form) { form.hidden = !form.hidden; if (!form.hidden) form.querySelector('textarea')?.focus(); }
       return;
     }
-    const threadRow = event.target.closest('[data-comment-thread-row]');
-    if (threadRow && event.target === threadRow) {
-      const comment = threadRow.closest('[data-comment-id]');
-      if (comment?.querySelector('.review-comment__replies')) comment.classList.toggle('is-thread-collapsed');
+    const repliesToggle = event.target.closest('[data-toggle-replies]');
+    if (repliesToggle) {
+      const comment = repliesToggle.closest('[data-comment-id]');
+      const replies = comment?.querySelector(':scope > .review-comment__replies');
+      if (replies) {
+        replies.hidden = !replies.hidden;
+        repliesToggle.setAttribute('aria-expanded', String(!replies.hidden));
+        repliesToggle.querySelector('span').textContent = (replies.hidden ? 'Exibir respostas (' : 'Ocultar respostas (') + repliesToggle.dataset.replyCount + ')';
+      }
       return;
     }
     const cancelEdit = event.target.closest('[data-cancel-edit]');
