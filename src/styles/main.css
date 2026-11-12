@@ -4926,3 +4926,151 @@ html body #app .auth-modal .submit-button__icon svg {
     transition: none !important;
   }
 }
+
+
+/* Autenticação restaurada: composição dividida com painel lateral integral */
+.auth-shell--split {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1.05fr) minmax(390px, .95fr) !important;
+  width: 100%;
+  height: 100vh !important;
+  height: 100svh !important;
+  min-height: 620px;
+  overflow: hidden !important;
+  background:
+    linear-gradient(90deg, rgb(24 21 31 / 76%) 0%, rgb(24 21 31 / 38%) 58%, rgb(24 21 31 / 24%) 100%),
+    linear-gradient(0deg, rgb(24 21 31 / 58%) 0%, transparent 48%, rgb(24 21 31 / 24%) 100%),
+    url('https://www.rockstargames.com/VI/_next/static/media/Vice_City_Postcard_landscape.0v2njmlk2n-qm.jpg?akim=1&imdensity=1&imwidth=3840') center / cover no-repeat;
+}
+.auth-shell--split .auth-intro {
+  display: flex;
+  position: relative;
+  width: auto;
+  height: 100%;
+  min-height: 0;
+  padding: clamp(32px, 6vw, 84px);
+  background: transparent !important;
+}
+.auth-shell--split .brand {
+  position: relative;
+  top: auto;
+  left: auto;
+}
+.auth-shell--split .auth-welcome-content {
+  position: relative;
+  top: auto;
+  left: auto;
+  width: min(100%, 700px);
+  align-items: flex-start;
+  margin: auto 0;
+  transform: none;
+  text-align: left;
+}
+.auth-shell--split .auth-welcome-content h1 {
+  text-align: left;
+  font-size: clamp(48px, 6.2vw, 82px);
+}
+.auth-shell--split .auth-welcome-actions {
+  justify-content: flex-start;
+}
+html body #app .auth-shell--split .auth-panel {
+  display: grid;
+  place-items: center;
+  justify-self: stretch;
+  align-self: stretch;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  margin: 0;
+  padding: clamp(32px, 5vw, 76px) clamp(28px, 6vw, 88px) !important;
+  overflow-x: hidden;
+  overflow-y: auto;
+  border-radius: 0 !important;
+  box-shadow: -18px 0 50px rgb(0 0 0 / 14%);
+}
+.auth-shell--split .auth-panel__inner {
+  width: min(100%, 410px);
+}
+.auth-switch {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+  padding: 5px;
+  margin: 0 0 30px;
+  background: #dcd2c1;
+  box-shadow: inset 0 2px 5px rgb(48 44 61 / 12%);
+}
+.auth-switch__button {
+  min-height: 43px;
+  padding: 10px 14px;
+  border: 0;
+  border-radius: 2px !important;
+  background: transparent;
+  color: #746d7d;
+  font: 600 13px 'Space Grotesk', sans-serif;
+  transition: background .18s ease, color .18s ease, box-shadow .18s ease;
+}
+.auth-switch__button.is-active {
+  background: #302c3d;
+  color: #e8dfce;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 13%), 0 2px 5px rgb(24 21 31 / 22%);
+}
+.auth-shell--split .auth-panel__heading h2 {
+  font-size: clamp(32px, 3.4vw, 43px);
+}
+@media (max-width: 820px) {
+  .auth-shell--split {
+    display: flex !important;
+    height: auto !important;
+    min-height: 100svh;
+    flex-direction: column;
+    overflow: visible !important;
+  }
+  .auth-shell--split .auth-intro {
+    width: 100%;
+    min-height: 42svh;
+    height: auto;
+    padding: 28px 28px 34px 42px;
+  }
+  .auth-shell--split .auth-welcome-content {
+    padding: 44px 0 8px;
+  }
+  .auth-shell--split .auth-welcome-content h1 {
+    font-size: clamp(44px, 9vw, 66px);
+  }
+  html body #app .auth-shell--split .auth-panel {
+    width: 100% !important;
+    height: auto !important;
+    min-height: 58svh !important;
+    padding: 42px 28px 56px !important;
+    border-radius: 0 !important;
+    box-shadow: 0 -12px 36px rgb(0 0 0 / 16%);
+  }
+}
+@media (max-width: 560px) {
+  .auth-shell--split .auth-intro {
+    min-height: 38svh;
+    padding: 24px 22px 28px 36px;
+  }
+  .auth-shell--split .auth-welcome-content h1 {
+    font-size: clamp(40px, 11vw, 58px);
+  }
+  .auth-shell--split .auth-welcome-actions {
+    gap: 9px;
+  }
+  html body #app .auth-shell--split .auth-welcome-button {
+    min-width: 0;
+    min-height: 54px;
+    padding-left: 18px;
+    font-size: 13px;
+  }
+  html body #app .auth-shell--split .auth-welcome-button__icon {
+    width: 38px;
+    height: 38px;
+    flex-basis: 38px;
+  }
+  html body #app .auth-shell--split .auth-panel {
+    padding: 34px 22px 44px !important;
+  }
+}
