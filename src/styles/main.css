@@ -3472,3 +3472,9 @@ body, #app, .feed-shell { overflow-x: clip; }
   .review-card__header .review-card__meta { gap: 6px; }
   .review-card__activity { font-size: 11px; }
 }
+
+
+/* Remover o contorno do chip interno das avaliações */
+.review-card__top-chip {
+  border: 0 !important;
+}
