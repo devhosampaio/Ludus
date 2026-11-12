@@ -1481,7 +1481,7 @@ async function openReviewComposer(user, existingReview = null, preselectedGame =
   });
 }
 
-function renderAuth(mode = 'welcome') {
+function renderAuth(mode = 'login') {
   const isWelcome = mode === 'welcome';
 
   if (isWelcome) {
@@ -1523,7 +1523,7 @@ function renderAuth(mode = 'welcome') {
   const passwordAutocomplete = isSignup ? 'new-password' : 'current-password';
 
   app.innerHTML = [
-    '<main class="auth-shell auth-shell--welcome auth-shell--modal">',
+    '<main class="auth-shell auth-shell--split">',
     '<section class="auth-intro" aria-label="Ludus">',
     '<a class="brand" href="./" aria-label="Ludus início">L<span>.</span></a>',
     '<div class="auth-welcome-content">',
@@ -1534,9 +1534,8 @@ function renderAuth(mode = 'welcome') {
     '</div></div>',
     '<span class="auth-intro__credit">GRAND THEFT AUTO VI — ROCKSTAR GAMES</span>',
     '</section>',
-    '<div class="auth-modal-backdrop" data-auth-close></div>',
-    '<section class="auth-modal" role="dialog" aria-modal="true" aria-label="' + (isSignup ? 'Criar conta' : 'Entrar no Ludus') + '" tabindex="-1">',
-    '<section class="auth-panel"><button class="auth-modal__close" type="button" data-auth-close aria-label="Fechar formulário" title="Fechar">×</button><div class="auth-panel__inner">',
+    '<section class="auth-panel" aria-label="' + (isSignup ? 'Criar conta' : 'Entrar no Ludus') + '"><div class="auth-panel__inner">',
+    '<nav class="auth-switch" aria-label="Acesso à conta"><button class="auth-switch__button ' + (!isSignup ? 'is-active' : '') + '" type="button" data-mode="login" ' + (!isSignup ? 'aria-current="page"' : '') + '>Entrar</button><button class="auth-switch__button ' + (isSignup ? 'is-active' : '') + '" type="button" data-mode="signup" ' + (isSignup ? 'aria-current="page"' : '') + '>Criar conta</button></nav>',
     '<div class="auth-panel__heading">' + (isSignup ? '<p class="eyebrow">COMECE SUA JORNADA</p>' : ''),
     '<h2>' + (isSignup ? 'Crie sua conta.' : 'Entre no Ludus.') + '</h2>',
     '</div>',
@@ -1549,21 +1548,14 @@ function renderAuth(mode = 'welcome') {
     '<button class="submit-button" type="submit"><span>' + (isSignup ? 'Criar minha conta' : 'Entrar') + '</span><span class="submit-button__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4M3 12h12m-5-5 5 5-5 5"/></svg></span></button>',
     '<p class="form-message" data-message role="status" aria-live="polite" hidden></p></form>',
     '<div class="terms-modal" data-terms-modal hidden><div class="terms-modal__backdrop" data-terms-close></div><section class="terms-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="terms-title"><button class="terms-modal__close" type="button" data-terms-close aria-label="Fechar">×</button><p class="eyebrow">LUDUS · COMUNIDADE</p><h3 id="terms-title">Termos de serviço</h3><p>Este é um texto provisório. Os termos oficiais de serviço do Ludus ainda serão publicados.</p><p>Ao utilizar a plataforma, esperamos que todas as pessoas tratem a comunidade com respeito, não publiquem conteúdo ilegal ou ofensivo e respeitem os direitos de terceiros.</p><p>As funcionalidades, regras de convivência, privacidade e condições de uso serão detalhadas nesta página quando os termos oficiais forem definidos.</p><p class="terms-modal__note">VERSÃO PLACEHOLDER — NÃO É O TEXTO FINAL</p></section></div>',
-    '</div></section></section></main>'
+    '</div></section></main>'
   ].join('');
 
   app.querySelectorAll('[data-mode]').forEach((button) => {
     button.addEventListener('click', () => renderAuth(button.dataset.mode));
   });
 
-  const authModal = app.querySelector('.auth-modal');
-  app.querySelectorAll('[data-auth-close]').forEach((button) => {
-    button.addEventListener('click', () => renderAuth('welcome'));
-  });
-  authModal?.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape') renderAuth('welcome');
-  });
-  authModal?.querySelector('input')?.focus();
+  app.querySelector('.auth-panel')?.querySelector('input')?.focus();
 
   app.querySelectorAll('[data-password-toggle]').forEach((button) => {
     const input = button.parentElement.querySelector('input');
