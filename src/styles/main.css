@@ -2711,3 +2711,124 @@ body, #app, .feed-shell { overflow-x: clip; }
   .game-page__rate { font-size: 9px; }
   .game-page__description { margin-right: 10px; margin-left: 10px; }
 }
+
+
+/* Curtidas em coral e realce branco nos ícones de interação */
+.review-card > .review-card__actions .review-card__like.is-liked,
+.review-card > .review-card__actions .review-card__like.is-liked > svg {
+  color: #d96c55 !important;
+}
+.review-card > .review-card__actions .review-card__like:hover > svg,
+.review-card > .review-card__actions .review-card__comments-toggle:hover > svg {
+  color: #ffffff !important;
+  fill: currentColor;
+}
+.review-card__cover-wrap {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.review-card__cover-wrap .review-card__cover { display: block; }
+
+/* Indicador de notificações sobre o sino */
+.notifications__trigger { position: relative !important; }
+.notifications__count {
+  position: absolute !important;
+  top: 1px !important;
+  right: 0 !important;
+  display: grid !important;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  place-items: center;
+  border: 2px solid #302c3d;
+  border-radius: 999px;
+  background: #d96c55;
+  color: #fff;
+  font: 600 9px/1 'DM Sans', sans-serif;
+  z-index: 5;
+}
+.notifications__count[hidden] { display: none !important; }
+
+/* Gaveta lateral de comentários */
+.review-comments {
+  position: fixed !important;
+  inset: 0 0 0 auto !important;
+  z-index: 300 !important;
+  width: min(420px, 92vw) !important;
+  height: 100dvh;
+  padding: 18px;
+  overflow-y: auto;
+  border-left: 1px solid rgb(201 191 176 / 25%);
+  background: #302c3d !important;
+  box-shadow: -18px 0 50px rgb(0 0 0 / 35%);
+  transform: translateX(105%);
+  transition: transform .28s ease;
+  display: block !important;
+}
+.review-comments.is-open { transform: translateX(0); }
+.review-comments[hidden] { display: block !important; }
+.review-comments__drawer-head {
+  position: sticky;
+  top: -18px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 0 16px;
+  background: #302c3d;
+}
+.review-comments__drawer-head strong { color: #f5f0e6; font-size: 15px; }
+.review-comments__drawer-head button {
+  width: 34px;
+  height: 34px;
+  border: 0;
+  border-radius: 50%;
+  background: rgb(232 223 206 / 9%);
+  color: #f5f0e6;
+  font-size: 24px;
+  cursor: pointer;
+}
+.review-comments__form { position: sticky; bottom: -18px; padding: 14px 0 18px; background: #302c3d; }
+.review-comments__form textarea { width: 100%; min-height: 90px; resize: vertical; }
+.review-comments__form button { margin-top: 9px; }
+.review-comment { padding: 13px 0; border-bottom: 1px solid rgb(201 191 176 / 18%); }
+.review-comment p { color: #e8dfce; line-height: 1.6; }
+.review-card { cursor: pointer; }
+.review-card button, .review-card details, .review-card a { cursor: pointer; }
+
+/* Avaliação em página própria, em tela ampla */
+.review-detail { max-width: 920px; margin: 28px auto 70px; padding: 0 24px; }
+.review-detail__main { display: grid; grid-template-columns: 210px minmax(0,1fr); gap: 30px; padding: 28px 0 36px; border-bottom: 1px solid rgb(232 223 206 / 20%); }
+.review-detail__cover { display: block; padding: 0; border: 0; background: transparent; cursor: pointer; }
+.review-detail__cover img { display: block; width: 100%; border: 1px solid rgb(232 223 206 / 30%); border-radius: 4px; }
+.review-detail__content { min-width: 0; align-self: center; }
+.review-detail__author { display: flex; align-items: center; gap: 11px; margin-bottom: 25px; }
+.review-detail__avatar, .review-detail__avatar img { display: block; width: 42px; height: 42px; border-radius: 50%; object-fit: cover; }
+.review-detail__author strong { display: block; color: #f5f0e6; font-size: 13px; }
+.review-detail__author small { display: block; margin-top: 4px; color: #a9a1b3; font-size: 10px; }
+.review-detail__content h1 { margin: 0; color: #f5f0e6; font: 600 clamp(26px,4vw,42px)/1.12 'Space Grotesk',sans-serif; }
+.review-detail__content h1 small { color: #c9bfb0; font-size: .55em; font-weight: 400; }
+.review-detail__rating { margin-top: 15px; color: #d5a64a; font-size: 22px; letter-spacing: 3px; }
+.review-detail__status { margin-top: 7px; color: #c9bfb0; font-size: 11px; }
+.review-detail__body { margin: 26px 0 0; color: #f5f0e6; font-size: 15px; line-height: 1.85; white-space: pre-line; }
+.review-detail__discussion { padding: 30px 0; }
+.review-detail__discussion h2 { display: flex; gap: 10px; align-items: center; margin: 0 0 15px; color: #f5f0e6; font-size: 18px; font-weight: 400; }
+.review-detail__discussion h2 span { color: #a9a1b3; font: 11px 'DM Mono',monospace; }
+.review-detail__comment { position: relative; padding: 17px 0; border-bottom: 1px solid rgb(232 223 206 / 15%); }
+.review-detail__comment strong { color: #f5f0e6; font-size: 12px; }
+.review-detail__comment time { margin-left: 10px; color: #a9a1b3; font-size: 10px; }
+.review-detail__comment p { margin: 8px 0 0; color: #e8dfce; font-size: 13px; line-height: 1.7; white-space: pre-line; }
+.review-detail__comment button { margin-top: 8px; border: 0; background: transparent; color: #d96c55; cursor: pointer; }
+.review-detail__form { display: grid; gap: 12px; margin-top: 22px; }
+.review-detail__form textarea { width: 100%; min-height: 100px; padding: 13px; border: 1px solid rgb(201 191 176 / 28%); border-radius: 4px; background: #211e2b; color: #f5f0e6; resize: vertical; }
+.review-detail__form button { justify-self: start; min-height: 40px; padding: 0 16px; border: 0; border-radius: 4px; background: #d96c55; color: #211e2b; font-weight: 600; cursor: pointer; }
+@media (max-width: 620px) {
+  .review-detail { margin-top: 12px; padding: 0 14px; }
+  .review-detail__main { grid-template-columns: 94px minmax(0,1fr); gap: 15px; padding-top: 15px; }
+  .review-detail__author { margin-bottom: 17px; }
+  .review-detail__content h1 { font-size: 22px; }
+  .review-detail__rating { font-size: 17px; }
+  .review-detail__body { grid-column: 1 / -1; font-size: 13px; }
+}
