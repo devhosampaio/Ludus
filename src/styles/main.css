@@ -3215,3 +3215,69 @@ body, #app, .feed-shell { overflow-x: clip; }
 .review-comment__replies:not([hidden]) {
   display: block;
 }
+
+
+/* Refinamento visual das respostas e de seus menus */
+.review-comment__body {
+  font-size: 13px !important;
+  line-height: 1.6 !important;
+}
+.review-comment__meta {
+  justify-content: flex-start;
+  gap: 7px;
+}
+.review-comment__meta--reply {
+  padding-left: 0;
+}
+.review-comment__meta--reply .review-comment__author {
+  margin-left: 0;
+}
+.review-comment__reply-form {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: stretch !important;
+  gap: 8px !important;
+}
+.review-comment__reply-form textarea {
+  box-sizing: border-box !important;
+  height: 42px !important;
+  min-height: 42px !important;
+  max-height: 42px !important;
+  flex: 1 1 auto !important;
+  align-self: stretch !important;
+  resize: none !important;
+  overflow-y: auto;
+}
+.review-comment__reply-form button {
+  box-sizing: border-box !important;
+  height: 42px !important;
+  min-height: 42px !important;
+  flex: 0 0 auto !important;
+  align-self: stretch !important;
+  padding: 0 14px !important;
+  white-space: nowrap;
+}
+.review-comment__menu-panel {
+  min-width: 155px !important;
+  padding: 4px !important;
+  border-radius: 6px !important;
+}
+.review-comment__menu-panel button {
+  min-height: 34px;
+  padding: 8px 10px !important;
+  border-radius: 3px;
+  font: 500 11px/1.35 'DM Sans', sans-serif !important;
+}
+@media (max-width: 520px) {
+  .review-comment__reply-form {
+    flex-direction: row !important;
+  }
+  .review-comment__reply-form button {
+    min-height: 42px !important;
+  }
+}
+@media (max-width: 380px) {
+  .review-comment__reply-form {
+    flex-direction: row !important;
+  }
+}
