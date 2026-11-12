@@ -226,6 +226,7 @@ function renderCommentsSection(reviewId, comments, likes, user) {
     if (!childrenByParent.has(key)) childrenByParent.set(key, []);
     childrenByParent.get(key).push(comment);
   });
+  childrenByParent.forEach((items) => items.sort((a, b) => new Date(a.created_at) - new Date(b.created_at)));
   const firstComments = childrenByParent.get('') || [];
   const markup = firstComments.slice(0, 2).map((comment) =>
     renderReviewCommentMarkup(comment, user, likes || [], childrenByParent)
@@ -699,7 +700,6 @@ async function renderSignedIn(user) {
         return;
       }
       const card = deleteComment.closest('[data-review-id]');
-      await loadReviewComments(user, card);
       await loadReviewComments(user, card);
       return;
     }
