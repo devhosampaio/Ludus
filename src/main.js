@@ -198,19 +198,23 @@ async function fetchCommentLikeRows(commentIds) {
 function renderReviewCommentMarkup(comment, user, likes, childrenByParent, nested = false) {
   const profile = comment.profiles || {};
   const username = profile.username || 'jogador';
-  const displayName = profile.display_name || username;
   const avatar = profile.avatar_url
     ? '<img src="' + escapeHTML(profile.avatar_url) + '" alt="" loading="lazy">'
     : profilePlaceholderMarkup();
   const commentLikes = likes.filter((like) => like.comment_id === comment.id);
   const isLiked = commentLikes.some((like) => like.user_id === user.id);
   const children = childrenByParent.get(comment.id) || [];
+  const menu = '<details class="review-comment__menu"><summary aria-label="Opções do comentário" title="Opções">⋯</summary><div class="review-comment__menu-panel">' +
+    (comment.user_id === user.id
+      ? '<button type="button" data-comment-action="edit">Editar comentário</button><button type="button" data-comment-action="delete">Excluir comentário</button>'
+      : '<button type="button" data-comment-action="report">Denunciar comentário</button>') +
+    '</div></details>';
   return '<article class="review-comment' + (nested ? ' review-comment--reply' : '') + '" data-comment-id="' + comment.id + '">' +
-    '<div class="review-comment__meta"><span class="review-comment__avatar">' + avatar + '</span>' +
-    '<button class="review-comment__author" type="button" data-profile-username="' + escapeHTML(username) + '">' + escapeHTML(displayName) + '</button>' +
-    '<span class="review-comment__username">' + escapeHTML(username) + '</span><time>' + formatDate(comment.created_at) + '</time>' +
-    (comment.user_id === user.id ? '<button type="button" class="review-comment__delete" data-delete-comment="' + comment.id + '">Excluir</button>' : '') +
-    '</div><p class="review-comment__body">' + escapeHTML(comment.body) + '</p>' +
+    '<div class="review-comment__meta" data-comment-thread-row><span class="review-comment__avatar">' + avatar + '</span>' +
+    '<button class="review-comment__author" type="button" data-profile-username="' + escapeHTML(username) + '">' + escapeHTML(username) + '</button>' +
+    '<time>' + formatDate(comment.created_at) + '</time>' + menu + '</div>' +
+    '<p class="review-comment__body">' + escapeHTML(comment.body) + '</p>' +
+    '<form class="review-comment__edit-form" data-edit-comment-form hidden><textarea rows="2" maxlength="1000" required>' + escapeHTML(comment.body) + '</textarea><button type="submit">Salvar</button><button type="button" data-cancel-edit>Cancelar</button></form>' +
     '<div class="review-comment__actions"><button type="button" class="review-comment__like' + (isLiked ? ' is-liked' : '') + '" data-like-comment aria-pressed="' + isLiked + '">' +
     '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 21s-8.8-5.9-8.8-12.2A4.8 4.8 0 0 1 12 6.4a4.8 4.8 0 0 1 8.8 2.4C20.8 15.1 12 21 12 21Z"></path></svg><span data-comment-like-count>' + (commentLikes.length || '') + '</span></button>' +
     '<button type="button" class="review-comment__reply" data-reply-comment>Responder</button></div>' +
@@ -228,15 +232,19 @@ function renderCommentsSection(reviewId, comments, likes, user) {
   });
   childrenByParent.forEach((items) => items.sort((a, b) => new Date(a.created_at) - new Date(b.created_at)));
   const firstComments = childrenByParent.get('') || [];
-  const markup = firstComments.slice(0, 2).map((comment) =>
+  const markup = firstComments.slice(0, 5).map((comment) =>
     renderReviewCommentMarkup(comment, user, likes || [], childrenByParent)
   ).join('');
+  const total = (comments || []).length;
   return '<section class="review-comments" data-comments-panel data-review-comments="' + reviewId + '">' +
-    '<div class="review-comments__list">' + (markup || '<p class="review-comments__empty">Seja o primeiro a comentar nesta review.</p>') + '</div>' +
+    '<button type="button" class="review-comments__view" data-view-comments>Visualizar comentários' + (total ? ' (' + total + ')' : '') + '</button>' +
+    '<div class="review-comments__tree" data-comments-tree hidden><div class="review-comments__list">' +
+    (markup || '<p class="review-comments__empty">Seja o primeiro a comentar nesta review.</p>') + '</div>' +
+    (total > 5 ? '<button type="button" class="review-comments__all" data-view-all-comments>Ver todos</button>' : '') +
+    '</div>' +
     '<form class="review-comments__form" data-comment-form><textarea rows="2" maxlength="1000" placeholder="Comentar nesta review..." required></textarea><button type="submit">Enviar</button></form>' +
     '</section>';
 }
-
 async function renderSignedIn(user) {
   activeUser = user;
   const fallbackName = user.user_metadata?.display_name || user.email?.split('@')[0] || 'jogador';
@@ -576,7 +584,7 @@ async function renderSignedIn(user) {
   renderFeed('popular');
 
   feedList.addEventListener('submit', async (event) => {
-    const form = event.target.closest('[data-comment-form], [data-reply-form]');
+    const form = event.target.closest('[data-comment-form], [data-reply-form], [data-edit-comment-form]');
     if (!form) return;
     event.preventDefault();
     const card = form.closest('[data-review-id]');
@@ -652,6 +660,72 @@ async function renderSignedIn(user) {
     const profileButton = event.target.closest('[data-profile-username]');
     if (profileButton?.dataset.profileUsername) {
       navigateToProfile(user, profileButton.dataset.profileUsername);
+      return;
+    }
+    const viewComments = event.target.closest('[data-view-comments]');
+    if (viewComments) {
+      const panel = viewComments.closest('[data-comments-panel]');
+      const tree = panel?.querySelector('[data-comments-tree]');
+      if (tree) {
+        tree.hidden = !tree.hidden;
+        viewComments.setAttribute('aria-expanded', String(!tree.hidden));
+        viewComments.textContent = (tree.hidden ? 'Visualizar comentários' : 'Ocultar comentários') +
+          (Number(cardCommentCount(panel)?.textContent || 0) ? ' (' + cardCommentCount(panel).textContent + ')' : '');
+      }
+      return;
+    }
+    const viewAll = event.target.closest('[data-view-all-comments]');
+    if (viewAll) {
+      const reviewCard = viewAll.closest('[data-review-id]');
+      if (reviewCard) navigateToReview(user, reviewCard.dataset.reviewId);
+      return;
+    }
+    const threadRow = event.target.closest('[data-comment-thread-row]');
+    if (threadRow && event.target === threadRow) {
+      const comment = threadRow.closest('[data-comment-id]');
+      if (comment?.querySelector('.review-comment__replies')) comment.classList.toggle('is-thread-collapsed');
+      return;
+    }
+    const commentAction = event.target.closest('[data-comment-action]');
+    if (commentAction) {
+      const comment = commentAction.closest('[data-comment-id]');
+      const menu = commentAction.closest('.review-comment__menu');
+      const action = commentAction.dataset.commentAction;
+      const card = commentAction.closest('[data-review-id]');
+      if (!comment || !card) return;
+      if (menu) menu.open = false;
+      if (action === 'edit') {
+        const form = comment.querySelector('[data-edit-comment-form]');
+        form.hidden = false;
+        comment.querySelector('.review-comment__body').hidden = true;
+        form.querySelector('textarea')?.focus();
+      } else if (action === 'delete') {
+        if (!window.confirm('Excluir este comentário e suas respostas?')) return;
+        const { error: deleteError } = await supabase.from('review_comments').delete()
+          .eq('id', comment.dataset.commentId).eq('user_id', user.id);
+        if (deleteError) { console.error('[Ludus] Falha ao excluir comentário:', deleteError); window.alert('Não foi possível excluir o comentário.'); return; }
+        await loadReviewComments(user, card);
+      } else if (action === 'report') {
+        const reason = window.prompt('Motivo da denúncia:\\n1 — Spam\\n2 — Assédio ou discurso de ódio\\n3 — Spoiler sem aviso\\n4 — Conteúdo impróprio\\n5 — Outro');
+        if (reason === null) return;
+        const reasons = { '1':'spam', '2':'harassment', '3':'spoiler', '4':'inappropriate', '5':'other' };
+        if (!reasons[reason.trim()]) { window.alert('Escolha uma opção de 1 a 5.'); return; }
+        const details = window.prompt('Detalhes adicionais (opcional):') || '';
+        const { error: reportError } = await supabase.from('comment_reports').insert({
+          comment_id: comment.dataset.commentId, reporter_id: user.id, reason: reasons[reason.trim()], details: details.slice(0, 1000)
+        });
+        if (reportError) {
+          console.error('[Ludus] Falha ao denunciar comentário:', reportError);
+          window.alert(reportError.code === '23505' ? 'Você já denunciou este comentário.' : 'Não foi possível enviar a denúncia.');
+        } else window.alert('Denúncia enviada. Obrigado por ajudar a manter a comunidade segura.');
+      }
+      return;
+    }
+    const cancelEdit = event.target.closest('[data-cancel-edit]');
+    if (cancelEdit) {
+      const comment = cancelEdit.closest('[data-comment-id]');
+      const form = comment?.querySelector('[data-edit-comment-form]');
+      if (form) { form.hidden = true; comment.querySelector('.review-comment__body').hidden = false; }
       return;
     }
     const replyButton = event.target.closest('[data-reply-comment]');
@@ -762,6 +836,17 @@ async function loadReviewComments(user, card) {
   panel.outerHTML = renderCommentsSection(card.dataset.reviewId, rows, likes || [], user);
   const count = card.querySelector('[data-comment-count]');
   if (count) count.textContent = rows.length || '';
+}
+
+function navigateToReview(currentUser, reviewId) {
+  if (!reviewId) return;
+  const nextHash = '#/review/' + encodeURIComponent(reviewId);
+  if (window.location.hash !== nextHash) window.history.pushState({ page: 'review', reviewId }, '', nextHash);
+  renderReviewPage(currentUser, reviewId);
+}
+
+function cardCommentCount(panel) {
+  return panel?.closest('[data-review-id]')?.querySelector('[data-comment-count]');
 }
 
 function getProfileUsernameFromLocation() {
