@@ -242,7 +242,7 @@ function renderCommentsSection(reviewId, comments, likes, user) {
     (markup || '<p class="review-comments__empty">Seja o primeiro a comentar nesta review.</p>') + '</div>' +
     (total > 5 ? '<button type="button" class="review-comments__all" data-view-all-comments>Ver todos</button>' : '') +
     '</div>' +
-    '<form class="review-comments__form" data-comment-form><textarea rows="2" maxlength="1000" placeholder="Comentar nesta review..." required></textarea><button type="submit">Enviar</button></form>' +
+    '<form class="review-comments__form" data-comment-form><textarea rows="2" maxlength="1000" placeholder="Comentar nesta review..." required></textarea><button type="submit" aria-label="Enviar comentário" title="Enviar comentário"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg></button></form>' +
     '</section>';
 }
 async function renderSignedIn(user) {
