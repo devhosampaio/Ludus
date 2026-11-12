@@ -3126,3 +3126,47 @@ body, #app, .feed-shell { overflow-x: clip; }
   .review-comment__edit-form textarea { flex-basis: 100%; }
   .review-comment__edit-form button { min-height: 36px; }
 }
+
+
+/* Ajustes do campo de comentário */
+.review-comments__view {
+  font-size: 10px !important;
+}
+.review-comments__form {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: stretch !important;
+  gap: 9px !important;
+}
+.review-comments__form textarea {
+  box-sizing: border-box !important;
+  height: 44px !important;
+  min-height: 44px !important;
+  max-height: 44px !important;
+  resize: none !important;
+  overflow-y: auto;
+}
+.review-comments__form button {
+  display: grid !important;
+  width: 44px !important;
+  min-width: 44px !important;
+  height: 44px !important;
+  min-height: 44px !important;
+  flex: 0 0 44px !important;
+  align-self: stretch !important;
+  place-items: center !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 50% !important;
+  background: #7060ab !important;
+  color: #f5f0e6 !important;
+  cursor: pointer;
+}
+.review-comments__form button:hover { background: #8171bd !important; }
+.review-comments__form button:disabled { opacity: .55; cursor: wait; }
+.review-comments__form button svg { display: block; width: 19px; height: 19px; }
+.review-comment__reply-form textarea,
+.review-comment__edit-form textarea,
+.review-detail__form textarea {
+  resize: none !important;
+}
