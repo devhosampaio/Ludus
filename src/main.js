@@ -180,6 +180,62 @@ async function fetchReviewRows(table, columns, reviewIds) {
   };
 }
 
+async function fetchCommentLikeRows(commentIds) {
+  if (!commentIds.length) return { data: [], error: null };
+  const batches = [];
+  for (let index = 0; index < commentIds.length; index += 100) {
+    batches.push(commentIds.slice(index, index + 100));
+  }
+  const results = await Promise.all(batches.map((ids) =>
+    fetchAllPages(() => supabase.from('review_comment_likes').select('comment_id, user_id').in('comment_id', ids))
+  ));
+  return {
+    data: results.flatMap((result) => result.data || []),
+    error: results.find((result) => result.error)?.error || null
+  };
+}
+
+function renderReviewCommentMarkup(comment, user, likes, childrenByParent, nested = false) {
+  const profile = comment.profiles || {};
+  const username = profile.username || 'jogador';
+  const displayName = profile.display_name || username;
+  const avatar = profile.avatar_url
+    ? '<img src="' + escapeHTML(profile.avatar_url) + '" alt="" loading="lazy">'
+    : profilePlaceholderMarkup();
+  const commentLikes = likes.filter((like) => like.comment_id === comment.id);
+  const isLiked = commentLikes.some((like) => like.user_id === user.id);
+  const children = childrenByParent.get(comment.id) || [];
+  return '<article class="review-comment' + (nested ? ' review-comment--reply' : '') + '" data-comment-id="' + comment.id + '">' +
+    '<div class="review-comment__meta"><span class="review-comment__avatar">' + avatar + '</span>' +
+    '<button class="review-comment__author" type="button" data-profile-username="' + escapeHTML(username) + '">' + escapeHTML(displayName) + '</button>' +
+    '<span class="review-comment__username">' + escapeHTML(username) + '</span><time>' + formatDate(comment.created_at) + '</time>' +
+    (comment.user_id === user.id ? '<button type="button" class="review-comment__delete" data-delete-comment="' + comment.id + '">Excluir</button>' : '') +
+    '</div><p class="review-comment__body">' + escapeHTML(comment.body) + '</p>' +
+    '<div class="review-comment__actions"><button type="button" class="review-comment__like' + (isLiked ? ' is-liked' : '') + '" data-like-comment aria-pressed="' + isLiked + '">' +
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 21s-8.8-5.9-8.8-12.2A4.8 4.8 0 0 1 12 6.4a4.8 4.8 0 0 1 8.8 2.4C20.8 15.1 12 21 12 21Z"></path></svg><span data-comment-like-count>' + (commentLikes.length || '') + '</span></button>' +
+    '<button type="button" class="review-comment__reply" data-reply-comment>Responder</button></div>' +
+    '<form class="review-comment__reply-form" data-reply-form data-parent-comment-id="' + comment.id + '" hidden><textarea rows="2" maxlength="1000" placeholder="Responder a ' + escapeHTML(username) + '..." required></textarea><button type="submit">Enviar resposta</button></form>' +
+    (children.length ? '<div class="review-comment__replies">' + children.map((child) => renderReviewCommentMarkup(child, user, likes, childrenByParent, true)).join('') + '</div>' : '') +
+    '</article>';
+}
+
+function renderCommentsSection(reviewId, comments, likes, user) {
+  const childrenByParent = new Map();
+  (comments || []).forEach((comment) => {
+    const key = comment.parent_comment_id || '';
+    if (!childrenByParent.has(key)) childrenByParent.set(key, []);
+    childrenByParent.get(key).push(comment);
+  });
+  const firstComments = childrenByParent.get('') || [];
+  const markup = firstComments.slice(0, 2).map((comment) =>
+    renderReviewCommentMarkup(comment, user, likes || [], childrenByParent)
+  ).join('');
+  return '<section class="review-comments" data-comments-panel data-review-comments="' + reviewId + '">' +
+    '<div class="review-comments__list">' + (markup || '<p class="review-comments__empty">Seja o primeiro a comentar nesta review.</p>') + '</div>' +
+    '<form class="review-comments__form" data-comment-form><textarea rows="2" maxlength="1000" placeholder="Comentar nesta review..." required></textarea><button type="submit">Enviar</button></form>' +
+    '</section>';
+}
+
 async function renderSignedIn(user) {
   activeUser = user;
   const fallbackName = user.user_metadata?.display_name || user.email?.split('@')[0] || 'jogador';
@@ -427,12 +483,20 @@ async function renderSignedIn(user) {
   }, {});
   const likedReviewIds = new Set(likeRows.filter((like) => like.user_id === user.id).map((like) => like.review_id));
   const { data: commentRows, error: commentsCountError } = reviewIds.length
-    ? await fetchReviewRows('review_comments', 'review_id', reviewIds)
+    ? await fetchReviewRows('review_comments', 'id, review_id, user_id, body, created_at, parent_comment_id, profiles!review_comments_user_id_fkey(username, display_name, avatar_url)', reviewIds)
     : { data: [], error: null };
-  if (commentsCountError) console.error('[Ludus] Falha ao carregar contagem de comentários:', commentsCountError);
+  if (commentsCountError) console.error('[Ludus] Falha ao carregar comentários:', commentsCountError);
   const commentCounts = (commentRows || []).reduce((counts, comment) => {
     counts[comment.review_id] = (counts[comment.review_id] || 0) + 1;
     return counts;
+  }, {});
+  const commentIds = (commentRows || []).map((comment) => comment.id);
+  const { data: commentLikeRows, error: commentLikesError } = await fetchCommentLikeRows(commentIds);
+  if (commentLikesError) console.error('[Ludus] Falha ao carregar curtidas dos comentários:', commentLikesError);
+  const commentsByReview = (commentRows || []).reduce((grouped, comment) => {
+    if (!grouped[comment.review_id]) grouped[comment.review_id] = [];
+    grouped[comment.review_id].push(comment);
+    return grouped;
   }, {});
 
   const { data: followedProfiles, error: followedError } = await fetchAllPages(() => supabase.from('follows')
@@ -491,15 +555,16 @@ async function renderSignedIn(user) {
         (isOwner ? '<button type="button" data-review-action="edit">Editar review</button><button type="button" class="is-danger" data-review-action="delete">Excluir review</button>' : '<button type="button" data-review-action="report">Denunciar review</button>') + '</div></details>';
       const likeTotal = likeCounts[review.id] || 0;
       const commentTotal = commentCounts[review.id] || 0;
-      const socialActions = '<div class="review-card__social-actions"><button class="review-card__like' + (isLiked ? ' is-liked' : '') + '" type="button" data-like-review aria-label="Curtir avaliação" title="Curtir avaliação" aria-pressed="' + isLiked + '"><svg class="ui-icon ui-icon--heart" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" stroke="none" d="M12 21s-8.8-5.9-8.8-12.2A4.8 4.8 0 0 1 12 6.4a4.8 4.8 0 0 1 8.8 2.4C20.8 15.1 12 21 12 21Z"></path></svg><span class="review-card__like-count" data-like-count>' + (likeTotal || '') + '</span></button><button class="review-card__comments-toggle" type="button" data-comments-toggle aria-label="Ver comentários" title="Ver comentários" aria-expanded="false"><svg class="ui-icon ui-icon--comment" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" stroke="none" d="M4 3.5h16A2.5 2.5 0 0 1 22.5 6v9a2.5 2.5 0 0 1-2.5 2.5h-8l-5.8 4v-4H4A2.5 2.5 0 0 1 1.5 15V6A2.5 2.5 0 0 1 4 3.5Z"></path></svg><span class="review-card__comment-count" data-comment-count>' + (commentTotal || '') + '</span></button></div>'
-      return '<article class="review-card" data-review-id="' + review.id + '" tabindex="0" role="link" aria-label="Abrir avaliação completa em uma nova aba">' +
+      const socialActions = '<div class="review-card__social-actions"><button class="review-card__like' + (isLiked ? ' is-liked' : '') + '" type="button" data-like-review aria-label="Curtir avaliação" title="Curtir avaliação" aria-pressed="' + isLiked + '"><svg class="ui-icon ui-icon--heart" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" stroke="none" d="M12 21s-8.8-5.9-8.8-12.2A4.8 4.8 0 0 1 12 6.4a4.8 4.8 0 0 1 8.8 2.4C20.8 15.1 12 21 12 21Z"></path></svg><span class="review-card__like-count" data-like-count>' + (likeTotal || '') + '</span></button><span class="review-card__comments-toggle" aria-label="Comentários"><svg class="ui-icon ui-icon--comment" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" stroke="none" d="M4 3.5h16A2.5 2.5 0 0 1 22.5 6v9a2.5 2.5 0 0 1-2.5 2.5h-8l-5.8 4v-4H4A2.5 2.5 0 0 1 1.5 15V6A2.5 2.5 0 0 1 4 3.5Z"></path></svg><span class="review-card__comment-count" data-comment-count>' + (commentTotal || '') + '</span></span></div>'
+      return '<article class="review-card" data-review-id="' + review.id + '">' +
         '<div class="review-card__cover-column">' + cover + '</div>' +
         '<div class="review-card__body"><div class="review-card__meta"><button class="review-card__author" type="button" data-profile-username="' + escapeHTML(username) + '"><span class="review-card__author-avatar">' + avatarMarkup + '</span><span>' + escapeHTML(author) + '</span></button><time>' + formatDate(review.created_at) + '</time></div>' + menuMarkup +
         '<h3>' + escapeHTML(game) + (gameYear ? ' <small class="review-card__year">' + escapeHTML(gameYear) + '</small>' : '') + '</h3><div class="review-card__details"><span class="review-card__stars" aria-label="Nota ' + review.rating + ' de 5">' + stars + '</span>' +
         (review.liked_game ? '<span class="review-card__liked" aria-label="Gostei deste jogo" title="Gostei deste jogo"><svg class="ui-icon ui-icon--heart" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" stroke="none" d="M12 21s-8.8-5.9-8.8-12.2A4.8 4.8 0 0 1 12 6.4a4.8 4.8 0 0 1 8.8 2.4C20.8 15.1 12 21 12 21Z"></path></svg></span>' : '') +
-        (review.status ? '<span class="review-card__status"><svg class="ui-icon ui-icon--gamepad" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" stroke="none" d="M7 6h10a4 4 0 0 1 3.9 3.1l1.4 6.1a2.8 2.8 0 0 1-4.7 2.6l-2.2-2.1H8.6l-2.2 2.1a2.8 2.8 0 0 1-4.7-2.6l1.4-6.1A4 4 0 0 1 7 6Zm1.2 2.5a.8.8 0 0 0-.8.8v1.2H6.2a.8.8 0 0 0 0 1.6h1.2v1.2a.8.8 0 0 0 1.6 0v-1.2h1.2a.8.8 0 0 0 0-1.6H9V9.3a.8.8 0 0 0-.8-.8Zm7.1 1.1a1 1 0 1 0 0 2 1 1 0 0 0 0-2Zm2.5 2.5a1 1 0 1 0 0 2 1 1 0 0 0 0-2Z"></path></svg>' + statusLabel(review.status) + '</span>' : '') + '</div><section class="review-comments" data-comments-panel hidden></section></div>' +
+        (review.status ? '<span class="review-card__status"><svg class="ui-icon ui-icon--gamepad" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" stroke="none" d="M7 6h10a4 4 0 0 1 3.9 3.1l1.4 6.1a2.8 2.8 0 0 1-4.7 2.6l-2.2-2.1H8.6l-2.2 2.1a2.8 2.8 0 0 1-4.7-2.6l1.4-6.1A4 4 0 0 1 7 6Zm1.2 2.5a.8.8 0 0 0-.8.8v1.2H6.2a.8.8 0 0 0 0 1.6h1.2v1.2a.8.8 0 0 0 1.6 0v-1.2h1.2a.8.8 0 0 0 0-1.6H9V9.3a.8.8 0 0 0-.8-.8Zm7.1 1.1a1 1 0 1 0 0 2 1 1 0 0 0 0-2Zm2.5 2.5a1 1 0 1 0 0 2 1 1 0 0 0 0-2Z"></path></svg>' + statusLabel(review.status) + '</span>' : '') + '</div></div>' +
         (review.body ? '<p class="review-card__text">' + escapeHTML(review.body) + '</p>' : '') +
-        '<div class="review-card__actions">' + socialActions + '</div></article>';
+        '<div class="review-card__actions">' + socialActions + '</div>' +
+        renderCommentsSection(review.id, commentsByReview[review.id] || [], commentLikeRows || [], user) + '</article>';
     }).join('');
   };
 
@@ -510,7 +575,7 @@ async function renderSignedIn(user) {
   renderFeed('popular');
 
   feedList.addEventListener('submit', async (event) => {
-    const form = event.target.closest('[data-comment-form]');
+    const form = event.target.closest('[data-comment-form], [data-reply-form]');
     if (!form) return;
     event.preventDefault();
     const card = form.closest('[data-review-id]');
@@ -519,19 +584,18 @@ async function renderSignedIn(user) {
     const body = textarea.value.trim();
     if (!body || !card) return;
     submit.disabled = true;
+    const parentCommentId = form.dataset.parentCommentId || null;
     const { error: insertError } = await supabase.from('review_comments').insert({
       review_id: card.dataset.reviewId,
       user_id: user.id,
-      body
+      body,
+      parent_comment_id: parentCommentId
     });
     if (insertError) {
       console.error('[Ludus] Falha ao publicar comentário:', insertError);
       submit.disabled = false;
       return;
     }
-    const count = card.querySelector('[data-comment-count]');
-    const nextCommentCount = Number(count.textContent || 0) + 1;
-    count.textContent = nextCommentCount ? String(nextCommentCount) : '';
     await loadReviewComments(user, card);
   });
 
@@ -581,13 +645,7 @@ async function renderSignedIn(user) {
     const gameCoverButton = event.target.closest('[data-open-game]');
     if (gameCoverButton) {
       const gameId = gameCoverButton.dataset.openGame;
-      if (gameId) window.open(window.location.pathname + window.location.search + '#/jogo/' + encodeURIComponent(gameId), '_blank', 'noopener');
-      return;
-    }
-    const closeComments = event.target.closest('[data-close-comments]');
-    if (closeComments) {
-      const drawer = closeComments.closest('[data-comments-panel]');
-      if (drawer) drawer.classList.remove('is-open');
+      if (gameId) navigateToGame(user, gameId);
       return;
     }
     const profileButton = event.target.closest('[data-profile-username]');
@@ -595,18 +653,38 @@ async function renderSignedIn(user) {
       navigateToProfile(user, profileButton.dataset.profileUsername);
       return;
     }
-    const commentsToggle = event.target.closest('[data-comments-toggle]');
-    if (commentsToggle) {
-      const card = commentsToggle.closest('[data-review-id]');
-      const panel = card?.querySelector('[data-comments-panel]');
-      if (!panel) return;
-      const opening = !panel.classList.contains('is-open');
-      commentsToggle.setAttribute('aria-expanded', String(opening));
-      if (opening && panel.dataset.loaded !== 'true') {
-        await loadReviewComments(user, card);
-      } else {
-        panel.classList.toggle('is-open', opening);
+    const replyButton = event.target.closest('[data-reply-comment]');
+    if (replyButton) {
+      const comment = replyButton.closest('[data-comment-id]');
+      const form = comment?.querySelector('[data-reply-form]');
+      if (form) {
+        form.hidden = !form.hidden;
+        if (!form.hidden) form.querySelector('textarea')?.focus();
       }
+      return;
+    }
+    const commentLikeButton = event.target.closest('[data-like-comment]');
+    if (commentLikeButton) {
+      if (commentLikeButton.disabled) return;
+      const comment = commentLikeButton.closest('[data-comment-id]');
+      const commentId = comment?.dataset.commentId;
+      if (!commentId) return;
+      const wasLiked = commentLikeButton.getAttribute('aria-pressed') === 'true';
+      const count = commentLikeButton.querySelector('[data-comment-like-count]');
+      commentLikeButton.disabled = true;
+      const result = wasLiked
+        ? await supabase.from('review_comment_likes').delete().eq('comment_id', commentId).eq('user_id', user.id)
+        : await supabase.from('review_comment_likes').insert({ comment_id: commentId, user_id: user.id });
+      if (result.error) {
+        console.error('[Ludus] Falha ao curtir comentário:', result.error);
+      } else {
+        const nextLiked = !wasLiked;
+        const nextCount = Math.max(0, Number(count.textContent || 0) + (nextLiked ? 1 : -1));
+        commentLikeButton.setAttribute('aria-pressed', String(nextLiked));
+        commentLikeButton.classList.toggle('is-liked', nextLiked);
+        count.textContent = nextCount || '';
+      }
+      commentLikeButton.disabled = false;
       return;
     }
     const deleteComment = event.target.closest('[data-delete-comment]');
@@ -622,14 +700,7 @@ async function renderSignedIn(user) {
       }
       const card = deleteComment.closest('[data-review-id]');
       await loadReviewComments(user, card);
-      const count = card.querySelector('[data-comment-count]');
-      const nextCommentCount = Math.max(0, Number(count.textContent || 0) - 1);
-      count.textContent = nextCommentCount ? String(nextCommentCount) : '';
-      return;
-    }
-    const cardForOpen = event.target.closest('.review-card');
-    if (cardForOpen && !event.target.closest('button, a, textarea, input, form, details, summary')) {
-      window.open(window.location.pathname + window.location.search + '#/review/' + encodeURIComponent(cardForOpen.dataset.reviewId), '_blank', 'noopener');
+      await loadReviewComments(user, card);
       return;
     }
     const button = event.target.closest('[data-like-review]');
@@ -674,28 +745,23 @@ async function loadReviewComments(user, card) {
   if (!card) return;
   const panel = card.querySelector('[data-comments-panel]');
   if (!panel) return;
-  panel.innerHTML = '<p class="review-comments__loading">Carregando conversa…</p>';
+  panel.innerHTML = '<p class="review-comments__loading">Atualizando comentários…</p>';
   const { data: comments, error } = await supabase.from('review_comments')
-    .select('id, user_id, body, created_at, profiles!review_comments_user_id_fkey(username, display_name, avatar_url)')
+    .select('id, review_id, user_id, body, created_at, parent_comment_id, profiles!review_comments_user_id_fkey(username, display_name, avatar_url)')
     .eq('review_id', card.dataset.reviewId)
     .order('created_at', { ascending: true })
-    .limit(100);
+    .limit(500);
   if (error) {
     console.error('[Ludus] Falha ao carregar comentários:', error);
     panel.innerHTML = '<p class="review-comments__empty">Não foi possível carregar os comentários.</p>';
     return;
   }
   const rows = comments || [];
-  panel.innerHTML = '<div class="review-comments__drawer-head"><strong>Comentários</strong><button type="button" data-close-comments aria-label="Fechar comentários">×</button></div><div class="review-comments__list">' +
-    (rows.length ? rows.map((comment) => {
-      const name = comment.profiles?.display_name || comment.profiles?.username || 'jogador';
-      return '<article class="review-comment"><div class="review-comment__meta"><strong>' + escapeHTML(name) + '</strong><span>' + escapeHTML(comment.profiles?.username || 'jogador') + '</span><time>' + formatDate(comment.created_at) + '</time>' +
-        (comment.user_id === user.id ? '<button type="button" data-delete-comment="' + comment.id + '" aria-label="Excluir comentário">Excluir</button>' : '') +
-        '</div><p>' + escapeHTML(comment.body) + '</p></article>';
-    }).join('') : '<p class="review-comments__empty">Ainda não há comentários. Comece a conversa.</p>') +
-    '</div><form class="review-comments__form" data-comment-form><textarea rows="2" maxlength="1000" placeholder="Escreva um comentário…" required></textarea><button type="submit">Publicar ↗</button></form>';
-  panel.dataset.loaded = 'true';
-  panel.classList.add('is-open');
+  const { data: likes, error: likesError } = await fetchCommentLikeRows(rows.map((comment) => comment.id));
+  if (likesError) console.error('[Ludus] Falha ao carregar curtidas dos comentários:', likesError);
+  panel.outerHTML = renderCommentsSection(card.dataset.reviewId, rows, likes || [], user);
+  const count = card.querySelector('[data-comment-count]');
+  if (count) count.textContent = rows.length || '';
 }
 
 function getProfileUsernameFromLocation() {
