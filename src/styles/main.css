@@ -4308,3 +4308,39 @@ html body #app .review-card__header .review-card__author-avatar img {
 .review-card > .review-card__actions [data-comment-count] {
   margin: 0 !important;
 }
+
+
+/* Padronizar visual dos três controles de ação */
+.review-card > .review-card__actions .review-card__like,
+.review-card > .review-card__actions .review-card__comments-toggle,
+.review-card > .review-card__actions .review-card__bookmark {
+  color: #f5f0e6 !important;
+  background: rgb(245 240 230 / 9%) !important;
+  border: 1px solid rgb(245 240 230 / 30%) !important;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 13%), 0 2px 8px rgb(12 10 18 / 12%) !important;
+}
+.review-card > .review-card__actions .review-card__like:not(.is-liked) {
+  color: #f5f0e6 !important;
+  background: rgb(245 240 230 / 9%) !important;
+}
+.review-card > .review-card__actions .review-card__like:not(.is-liked) > svg,
+.review-card > .review-card__actions .review-card__comments-toggle > svg,
+.review-card > .review-card__actions .review-card__bookmark > svg {
+  color: #f5f0e6 !important;
+  fill: currentColor;
+}
+.review-card > .review-card__actions .review-card__bookmark {
+  width: 40px !important;
+  min-width: 40px !important;
+  height: 40px !important;
+  padding: 0 !important;
+  border-radius: 999px !important;
+  background: rgb(245 240 230 / 9%) !important;
+  color: #f5f0e6 !important;
+}
+.review-card > .review-card__actions .review-card__bookmark:hover,
+.review-card > .review-card__actions .review-card__like:not(.is-liked):hover,
+.review-card > .review-card__actions .review-card__comments-toggle:hover {
+  background: rgb(245 240 230 / 16%) !important;
+  border-color: rgb(245 240 230 / 48%) !important;
+}
