@@ -4719,8 +4719,7 @@ html body #app .auth-modal .auth-panel {
 
 /* Sistema de botões: padrão visual reutilizável */
 :root {
-  --positive-inactive: #58D955;
-  --positive-active: #4AB948;
+  --button-active: #DCD2C1;
 }
 html body #app .auth-modal .auth-panel {
   position: relative;
@@ -4761,8 +4760,8 @@ html body #app .auth-modal .submit-button {
   padding: 6px 8px 6px 25px;
   border: 0;
   border-radius: 999px !important;
-  background: var(--positive-inactive) !important;
-  color: #302c3d !important;
+  background: #302c3d !important;
+  color: #e8dfce !important;
   font: 600 15px/1 'Space Grotesk', sans-serif;
   letter-spacing: .01em;
   text-align: left;
@@ -4770,10 +4769,10 @@ html body #app .auth-modal .submit-button {
   transition: background .18s ease, transform .18s ease, filter .18s ease;
 }
 html body #app .auth-modal .submit-button:hover:not(:disabled) {
-  background: var(--positive-active) !important;
+  background: var(--button-active) !important;
 }
 html body #app .auth-modal .submit-button:active:not(:disabled) {
-  background: var(--positive-active) !important;
+  background: var(--button-active) !important;
   transform: scale(.985);
 }
 html body #app .auth-modal .submit-button:disabled {
@@ -4788,8 +4787,8 @@ html body #app .auth-modal .submit-button__icon {
   align-items: center;
   justify-content: center;
   border-radius: 50% !important;
-  background: #302c3d;
-  color: var(--positive-inactive);
+  background: #e8dfce;
+  color: #302c3d;
 }
 html body #app .auth-modal .submit-button__icon svg {
   display: block;
