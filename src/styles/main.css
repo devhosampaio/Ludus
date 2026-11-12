@@ -4442,3 +4442,35 @@ html body #app .review-card__header .review-card__author-avatar img {
     border-radius: 25px;
   }
 }
+
+
+/* Login: imagem em tela cheia e painel flutuante */
+.auth-shell {
+  background:
+    linear-gradient(90deg, rgb(24 21 31 / 76%) 0%, rgb(24 21 31 / 38%) 58%, rgb(24 21 31 / 24%) 100%),
+    linear-gradient(0deg, rgb(24 21 31 / 58%) 0%, transparent 48%, rgb(24 21 31 / 24%) 100%),
+    url('https://www.rockstargames.com/VI/_next/static/media/Vice_City_Postcard_landscape.0v2njmlk2n-qm.jpg?akim=1&imdensity=1&imwidth=3840') center / cover no-repeat;
+}
+.auth-intro {
+  background: transparent !important;
+}
+@media (min-width: 821px) {
+  html body #app .auth-panel {
+    width: 92%;
+    height: 60%;
+    justify-self: center;
+    align-self: center;
+    border-radius: 50px !important;
+  }
+}
+@media (max-width: 820px) {
+  .auth-shell {
+    background-attachment: scroll;
+  }
+  .auth-intro {
+    background: transparent !important;
+  }
+  html body #app .auth-panel {
+    border-radius: 50px !important;
+  }
+}
