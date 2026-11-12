@@ -198,9 +198,9 @@ async function fetchCommentLikeRows(commentIds) {
 function renderReviewCommentMarkup(comment, user, likes, childrenByParent, nested = false) {
   const profile = comment.profiles || {};
   const username = profile.username || 'jogador';
-  const avatar = profile.avatar_url
+  const avatar = nested ? '' : (profile.avatar_url
     ? '<img src="' + escapeHTML(profile.avatar_url) + '" alt="" loading="lazy">'
-    : profilePlaceholderMarkup();
+    : profilePlaceholderMarkup());
   const commentLikes = likes.filter((like) => like.comment_id === comment.id);
   const isLiked = commentLikes.some((like) => like.user_id === user.id);
   const children = childrenByParent.get(comment.id) || [];
@@ -210,9 +210,9 @@ function renderReviewCommentMarkup(comment, user, likes, childrenByParent, neste
       : '<button type="button" data-comment-action="report">Denunciar comentário</button>') +
     '</div></details>';
   return '<article class="review-comment' + (nested ? ' review-comment--reply' : '') + '" data-comment-id="' + comment.id + '">' +
-    '<div class="review-comment__meta"><span class="review-comment__avatar">' + avatar + '</span>' +
-    '<button class="review-comment__author" type="button" data-profile-username="' + escapeHTML(username) + '">' + escapeHTML(username) + '</button>' +
-    '<time>' + formatDate(comment.created_at) + '</time>' + menu + '</div>' +
+    '<div class="review-comment__meta' + (nested ? ' review-comment__meta--reply' : '') + '">' +
+    (nested ? '' : '<span class="review-comment__avatar">' + avatar + '</span>') +
+    '<button class="review-comment__author" type="button" data-profile-username="' + escapeHTML(username) + '">' + escapeHTML(username) + '</button>' + menu + '</div>' +
     '<p class="review-comment__body">' + escapeHTML(comment.body) + '</p>' +
     '<form class="review-comment__edit-form" data-edit-comment-form hidden><textarea rows="2" maxlength="1000" required>' + escapeHTML(comment.body) + '</textarea><button type="submit">Salvar</button><button type="button" data-cancel-edit>Cancelar</button></form>' +
     '<div class="review-comment__actions"><button type="button" class="review-comment__like' + (isLiked ? ' is-liked' : '') + '" data-like-comment aria-pressed="' + isLiked + '">' +
