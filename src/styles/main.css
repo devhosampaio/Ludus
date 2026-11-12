@@ -3558,3 +3558,136 @@ html body #app .review-card__header .review-card__author-avatar,
 html body #app .review-card__header .review-card__author-avatar img {
   border-radius: 50% !important;
 }
+
+
+/* Compositor de avaliação: identificação do jogo e nota por estrelas */
+.composer__selected {
+  display: grid !important;
+  grid-template-columns: 104px minmax(0, 1fr);
+  align-items: stretch !important;
+  gap: 16px !important;
+  padding: 12px !important;
+  border: 1px solid rgb(48 44 61 / 18%);
+  background: #ded5c6 !important;
+}
+.composer__selected .composer__game-cover,
+.composer__selected .composer__cover-empty {
+  display: block;
+  box-sizing: border-box;
+  width: 104px !important;
+  height: 139px !important;
+  object-fit: contain !important;
+  object-position: center;
+  border: 1px solid rgb(48 44 61 / 28%);
+  background: #282433;
+}
+.composer__selected .composer__game-info {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 7px;
+}
+.composer__selected .composer__game-info > strong {
+  color: #302c3d;
+  font: 700 18px/1.2 'Space Grotesk', sans-serif;
+  overflow-wrap: anywhere;
+}
+.composer__selected .composer__game-year {
+  color: #81798a !important;
+  font: 11px 'DM Mono', monospace !important;
+}
+.composer__selected .composer__average {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 5px;
+  color: #7060ab;
+  font: 11px 'DM Sans', sans-serif;
+}
+.composer__selected .composer__average > strong {
+  color: #302c3d;
+  font: 700 21px/1 'Space Grotesk', sans-serif;
+}
+.composer__selected .composer__average small {
+  color: #81798a;
+  font-size: 10px;
+}
+.composer__selected .composer__selected-caption {
+  color: #81798a;
+  font-size: 9px;
+}
+.composer__selected > button {
+  grid-column: 2;
+  justify-self: start;
+}
+.composer__rating-field { align-content: start; }
+.composer__stars {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 42px;
+}
+.composer__star {
+  display: inline-grid;
+  width: 35px !important;
+  min-width: 35px !important;
+  height: 38px !important;
+  min-height: 38px !important;
+  padding: 0 !important;
+  place-items: center;
+  border: 0 !important;
+  background: transparent !important;
+  color: #aaa092 !important;
+  font: 30px/1 'DM Sans', sans-serif !important;
+  cursor: pointer;
+  transition: color .15s ease, transform .15s ease;
+}
+.composer__star.is-active { color: #c18e31 !important; }
+.composer__star:hover { transform: translateY(-2px); color: #d5a64a !important; }
+.composer__star:focus-visible { outline: 2px solid #7060ab; outline-offset: 2px; }
+.composer__liked {
+  display: inline-flex !important;
+  width: fit-content !important;
+  max-width: 100%;
+  align-items: center !important;
+  justify-self: start;
+  gap: 8px !important;
+  padding: 5px 0 !important;
+  color: #a44f48 !important;
+  font-size: 12px !important;
+}
+.composer__liked input[type="checkbox"] {
+  display: inline-block !important;
+  width: 15px !important;
+  min-width: 15px !important;
+  max-width: 15px !important;
+  height: 15px !important;
+  min-height: 15px !important;
+  flex: 0 0 15px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  accent-color: #d96c55;
+}
+.composer__liked > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+.composer__liked .ui-icon--heart {
+  display: block !important;
+  width: 15px !important;
+  min-width: 15px !important;
+  height: 15px !important;
+  min-height: 15px !important;
+  flex: 0 0 15px !important;
+}
+@media (max-width: 600px) {
+  .composer__selected { grid-template-columns: 88px minmax(0, 1fr); gap: 12px !important; }
+  .composer__selected .composer__game-cover,
+  .composer__selected .composer__cover-empty { width: 88px !important; height: 118px !important; }
+  .composer__selected .composer__game-info > strong { font-size: 15px; }
+  .composer__star { width: 32px !important; min-width: 32px !important; }
+}
