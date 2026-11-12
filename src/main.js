@@ -1536,7 +1536,7 @@ function renderAuth(mode = 'welcome') {
     '</section>',
     '<div class="auth-modal-backdrop" data-auth-close></div>',
     '<section class="auth-modal" role="dialog" aria-modal="true" aria-label="' + (isSignup ? 'Criar conta' : 'Entrar no Ludus') + '" tabindex="-1">',
-    '<section class="auth-panel"><div class="auth-panel__inner">',
+    '<section class="auth-panel"><button class="auth-modal__close" type="button" data-auth-close aria-label="Fechar formulário" title="Fechar">×</button><div class="auth-panel__inner">',
     '<div class="auth-panel__heading">' + (isSignup ? '<p class="eyebrow">COMECE SUA JORNADA</p>' : ''),
     '<h2>' + (isSignup ? 'Crie sua conta.' : 'Entre no Ludus.') + '</h2>',
     '</div>',
@@ -1546,7 +1546,7 @@ function renderAuth(mode = 'welcome') {
     '<label class="field"><span>Senha</span><div class="password-field"><input name="password" type="password" minlength="6" placeholder="Mínimo de 6 caracteres" autocomplete="' + passwordAutocomplete + '" required><button class="password-toggle" type="button" data-password-toggle aria-label="Mostrar senha" title="Mostrar senha"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button></div></label>',
     (!isSignup ? '<button class="text-button" type="button" data-reset>Esqueceu sua senha?</button>' : ''),
     (isSignup ? '<div class="auth-consents"><label class="auth-consent"><input type="checkbox" name="age_confirmed" required><span>Tenho mais de 16 anos</span></label><label class="auth-consent"><input type="checkbox" name="terms_accepted" required><span>Concordo com os <button class="terms-link" type="button" data-terms-open>termos de serviço</button></span></label></div>' : ''),
-    '<button class="submit-button" type="submit">' + (isSignup ? 'Criar minha conta <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/><path d="m13 5 6 7-6 7"/></svg>' : 'Entrar <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3h5a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-5"/><path d="M3 12h12m-5-5 5 5-5 5"/></svg>') + '</button>',
+    '<button class="submit-button" type="submit"><span>' + (isSignup ? 'Criar minha conta' : 'Entrar') + '</span><span class="submit-button__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4M3 12h12m-5-5 5 5-5 5"/></svg></span></button>',
     '<p class="form-message" data-message role="status" aria-live="polite" hidden></p></form>',
     '<div class="terms-modal" data-terms-modal hidden><div class="terms-modal__backdrop" data-terms-close></div><section class="terms-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="terms-title"><button class="terms-modal__close" type="button" data-terms-close aria-label="Fechar">×</button><p class="eyebrow">LUDUS · COMUNIDADE</p><h3 id="terms-title">Termos de serviço</h3><p>Este é um texto provisório. Os termos oficiais de serviço do Ludus ainda serão publicados.</p><p>Ao utilizar a plataforma, esperamos que todas as pessoas tratem a comunidade com respeito, não publiquem conteúdo ilegal ou ofensivo e respeitem os direitos de terceiros.</p><p>As funcionalidades, regras de convivência, privacidade e condições de uso serão detalhadas nesta página quando os termos oficiais forem definidos.</p><p class="terms-modal__note">VERSÃO PLACEHOLDER — NÃO É O TEXTO FINAL</p></section></div>',
     '</div></section></section></main>'
@@ -1623,7 +1623,7 @@ function renderAuth(mode = 'welcome') {
     } catch (error) {
       showMessage(error.message || 'Não foi possível concluir. Tente novamente.', 'error');
       submit.disabled = false;
-      submit.innerHTML = isSignup ? 'Criar minha conta <span aria-hidden="true">＋</span>' : 'Entrar <span aria-hidden="true">↗</span>';
+      submit.innerHTML = '<span>' + (isSignup ? 'Criar minha conta' : 'Entrar') + '</span><span class="submit-button__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4M3 12h12m-5-5 5 5-5 5"/></svg></span>';
     }
   });
 
