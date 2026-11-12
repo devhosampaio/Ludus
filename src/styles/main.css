@@ -4715,3 +4715,104 @@ html body #app .auth-modal .auth-panel {
     border-radius: 24px !important;
   }
 }
+
+
+/* Sistema de botões: padrão visual reutilizável */
+:root {
+  --positive-inactive: #58D955;
+  --positive-active: #4AB948;
+}
+html body #app .auth-modal .auth-panel {
+  position: relative;
+}
+html body #app .auth-modal .auth-modal__close {
+  position: absolute;
+  top: 17px;
+  right: 19px;
+  z-index: 2;
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50% !important;
+  background: transparent;
+  color: #302c3d;
+  font: 400 30px/1 'DM Sans', sans-serif;
+  cursor: pointer;
+  transition: background .18s ease, transform .18s ease;
+}
+html body #app .auth-modal .auth-modal__close:hover {
+  background: rgb(48 44 61 / 8%);
+  transform: rotate(90deg);
+}
+html body #app .auth-modal .auth-panel__heading {
+  padding-right: 30px;
+}
+html body #app .auth-modal .submit-button {
+  display: inline-flex;
+  width: 100%;
+  min-height: 58px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-top: 6px;
+  padding: 6px 8px 6px 25px;
+  border: 0;
+  border-radius: 999px !important;
+  background: var(--positive-inactive) !important;
+  color: #302c3d !important;
+  font: 600 15px/1 'Space Grotesk', sans-serif;
+  letter-spacing: .01em;
+  text-align: left;
+  cursor: pointer;
+  transition: background .18s ease, transform .18s ease, filter .18s ease;
+}
+html body #app .auth-modal .submit-button:hover:not(:disabled) {
+  background: var(--positive-active) !important;
+}
+html body #app .auth-modal .submit-button:active:not(:disabled) {
+  background: var(--positive-active) !important;
+  transform: scale(.985);
+}
+html body #app .auth-modal .submit-button:disabled {
+  cursor: wait;
+  opacity: .72;
+}
+html body #app .auth-modal .submit-button__icon {
+  display: inline-flex;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50% !important;
+  background: #302c3d;
+  color: var(--positive-inactive);
+}
+html body #app .auth-modal .submit-button__icon svg {
+  display: block;
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+@media (max-width: 560px) {
+  html body #app .auth-modal .auth-modal__close {
+    top: 12px;
+    right: 13px;
+  }
+  html body #app .auth-modal .submit-button {
+    min-height: 54px;
+    padding-left: 21px;
+  }
+  html body #app .auth-modal .submit-button__icon {
+    width: 40px;
+    height: 40px;
+    flex-basis: 40px;
+  }
+}
