@@ -3964,3 +3964,25 @@ html body #app .review-card__header .review-card__author-avatar img {
     padding: 11px 12px;
   }
 }
+
+
+/* Retorno ao chip de informações do jogo, sem contorno ou arte desfocada */
+.review-card__top-chip {
+  border: 0 !important;
+  background: rgb(232 223 206 / 6%);
+  isolation: auto;
+  overflow: visible;
+  box-shadow: none;
+}
+.review-card__top-chip::after,
+.review-card__chip-backdrop,
+.review-card__card-backdrop,
+.review-card--has-art::after {
+  display: none !important;
+  content: none !important;
+}
+.review-card__top-chip > .review-card__cover-column,
+.review-card__top-chip > .review-card__body {
+  position: static;
+  z-index: auto;
+}
