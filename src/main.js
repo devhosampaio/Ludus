@@ -878,38 +878,109 @@ async function renderReviewPage(currentUser, reviewId) {
   const game = review.games || {}, profile = review.profiles || {};
   const avatar = profile.avatar_url ? '<img src="' + escapeHTML(profile.avatar_url) + '" alt="">' : profilePlaceholderMarkup();
   const { data: comments, error: commentsError } = await supabase.from('review_comments')
-    .select('id, user_id, body, created_at, profiles!review_comments_user_id_fkey(username, display_name)')
-    .eq('review_id', review.id).order('created_at', { ascending: true }).limit(200);
+    .select('id, user_id, body, created_at, parent_comment_id, profiles!review_comments_user_id_fkey(username, avatar_url)')
+    .eq('review_id', review.id).order('created_at', { ascending: true }).limit(1000);
   if (requestId !== renderReviewPage.requestId) return;
+  const commentRows = comments || [];
+  const { data: commentLikes, error: commentLikesError } = await fetchCommentLikeRows(commentRows.map((comment) => comment.id));
+  if (commentLikesError) console.error('[Ludus] Falha ao carregar curtidas dos comentários:', commentLikesError);
+  const childrenByParent = new Map();
+  commentRows.forEach((comment) => {
+    const key = comment.parent_comment_id || '';
+    if (!childrenByParent.has(key)) childrenByParent.set(key, []);
+    childrenByParent.get(key).push(comment);
+  });
+  childrenByParent.forEach((items) => items.sort((a, b) => new Date(a.created_at) - new Date(b.created_at)));
   const commentsMarkup = commentsError ? '<p class="review-comments__empty">Não foi possível carregar os comentários.</p>' :
-    (comments || []).map((comment) => {
-      const p = comment.profiles || {};
-      return '<article class="review-detail__comment"><strong>' + escapeHTML(p.display_name || p.username || 'jogador') + '</strong><time>' + formatDate(comment.created_at) + '</time><p>' + escapeHTML(comment.body) + '</p>' +
-        (comment.user_id === currentUser.id ? '<button type="button" data-detail-delete-comment="' + comment.id + '">Excluir</button>' : '') + '</article>';
-    }).join('') || '<p class="review-comments__empty">Ainda não há comentários. Comece a conversa.</p>';
+    (childrenByParent.get('') || []).map((comment) =>
+      renderReviewCommentMarkup(comment, currentUser, commentLikes || [], childrenByParent)
+    ).join('') || '<p class="review-comments__empty">Ainda não há comentários. Comece a conversa.</p>';
   content.innerHTML = '<article class="review-detail"><div class="review-detail__main">' +
     (game.cover_url ? '<button class="review-detail__cover" type="button" data-detail-game="' + escapeHTML(review.game_id) + '"><img src="' + escapeHTML(game.cover_url) + '" alt="Capa de ' + escapeHTML(game.title || 'jogo') + '"></button>' : '') +
     '<div class="review-detail__content"><div class="review-detail__author"><span class="review-detail__avatar">' + avatar + '</span><div><strong>' + escapeHTML(profile.display_name || profile.username || 'Jogador') + '</strong><small>' + escapeHTML(profile.username || '') + ' · ' + formatDate(review.created_at) + '</small></div></div>' +
     '<h1>' + escapeHTML(game.title || 'Jogo') + (game.release_year ? ' <small>' + escapeHTML(game.release_year) + '</small>' : '') + '</h1><div class="review-detail__rating">' + '★'.repeat(review.rating) + '☆'.repeat(5-review.rating) + '</div><div class="review-detail__status">' + escapeHTML(statusLabel(review.status)) + (review.liked_game ? ' · Gostei deste jogo' : '') + '</div>' +
-    (review.body ? '<p class="review-detail__body">' + escapeHTML(review.body) + '</p>' : '') + '</div></div><section class="review-detail__discussion"><h2>Comentários <span>' + (comments || []).length + '</span></h2><div class="review-detail__comments">' + commentsMarkup + '</div><form class="review-detail__form" data-detail-comment-form><textarea rows="3" maxlength="1000" placeholder="Escreva um comentário…" required></textarea><button type="submit">Enviar comentário ↗</button></form></section></article>';
+    (review.body ? '<p class="review-detail__body">' + escapeHTML(review.body) + '</p>' : '') + '</div></div><section class="review-detail__discussion"><h2>Comentários <span>' + commentRows.length + '</span></h2><div class="review-detail__comments">' + commentsMarkup + '</div><form class="review-detail__form" data-detail-comment-form><textarea rows="3" maxlength="1000" placeholder="Escreva um comentário…" required></textarea><button type="submit">Enviar comentário ↗</button></form></section></article>';
   content.querySelector('[data-detail-game]')?.addEventListener('click', () => navigateToGame(currentUser, review.game_id));
   content.addEventListener('submit', async (event) => {
-    if (!event.target.matches('[data-detail-comment-form]')) return;
+    const form = event.target.closest('[data-detail-comment-form], [data-reply-form], [data-edit-comment-form]');
+    if (!form) return;
     event.preventDefault();
-    const form = event.target, textarea = form.querySelector('textarea'), submit = form.querySelector('button[type="submit"]'), body = textarea.value.trim();
+    const textarea = form.querySelector('textarea');
+    const submit = form.querySelector('button[type="submit"]');
+    const body = textarea.value.trim();
     if (!body) return;
     submit.disabled = true;
-    const { error: insertError } = await supabase.from('review_comments').insert({ review_id: review.id, user_id: currentUser.id, body });
-    if (insertError) { console.error('[Ludus] Falha ao publicar comentário:', insertError); submit.disabled = false; return; }
+    let result;
+    if (form.matches('[data-edit-comment-form]')) {
+      const comment = form.closest('[data-comment-id]');
+      result = await supabase.from('review_comments').update({ body }).eq('id', comment?.dataset.commentId).eq('user_id', currentUser.id);
+    } else {
+      result = await supabase.from('review_comments').insert({
+        review_id: review.id, user_id: currentUser.id, body, parent_comment_id: form.dataset.parentCommentId || null
+      });
+    }
+    if (result.error) { console.error('[Ludus] Falha ao salvar comentário:', result.error); submit.disabled = false; return; }
     await renderReviewPage(currentUser, reviewId);
   });
   content.addEventListener('click', async (event) => {
-    const remove = event.target.closest('[data-detail-delete-comment]');
-    if (!remove) return;
-    remove.disabled = true;
-    const { error: deleteError } = await supabase.from('review_comments').delete().eq('id', remove.dataset.detailDeleteComment).eq('user_id', currentUser.id);
-    if (deleteError) { remove.disabled = false; return; }
-    await renderReviewPage(currentUser, reviewId);
+    const replyButton = event.target.closest('[data-reply-comment]');
+    if (replyButton) {
+      const form = replyButton.closest('[data-comment-id]')?.querySelector('[data-reply-form]');
+      if (form) { form.hidden = !form.hidden; if (!form.hidden) form.querySelector('textarea')?.focus(); }
+      return;
+    }
+    const threadRow = event.target.closest('[data-comment-thread-row]');
+    if (threadRow && event.target === threadRow) {
+      const comment = threadRow.closest('[data-comment-id]');
+      if (comment?.querySelector('.review-comment__replies')) comment.classList.toggle('is-thread-collapsed');
+      return;
+    }
+    const cancelEdit = event.target.closest('[data-cancel-edit]');
+    if (cancelEdit) {
+      const comment = cancelEdit.closest('[data-comment-id]');
+      const form = comment?.querySelector('[data-edit-comment-form]');
+      if (form) { form.hidden = true; comment.querySelector('.review-comment__body').hidden = false; }
+      return;
+    }
+    const likeButton = event.target.closest('[data-like-comment]');
+    if (likeButton) {
+      const commentId = likeButton.closest('[data-comment-id]')?.dataset.commentId;
+      const liked = likeButton.getAttribute('aria-pressed') === 'true';
+      const result = liked
+        ? await supabase.from('review_comment_likes').delete().eq('comment_id', commentId).eq('user_id', currentUser.id)
+        : await supabase.from('review_comment_likes').insert({ comment_id: commentId, user_id: currentUser.id });
+      if (!result.error) await renderReviewPage(currentUser, reviewId);
+      else console.error('[Ludus] Falha ao curtir comentário:', result.error);
+      return;
+    }
+    const actionButton = event.target.closest('[data-comment-action]');
+    if (!actionButton) return;
+    const comment = actionButton.closest('[data-comment-id]');
+    const menu = actionButton.closest('.review-comment__menu');
+    const action = actionButton.dataset.commentAction;
+    if (menu) menu.open = false;
+    if (action === 'edit') {
+      const form = comment.querySelector('[data-edit-comment-form]');
+      form.hidden = false;
+      comment.querySelector('.review-comment__body').hidden = true;
+      form.querySelector('textarea')?.focus();
+    } else if (action === 'delete') {
+      if (!window.confirm('Excluir este comentário e suas respostas?')) return;
+      const { error: deleteError } = await supabase.from('review_comments').delete().eq('id', comment.dataset.commentId).eq('user_id', currentUser.id);
+      if (deleteError) { window.alert('Não foi possível excluir o comentário.'); return; }
+      await renderReviewPage(currentUser, reviewId);
+    } else if (action === 'report') {
+      const reason = window.prompt('Motivo da denúncia:\\n1 — Spam\\n2 — Assédio ou discurso de ódio\\n3 — Spoiler sem aviso\\n4 — Conteúdo impróprio\\n5 — Outro');
+      if (reason === null) return;
+      const reasons = { '1':'spam', '2':'harassment', '3':'spoiler', '4':'inappropriate', '5':'other' };
+      if (!reasons[reason.trim()]) { window.alert('Escolha uma opção de 1 a 5.'); return; }
+      const details = window.prompt('Detalhes adicionais (opcional):') || '';
+      const { error: reportError } = await supabase.from('comment_reports').insert({
+        comment_id: comment.dataset.commentId, reporter_id: currentUser.id, reason: reasons[reason.trim()], details: details.slice(0,1000)
+      });
+      if (reportError) window.alert(reportError.code === '23505' ? 'Você já denunciou este comentário.' : 'Não foi possível enviar a denúncia.');
+      else window.alert('Denúncia enviada. Obrigado por ajudar a manter a comunidade segura.');
+    }
   });
 }
 
