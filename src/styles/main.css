@@ -4815,3 +4815,114 @@ html body #app .auth-modal .submit-button__icon svg {
     flex-basis: 40px;
   }
 }
+
+
+/* =========================================================
+   LUDUS — linguagem visual: esqueumorfismo minimalista
+   Referência material: consoles PlayStation 1 e PlayStation 2
+   Camada inicial: profundidade, superfícies e resposta tátil.
+   ========================================================= */
+:root {
+  --material-shell: #282433;
+  --material-shell-highlight: rgb(255 255 255 / 7%);
+  --material-shell-shadow: rgb(0 0 0 / 28%);
+  --material-panel: #383345;
+  --material-panel-highlight: rgb(255 255 255 / 9%);
+  --material-panel-shadow: rgb(0 0 0 / 24%);
+  --material-inset: rgb(16 14 23 / 28%);
+  --material-edge: rgb(232 223 206 / 15%);
+  --material-control: #e8dfce;
+  --material-control-text: #302c3d;
+  --material-control-shadow: rgb(20 17 28 / 32%);
+  --material-focus: #dcd2c1;
+}
+
+/* Superfícies principais: plástico fosco, sem brilho excessivo. */
+.sidebar {
+  background:
+    linear-gradient(145deg, rgb(255 255 255 / 2.8%), transparent 42%),
+    var(--material-shell);
+  border-right-color: var(--material-edge);
+  box-shadow: inset -1px 0 0 rgb(0 0 0 / 20%), 5px 0 18px rgb(0 0 0 / 9%);
+}
+
+.review-card,
+.game-page__panel,
+.review-detail__panel,
+.profile-section,
+.notification-menu,
+.search-results,
+.dropdown-menu {
+  border-color: var(--material-edge);
+  box-shadow:
+    inset 0 1px 0 var(--material-panel-highlight),
+    0 2px 0 rgb(0 0 0 / 16%),
+    0 9px 22px rgb(0 0 0 / 13%);
+}
+
+/* Controles com leve relevo e retorno físico ao pressionar. */
+#app button:not(.review-card__like):not(.review-card__comments-toggle):not(.review-card__bookmark):not(.auth-modal__close),
+#app .button,
+#app a.button {
+  transition:
+    transform .14s ease,
+    box-shadow .14s ease,
+    background-color .18s ease,
+    color .18s ease,
+    border-color .18s ease;
+}
+
+#app button:not(:disabled):not(.review-card__like):not(.review-card__comments-toggle):not(.review-card__bookmark):not(.auth-modal__close):active,
+#app .button:active,
+#app a.button:active {
+  transform: translateY(1px);
+  box-shadow: inset 0 2px 4px var(--material-control-shadow);
+}
+
+/* Campos: aparência de encaixe no painel, em vez de peças flutuantes. */
+#app input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+#app textarea,
+#app select {
+  box-shadow:
+    inset 0 2px 4px rgb(25 21 34 / 7%),
+    inset 0 1px 0 rgb(0 0 0 / 3%);
+  transition: border-color .18s ease, box-shadow .18s ease;
+}
+
+#app input:focus,
+#app textarea:focus,
+#app select:focus {
+  box-shadow:
+    inset 0 2px 4px rgb(25 21 34 / 7%),
+    0 0 0 2px rgb(220 210 193 / 22%);
+}
+
+/* Navegação: pequenas teclas de console, sem transformar links em cards. */
+.side-nav__link {
+  border: 1px solid transparent;
+  border-radius: 3px;
+  transition: background .18s ease, border-color .18s ease, color .18s ease, transform .14s ease;
+}
+.side-nav__link:hover {
+  border-color: rgb(232 223 206 / 9%);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 4%), 0 2px 5px rgb(0 0 0 / 12%);
+}
+.side-nav__link:active {
+  transform: translateY(1px);
+  box-shadow: inset 0 2px 5px rgb(0 0 0 / 18%);
+}
+
+/* O foco permanece visível e coerente com a paleta do console. */
+#app :focus-visible {
+  outline: 2px solid var(--material-focus);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #app button,
+  #app .button,
+  #app a.button,
+  .side-nav__link {
+    transition: none !important;
+  }
+}
