@@ -1315,11 +1315,12 @@ async function openReviewComposer(user, existingReview = null, preselectedGame =
       <div class="composer__results" data-game-results aria-live="polite"></div>
       <div class="composer__selected" data-selected hidden></div>
       <form class="composer__form" data-review-form hidden>
-        <div class="composer__field">
-          <label for="review-rating">Sua nota</label>
-          <select id="review-rating" name="rating" required>
-            <option value="5">5 — Obra-prima</option><option value="4">4 — Muito bom</option><option value="3">3 — Bom</option><option value="2">2 — Regular</option><option value="1">1 — Não gostei</option>
-          </select>
+        <div class="composer__field composer__rating-field">
+          <label>Sua nota</label>
+          <input id="review-rating" type="hidden" name="rating" value="5" required>
+          <div class="composer__stars" role="group" aria-label="Escolha uma nota de uma a cinco estrelas">
+            <button type="button" class="composer__star is-active" data-rating-value="1" aria-label="1 estrela" aria-pressed="false">★</button><button type="button" class="composer__star is-active" data-rating-value="2" aria-label="2 estrelas" aria-pressed="false">★</button><button type="button" class="composer__star is-active" data-rating-value="3" aria-label="3 estrelas" aria-pressed="false">★</button><button type="button" class="composer__star is-active" data-rating-value="4" aria-label="4 estrelas" aria-pressed="false">★</button><button type="button" class="composer__star is-active" data-rating-value="5" aria-label="5 estrelas" aria-pressed="true">★</button>
+          </div>
         </div>
         <div class="composer__field">
           <label for="review-status">Status</label>
@@ -1341,20 +1342,61 @@ async function openReviewComposer(user, existingReview = null, preselectedGame =
     ? { id: existingReview.game_id, ...(existingReview.games || {}) }
     : preselectedGame ? { ...preselectedGame } : null;
   let timer;
+  const renderSelectedGame = async (game, caption = 'Jogo selecionado') => {
+    if (!game) return;
+    selected.hidden = false;
+    selected.innerHTML = (game.cover_url
+      ? '<img class="composer__game-cover" src="' + escapeHTML(game.cover_url) + '" alt="">'
+      : '<span class="composer__cover-empty">L.</span>') +
+      '<span class="composer__game-info"><strong>' + escapeHTML(game.title || 'Jogo') + '</strong>' +
+      (game.release_year ? '<small class="composer__game-year">' + escapeHTML(game.release_year) + '</small>' : '') +
+      '<span class="composer__average" data-game-average>Calculando média…</span><small class="composer__selected-caption">' + caption + '</small></span>' +
+      (caption === 'Jogo selecionado' && !existingReview && !preselectedGame ? '<button type="button" data-change-game>Trocar</button>' : '');
+    const averageNode = selected.querySelector('[data-game-average]');
+    const { data: ratingRows, error: ratingError } = await fetchAllPages(() =>
+      supabase.from('reviews').select('rating').eq('game_id', game.id)
+    );
+    if (!averageNode || !selected.isConnected) return;
+    if (ratingError) {
+      averageNode.textContent = 'Média indisponível';
+    } else if (!ratingRows.length) {
+      averageNode.textContent = 'Ainda sem notas';
+    } else {
+      const average = ratingRows.reduce((sum, row) => sum + Number(row.rating || 0), 0) / ratingRows.length;
+      averageNode.innerHTML = '<strong>' + average.toFixed(1).replace('.', ',') + '</strong> / 5 <small>· ' + ratingRows.length + (ratingRows.length === 1 ? ' avaliação' : ' avaliações') + '</small>';
+    }
+    selected.querySelector('[data-change-game]')?.addEventListener('click', () => {
+      selectedGame = null; selected.hidden = true; form.hidden = true; search.focus();
+    });
+  };
+
+  const syncRatingStars = (value) => {
+    const ratingInput = form.elements.rating;
+    ratingInput.value = String(value);
+    form.querySelectorAll('[data-rating-value]').forEach((star) => {
+      const active = Number(star.dataset.ratingValue) <= Number(value);
+      star.classList.toggle('is-active', active);
+      star.setAttribute('aria-pressed', String(Number(star.dataset.ratingValue) === Number(value)));
+    });
+  };
+
   if (existingReview || preselectedGame) {
     const game = existingReview?.games || preselectedGame || {};
-    selected.hidden = false;
-    selected.innerHTML = (game.cover_url ? '<img src="' + escapeHTML(game.cover_url) + '" alt="">' : '<span class="composer__cover-empty">L.</span>') +
-      '<span><strong>' + escapeHTML(game.title || 'Jogo') + (game.release_year ? ' <small class="review-card__year">(' + escapeHTML(game.release_year) + ')</small>' : '') + '</strong><small>' + (existingReview ? 'Jogo da avaliação' : 'Jogo selecionado') + '</small></span>';
+    renderSelectedGame({ ...game, id: existingReview?.game_id || game.id }, existingReview ? 'Jogo da avaliação' : 'Jogo selecionado');
     form.hidden = false;
     if (existingReview) {
-      form.elements.rating.value = String(existingReview.rating);
+      syncRatingStars(existingReview.rating);
       form.elements.status.value = existingReview.status || 'playing';
       form.elements.liked_game.checked = Boolean(existingReview.liked_game);
       form.elements.body.value = existingReview.body || '';
       form.querySelector('[type="submit"]').textContent = 'Salvar alterações ↗';
     }
   }
+
+  form.querySelector('.composer__stars').addEventListener('click', (event) => {
+    const star = event.target.closest('[data-rating-value]');
+    if (star) syncRatingStars(Number(star.dataset.ratingValue));
+  });
 
   const close = () => overlay.remove();
   overlay.querySelector('[data-close]').addEventListener('click', close);
@@ -1402,13 +1444,7 @@ async function openReviewComposer(user, existingReview = null, preselectedGame =
     }
     selectedGame = data.game;
     results.innerHTML = '';
-    selected.hidden = false;
-    selected.innerHTML = (selectedGame.cover_url ? '<img src="' + escapeHTML(selectedGame.cover_url) + '" alt="">' : '<span class="composer__cover-empty">L.</span>') +
-      '<span><strong>' + escapeHTML(selectedGame.title) + (selectedGame.release_year ? ' <small class="review-card__year">(' + escapeHTML(selectedGame.release_year) + ')</small>' : '') + '</strong><small>Jogo selecionado</small></span>' +
-      '<button type="button" data-change-game>Trocar</button>';
-    selected.querySelector('[data-change-game]').addEventListener('click', () => {
-      selectedGame = null; selected.hidden = true; form.hidden = true; search.focus();
-    });
+    await renderSelectedGame(selectedGame, 'Jogo selecionado');
     form.hidden = false;
   });
 
