@@ -3412,3 +3412,63 @@ body, #app, .feed-shell { overflow-x: clip; }
   .review-card__top-chip .review-card__body h3 { margin-top: 9px; }
   .review-card__top-chip .review-card__details { gap: 7px 9px; }
 }
+
+
+/* Autoria da avaliação acima do chip de informações do jogo */
+.review-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  min-width: 0;
+  margin: 0 0 12px;
+}
+.review-card__header .review-card__meta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+  min-width: 0;
+  padding: 0;
+}
+.review-card__header .review-card__author {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.review-card__header .review-card__author-avatar {
+  display: inline-grid;
+  flex: 0 0 29px;
+  width: 29px;
+  height: 29px;
+  overflow: hidden;
+  place-items: center;
+}
+.review-card__header .review-card__author-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+.review-card__activity {
+  color: rgb(245 240 230 / 72%);
+  font: 400 12px/1.4 'DM Sans', sans-serif;
+}
+.review-card__activity em {
+  color: #f5f0e6;
+  font-style: italic;
+}
+.review-card__activity strong {
+  font-weight: 700;
+}
+@media (max-width: 420px) {
+  .review-card__header { margin-bottom: 10px; }
+  .review-card__header .review-card__meta { gap: 6px; }
+  .review-card__activity { font-size: 11px; }
+}
