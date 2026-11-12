@@ -3929,3 +3929,38 @@ html body #app .review-card__header .review-card__author-avatar img {
     padding: 0 9px 10px !important;
   }
 }
+
+/* Correção de hierarquia: manter somente o card externo original */
+.review-card {
+  background: #24212f;
+  border: 0;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+.review-card__header {
+  padding: 0;
+}
+.review-card__game-layout {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+/* A única superfície adicional fica atrás do texto corrido da resenha */
+.review-card__text-panel {
+  margin: 2px 0 13px;
+  padding: 13px 15px;
+  background: rgb(25 22 34 / 78%);
+  border: 1px solid rgb(245 240 230 / 15%);
+  box-shadow: none;
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+}
+@media (max-width: 420px) {
+  .review-card__text-panel {
+    margin: 2px 0 10px;
+    padding: 11px 12px;
+  }
+}
