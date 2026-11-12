@@ -3342,3 +3342,73 @@ body, #app, .feed-shell { overflow-x: clip; }
   font-size: 17px;
   line-height: 1.85;
 }
+
+
+/* Chip interno: capa e informações principais da avaliação */
+.review-card {
+  display: block !important;
+}
+.review-card__top-chip {
+  display: grid;
+  grid-template-columns: 112px minmax(0, 1fr);
+  align-items: stretch;
+  gap: 18px;
+  padding: 13px;
+  margin: 0 0 14px;
+  border: 1px solid rgb(201 191 176 / 34%);
+  border-radius: 7px;
+  background: rgb(232 223 206 / 6%);
+}
+.review-card__top-chip .review-card__cover-column {
+  display: block;
+  min-width: 0;
+  grid-column: 1;
+  grid-row: 1;
+}
+.review-card__top-chip .review-card__cover-column .review-card__cover-wrap {
+  width: 100%;
+}
+.review-card__top-chip .review-card__body {
+  min-width: 0;
+  grid-column: 2;
+  grid-row: 1;
+  padding: 2px 32px 2px 0;
+}
+.review-card__top-chip .review-card__body h3 {
+  margin-top: 13px;
+}
+.review-card__top-chip .review-card__details {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 9px 13px;
+}
+.review-card__text {
+  display: block;
+  width: 100%;
+  margin: 0 0 12px !important;
+}
+.review-card > .review-card__actions {
+  display: flex;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+@media (max-width: 760px) {
+  .review-card__top-chip {
+    grid-template-columns: 92px minmax(0, 1fr);
+    gap: 13px;
+    padding: 10px;
+  }
+  .review-card__top-chip .review-card__body { padding-right: 25px; }
+}
+@media (max-width: 420px) {
+  .review-card__top-chip {
+    grid-template-columns: 80px minmax(0, 1fr);
+    gap: 10px;
+    padding: 9px;
+  }
+  .review-card__top-chip .review-card__body { padding-right: 22px; }
+  .review-card__top-chip .review-card__body h3 { margin-top: 9px; }
+  .review-card__top-chip .review-card__details { gap: 7px 9px; }
+}
