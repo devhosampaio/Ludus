@@ -1481,7 +1481,41 @@ async function openReviewComposer(user, existingReview = null, preselectedGame =
   });
 }
 
-function renderAuth(mode = 'login') {
+function renderAuth(mode = 'welcome') {
+  const isWelcome = mode === 'welcome';
+
+  if (isWelcome) {
+    app.innerHTML = `
+      <main class="auth-shell auth-shell--welcome">
+        <section class="auth-intro" aria-label="Ludus">
+          <a class="brand" href="./" aria-label="Ludus início">L<span>.</span></a>
+          <div class="auth-welcome-content">
+            <h1>Todo jogo<br>deixa uma <em>história.</em></h1>
+            <div class="auth-welcome-actions">
+              <button class="auth-welcome-button auth-welcome-button--login" type="button" data-mode="login">
+                <span>Entrar</span>
+                <span class="auth-welcome-button__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4M3 12h12m-5-5 5 5-5 5"/></svg>
+                </span>
+              </button>
+              <button class="auth-welcome-button auth-welcome-button--signup" type="button" data-mode="signup">
+                <span>Criar conta</span>
+                <span class="auth-welcome-button__icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="4"/><path d="M2.5 21a6.5 6.5 0 0 1 13 0M19 8v8m-4-4h8"/></svg>
+                </span>
+              </button>
+            </div>
+          </div>
+          <span class="auth-intro__credit">GRAND THEFT AUTO VI — ROCKSTAR GAMES</span>
+        </section>
+      </main>`;
+
+    app.querySelectorAll('[data-mode]').forEach((button) => {
+      button.addEventListener('click', () => renderAuth(button.dataset.mode));
+    });
+    return;
+  }
+
   const isSignup = mode === 'signup';
   const fields = isSignup
     ? '<label class="field"><span>Nome de usuário</span><input name="username" type="text" minlength="3" maxlength="16" pattern="[A-Za-z0-9._-]+" placeholder="seu.nome" autocomplete="username" required><small>Utilize letras, números e caracteres especiais</small></label><label class="field"><span>Como podemos chamar você?</span><input name="displayName" type="text" maxlength="60" placeholder="Seu nome" autocomplete="name" required></label>'
@@ -1601,12 +1635,12 @@ function renderAuth(mode = 'login') {
 if (!supabase) {
   app.innerHTML = '<main class="setup-shell"><a class="brand" href="./">L<span>.</span></a><p class="eyebrow">CONFIGURAÇÃO NECESSÁRIA</p><h1>Estamos preparando<br><em>o Ludus.</em></h1><p>As credenciais públicas do Supabase ainda não foram carregadas nesta publicação.</p></main>';
 } else {
-  renderAuth('login');
+  renderAuth('welcome');
   let authReady = false;
   supabase.auth.onAuthStateChange((event, session) => {
     authReady = true;
     if (event === 'SIGNED_IN' && session?.user) renderSignedIn(session.user);
-    if (event === 'SIGNED_OUT') { activeUser = null; renderAuth('login'); }
+    if (event === 'SIGNED_OUT') { activeUser = null; renderAuth('welcome'); }
     if (event === 'INITIAL_SESSION' && session?.user) renderSignedIn(session.user);
   });
 
