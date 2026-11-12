@@ -1446,6 +1446,35 @@ button:disabled { cursor: wait; opacity: .65; }
   border-radius: 0;
 }
 
+/* Padronizar a área das capas sem cortar a arte original */
+.review-card__cover-wrap {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  min-width: 0;
+  background: #211e2b !important;
+}
+.review-card__cover-wrap .review-card__cover {
+  width: 100%;
+  height: 100%;
+  object-fit: contain !important;
+  object-position: center;
+  background: #211e2b;
+}
+.game-page__cover {
+  width: 170px;
+  aspect-ratio: 3 / 4;
+  height: auto;
+  object-fit: contain !important;
+  object-position: center;
+  background: #211e2b;
+}
+@media (max-width: 760px) {
+  .game-page__cover { width: 104px; }
+}
+@media (max-width: 420px) {
+  .game-page__cover { width: 88px; }
+}
+
 /* Ações sociais alinhadas no rodapé de cada review */
 .review-card__actions {
   display: flex;
