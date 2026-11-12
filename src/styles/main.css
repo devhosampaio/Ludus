@@ -2832,3 +2832,10 @@ body, #app, .feed-shell { overflow-x: clip; }
   .review-detail__rating { font-size: 17px; }
   .review-detail__body { grid-column: 1 / -1; font-size: 13px; }
 }
+
+
+/* Curtida ativa: mantém o coral no hover, apenas um tom mais claro */
+.review-card > .review-card__actions .review-card__like.is-liked:hover,
+.review-card > .review-card__actions .review-card__like.is-liked:hover > svg {
+  color: #f08a76 !important;
+}
