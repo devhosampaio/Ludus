@@ -1523,13 +1523,20 @@ function renderAuth(mode = 'welcome') {
   const passwordAutocomplete = isSignup ? 'new-password' : 'current-password';
 
   app.innerHTML = [
-    '<main class="auth-shell">',
+    '<main class="auth-shell auth-shell--welcome auth-shell--modal">',
     '<section class="auth-intro" aria-label="Ludus">',
     '<a class="brand" href="./" aria-label="Ludus início">L<span>.</span></a>',
-
+    '<div class="auth-welcome-content">',
+    '<h1>Todo jogo<br>deixa uma <em>história.</em></h1>',
+    '<div class="auth-welcome-actions">',
+    '<button class="auth-welcome-button auth-welcome-button--login" type="button" data-mode="login"><span>Entrar</span><span class="auth-welcome-button__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4M3 12h12m-5-5 5 5-5 5"/></svg></span></button>',
+    '<button class="auth-welcome-button auth-welcome-button--signup" type="button" data-mode="signup"><span>Criar conta</span><span class="auth-welcome-button__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="4"/><path d="M2.5 21a6.5 6.5 0 0 1 13 0M19 8v8m-4-4h8"/></svg></span></button>',
+    '</div></div>',
     '<span class="auth-intro__credit">GRAND THEFT AUTO VI — ROCKSTAR GAMES</span>',
     '</section>',
-    '<section class="auth-panel"><div class="auth-panel__inner">',
+    '<div class="auth-modal-backdrop" data-auth-close></div>',
+    '<section class="auth-modal" role="dialog" aria-modal="true" aria-label="' + (isSignup ? 'Criar conta' : 'Entrar no Ludus') + '" tabindex="-1">',
+    '<section class="auth-panel"><div class="auth-panel__inner">
     '<div class="auth-panel__heading"><p class="eyebrow">' + (isSignup ? 'COMECE SUA JORNADA' : 'BEM-VINDO DE VOLTA') + '</p>',
     '<h2>' + (isSignup ? 'Crie sua conta.' : 'Entre no Ludus.') + '</h2>',
     '</div>',
@@ -1544,12 +1551,21 @@ function renderAuth(mode = 'welcome') {
     '<button class="submit-button" type="submit">' + (isSignup ? 'Criar minha conta <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/><path d="m13 5 6 7-6 7"/></svg>' : 'Entrar <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3h5a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-5"/><path d="M3 12h12m-5-5 5 5-5 5"/></svg>') + '</button>',
     '<p class="form-message" data-message role="status" aria-live="polite" hidden></p></form>',
     '<div class="terms-modal" data-terms-modal hidden><div class="terms-modal__backdrop" data-terms-close></div><section class="terms-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="terms-title"><button class="terms-modal__close" type="button" data-terms-close aria-label="Fechar">×</button><p class="eyebrow">LUDUS · COMUNIDADE</p><h3 id="terms-title">Termos de serviço</h3><p>Este é um texto provisório. Os termos oficiais de serviço do Ludus ainda serão publicados.</p><p>Ao utilizar a plataforma, esperamos que todas as pessoas tratem a comunidade com respeito, não publiquem conteúdo ilegal ou ofensivo e respeitem os direitos de terceiros.</p><p>As funcionalidades, regras de convivência, privacidade e condições de uso serão detalhadas nesta página quando os termos oficiais forem definidos.</p><p class="terms-modal__note">VERSÃO PLACEHOLDER — NÃO É O TEXTO FINAL</p></section></div>',
-    '</div></section></main>'
+    '</div></section></section></main>'
   ].join('');
 
   app.querySelectorAll('[data-mode]').forEach((button) => {
     button.addEventListener('click', () => renderAuth(button.dataset.mode));
   });
+
+  const authModal = app.querySelector('.auth-modal');
+  app.querySelectorAll('[data-auth-close]').forEach((button) => {
+    button.addEventListener('click', () => renderAuth('welcome'));
+  });
+  authModal?.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') renderAuth('welcome');
+  });
+  authModal?.querySelector('input')?.focus();
 
   app.querySelectorAll('[data-password-toggle]').forEach((button) => {
     const input = button.parentElement.querySelector('input');
