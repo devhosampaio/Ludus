@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=IBM+Plex+Serif:ital,wght@0,400;0,500;1,400;1,500&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
 
 :root {
@@ -286,13 +286,13 @@ button:disabled { cursor: wait; opacity: .65; }
 .review-card__meta { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; color: #938ba0; font-size: 10px; }
 .review-card__meta strong { color: var(--color-surface); font-size: 11px; }
 .review-card__meta time { margin-left: auto; }
-.review-card__body h3 { margin: 15px 0 9px; color: var(--color-surface); font: 500 21px 'Space Grotesk', sans-serif; letter-spacing: -.04em; }
+.review-card__body h3 { margin: 15px 0 9px; color: var(--color-surface); font: 400 21px 'Archivo Black', sans-serif; letter-spacing: -.035em; }
 .review-card__details { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; }
 .review-card__stars { color: #d5a64a; font-size: 12px; letter-spacing: 2px; }
 .review-card__stars-muted { color: #655e70; }
 .review-card__status, .review-card__liked { color: #b8b0c2; font-size: 10px; }
 .review-card__liked { color: var(--color-secondary); }
-.review-card__text { max-width: 650px; margin: 14px 0 0; color: #c4bdcc; font-family: 'Press Start 2P', monospace; font-size: 12px; line-height: 1.8; white-space: pre-wrap; overflow-wrap: anywhere; }
+.review-card__text { max-width: 650px; margin: 14px 0 0; color: #c4bdcc; font-family: 'IBM Plex Serif', Georgia, serif; font-size: 15px; line-height: 1.8; white-space: pre-wrap; overflow-wrap: anywhere; }
 @media (max-width: 760px) {
   .feed-shell { grid-template-columns: 1fr; }
   .sidebar { position: relative; height: auto; flex-direction: row; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 14px; border-right: 0; border-bottom: 1px solid rgb(201 191 176 / 18%); }
@@ -2618,8 +2618,8 @@ body, #app, .feed-shell { overflow-x: clip; }
 .game-page__details h1 {
   margin: 0;
   color: #f5f0e6;
-  font: 600 clamp(27px, 4vw, 43px)/1.08 'Space Grotesk', sans-serif;
-  letter-spacing: -.045em;
+  font: 400 clamp(27px, 4vw, 43px)/1.08 'Archivo Black', sans-serif;
+  letter-spacing: -.035em;
 }
 .game-page__subline {
   margin: 10px 0 0;
@@ -2810,7 +2810,7 @@ body, #app, .feed-shell { overflow-x: clip; }
 .review-detail__avatar, .review-detail__avatar img { display: block; width: 42px; height: 42px; border-radius: 50%; object-fit: cover; }
 .review-detail__author strong { display: block; color: #f5f0e6; font-size: 13px; }
 .review-detail__author small { display: block; margin-top: 4px; color: #a9a1b3; font-size: 10px; }
-.review-detail__content h1 { margin: 0; color: #f5f0e6; font: 600 clamp(26px,4vw,42px)/1.12 'Space Grotesk',sans-serif; }
+.review-detail__content h1 { margin: 0; color: #f5f0e6; font: 400 clamp(26px,4vw,42px)/1.12 'Archivo Black',sans-serif; letter-spacing: -.035em; }
 .review-detail__content h1 small { color: #c9bfb0; font-size: .55em; font-weight: 400; }
 .review-detail__rating { margin-top: 15px; color: #d5a64a; font-size: 22px; letter-spacing: 3px; }
 .review-detail__status { margin-top: 7px; color: #c9bfb0; font-size: 11px; }
