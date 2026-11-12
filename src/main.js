@@ -1641,12 +1641,12 @@ function renderAuth(mode = 'login') {
 if (!supabase) {
   app.innerHTML = '<main class="setup-shell"><a class="brand" href="./">L<span>.</span></a><p class="eyebrow">CONFIGURAÇÃO NECESSÁRIA</p><h1>Estamos preparando<br><em>o Ludus.</em></h1><p>As credenciais públicas do Supabase ainda não foram carregadas nesta publicação.</p></main>';
 } else {
-  renderAuth('welcome');
+  renderAuth('login');
   let authReady = false;
   supabase.auth.onAuthStateChange((event, session) => {
     authReady = true;
     if (event === 'SIGNED_IN' && session?.user) renderSignedIn(session.user);
-    if (event === 'SIGNED_OUT') { activeUser = null; renderAuth('welcome'); }
+    if (event === 'SIGNED_OUT') { activeUser = null; renderAuth('login'); }
     if (event === 'INITIAL_SESSION' && session?.user) renderSignedIn(session.user);
   });
 
