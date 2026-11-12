@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
 
 :root {
   font-family: 'DM Sans', sans-serif;
@@ -290,7 +292,7 @@ button:disabled { cursor: wait; opacity: .65; }
 .review-card__stars-muted { color: #655e70; }
 .review-card__status, .review-card__liked { color: #b8b0c2; font-size: 10px; }
 .review-card__liked { color: var(--color-secondary); }
-.review-card__text { max-width: 650px; margin: 14px 0 0; color: #c4bdcc; font-size: 12px; line-height: 1.8; white-space: pre-wrap; overflow-wrap: anywhere; }
+.review-card__text { max-width: 650px; margin: 14px 0 0; color: #c4bdcc; font-family: 'Press Start 2P', monospace; font-size: 12px; line-height: 1.8; white-space: pre-wrap; overflow-wrap: anywhere; }
 @media (max-width: 760px) {
   .feed-shell { grid-template-columns: 1fr; }
   .sidebar { position: relative; height: auto; flex-direction: row; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 14px; border-right: 0; border-bottom: 1px solid rgb(201 191 176 / 18%); }
@@ -2812,7 +2814,7 @@ body, #app, .feed-shell { overflow-x: clip; }
 .review-detail__content h1 small { color: #c9bfb0; font-size: .55em; font-weight: 400; }
 .review-detail__rating { margin-top: 15px; color: #d5a64a; font-size: 22px; letter-spacing: 3px; }
 .review-detail__status { margin-top: 7px; color: #c9bfb0; font-size: 11px; }
-.review-detail__body { margin: 26px 0 0; color: #f5f0e6; font-size: 15px; line-height: 1.85; white-space: pre-line; }
+.review-detail__body { margin: 26px 0 0; color: #f5f0e6; font-family: 'Press Start 2P', monospace; font-size: 15px; line-height: 1.85; white-space: pre-line; }
 .review-detail__discussion { padding: 30px 0; }
 .review-detail__discussion h2 { display: flex; gap: 10px; align-items: center; margin: 0 0 15px; color: #f5f0e6; font-size: 18px; font-weight: 400; }
 .review-detail__discussion h2 span { color: #a9a1b3; font: 11px 'DM Mono',monospace; }
