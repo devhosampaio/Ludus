@@ -4244,3 +4244,67 @@ html body #app .review-card__header .review-card__author-avatar img {
 .review-card__comments-toggle {
   margin-left: 0 !important;
 }
+
+
+/* Ações das avaliações: alinhamento pela margem interna do card */
+.review-card > .review-card__actions {
+  display: flex !important;
+  box-sizing: border-box !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  margin: 14px 0 0 !important;
+  padding: 0 !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 12px !important;
+  text-align: left !important;
+}
+.review-card > .review-card__actions .review-card__social-actions {
+  display: flex !important;
+  flex: 0 1 auto !important;
+  width: auto !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 10px !important;
+}
+.review-card > .review-card__actions .review-card__like,
+.review-card > .review-card__actions .review-card__comments-toggle,
+.review-card > .review-card__actions .review-card__bookmark {
+  display: inline-flex !important;
+  flex: 0 0 auto !important;
+  width: 40px !important;
+  min-width: 40px !important;
+  height: 40px !important;
+  min-height: 40px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+  vertical-align: middle !important;
+}
+.review-card > .review-card__actions .review-card__bookmark {
+  margin-left: auto !important;
+  border: 0 !important;
+  border-radius: 8px !important;
+  background: rgb(232 223 206 / 10%) !important;
+  color: #e8dfce !important;
+  cursor: pointer;
+  transition: background .18s ease, color .18s ease;
+}
+.review-card > .review-card__actions .review-card__bookmark:hover {
+  background: rgb(232 223 206 / 17%) !important;
+  color: #fff !important;
+}
+.review-card > .review-card__actions .review-card__bookmark svg {
+  display: block;
+  width: 21px;
+  height: 21px;
+}
+.review-card > .review-card__actions [data-like-count],
+.review-card > .review-card__actions [data-comment-count] {
+  margin: 0 !important;
+}
