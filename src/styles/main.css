@@ -4429,3 +4429,16 @@ html body #app .review-card__header .review-card__author-avatar img {
 .review-card > .review-card__actions .review-card__bookmark:hover > svg {
   color: #e1dfe5 !important;
 }
+
+
+/* Painel lateral de autenticação: cartão centralizado e mais compacto */
+@media (min-width: 821px) {
+  .auth-panel {
+    width: 92%;
+    height: 60%;
+    min-height: 0;
+    justify-self: center;
+    align-self: center;
+    border-radius: 25px;
+  }
+}
