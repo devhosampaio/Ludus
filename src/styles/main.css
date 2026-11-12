@@ -3170,3 +3170,47 @@ body, #app, .feed-shell { overflow-x: clip; }
 .review-detail__form textarea {
   resize: none !important;
 }
+
+
+/* Separador discreto para expandir respostas diretas de cada comentário */
+.review-comment__author {
+  color: #ffffff !important;
+}
+.review-comment__meta {
+  cursor: default !important;
+}
+.review-comment__replies-toggle {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 9px;
+  margin: 10px 0 0 34px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #a9a1b3;
+  font: 9px 'DM Sans', sans-serif;
+  text-align: left;
+  cursor: pointer;
+}
+.review-comment__replies-toggle::before,
+.review-comment__replies-toggle::after {
+  content: '';
+  height: 1px;
+  flex: 1;
+  background: rgb(201 191 176 / 22%);
+}
+.review-comment__replies-toggle span {
+  flex: 0 0 auto;
+  font-size: 9px;
+  line-height: 1.4;
+}
+.review-comment__replies-toggle:hover {
+  color: #f5f0e6;
+}
+.review-comment__replies[hidden] {
+  display: none !important;
+}
+.review-comment__replies:not([hidden]) {
+  display: block;
+}
