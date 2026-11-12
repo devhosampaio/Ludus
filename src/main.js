@@ -1540,9 +1540,7 @@ function renderAuth(mode = 'welcome') {
     '<div class="auth-panel__heading">' + (isSignup ? '<p class="eyebrow">COMECE SUA JORNADA</p>' : ''),
     '<h2>' + (isSignup ? 'Crie sua conta.' : 'Entre no Ludus.') + '</h2>',
     '</div>',
-    '<div class="auth-tabs" role="group" aria-label="Acesso à conta">',
-    '<button class="auth-tabs__button ' + (!isSignup ? 'is-active' : '') + '" type="button" data-mode="login">Entrar</button>',
-    '<button class="auth-tabs__button ' + (isSignup ? 'is-active' : '') + '" type="button" data-mode="signup">Criar conta</button></div>',
+
     '<form class="auth-form" id="auth-form">' + fields,
     '<label class="field"><span>' + (isSignup ? 'E-mail' : 'E-mail ou nome de usuário') + '</span><input name="' + (isSignup ? 'email' : 'identifier') + '" type="' + (isSignup ? 'email' : 'text') + '" placeholder="' + (isSignup ? 'voce@email.com' : 'E-mail ou usuário') + '" autocomplete="' + (isSignup ? 'email' : 'username') + '" required></label>',
     '<label class="field"><span>Senha</span><div class="password-field"><input name="password" type="password" minlength="6" placeholder="Mínimo de 6 caracteres" autocomplete="' + passwordAutocomplete + '" required><button class="password-toggle" type="button" data-password-toggle aria-label="Mostrar senha" title="Mostrar senha"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button></div></label>',
