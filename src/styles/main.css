@@ -3693,3 +3693,47 @@ html body #app .review-card__header .review-card__author-avatar img {
 }
 
 .composer__selected[hidden] { display: none !important; }
+
+
+/* Capas preenchendo a moldura sem recorte vertical */
+.review-card__cover-wrap .review-card__cover {
+  width: 100%;
+  height: 100%;
+  object-fit: fill !important;
+  object-position: center;
+}
+
+/* Chip com tonalidade suave derivada da arte do jogo */
+.review-card__top-chip {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: rgb(232 223 206 / 7%);
+}
+.review-card__top-chip--has-art {
+  background: rgb(232 223 206 / 10%);
+}
+.review-card__chip-backdrop {
+  position: absolute;
+  z-index: -1;
+  inset: -22px;
+  display: block;
+  background-position: center;
+  background-size: cover;
+  filter: blur(22px) saturate(.72);
+  opacity: .24;
+  transform: scale(1.08);
+  pointer-events: none;
+}
+.review-card__top-chip--has-art::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: linear-gradient(110deg, rgb(232 223 206 / 25%), rgb(48 44 61 / 30%));
+  pointer-events: none;
+}
+.review-card__top-chip > :not(.review-card__chip-backdrop) {
+  position: relative;
+  z-index: 1;
+}
