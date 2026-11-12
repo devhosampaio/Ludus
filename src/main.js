@@ -1492,7 +1492,7 @@ function renderAuth(mode = 'login') {
     '<main class="auth-shell">',
     '<section class="auth-intro" aria-label="Ludus">',
     '<a class="brand" href="./" aria-label="Ludus início">L<span>.</span></a>',
-    '<div class="auth-intro__copy"><h1>Todo jogo<br>deixa uma <em>história.</em></h1></div>',
+
     '<span class="auth-intro__credit">GRAND THEFT AUTO VI — ROCKSTAR GAMES</span>',
     '</section>',
     '<section class="auth-panel"><div class="auth-panel__inner">',
