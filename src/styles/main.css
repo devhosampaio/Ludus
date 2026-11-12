@@ -3181,7 +3181,8 @@ body, #app, .feed-shell { overflow-x: clip; }
 }
 .review-comment__replies-toggle {
   display: flex;
-  width: 100%;
+  box-sizing: border-box;
+  width: calc(100% - 34px);
   align-items: center;
   gap: 9px;
   margin: 10px 0 0 34px;
