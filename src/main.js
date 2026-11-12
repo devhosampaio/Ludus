@@ -397,6 +397,11 @@ async function renderSignedIn(user) {
     await renderGamePage(user, routeGameId);
     return;
   }
+  const routeReviewId = getReviewIdFromLocation();
+  if (routeReviewId) {
+    await renderReviewPage(user, routeReviewId);
+    return;
+  }
 
   const feedList = app.querySelector('[data-feed-list]');
   const { data: reviews, error } = await fetchAllPages(() => supabase.from('reviews')
@@ -473,9 +478,9 @@ async function renderSignedIn(user) {
       const author = username;
       const game = review.games?.title || 'Jogo';
       const gameYear = review.games?.release_year ? String(review.games.release_year) : '';
-      const cover = '<div class="review-card__cover-wrap">' + (review.games?.cover_url
+      const cover = '<button class="review-card__cover-wrap" type="button" data-open-game="' + escapeHTML(review.game_id) + '" aria-label="Abrir página de ' + escapeHTML(game) + '">' + (review.games?.cover_url
         ? '<img class="review-card__cover" src="' + escapeHTML(review.games.cover_url) + '" alt="Capa de ' + escapeHTML(game) + '" loading="lazy">'
-        : '<div class="review-card__cover review-card__cover--empty">L<span>.</span></div>') + '</div>';
+        : '<span class="review-card__cover review-card__cover--empty">L<span>.</span></span>') + '</button>';
       const stars = '★'.repeat(review.rating) + '<span class="review-card__stars-muted">' + '★'.repeat(5 - review.rating) + '</span>';
       const isLiked = likedReviewIds.has(review.id);
       const avatarMarkup = review.profiles?.avatar_url
@@ -487,7 +492,7 @@ async function renderSignedIn(user) {
       const likeTotal = likeCounts[review.id] || 0;
       const commentTotal = commentCounts[review.id] || 0;
       const socialActions = '<div class="review-card__social-actions"><button class="review-card__like' + (isLiked ? ' is-liked' : '') + '" type="button" data-like-review aria-label="Curtir avaliação" title="Curtir avaliação" aria-pressed="' + isLiked + '"><svg class="ui-icon ui-icon--heart" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" stroke="none" d="M12 21s-8.8-5.9-8.8-12.2A4.8 4.8 0 0 1 12 6.4a4.8 4.8 0 0 1 8.8 2.4C20.8 15.1 12 21 12 21Z"></path></svg><span class="review-card__like-count" data-like-count>' + (likeTotal || '') + '</span></button><button class="review-card__comments-toggle" type="button" data-comments-toggle aria-label="Ver comentários" title="Ver comentários" aria-expanded="false"><svg class="ui-icon ui-icon--comment" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" stroke="none" d="M4 3.5h16A2.5 2.5 0 0 1 22.5 6v9a2.5 2.5 0 0 1-2.5 2.5h-8l-5.8 4v-4H4A2.5 2.5 0 0 1 1.5 15V6A2.5 2.5 0 0 1 4 3.5Z"></path></svg><span class="review-card__comment-count" data-comment-count>' + (commentTotal || '') + '</span></button></div>'
-      return '<article class="review-card" data-review-id="' + review.id + '">' +
+      return '<article class="review-card" data-review-id="' + review.id + '" tabindex="0" role="link" aria-label="Abrir avaliação completa em uma nova aba">' +
         '<div class="review-card__cover-column">' + cover + '</div>' +
         '<div class="review-card__body"><div class="review-card__meta"><button class="review-card__author" type="button" data-profile-username="' + escapeHTML(username) + '"><span class="review-card__author-avatar">' + avatarMarkup + '</span><span>' + escapeHTML(author) + '</span></button><time>' + formatDate(review.created_at) + '</time></div>' + menuMarkup +
         '<h3>' + escapeHTML(game) + (gameYear ? ' <small class="review-card__year">' + escapeHTML(gameYear) + '</small>' : '') + '</h3><div class="review-card__details"><span class="review-card__stars" aria-label="Nota ' + review.rating + ' de 5">' + stars + '</span>' +
@@ -573,6 +578,18 @@ async function renderSignedIn(user) {
       return;
     }
 
+    const gameCoverButton = event.target.closest('[data-open-game]');
+    if (gameCoverButton) {
+      const gameId = gameCoverButton.dataset.openGame;
+      if (gameId) window.open(window.location.pathname + window.location.search + '#/jogo/' + encodeURIComponent(gameId), '_blank', 'noopener');
+      return;
+    }
+    const closeComments = event.target.closest('[data-close-comments]');
+    if (closeComments) {
+      const drawer = closeComments.closest('[data-comments-panel]');
+      if (drawer) drawer.classList.remove('is-open');
+      return;
+    }
     const profileButton = event.target.closest('[data-profile-username]');
     if (profileButton?.dataset.profileUsername) {
       navigateToProfile(user, profileButton.dataset.profileUsername);
@@ -583,11 +600,12 @@ async function renderSignedIn(user) {
       const card = commentsToggle.closest('[data-review-id]');
       const panel = card?.querySelector('[data-comments-panel]');
       if (!panel) return;
-      const opening = panel.hidden;
-      panel.hidden = !opening;
+      const opening = !panel.classList.contains('is-open');
       commentsToggle.setAttribute('aria-expanded', String(opening));
       if (opening && panel.dataset.loaded !== 'true') {
         await loadReviewComments(user, card);
+      } else {
+        panel.classList.toggle('is-open', opening);
       }
       return;
     }
@@ -607,6 +625,11 @@ async function renderSignedIn(user) {
       const count = card.querySelector('[data-comment-count]');
       const nextCommentCount = Math.max(0, Number(count.textContent || 0) - 1);
       count.textContent = nextCommentCount ? String(nextCommentCount) : '';
+      return;
+    }
+    const cardForOpen = event.target.closest('.review-card');
+    if (cardForOpen && !event.target.closest('button, a, textarea, input, form, details, summary')) {
+      window.open(window.location.pathname + window.location.search + '#/review/' + encodeURIComponent(cardForOpen.dataset.reviewId), '_blank', 'noopener');
       return;
     }
     const button = event.target.closest('[data-like-review]');
@@ -663,7 +686,7 @@ async function loadReviewComments(user, card) {
     return;
   }
   const rows = comments || [];
-  panel.innerHTML = '<div class="review-comments__list">' +
+  panel.innerHTML = '<div class="review-comments__drawer-head"><strong>Comentários</strong><button type="button" data-close-comments aria-label="Fechar comentários">×</button></div><div class="review-comments__list">' +
     (rows.length ? rows.map((comment) => {
       const name = comment.profiles?.display_name || comment.profiles?.username || 'jogador';
       return '<article class="review-comment"><div class="review-comment__meta"><strong>' + escapeHTML(name) + '</strong><span>' + escapeHTML(comment.profiles?.username || 'jogador') + '</span><time>' + formatDate(comment.created_at) + '</time>' +
@@ -672,6 +695,7 @@ async function loadReviewComments(user, card) {
     }).join('') : '<p class="review-comments__empty">Ainda não há comentários. Comece a conversa.</p>') +
     '</div><form class="review-comments__form" data-comment-form><textarea rows="2" maxlength="1000" placeholder="Escreva um comentário…" required></textarea><button type="submit">Publicar ↗</button></form>';
   panel.dataset.loaded = 'true';
+  panel.classList.add('is-open');
 }
 
 function getProfileUsernameFromLocation() {
@@ -682,6 +706,60 @@ function getProfileUsernameFromLocation() {
 function getGameIdFromLocation() {
   const parts = window.location.hash.split('/');
   return parts[1] === 'jogo' && parts[2] ? decodeURIComponent(parts[2]) : null;
+}
+
+function getReviewIdFromLocation() {
+  const parts = window.location.hash.split('/');
+  return parts[1] === 'review' && parts[2] ? decodeURIComponent(parts[2]) : null;
+}
+
+async function renderReviewPage(currentUser, reviewId) {
+  const requestId = (renderReviewPage.requestId || 0) + 1;
+  renderReviewPage.requestId = requestId;
+  app.innerHTML = '<main class="profile-page review-detail-page"><header class="profile-page__topbar"><a class="brand" href="#inicio">L<span>.</span></a><div class="profile-page__topbar-label"><span>COMUNIDADE / AVALIAÇÕES</span><strong>REVIEW</strong></div><button class="profile-page__back" type="button" data-review-back>← <span>Voltar ao feed</span></button></header><div class="profile-page__content"><div class="profile-page__loading">Carregando avaliação…</div></div></main>';
+  app.querySelector('[data-review-back]')?.addEventListener('click', () => navigateToFeed(currentUser));
+  const { data: review, error } = await supabase.from('reviews')
+    .select('id, user_id, game_id, rating, body, status, liked_game, created_at, profiles!reviews_user_id_fkey(username, display_name, avatar_url), games!reviews_game_id_fkey(title, cover_url, release_year, developer)')
+    .eq('id', reviewId).maybeSingle();
+  if (requestId !== renderReviewPage.requestId) return;
+  const content = app.querySelector('.profile-page__content');
+  if (error || !review) { content.innerHTML = '<div class="profile-page__empty"><h1>Não encontramos esta avaliação.</h1></div>'; return; }
+  const game = review.games || {}, profile = review.profiles || {};
+  const avatar = profile.avatar_url ? '<img src="' + escapeHTML(profile.avatar_url) + '" alt="">' : profilePlaceholderMarkup();
+  const { data: comments, error: commentsError } = await supabase.from('review_comments')
+    .select('id, user_id, body, created_at, profiles!review_comments_user_id_fkey(username, display_name)')
+    .eq('review_id', review.id).order('created_at', { ascending: true }).limit(200);
+  if (requestId !== renderReviewPage.requestId) return;
+  const commentsMarkup = commentsError ? '<p class="review-comments__empty">Não foi possível carregar os comentários.</p>' :
+    (comments || []).map((comment) => {
+      const p = comment.profiles || {};
+      return '<article class="review-detail__comment"><strong>' + escapeHTML(p.display_name || p.username || 'jogador') + '</strong><time>' + formatDate(comment.created_at) + '</time><p>' + escapeHTML(comment.body) + '</p>' +
+        (comment.user_id === currentUser.id ? '<button type="button" data-detail-delete-comment="' + comment.id + '">Excluir</button>' : '') + '</article>';
+    }).join('') || '<p class="review-comments__empty">Ainda não há comentários. Comece a conversa.</p>';
+  content.innerHTML = '<article class="review-detail"><div class="review-detail__main">' +
+    (game.cover_url ? '<button class="review-detail__cover" type="button" data-detail-game="' + escapeHTML(review.game_id) + '"><img src="' + escapeHTML(game.cover_url) + '" alt="Capa de ' + escapeHTML(game.title || 'jogo') + '"></button>' : '') +
+    '<div class="review-detail__content"><div class="review-detail__author"><span class="review-detail__avatar">' + avatar + '</span><div><strong>' + escapeHTML(profile.display_name || profile.username || 'Jogador') + '</strong><small>' + escapeHTML(profile.username || '') + ' · ' + formatDate(review.created_at) + '</small></div></div>' +
+    '<h1>' + escapeHTML(game.title || 'Jogo') + (game.release_year ? ' <small>' + escapeHTML(game.release_year) + '</small>' : '') + '</h1><div class="review-detail__rating">' + '★'.repeat(review.rating) + '☆'.repeat(5-review.rating) + '</div><div class="review-detail__status">' + escapeHTML(statusLabel(review.status)) + (review.liked_game ? ' · Gostei deste jogo' : '') + '</div>' +
+    (review.body ? '<p class="review-detail__body">' + escapeHTML(review.body) + '</p>' : '') + '</div></div><section class="review-detail__discussion"><h2>Comentários <span>' + (comments || []).length + '</span></h2><div class="review-detail__comments">' + commentsMarkup + '</div><form class="review-detail__form" data-detail-comment-form><textarea rows="3" maxlength="1000" placeholder="Escreva um comentário…" required></textarea><button type="submit">Enviar comentário ↗</button></form></section></article>';
+  content.querySelector('[data-detail-game]')?.addEventListener('click', () => navigateToGame(currentUser, review.game_id));
+  content.addEventListener('submit', async (event) => {
+    if (!event.target.matches('[data-detail-comment-form]')) return;
+    event.preventDefault();
+    const form = event.target, textarea = form.querySelector('textarea'), submit = form.querySelector('button[type="submit"]'), body = textarea.value.trim();
+    if (!body) return;
+    submit.disabled = true;
+    const { error: insertError } = await supabase.from('review_comments').insert({ review_id: review.id, user_id: currentUser.id, body });
+    if (insertError) { console.error('[Ludus] Falha ao publicar comentário:', insertError); submit.disabled = false; return; }
+    await renderReviewPage(currentUser, reviewId);
+  });
+  content.addEventListener('click', async (event) => {
+    const remove = event.target.closest('[data-detail-delete-comment]');
+    if (!remove) return;
+    remove.disabled = true;
+    const { error: deleteError } = await supabase.from('review_comments').delete().eq('id', remove.dataset.detailDeleteComment).eq('user_id', currentUser.id);
+    if (deleteError) { remove.disabled = false; return; }
+    await renderReviewPage(currentUser, reviewId);
+  });
 }
 
 function navigateToGame(currentUser, gameId) {
