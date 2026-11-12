@@ -3986,3 +3986,115 @@ html body #app .review-card__header .review-card__author-avatar img {
   position: static;
   z-index: auto;
 }
+
+
+/* Estrutura definitiva das avaliações: chip de jogo, resenha e ações em sequência */
+.review-card {
+  display: block !important;
+  width: 100%;
+  min-width: 0;
+}
+.review-card__header {
+  display: flex !important;
+  width: 100%;
+  margin-bottom: 12px;
+}
+.review-card__top-chip {
+  display: grid !important;
+  grid-template-columns: 112px minmax(0, 1fr) !important;
+  align-items: stretch;
+  gap: 18px;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  margin: 0 0 14px !important;
+  padding: 13px !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  isolation: auto !important;
+  overflow: visible !important;
+}
+.review-card__top-chip > .review-card__cover-column {
+  display: block !important;
+  grid-column: 1 !important;
+  grid-row: 1 !important;
+  width: 100%;
+  min-width: 0;
+  position: static !important;
+}
+.review-card__top-chip .review-card__cover-wrap {
+  display: block;
+  width: 100% !important;
+}
+.review-card__top-chip > .review-card__body {
+  display: block !important;
+  grid-column: 2 !important;
+  grid-row: 1 !important;
+  width: 100%;
+  min-width: 0;
+  padding: 2px 0 !important;
+  position: static !important;
+}
+.review-card__top-chip .review-card__body h3 {
+  margin-top: 8px;
+}
+.review-card__top-chip .review-card__details {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 9px 13px;
+}
+.review-card__text {
+  display: block !important;
+  width: 100%;
+  max-width: none;
+  margin: 0 0 14px !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+.review-card__text-panel {
+  display: contents !important;
+}
+.review-card > .review-card__actions {
+  display: flex !important;
+  position: static !important;
+  clear: both;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 13px 13px !important;
+}
+.review-card__social-actions {
+  display: flex !important;
+  position: static !important;
+  align-items: center;
+  justify-content: flex-start;
+  width: 100%;
+  gap: 9px;
+}
+.review-card__card-backdrop,
+.review-card--has-art::after,
+.review-card__chip-backdrop,
+.review-card__top-chip::after {
+  display: none !important;
+  content: none !important;
+}
+@media (max-width: 760px) {
+  .review-card__top-chip {
+    grid-template-columns: 92px minmax(0, 1fr) !important;
+    gap: 13px;
+    padding: 10px !important;
+  }
+}
+@media (max-width: 420px) {
+  .review-card__top-chip {
+    grid-template-columns: 80px minmax(0, 1fr) !important;
+    gap: 10px;
+    padding: 9px !important;
+  }
+  .review-card > .review-card__actions {
+    padding: 0 9px 10px !important;
+  }
+}
