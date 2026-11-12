@@ -4488,3 +4488,16 @@ html body #app .review-card__header .review-card__author-avatar img {
     border-radius: 50px !important;
   }
 }
+
+
+/* Ajuste fino do painel de autenticação: menos espaço interno */
+@media (min-width: 821px) {
+  html body #app .auth-panel {
+    padding: 20px clamp(18px, 3vw, 42px) !important;
+  }
+}
+@media (max-width: 820px) {
+  html body #app .auth-panel {
+    padding: 26px 20px 34px !important;
+  }
+}
