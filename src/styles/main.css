@@ -4501,3 +4501,138 @@ html body #app .review-card__header .review-card__author-avatar img {
     padding: 26px 20px 34px !important;
   }
 }
+
+
+
+/* Tela inicial de autenticação: título e chamadas de acesso centralizados */
+.auth-shell--welcome {
+  display: block !important;
+  position: relative;
+  min-height: 100svh;
+  height: 100svh;
+}
+.auth-shell--welcome .auth-intro {
+  display: block !important;
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 100svh;
+  padding: 0 !important;
+}
+.auth-shell--welcome .brand {
+  position: absolute;
+  z-index: 2;
+  top: clamp(28px, 5vw, 58px);
+  left: clamp(28px, 5vw, 64px);
+}
+.auth-welcome-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: flex;
+  width: min(900px, calc(100% - 40px));
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(28px, 4vh, 42px);
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+.auth-welcome-content h1 {
+  margin: 0;
+  color: #dcd2c1;
+  font: 500 clamp(48px, 7.2vw, 92px)/.98 'Space Grotesk', sans-serif;
+  letter-spacing: -.075em;
+  text-align: center;
+  text-shadow: 0 3px 24px rgb(0 0 0 / 30%);
+}
+.auth-welcome-content h1 em {
+  color: #d96c55;
+  font-style: normal;
+}
+.auth-welcome-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+html body #app .auth-welcome-button {
+  display: inline-flex;
+  min-width: 220px;
+  min-height: 66px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+  padding: 9px 10px 9px 28px;
+  border: 0;
+  border-radius: 999px !important;
+  font: 600 15px/1 'Space Grotesk', sans-serif;
+  letter-spacing: .01em;
+  text-align: left;
+  transition: transform .18s ease, filter .18s ease;
+}
+html body #app .auth-welcome-button:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.08);
+}
+html body #app .auth-welcome-button:active {
+  transform: translateY(0) scale(.98);
+}
+html body #app .auth-welcome-button--login {
+  color: #dcd2c1;
+  background: #302c3d;
+}
+html body #app .auth-welcome-button--signup {
+  color: #302c3d;
+  background: #dcd2c1;
+}
+html body #app .auth-welcome-button__icon {
+  display: inline-flex;
+  width: 46px;
+  height: 46px;
+  flex: 0 0 46px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50% !important;
+}
+html body #app .auth-welcome-button--login .auth-welcome-button__icon {
+  color: #302c3d;
+  background: #dcd2c1;
+}
+html body #app .auth-welcome-button--signup .auth-welcome-button__icon {
+  color: #dcd2c1;
+  background: #302c3d;
+}
+.auth-welcome-button__icon svg {
+  display: block;
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+@media (max-width: 560px) {
+  .auth-welcome-content {
+    width: calc(100% - 36px);
+    gap: 30px;
+  }
+  .auth-welcome-content h1 {
+    font-size: clamp(46px, 12vw, 66px);
+  }
+  .auth-welcome-actions {
+    width: min(100%, 300px);
+    flex-direction: column;
+    gap: 11px;
+  }
+  html body #app .auth-welcome-button {
+    width: 100%;
+    min-height: 60px;
+  }
+  html body #app .auth-welcome-button__icon {
+    width: 42px;
+    height: 42px;
+    flex-basis: 42px;
+  }
+}
