@@ -4379,3 +4379,16 @@ html body #app .review-card__header .review-card__author-avatar img {
 .review-card > .review-card__actions .review-card__bookmark:hover > svg {
   color: #ffffff !important;
 }
+
+
+/* Tipografia das avaliações */
+.review-card__text {
+  text-align: justify !important;
+  text-justify: inter-word;
+}
+.review-card__author,
+.review-card__author > span,
+.review-card__author > span:last-child {
+  color: #ffffff !important;
+  opacity: 1 !important;
+}
