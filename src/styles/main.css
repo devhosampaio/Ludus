@@ -3478,3 +3478,26 @@ body, #app, .feed-shell { overflow-x: clip; }
 .review-card__top-chip {
   border: 0 !important;
 }
+
+
+/* Menu de opções no canto superior direito do cartão externo */
+.review-card {
+  position: relative;
+}
+.review-card__header {
+  position: relative;
+  padding-right: 38px;
+}
+.review-card__header > .review-menu {
+  position: absolute;
+  top: -3px;
+  right: 0;
+  z-index: 16;
+}
+.review-card__top-chip .review-card__body {
+  padding-right: 0;
+}
+@media (max-width: 420px) {
+  .review-card__header { padding-right: 32px; }
+  .review-card__top-chip .review-card__body { padding-right: 0; }
+}
