@@ -1536,7 +1536,7 @@ function renderAuth(mode = 'welcome') {
     '</section>',
     '<div class="auth-modal-backdrop" data-auth-close></div>',
     '<section class="auth-modal" role="dialog" aria-modal="true" aria-label="' + (isSignup ? 'Criar conta' : 'Entrar no Ludus') + '" tabindex="-1">',
-    '<section class="auth-panel"><div class="auth-panel__inner">
+    '<section class="auth-panel"><div class="auth-panel__inner">',
     '<div class="auth-panel__heading"><p class="eyebrow">' + (isSignup ? 'COMECE SUA JORNADA' : 'BEM-VINDO DE VOLTA') + '</p>',
     '<h2>' + (isSignup ? 'Crie sua conta.' : 'Entre no Ludus.') + '</h2>',
     '</div>',
