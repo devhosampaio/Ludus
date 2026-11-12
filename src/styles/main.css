@@ -4636,3 +4636,82 @@ html body #app .auth-welcome-button--signup .auth-welcome-button__icon {
     flex-basis: 42px;
   }
 }
+
+/* Inversão da paleta dos botões da tela inicial */
+html body #app .auth-welcome-button--login {
+  color: #302c3d !important;
+  background: #dcd2c1 !important;
+}
+html body #app .auth-welcome-button--signup {
+  color: #dcd2c1 !important;
+  background: #302c3d !important;
+}
+html body #app .auth-welcome-button--login .auth-welcome-button__icon {
+  color: #dcd2c1 !important;
+  background: #302c3d !important;
+}
+html body #app .auth-welcome-button--signup .auth-welcome-button__icon {
+  color: #302c3d !important;
+  background: #dcd2c1 !important;
+}
+
+/* Formulários de acesso em modal central, sobre a tela inicial escurecida */
+.auth-shell--modal {
+  position: relative;
+  isolation: isolate;
+}
+.auth-modal-backdrop {
+  position: fixed;
+  z-index: 30;
+  inset: 0;
+  background: rgb(10 8 14 / 72%);
+  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
+}
+.auth-modal {
+  position: fixed;
+  z-index: 31;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 100%;
+  padding: 24px 16px;
+  overflow-y: auto;
+  outline: none;
+}
+html body #app .auth-modal .auth-panel {
+  display: block;
+  width: min(520px, calc(100vw - 32px)) !important;
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: calc(100svh - 48px);
+  margin: auto;
+  padding: 30px clamp(22px, 4vw, 42px) !important;
+  overflow-x: hidden;
+  overflow-y: auto;
+  border-radius: 28px !important;
+  box-shadow: 0 24px 90px rgb(0 0 0 / 38%);
+}
+.auth-modal .auth-panel__inner {
+  width: 100%;
+}
+.auth-modal .auth-panel__heading {
+  margin-bottom: 20px;
+}
+.auth-modal .auth-tabs {
+  margin-bottom: 22px;
+}
+@media (max-width: 560px) {
+  .auth-modal {
+    align-items: center;
+    padding: 16px 12px;
+  }
+  html body #app .auth-modal .auth-panel {
+    width: min(100%, 460px) !important;
+    max-height: calc(100svh - 32px);
+    padding: 25px 20px !important;
+    border-radius: 24px !important;
+  }
+}
