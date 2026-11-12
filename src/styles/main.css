@@ -3504,8 +3504,8 @@ body, #app, .feed-shell { overflow-x: clip; }
 
 
 /* Direção visual experimental: geometria rígida e cantos retos em toda a interface */
-*,
-*::before,
-*::after {
+html body #app *,
+html body #app *::before,
+html body #app *::after {
   border-radius: 0 !important;
 }
