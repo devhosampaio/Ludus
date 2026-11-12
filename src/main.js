@@ -251,6 +251,8 @@ async function renderSignedIn(user) {
   if (activeUser?.id === user.id && app.querySelector('[data-feed-list]') &&
       !getProfileUsernameFromLocation() && !getGameIdFromLocation() && !getReviewIdFromLocation()) return;
   activeUser = user;
+  const reviewRouteId = getReviewIdFromLocation();
+  if (reviewRouteId) { renderReviewPage(user, reviewRouteId); return; }
   const fallbackName = user.user_metadata?.display_name || user.email?.split('@')[0] || 'jogador';
   app.innerHTML = `
     <div class="feed-shell">
