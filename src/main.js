@@ -568,7 +568,7 @@ async function renderSignedIn(user) {
         (isOwner ? '<button type="button" data-review-action="edit">Editar review</button><button type="button" class="is-danger" data-review-action="delete">Excluir review</button>' : '<button type="button" data-review-action="report">Denunciar review</button>') + '</div></details>';
       const likeTotal = likeCounts[review.id] || 0;
       const commentTotal = commentCounts[review.id] || 0;
-      const socialActions = '<div class="review-card__social-actions"><button class="review-card__like' + (isLiked ? ' is-liked' : '') + '" type="button" data-like-review aria-label="Curtir avaliação" title="Curtir avaliação" aria-pressed="' + isLiked + '"><svg class="ui-icon ui-icon--heart" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" stroke="none" d="M12 21s-8.8-5.9-8.8-12.2A4.8 4.8 0 0 1 12 6.4a4.8 4.8 0 0 1 8.8 2.4C20.8 15.1 12 21 12 21Z"></path></svg><span class="review-card__like-count" data-like-count>' + (likeTotal || '') + '</span></button><span class="review-card__comments-toggle" aria-label="Comentários"><svg class="ui-icon ui-icon--comment" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" stroke="none" d="M4 3.5h16A2.5 2.5 0 0 1 22.5 6v9a2.5 2.5 0 0 1-2.5 2.5h-8l-5.8 4v-4H4A2.5 2.5 0 0 1 1.5 15V6A2.5 2.5 0 0 1 4 3.5Z"></path></svg><span class="review-card__comment-count" data-comment-count>' + (commentTotal || '') + '</span></span></div>'
+      const socialActions = '<div class="review-card__social-actions"><button class="review-card__like' + (isLiked ? ' is-liked' : '') + '" type="button" data-like-review aria-label="Curtir avaliação" title="Curtir avaliação" aria-pressed="' + isLiked + '"><svg class="ui-icon ui-icon--heart" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" stroke="none" d="M12 21s-8.8-5.9-8.8-12.2A4.8 4.8 0 0 1 12 6.4a4.8 4.8 0 0 1 8.8 2.4C20.8 15.1 12 21 12 21Z"></path></svg><span class="review-card__like-count" data-like-count>' + (likeTotal || '') + '</span></button><button type="button" class="review-card__comments-toggle" data-open-review-comments aria-label="Abrir comentários" title="Abrir comentários"><svg class="ui-icon ui-icon--comment" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" stroke="none" d="M4 3.5h16A2.5 2.5 0 0 1 22.5 6v9a2.5 2.5 0 0 1-2.5 2.5h-8l-5.8 4v-4H4A2.5 2.5 0 0 1 1.5 15V6A2.5 2.5 0 0 1 4 3.5Z"></path></svg><span class="review-card__comment-count" data-comment-count>' + (commentTotal || '') + '</span></button></div>'
       return '<article class="review-card" data-review-id="' + review.id + '">' +
         '<div class="review-card__cover-column">' + cover + '</div>' +
         '<div class="review-card__body"><div class="review-card__meta"><button class="review-card__author" type="button" data-profile-username="' + escapeHTML(username) + '"><span class="review-card__author-avatar">' + avatarMarkup + '</span><span>' + escapeHTML(author) + '</span></button></div>' + menuMarkup +
@@ -576,8 +576,7 @@ async function renderSignedIn(user) {
         (review.liked_game ? '<span class="review-card__liked" aria-label="Gostei deste jogo" title="Gostei deste jogo"><svg class="ui-icon ui-icon--heart" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" stroke="none" d="M12 21s-8.8-5.9-8.8-12.2A4.8 4.8 0 0 1 12 6.4a4.8 4.8 0 0 1 8.8 2.4C20.8 15.1 12 21 12 21Z"></path></svg></span>' : '') +
         (review.status ? '<span class="review-card__status"><svg class="ui-icon ui-icon--gamepad" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" stroke="none" d="M7 6h10a4 4 0 0 1 3.9 3.1l1.4 6.1a2.8 2.8 0 0 1-4.7 2.6l-2.2-2.1H8.6l-2.2 2.1a2.8 2.8 0 0 1-4.7-2.6l1.4-6.1A4 4 0 0 1 7 6Zm1.2 2.5a.8.8 0 0 0-.8.8v1.2H6.2a.8.8 0 0 0 0 1.6h1.2v1.2a.8.8 0 0 0 1.6 0v-1.2h1.2a.8.8 0 0 0 0-1.6H9V9.3a.8.8 0 0 0-.8-.8Zm7.1 1.1a1 1 0 1 0 0 2 1 1 0 0 0 0-2Zm2.5 2.5a1 1 0 1 0 0 2 1 1 0 0 0 0-2Z"></path></svg>' + statusLabel(review.status) + '</span>' : '') + '</div></div>' +
         (review.body ? '<p class="review-card__text">' + escapeHTML(review.body) + '</p>' : '') +
-        '<div class="review-card__actions">' + socialActions + '</div>' +
-        renderCommentsSection(review.id, commentsByReview[review.id] || [], commentLikeRows || [], user) + '</article>';
+        '<div class="review-card__actions">' + socialActions + '</div></article>';
     }).join('');
   };
 
@@ -670,6 +669,12 @@ async function renderSignedIn(user) {
     const profileButton = event.target.closest('[data-profile-username]');
     if (profileButton?.dataset.profileUsername) {
       navigateToProfile(user, profileButton.dataset.profileUsername);
+      return;
+    }
+    const openReviewComments = event.target.closest('[data-open-review-comments]');
+    if (openReviewComments) {
+      const reviewCard = openReviewComments.closest('[data-review-id]');
+      if (reviewCard) navigateToReview(user, reviewCard.dataset.reviewId);
       return;
     }
     const viewComments = event.target.closest('[data-view-comments]');
@@ -882,7 +887,7 @@ function getReviewIdFromLocation() {
 async function renderReviewPage(currentUser, reviewId) {
   const requestId = (renderReviewPage.requestId || 0) + 1;
   renderReviewPage.requestId = requestId;
-  app.innerHTML = '<main class="profile-page review-detail-page"><header class="profile-page__topbar"><a class="brand" href="#inicio">L<span>.</span></a><div class="profile-page__topbar-label"><span>COMUNIDADE / AVALIAÇÕES</span><strong>REVIEW</strong></div><button class="profile-page__back" type="button" data-review-back>← <span>Voltar ao feed</span></button></header><div class="profile-page__content"><div class="profile-page__loading">Carregando avaliação…</div></div></main>';
+  app.innerHTML = '<main class="profile-page review-detail-page"><header class="profile-page__topbar"><a class="brand" href="#inicio">L<span>.</span></a><div class="profile-page__topbar-label"><span>COMUNIDADE / DISCUSSÕES</span><strong>COMENTÁRIOS</strong></div><button class="profile-page__back" type="button" data-review-back>← <span>Voltar ao feed</span></button></header><div class="profile-page__content"><div class="profile-page__loading">Carregando avaliação…</div></div></main>';
   app.querySelector('[data-review-back]')?.addEventListener('click', () => navigateToFeed(currentUser));
   const { data: review, error } = await supabase.from('reviews')
     .select('id, user_id, game_id, rating, body, status, liked_game, created_at, profiles!reviews_user_id_fkey(username, display_name, avatar_url), games!reviews_game_id_fkey(title, cover_url, release_year, developer)')
@@ -916,7 +921,7 @@ async function renderReviewPage(currentUser, reviewId) {
     (game.cover_url ? '<button class="review-detail__cover" type="button" data-detail-game="' + escapeHTML(review.game_id) + '"><img src="' + escapeHTML(game.cover_url) + '" alt="Capa de ' + escapeHTML(game.title || 'jogo') + '"></button>' : '') +
     '<div class="review-detail__content"><div class="review-detail__author"><span class="review-detail__avatar">' + avatar + '</span><div><strong>' + escapeHTML(profile.display_name || profile.username || 'Jogador') + '</strong><small>' + escapeHTML(profile.username || '') + ' · ' + formatDate(review.created_at) + '</small></div></div>' +
     '<h1>' + escapeHTML(game.title || 'Jogo') + (game.release_year ? ' <small>' + escapeHTML(game.release_year) + '</small>' : '') + '</h1><div class="review-detail__rating">' + '★'.repeat(review.rating) + '☆'.repeat(5-review.rating) + '</div><div class="review-detail__status">' + escapeHTML(statusLabel(review.status)) + (review.liked_game ? ' · Gostei deste jogo' : '') + '</div>' +
-    (review.body ? '<p class="review-detail__body">' + escapeHTML(review.body) + '</p>' : '') + '</div></div><section class="review-detail__discussion"><h2>Comentários <span>' + commentRows.length + '</span></h2><div class="review-detail__comments">' + commentsMarkup + '</div><form class="review-detail__form" data-detail-comment-form><textarea rows="3" maxlength="1000" placeholder="Escreva um comentário…" required></textarea><button type="submit">Enviar comentário ↗</button></form></section></article>';
+    (review.body ? '<p class="review-detail__body">' + escapeHTML(review.body) + '</p>' : '') + '</div></div><section class="review-detail__discussion"><h2>Discussão <span>' + commentRows.length + ' comentários</span></h2><div class="review-detail__comments">' + commentsMarkup + '</div><form class="review-detail__form" data-detail-comment-form><textarea rows="3" maxlength="1000" placeholder="Escreva um comentário…" required></textarea><button type="submit">Enviar comentário ↗</button></form></section></article>';
   content.querySelector('[data-detail-game]')?.addEventListener('click', () => navigateToGame(currentUser, review.game_id));
   content.addEventListener('submit', async (event) => {
     const form = event.target.closest('[data-detail-comment-form], [data-reply-form], [data-edit-comment-form]');
@@ -1587,7 +1592,9 @@ window.addEventListener('hashchange', () => {
   if (!activeUser) return;
   const username = getProfileUsernameFromLocation();
   const gameId = getGameIdFromLocation();
+  const reviewId = getReviewIdFromLocation();
   if (username) renderProfilePage(activeUser, username);
   else if (gameId) renderGamePage(activeUser, gameId);
+  else if (reviewId) renderReviewPage(activeUser, reviewId);
   else renderSignedIn(activeUser);
 });
