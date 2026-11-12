@@ -593,15 +593,21 @@ async function renderSignedIn(user) {
     const body = textarea.value.trim();
     if (!body || !card) return;
     submit.disabled = true;
-    const parentCommentId = form.dataset.parentCommentId || null;
-    const { error: insertError } = await supabase.from('review_comments').insert({
-      review_id: card.dataset.reviewId,
-      user_id: user.id,
-      body,
-      parent_comment_id: parentCommentId
-    });
-    if (insertError) {
-      console.error('[Ludus] Falha ao publicar comentário:', insertError);
+    let result;
+    if (form.matches('[data-edit-comment-form]')) {
+      const comment = form.closest('[data-comment-id]');
+      result = await supabase.from('review_comments').update({ body })
+        .eq('id', comment?.dataset.commentId).eq('user_id', user.id);
+    } else {
+      result = await supabase.from('review_comments').insert({
+        review_id: card.dataset.reviewId,
+        user_id: user.id,
+        body,
+        parent_comment_id: form.dataset.parentCommentId || null
+      });
+    }
+    if (result.error) {
+      console.error('[Ludus] Falha ao salvar comentário:', result.error);
       submit.disabled = false;
       return;
     }
