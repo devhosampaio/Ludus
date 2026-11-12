@@ -4193,3 +4193,54 @@ html body #app .review-card__header .review-card__author-avatar img {
     padding: 0 9px 10px !important;
   }
 }
+
+
+/* Refinos do cabeçalho e alinhamento das ações das avaliações */
+.review-card__meta {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 7px !important;
+  text-align: left !important;
+}
+.review-card__author {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 7px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  text-align: left !important;
+}
+.review-card__author-avatar,
+.review-card__author-avatar img {
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+}
+.review-card__activity {
+  display: inline-block !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  text-align: left !important;
+  white-space: normal !important;
+}
+.review-card__activity em,
+.review-card__activity em strong {
+  font-style: italic !important;
+}
+.review-card__activity em strong {
+  font-weight: 700 !important;
+}
+.review-card__actions,
+.review-card__social-actions {
+  display: flex !important;
+  justify-content: flex-start !important;
+  align-items: center !important;
+  text-align: left !important;
+  margin-left: 0 !important;
+}
+.review-card__social-actions > button,
+.review-card__comments-toggle {
+  margin-left: 0 !important;
+}
