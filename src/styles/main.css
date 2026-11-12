@@ -3503,9 +3503,23 @@ body, #app, .feed-shell { overflow-x: clip; }
 }
 
 
-/* Direção visual experimental: geometria rígida e cantos retos em toda a interface */
+/* Direção visual experimental: geometria rígida com arredondamento quase imperceptível */
 html body #app *,
 html body #app *::before,
 html body #app *::after {
-  border-radius: 0 !important;
+  border-radius: 2px !important;
+}
+
+/* Preservar avatares circulares */
+html body #app .profile-page__avatar,
+html body #app .profile-editor__preview--avatar,
+html body #app .review-detail__avatar,
+html body #app .review-detail__avatar img,
+html body #app .sidebar-user__avatar,
+html body #app .sidebar-user__avatar img,
+html body #app .review-comment__avatar,
+html body #app .review-comment__avatar img,
+html body #app .review-card__header .review-card__author-avatar,
+html body #app .review-card__header .review-card__author-avatar img {
+  border-radius: 50% !important;
 }
