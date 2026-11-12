@@ -3059,8 +3059,6 @@ body, #app, .feed-shell { overflow-x: clip; }
 .review-comments__all { margin: 8px 0 2px 34px; color: #d96c55; }
 .review-comments__form { margin-top: 10px !important; }
 .review-comment__meta { position: relative; cursor: pointer; min-height: 29px; }
-.review-comment__author { font: inherit !important; }
-.review-comment__meta time { font: inherit !important; }
 .review-comment__menu { position: relative; margin-left: auto; cursor: default; }
 .review-comment__menu > summary {
   display: grid;
