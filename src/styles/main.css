@@ -6376,6 +6376,8 @@ html body #app .auth-shell--split .auth-panel {
   grid-column:1!important;
   grid-row:1!important;
   width:auto!important;
+  max-width:none!important;
+  margin-right:0!important;
   height:100vh!important;
   min-height:100vh!important;
   flex-direction:column!important;
@@ -6390,14 +6392,26 @@ html body #app .auth-shell--split .auth-panel {
 #app .sidebar .header-actions{
   display:flex!important;
   flex-direction:column!important;
-  align-items:stretch!important;
+  align-items:flex-start!important;
   gap:12px!important;
+  width:40px!important;
   margin:0!important;
 }
-#app .sidebar .header-search,
+#app .sidebar .header-search{
+  width:40px!important;
+  min-width:40px!important;
+  max-width:40px!important;
+  flex:0 0 40px!important;
+}
 #app .sidebar .header-search.is-open{
-  width:100%!important;
-  max-width:none!important;
+  width:230px!important;
+  max-width:min(230px,58vw)!important;
+  flex:0 1 230px!important;
+}
+#app .sidebar .notifications{
+  width:40px!important;
+  min-width:40px!important;
+  flex:0 0 40px!important;
 }
 #app .sidebar .header-search.is-open input{
   width:calc(100% - 44px)!important;
