@@ -339,7 +339,7 @@ async function renderSignedIn(user) {
             <div class="newcomers-list__loading">Descobrindo novas histórias…</div>
           </div>
         </section>
-        <nav class="feed-navigation" aria-label="Navegação do feed"><div class="feed-tabs" role="tablist" aria-label="Navegação do feed"><button class="feed-tabs__button is-active" type="button" role="tab" aria-selected="true" data-feed-mode="home">Início</button><button class="feed-tabs__button" type="button" role="tab" aria-selected="false" data-feed-mode="popular">Para você</button><button class="feed-tabs__button" type="button" role="tab" aria-selected="false" data-feed-mode="following">Seguindo</button><button class="feed-tabs__button" type="button" role="tab" aria-selected="false" data-feed-mode="recent">Recentes</button></div></nav>
+        <nav class="feed-navigation" aria-label="Navegação do feed"><div class="feed-tabs" role="tablist" aria-label="Navegação do feed"><button class="feed-tabs__button is-active" type="button" role="tab" aria-selected="true" data-feed-mode="home">Início</button><button class="feed-tabs__button" type="button" role="tab" aria-selected="false" data-feed-mode="popular">Para você</button><button class="feed-tabs__button" type="button" role="tab" aria-selected="false" data-feed-mode="following">Seguindo</button><button class="feed-tabs__button" type="button" role="tab" aria-selected="false" data-feed-mode="recent">Recentes</button><button class="feed-tabs__button" type="button" role="tab" aria-selected="false" data-feed-mode="saved">Minha lista</button></div></nav>
         <section class="feed-content" aria-label="Atividade da comunidade">
           <div class="section-heading feed-section-heading"><div class="feed-heading__inner"><h2 class="feed-section-heading__title" data-feed-title>Para você</h2></div></div>
           <div class="feed-list" data-feed-list><div class="feed-loading">Carregando as histórias da comunidade…</div></div>
@@ -562,6 +562,19 @@ async function renderSignedIn(user) {
     counts[comment.review_id] = (counts[comment.review_id] || 0) + 1;
     return counts;
   }, {});
+  const { data: savedReviewRows, error: savedReviewsError } = await fetchAllPages(() => supabase
+    .from('review_saves').select('review_id, created_at').eq('user_id', user.id).order('created_at', { ascending: false }));
+  if (savedReviewsError) console.error('[Ludus] Falha ao carregar Minha lista:', savedReviewsError);
+  const savedReviewIds = new Set((savedReviewRows || []).map((saved) => saved.review_id));
+  const savedAtByReview = new Map((savedReviewRows || []).map((saved) => [saved.review_id, saved.created_at]));
+  const { data: saveCountRows, error: saveCountsError } = reviewIds.length
+    ? await supabase.rpc('get_review_save_counts', { p_review_ids: reviewIds })
+    : { data: [], error: null };
+  if (saveCountsError) console.error('[Ludus] Falha ao carregar contagem de itens salvos:', saveCountsError);
+  const saveCounts = (saveCountRows || []).reduce((counts, saved) => {
+    counts[saved.review_id] = Number(saved.save_count || 0);
+    return counts;
+  }, {});
   const commentIds = (commentRows || []).map((comment) => comment.id);
   const { data: commentLikeRows, error: commentLikesError } = await fetchCommentLikeRows(commentIds);
   if (commentLikesError) console.error('[Ludus] Falha ao carregar curtidas dos comentários:', commentLikesError);
@@ -634,7 +647,9 @@ async function renderSignedIn(user) {
 
   const feedWelcome = app.querySelector('.feed-welcome');
   const feedContent = app.querySelector('.feed-content');
+  let activeFeedMode = 'home';
   const renderFeed = (mode = 'home') => {
+    activeFeedMode = mode;
     const isHome = mode === 'home';
     feedWelcome.hidden = !isHome;
     newcomersSection.hidden = !isHome;
@@ -644,10 +659,13 @@ async function renderSignedIn(user) {
     let visibleReviews = [...(reviews || [])];
     if (mode === 'following') {
       visibleReviews = visibleReviews.filter((review) => followedIds.has(review.user_id));
+    } else if (mode === 'saved') {
+      visibleReviews = visibleReviews.filter((review) => savedReviewIds.has(review.id));
+      visibleReviews.sort((a, b) => new Date(savedAtByReview.get(b.id) || b.created_at) - new Date(savedAtByReview.get(a.id) || a.created_at));
     } else if (mode === 'popular') {
       visibleReviews.sort((a, b) => {
-        const scoreA = (likeCounts[a.id] || 0) + (commentCounts[a.id] || 0);
-        const scoreB = (likeCounts[b.id] || 0) + (commentCounts[b.id] || 0);
+        const scoreA = (likeCounts[a.id] || 0) + (commentCounts[a.id] || 0) + (saveCounts[a.id] || 0);
+        const scoreB = (likeCounts[b.id] || 0) + (commentCounts[b.id] || 0) + (saveCounts[b.id] || 0);
         return scoreB - scoreA || new Date(b.created_at) - new Date(a.created_at);
       });
     } else {
@@ -667,7 +685,9 @@ async function renderSignedIn(user) {
     if (!visibleReviews.length) {
       const message = mode === 'following'
         ? 'As avaliações de quem você segue aparecerão aqui.'
-        : 'Ainda não há avaliações publicadas pela comunidade.';
+        : mode === 'saved'
+          ? 'As avaliações que você adicionar à lista aparecerão aqui.'
+          : 'Ainda não há avaliações publicadas pela comunidade.';
       feedList.innerHTML = '<div class="feed-empty"><span class="feed-empty__number">01</span><h3>O feed ainda está em silêncio.</h3><p>' + message + '</p><span class="feed-empty__note">CADA JOGO TEM UMA HISTÓRIA.</span></div>';
       return;
     }
@@ -698,7 +718,9 @@ async function renderSignedIn(user) {
         (isOwner ? '<button type="button" data-review-action="edit">Editar review</button><button type="button" class="is-danger" data-review-action="delete">Excluir review</button>' : '<button type="button" data-review-action="report">Denunciar review</button>') + '</div></details>';
       const likeTotal = likeCounts[review.id] || 0;
       const commentTotal = commentCounts[review.id] || 0;
-      const socialActions = '<div class="review-card__social-actions"><button class="review-card__like' + (isLiked ? ' is-liked' : '') + '" type="button" data-like-review aria-label="Curtir avaliação" title="Curtir avaliação" aria-pressed="' + isLiked + '"><svg class="ui-icon ui-icon--heart" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" stroke="none" d="M12 21s-8.8-5.9-8.8-12.2A4.8 4.8 0 0 1 12 6.4a4.8 4.8 0 0 1 8.8 2.4C20.8 15.1 12 21 12 21Z"></path></svg><span class="review-card__like-count" data-like-count>' + String(likeTotal) + '</span></button><button type="button" class="review-card__comments-toggle" data-open-review-comments aria-label="Abrir comentários" title="Abrir comentários"><svg class="ui-icon ui-icon--comment" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.25 11.5a7.75 7.75 0 0 1-7.75 7.75 8 8 0 0 1-3.5-.8L4 20l1.35-4.15a7.7 7.7 0 0 1-.85-3.6 7.75 7.75 0 0 1 7.75-7.75h.5a7.75 7.75 0 0 1 7.5 7Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg><span class="review-card__comment-count" data-comment-count>' + String(commentTotal) + '</span></button><button type="button" class="review-card__bookmark" data-save-review aria-label="Salvar avaliação em uma lista" title="Salvar em lista"><svg class="ui-icon ui-icon--bookmark" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3.75h10a1.75 1.75 0 0 1 1.75 1.75V21L12 16.5 5.25 21V5.5A1.75 1.75 0 0 1 7 3.75Z" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>';
+      const saveTotal = saveCounts[review.id] || 0;
+      const isSaved = savedReviewIds.has(review.id);
+      const socialActions = '<div class="review-card__social-actions"><button class="review-card__like' + (isLiked ? ' is-liked' : '') + '" type="button" data-like-review aria-label="Curtir avaliação" title="Curtir avaliação" aria-pressed="' + isLiked + '"><svg class="ui-icon ui-icon--heart" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" stroke="none" d="M12 21s-8.8-5.9-8.8-12.2A4.8 4.8 0 0 1 12 6.4a4.8 4.8 0 0 1 8.8 2.4C20.8 15.1 12 21 12 21Z"></path></svg><span class="review-card__like-count" data-like-count>' + String(likeTotal) + '</span></button><button type="button" class="review-card__comments-toggle" data-open-review-comments aria-label="Abrir comentários" title="Abrir comentários"><svg class="ui-icon ui-icon--comment" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.25 11.5a7.75 7.75 0 0 1-7.75 7.75 8 8 0 0 1-3.5-.8L4 20l1.35-4.15a7.7 7.7 0 0 1-.85-3.6 7.75 7.75 0 0 1 7.75-7.75h.5a7.75 7.75 0 0 1 7.5 7Z" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg><span class="review-card__comment-count" data-comment-count>' + String(commentTotal) + '</span></button><button type="button" class="review-card__bookmark' + (isSaved ? ' is-saved' : '') + '" data-save-review aria-label="' + (isSaved ? 'Remover da lista' : 'Adicionar à lista') + '" title="' + (isSaved ? 'Na sua lista' : 'Adicionar à lista') + '" aria-pressed="' + isSaved + '"><svg class="ui-icon ui-icon--bookmark" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3.75h10a1.75 1.75 0 0 1 1.75 1.75V21L12 16.5 5.25 21V5.5A1.75 1.75 0 0 1 7 3.75Z" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="review-card__save-count" data-save-count>' + String(saveTotal) + '</span></button></div>';
       const body = review.body || '';
       const reviewText = body ? '<div class="review-card__text-wrap"><p class="review-card__text" data-review-text>' + escapeHTML(body) + '</p></div>' : '';
       const reviewAuthor = '<div class="review-card__header"><div class="review-card__meta"><div class="review-card__author-line"><button class="review-card__author" type="button" data-profile-username="' + escapeHTML(username) + '"><span class="review-card__author-avatar">' + avatarMarkup + '</span><span class="review-card__author-name">' + escapeHTML(author) + '</span></button><span class="review-card__posted-at">' + relativeTime(review.created_at) + '</span></div>' + menuMarkup + '</div></div>';
@@ -941,6 +963,39 @@ async function renderSignedIn(user) {
       }
       const card = deleteComment.closest('[data-review-id]');
       await loadReviewComments(user, card);
+      return;
+    }
+    const saveButton = event.target.closest('[data-save-review]');
+    if (saveButton) {
+      if (saveButton.disabled) return;
+      const saveCard = saveButton.closest('[data-review-id]');
+      const saveReviewId = saveCard?.dataset.reviewId;
+      if (!saveReviewId) return;
+      const wasSaved = savedReviewIds.has(saveReviewId);
+      saveButton.disabled = true;
+      const saveResult = wasSaved
+        ? await supabase.from('review_saves').delete().eq('review_id', saveReviewId).eq('user_id', user.id)
+        : await supabase.from('review_saves').insert({ review_id: saveReviewId, user_id: user.id });
+      if (saveResult.error) {
+        console.error('[Ludus] Falha ao atualizar Minha lista:', saveResult.error);
+        window.alert('Não foi possível atualizar sua lista. Tente novamente.');
+        saveButton.disabled = false;
+        return;
+      }
+      if (wasSaved) {
+        savedReviewIds.delete(saveReviewId);
+        savedAtByReview.delete(saveReviewId);
+        saveCounts[saveReviewId] = Math.max(0, (saveCounts[saveReviewId] || 0) - 1);
+        const savedIndex = savedReviewRows.findIndex((saved) => saved.review_id === saveReviewId);
+        if (savedIndex >= 0) savedReviewRows.splice(savedIndex, 1);
+      } else {
+        const savedAt = new Date().toISOString();
+        savedReviewIds.add(saveReviewId);
+        savedAtByReview.set(saveReviewId, savedAt);
+        saveCounts[saveReviewId] = (saveCounts[saveReviewId] || 0) + 1;
+        savedReviewRows.unshift({ review_id: saveReviewId, created_at: savedAt });
+      }
+      renderFeed(activeFeedMode);
       return;
     }
     const button = event.target.closest('[data-like-review]');
