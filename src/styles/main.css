@@ -8514,3 +8514,59 @@ html body #app .auth-shell--split .auth-panel {
 @media(max-width:520px){
   #app .app-topbar .account-menu{margin-left:6px!important}
 }
+
+
+/* Mobile: painel de credenciais ocupa o restante da viewport e fica ancorado embaixo. */
+@media(max-width:820px){
+  html,body,#app{
+    min-height:100%!important;
+  }
+  html body #app .auth-shell--split{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr)!important;
+    grid-template-rows:minmax(250px,38svh) minmax(0,1fr)!important;
+    width:100%!important;
+    height:100vh!important;
+    height:100dvh!important;
+    min-height:100vh!important;
+    min-height:100dvh!important;
+    max-height:100dvh!important;
+    overflow:hidden!important;
+  }
+  html body #app .auth-shell--split .auth-intro{
+    grid-row:1!important;
+    width:100%!important;
+    height:100%!important;
+    min-height:0!important;
+    padding:24px 22px 22px 36px!important;
+  }
+  html body #app .auth-shell--split .auth-panel{
+    grid-row:2!important;
+    align-self:stretch!important;
+    justify-self:stretch!important;
+    width:100%!important;
+    height:100%!important;
+    min-height:0!important;
+    max-height:none!important;
+    margin:0!important;
+    padding:26px 22px max(20px,env(safe-area-inset-bottom))!important;
+    overflow-x:hidden!important;
+    overflow-y:auto!important;
+    border-radius:0!important;
+  }
+  html body #app .auth-shell--split .auth-panel__inner{
+    width:min(100%,410px)!important;
+    margin:0 auto!important;
+  }
+}
+@media(max-width:560px){
+  html body #app .auth-shell--split{
+    grid-template-rows:minmax(220px,34svh) minmax(0,1fr)!important;
+  }
+  html body #app .auth-shell--split .auth-intro{
+    padding:22px 22px 18px 32px!important;
+  }
+  html body #app .auth-shell--split .auth-panel{
+    padding:22px 22px max(18px,env(safe-area-inset-bottom))!important;
+  }
+}
