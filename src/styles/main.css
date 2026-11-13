@@ -8030,3 +8030,19 @@ html body #app .auth-shell--split .auth-panel {
   #app .newcomers-section__heading h2,
   #app .feed-section-heading__title{font-size:17px!important}
 }
+
+
+/* O feed Para você destaca avaliações em uma coluna; Início mantém todas as seções. */
+#app .feed-list.is-popular-feed{
+  column-count:1!important;
+  column-gap:0!important;
+}
+#app .feed-list.is-popular-feed>.review-card{
+  display:grid!important;
+  grid-template-columns:104px minmax(0,1fr)!important;
+  flex-direction:initial!important;
+  width:100%!important;
+  margin:0!important;
+  break-inside:avoid!important;
+  -webkit-column-break-inside:avoid!important;
+}
