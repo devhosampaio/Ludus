@@ -7906,3 +7906,70 @@ html body #app .auth-shell--split .auth-panel {
 #app .feed-content[hidden]{
   display:none!important;
 }
+
+
+/* Ajustes solicitados: boas-vindas sem painel, hover cromático e masonry por coluna. */
+#app .feed-welcome{
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+  outline:0!important;
+}
+#app .feed-navigation{
+  width:100%!important;
+  max-width:850px!important;
+  margin:0 auto 22px!important;
+}
+#app .feed-navigation .feed-tabs{
+  width:min(100%,540px)!important;
+  margin:0!important;
+}
+#app .feed-content .section-heading{
+  margin-top:0!important;
+}
+#app .feed-list{
+  display:block!important;
+  column-count:2!important;
+  column-gap:22px!important;
+  column-fill:balance!important;
+  width:100%!important;
+}
+#app .feed-list>.review-card{
+  display:inline-flex!important;
+  flex-direction:column!important;
+  vertical-align:top!important;
+  width:100%!important;
+  margin:0 0 22px!important;
+  break-inside:avoid!important;
+  -webkit-column-break-inside:avoid!important;
+}
+@media(max-width:999px){
+  #app .feed-list{
+    column-count:1!important;
+    column-gap:0!important;
+  }
+}
+#app .newcomers-review__username,
+#app .review-card__author-name,
+#app .review-card__game-title{
+  transition:color .18s ease!important;
+}
+#app .newcomers-review__username:hover,
+#app .review-card__author:hover .review-card__author-name,
+#app .review-card__game-heading:hover .review-card__game-title{
+  color:#d96c55!important;
+  text-decoration:none!important;
+}
+#app .newcomers-review__game,
+#app .review-card__cover-wrap{
+  transition:filter .18s ease,opacity .18s ease!important;
+}
+#app .newcomers-review__game:hover,
+#app .review-card__cover-wrap:hover{
+  filter:brightness(.78) saturate(1.12)!important;
+}
+#app .newcomers-review__username,
+#app .review-card__author,
+#app .review-card__game-heading{
+  text-decoration:none!important;
+}
