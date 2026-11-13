@@ -8272,3 +8272,22 @@ html body #app .auth-shell--split .auth-panel {
 #app .newcomers-review__stars{
   color:#bdb5ce!important;
 }
+
+
+/* NOVOS NO LUDUS: capas dentro dos próprios cards, com espaço visível entre elas. */
+#app .newcomers-list{
+  gap:clamp(10px,1.15vw,14px)!important;
+}
+#app .newcomers-review__art{
+  width:100%!important;
+  margin-left:0!important;
+}
+@media(max-width:760px){
+  #app .newcomers-list{
+    gap:10px!important;
+  }
+  #app .newcomers-review__art{
+    width:100%!important;
+    margin-left:0!important;
+  }
+}
