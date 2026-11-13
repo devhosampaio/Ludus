@@ -8205,3 +8205,28 @@ html body #app .auth-shell--split .auth-panel {
     bottom:-11px!important;
   }
 }
+
+
+/* Boas-vindas: título e apoio empilhados e centralizados no eixo vertical e horizontal. */
+#app .feed-main>.feed-welcome{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  min-height:150px!important;
+  text-align:center!important;
+}
+#app .feed-main>.feed-welcome h1,
+#app .feed-main>.feed-welcome p{
+  width:100%!important;
+  max-width:720px!important;
+  text-align:center!important;
+}
+#app .feed-main>.feed-welcome p{
+  margin-top:10px!important;
+}
+@media(max-width:520px){
+  #app .feed-main>.feed-welcome{
+    min-height:132px!important;
+  }
+}
