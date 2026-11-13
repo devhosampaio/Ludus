@@ -327,6 +327,15 @@ async function renderSignedIn(user) {
       </header>
       <main class="feed-main">
         <aside class="feed-ad feed-ad--left" aria-label="Espaço reservado para publicidade"></aside>
+        <section class="newcomers-section" aria-labelledby="newcomers-title">
+          <div class="newcomers-section__heading">
+            <p class="newcomers-section__eyebrow">A comunidade está crescendo</p>
+            <h2 id="newcomers-title">NOVOS NO LUDUS</h2>
+          </div>
+          <div class="newcomers-list" data-newcomers-list>
+            <div class="newcomers-list__loading">Descobrindo novas histórias…</div>
+          </div>
+        </section>
         <section class="feed-content" aria-label="Atividade da comunidade">
           <div class="section-heading"><div class="feed-heading__inner"><div class="feed-tabs" role="tablist" aria-label="Ordenar atividade"><button class="feed-tabs__button is-active" type="button" role="tab" aria-selected="true" data-feed-mode="popular">Para você</button><button class="feed-tabs__button" type="button" role="tab" aria-selected="false" data-feed-mode="following">Seguindo</button><button class="feed-tabs__button" type="button" role="tab" aria-selected="false" data-feed-mode="recent">Recentes</button></div><h2 data-feed-title>Para você</h2></div></div>
           <div class="feed-list" data-feed-list><div class="feed-loading">Carregando as histórias da comunidade…</div></div>
@@ -560,6 +569,55 @@ async function renderSignedIn(user) {
   if (followedError) console.error('[Ludus] Falha ao carregar quem você segue:', followedError);
   const followedIds = new Set((followedProfiles || []).map((item) => item.following_id));
   const feedTabs = app.querySelector('[data-feed-mode="popular"]').closest('.feed-tabs');
+  const newcomersSection = app.querySelector('.newcomers-section');
+  const newcomersList = app.querySelector('[data-newcomers-list]');
+  const renderNewcomers = () => {
+    const newestReviews = [...(reviews || [])]
+      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+      .slice(0, 6);
+    if (!newestReviews.length) {
+      newcomersList.innerHTML = '<p class="newcomers-list__empty">As primeiras avaliações da comunidade aparecerão aqui.</p>';
+      return;
+    }
+    newcomersList.innerHTML = newestReviews.map((review) => {
+      const profile = review.profiles || {};
+      const username = profile.username || 'jogador';
+      const gameData = review.games || {};
+      const game = gameData.title || 'Jogo';
+      const avatar = profile.avatar_url
+        ? '<img src="' + escapeHTML(profile.avatar_url) + '" alt="" loading="lazy">'
+        : profilePlaceholderMarkup();
+      const cover = gameData.cover_url
+        ? '<img class="newcomers-review__cover" src="' + escapeHTML(gameData.cover_url) + '" alt="Capa de ' + escapeHTML(game) + '" loading="lazy">'
+        : '<span class="newcomers-review__cover newcomers-review__cover--empty">L<span>.</span></span>';
+      const rating = Math.max(0, Math.min(5, Number(review.rating) || 0));
+      const ratingMarkup = '<span class="newcomers-review__stars" aria-label="' + rating + ' de 5 estrelas">' + '★'.repeat(rating) + '</span>';
+      const likedMarkup = review.liked_game
+        ? '<span class="newcomers-review__liked" title="Curtiu o jogo" aria-label="Curtiu o jogo"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-8.8-5.9-8.8-12.2A4.8 4.8 0 0 1 12 6.4a4.8 4.8 0 0 1 8.8 2.4C20.8 15.1 12 21 12 21Z" fill="currentColor"/></svg></span>'
+        : '';
+      const critiqueMarkup = review.body
+        ? '<span class="newcomers-review__critique" title="Publicou uma resenha" aria-label="Publicou uma resenha"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3.75h9.5L19 8.2v12.05H5zM14 3.75V8.5h4.75M8 12h8M8 15.5h8M8 8.5h2.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span>'
+        : '';
+      return '<article class="newcomers-review" data-newcomer-review="' + escapeHTML(review.id) + '">' +
+        '<div class="newcomers-review__art">' +
+          '<button class="newcomers-review__game" type="button" data-open-game="' + escapeHTML(review.game_id) + '" aria-label="Abrir página de ' + escapeHTML(game) + '">' + cover + '</button>' +
+          '<button class="newcomers-review__avatar" type="button" data-profile-username="' + escapeHTML(username) + '" aria-label="Ver perfil de ' + escapeHTML(username) + '">' + avatar + '</button>' +
+        '</div>' +
+        '<button class="newcomers-review__username" type="button" data-profile-username="' + escapeHTML(username) + '">' + escapeHTML(username) + '</button>' +
+        '<div class="newcomers-review__metadata">' + ratingMarkup + likedMarkup + critiqueMarkup + '</div>' +
+      '</article>';
+    }).join('');
+  };
+  renderNewcomers();
+  newcomersSection.addEventListener('click', (event) => {
+    const gameButton = event.target.closest('[data-open-game]');
+    if (gameButton?.dataset.openGame) {
+      navigateToGame(user, gameButton.dataset.openGame);
+      return;
+    }
+    const profileButton = event.target.closest('[data-profile-username]');
+    if (profileButton?.dataset.profileUsername) navigateToProfile(user, profileButton.dataset.profileUsername);
+  });
 
   const renderFeed = (mode = 'popular') => {
     let visibleReviews = [...(reviews || [])];
@@ -602,8 +660,8 @@ async function renderSignedIn(user) {
       const platformList = Array.isArray(gameData.platforms) ? gameData.platforms : [];
       const platformText = platformList.map((item) => typeof item === 'string' ? item : item?.name).filter(Boolean).join(', ');
       const gameMeta = [platformText, gameYear, gameData.developer].filter(Boolean).map(escapeHTML).join(' <span aria-hidden="true">·</span> ');
-      const cover = '<button class="review-card__cover-wrap" type="button" data-open-game="' + escapeHTML(review.game_id) + '" aria-label="Abrir página de ' + escapeHTML(game) + '" style="border-radius:0!important;overflow:visible!important;clip-path:none!important;mask:none!important;box-shadow:none!important">' + (gameData.cover_url
-        ? '<img class="review-card__cover" src="' + escapeHTML(gameData.cover_url) + '" alt="Capa de ' + escapeHTML(game) + '" loading="lazy" style="display:block;border-radius:0!important;clip-path:none!important;mask:none!important;box-shadow:none!important">'
+      const cover = '<button class="review-card__cover-wrap" type="button" data-open-game="' + escapeHTML(review.game_id) + '" aria-label="Abrir página de ' + escapeHTML(game) + '">' + (gameData.cover_url
+        ? '<img class="review-card__cover" src="' + escapeHTML(gameData.cover_url) + '" alt="Capa de ' + escapeHTML(game) + '" loading="lazy">'
         : '<span class="review-card__cover review-card__cover--empty">L<span>.</span></span>') + '</button>';
       const stars = '★'.repeat(review.rating) + '<span class="review-card__stars-muted">' + '★'.repeat(5 - review.rating) + '</span>';
       const isLiked = likedReviewIds.has(review.id);
