@@ -8363,3 +8363,57 @@ html body #app .auth-shell--split .auth-panel {
     max-width:60px!important;
   }
 }
+
+
+/* Ajustes de alinhamento do feed e do avatar no cabeçalho. */
+#app .feed-main>.feed-navigation{
+  display:flex!important;
+  align-items:center!important;
+}
+#app .feed-main>.feed-navigation .feed-tabs{
+  align-self:center!important;
+}
+#app .feed-shell>.feed-main{
+  padding-top:42px!important;
+}
+#app .app-topbar .sidebar-user__avatar{
+  position:relative!important;
+  display:block!important;
+  box-sizing:border-box!important;
+  flex:0 0 24px!important;
+  width:24px!important;
+  height:24px!important;
+  min-width:24px!important;
+  min-height:24px!important;
+  padding:1px!important;
+  overflow:hidden!important;
+  border:1px solid rgb(232 223 206 / 48%)!important;
+  border-radius:50%!important;
+  background:#777783!important;
+}
+#app .app-topbar .sidebar-user__avatar img{
+  position:absolute!important;
+  inset:1px!important;
+  display:block!important;
+  box-sizing:border-box!important;
+  width:calc(100% - 2px)!important;
+  height:calc(100% - 2px)!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:50%!important;
+  object-fit:cover!important;
+  object-position:center!important;
+}
+@media(max-width:760px){
+  #app .feed-shell>.feed-main{
+    padding-top:34px!important;
+  }
+}
+@media(max-width:520px){
+  #app .app-topbar .sidebar-user__avatar{
+    flex-basis:24px!important;
+    width:24px!important;
+    height:24px!important;
+  }
+}
