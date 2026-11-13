@@ -8448,7 +8448,7 @@ html body #app .auth-shell--split .auth-panel {
   width:calc((100% - 8px) / 4)!important;
   border-radius:999px!important;
   background:#f5f0e6!important;
-  transform:translateX(calc(var(--active-index,0) * 100%))!important;
+  transform:translateX(var(--active-offset,0%))!important;
   transition:transform .38s cubic-bezier(.22,.8,.25,1)!important;
   pointer-events:none!important;
 }
