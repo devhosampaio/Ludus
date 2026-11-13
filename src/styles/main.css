@@ -6760,3 +6760,49 @@ html body #app .auth-shell--split .auth-panel {
   #app .app-topbar .sidebar-user__chevron{display:none!important}
   #app .review-card__body{width:calc(100% - 14px)!important}
 }
+
+/* Identidade flat: remove relevo, brilho e profundidade. */
+#app *,
+#app *::before,
+#app *::after{
+  box-shadow:none!important;
+  text-shadow:none!important;
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+}
+#app .auth-shell,
+#app .feed-shell,
+#app .sidebar,
+#app .app-topbar,
+#app .review-card,
+#app .composer,
+#app .profile-page__hero,
+#app .profile-editor,
+#app .terms-modal__dialog,
+#app .notifications__panel,
+#app .header-search__results,
+#app .account-menu__panel,
+#app .review-menu__panel,
+#app .review-comment__menu-panel,
+#app .feed-tabs{
+  background-image:none!important;
+}
+#app button,
+#app .button,
+#app input,
+#app textarea,
+#app select{
+  background-image:none!important;
+  filter:none!important;
+}
+#app button:active,
+#app .button:active{transform:none!important}
+#app button:focus-visible,
+#app a:focus-visible,
+#app input:focus-visible,
+#app textarea:focus-visible,
+#app select:focus-visible{
+  outline:2px solid #a99be0!important;
+  outline-offset:2px!important;
+}
+#app .notifications__item:hover{background-image:none!important;background-color:rgb(112 96 171 / 12%)!important}
