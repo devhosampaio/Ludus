@@ -6483,3 +6483,22 @@ html body #app .auth-shell--split .auth-panel {
 @media(max-width:520px){
   #app .feed-shell>.feed-main{padding:12px 10px 40px!important}
 }
+
+/* Ajuste de largura do título e respiro das ações. */
+#app .review-card__game-layout>.review-card__body{
+  min-width:0!important;
+  width:100%!important;
+}
+#app .review-card__game-layout>.review-card__body h3{
+  width:100%!important;
+  max-width:none!important;
+}
+#app .review-card>.review-card__text-wrap{
+  margin-bottom:8px!important;
+}
+#app .review-card>.review-card__text-wrap .review-card__text{
+  margin-bottom:0!important;
+}
+#app .review-card>.review-card__actions{
+  padding-top:22px!important;
+}
