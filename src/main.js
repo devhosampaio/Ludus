@@ -602,14 +602,16 @@ async function renderSignedIn(user) {
       const longReview = body.length >= 400;
       const reviewText = body ? '<div class="review-card__text-wrap"><p class="review-card__text' + (longReview ? ' is-truncated' : '') + '" data-review-text>' + escapeHTML(body) + '</p>' + (longReview ? '<button type="button" class="review-card__read-more" data-read-more>ler mais</button>' : '') + '</div>' : '';
       return '<article class="review-card" data-review-id="' + review.id + '">' +
-        '<div class="review-card__header"><div class="review-card__meta"><div class="review-card__author-line"><button class="review-card__author" type="button" data-profile-username="' + escapeHTML(username) + '"><span class="review-card__author-avatar">' + avatarMarkup + '</span><span class="review-card__author-name">' + escapeHTML(author) + '</span></button><span class="review-card__posted-at">' + relativeTime(review.created_at) + '</span></div>' + menuMarkup + '</div>' +
         '<div class="review-card__game-layout">' +
+          '<div class="review-card__cover-column">' + cover + '</div>' +
           '<div class="review-card__body"><h3>' + escapeHTML(game.toLocaleUpperCase('pt-BR')) + '</h3>' +
           (gameMeta ? '<p class="review-card__game-meta">' + gameMeta + '</p>' : '') + '</div>' +
-          '<div class="review-card__cover-column">' + cover + '<div class="review-card__details"><span class="review-card__stars" aria-label="Nota ' + review.rating + ' de 5">' + stars + '</span>' +
+        '</div>' +
+        '<div class="review-card__header"><div class="review-card__meta"><div class="review-card__author-line"><button class="review-card__author" type="button" data-profile-username="' + escapeHTML(username) + '"><span class="review-card__author-avatar">' + avatarMarkup + '</span><span class="review-card__author-name">' + escapeHTML(author) + '</span></button><span class="review-card__posted-at">' + relativeTime(review.created_at) + '</span></div>' + menuMarkup + '</div></div>' +
+        '<div class="review-card__details"><span class="review-card__stars" aria-label="Nota ' + review.rating + ' de 5">' + stars + '</span>' +
           (review.liked_game ? '<span class="review-card__liked" aria-label="Gostei deste jogo" title="Gostei deste jogo"><svg class="ui-icon ui-icon--heart" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" stroke="none" d="M12 21s-8.8-5.9-8.8-12.2A4.8 4.8 0 0 1 12 6.4a4.8 4.8 0 0 1 8.8 2.4C20.8 15.1 12 21 12 21Z"></path></svg></span>' : '') +
           (review.status ? '<span class="review-card__status" aria-label="' + statusLabel(review.status) + '" title="' + statusLabel(review.status) + '">' + statusIconMarkup(review.status) + '</span>' : '') +
-          '</div></div></div>' +
+        '</div>' +
         reviewText +
         '<div class="review-card__actions"><span class="review-card__actions-divider"></span>' + socialActions + '</div></article>';
     }).join('');
