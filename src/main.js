@@ -602,8 +602,8 @@ async function renderSignedIn(user) {
       const platformList = Array.isArray(gameData.platforms) ? gameData.platforms : [];
       const platformText = platformList.map((item) => typeof item === 'string' ? item : item?.name).filter(Boolean).join(', ');
       const gameMeta = [platformText, gameYear, gameData.developer].filter(Boolean).map(escapeHTML).join(' <span aria-hidden="true">·</span> ');
-      const cover = '<button class="review-card__cover-wrap" type="button" data-open-game="' + escapeHTML(review.game_id) + '" aria-label="Abrir página de ' + escapeHTML(game) + '">' + (gameData.cover_url
-        ? '<img class="review-card__cover" src="' + escapeHTML(gameData.cover_url) + '" alt="Capa de ' + escapeHTML(game) + '" loading="lazy">'
+      const cover = '<button class="review-card__cover-wrap" type="button" data-open-game="' + escapeHTML(review.game_id) + '" aria-label="Abrir página de ' + escapeHTML(game) + '" style="border-radius:0!important;overflow:visible!important;clip-path:none!important;mask:none!important;box-shadow:none!important">' + (gameData.cover_url
+        ? '<img class="review-card__cover" src="' + escapeHTML(gameData.cover_url) + '" alt="Capa de ' + escapeHTML(game) + '" loading="lazy" style="display:block;border-radius:0!important;clip-path:none!important;mask:none!important;box-shadow:none!important">'
         : '<span class="review-card__cover review-card__cover--empty">L<span>.</span></span>') + '</button>';
       const stars = '★'.repeat(review.rating) + '<span class="review-card__stars-muted">' + '★'.repeat(5 - review.rating) + '</span>';
       const isLiked = likedReviewIds.has(review.id);
