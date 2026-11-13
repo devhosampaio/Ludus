@@ -7290,3 +7290,22 @@ html body #app .auth-shell--split .auth-panel {
   #app .review-card__game-layout>.review-card__body h3{font-size:17px!important}
   #app .review-card__details .review-card__status{font-size:9px!important}
 }
+
+
+/* Remove divisórias visuais dentro dos cards de avaliação. */
+#app .feed-list>.review-card{
+  border-top:0!important;
+  border-right:0!important;
+  border-bottom:0!important;
+  border-left:0!important;
+}
+#app .feed-list>.review-card *,
+#app .feed-list>.review-card *::before,
+#app .feed-list>.review-card *::after{
+  border-top-color:transparent!important;
+  border-bottom-color:transparent!important;
+  box-shadow:none!important;
+}
+#app .feed-list>.review-card .review-card__cover-wrap{
+  border:0!important;
+}
