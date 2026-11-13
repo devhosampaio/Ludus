@@ -6919,3 +6919,108 @@ html body #app .auth-shell--split .auth-panel {
   #app .review-card__body{width:auto!important}
 }
 
+/* Cards de avaliação: altura totalmente determinada pelo conteúdo. */
+#app .feed-list>.review-card{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr)!important;
+  grid-template-rows:none!important;
+  grid-auto-rows:auto!important;
+  align-content:start!important;
+  align-items:start!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  overflow:visible!important;
+  box-sizing:border-box!important;
+}
+#app .review-card__game-layout{
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  grid-template-rows:auto!important;
+  align-items:start!important;
+  overflow:visible!important;
+}
+#app .review-card__cover-column .review-card__cover-wrap,
+#app .review-card__game-layout>.review-card__cover-column .review-card__cover-wrap{
+  height:auto!important;
+  aspect-ratio:64 / 94!important;
+}
+#app .review-card__body,
+#app .review-card__game-layout>.review-card__body{
+  display:flex!important;
+  flex-direction:column!important;
+  align-self:start!important;
+  align-content:initial!important;
+  gap:10px!important;
+  width:auto!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  margin:0!important;
+  padding:0!important;
+}
+#app .review-card__body .review-card__header{
+  height:auto!important;
+  min-height:0!important;
+  margin:0!important;
+}
+#app .review-card__game-layout>.review-card__body h3{
+  align-self:auto!important;
+  height:auto!important;
+  max-height:none!important;
+  margin:0!important;
+  overflow:visible!important;
+  text-overflow:clip!important;
+  white-space:normal!important;
+  overflow-wrap:anywhere!important;
+}
+#app .review-card__body .review-card__game-meta{
+  align-self:auto!important;
+  height:auto!important;
+  max-height:none!important;
+  margin:0!important;
+  overflow:visible!important;
+  text-overflow:clip!important;
+  white-space:normal!important;
+  overflow-wrap:anywhere!important;
+}
+#app .review-card__body .review-card__details{
+  align-self:auto!important;
+  height:auto!important;
+  min-height:0!important;
+  margin:0!important;
+  flex-wrap:wrap!important;
+}
+#app .review-card>.review-card__text-wrap{
+  grid-row:auto!important;
+  align-self:auto!important;
+  height:auto!important;
+  max-height:none!important;
+  margin:0!important;
+  padding:0 12px!important;
+  overflow:visible!important;
+}
+#app .review-card>.review-card__text-wrap .review-card__text,
+#app .review-card>.review-card__text-wrap .review-card__text.is-truncated,
+#app .review-card>.review-card__text-wrap .review-card__text.is-expanded{
+  display:block!important;
+  height:auto!important;
+  max-height:none!important;
+  overflow:visible!important;
+  -webkit-box-orient:initial!important;
+  -webkit-line-clamp:unset!important;
+  line-clamp:unset!important;
+  white-space:pre-wrap!important;
+  overflow-wrap:anywhere!important;
+}
+#app .review-card>.review-card__actions{
+  grid-row:auto!important;
+  align-self:auto!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  margin:0!important;
+  padding:12px 10px 4px!important;
+  box-sizing:border-box!important;
+}
