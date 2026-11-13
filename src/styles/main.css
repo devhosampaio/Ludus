@@ -8078,3 +8078,50 @@ html body #app .auth-shell--split .auth-panel {
     width:100%!important;
   }
 }
+
+
+/* Alinhamento comum: cabeçalho e todas as seções do feed compartilham
+   a mesma largura útil e o mesmo eixo central. */
+#app .app-topbar__content{
+  width:min(980px,calc(100% - 48px))!important;
+  max-width:980px!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+  padding-left:0!important;
+  padding-right:0!important;
+  box-sizing:border-box!important;
+}
+#app .feed-main>.feed-welcome,
+#app .feed-main>.newcomers-section,
+#app .feed-main>.feed-navigation,
+#app .feed-main>.feed-content{
+  width:100%!important;
+  max-width:980px!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+  box-sizing:border-box!important;
+}
+#app .feed-main>.newcomers-section{
+  max-width:980px!important;
+}
+#app .feed-main>.feed-navigation{
+  margin-bottom:22px!important;
+}
+#app .feed-main>.feed-content{
+  max-width:980px!important;
+}
+#app .feed-main>.feed-navigation .feed-tabs{
+  margin-left:0!important;
+  margin-right:auto!important;
+}
+@media(max-width:520px){
+  #app .app-topbar__content{
+    width:calc(100% - 24px)!important;
+  }
+  #app .feed-main>.feed-welcome,
+  #app .feed-main>.newcomers-section,
+  #app .feed-main>.feed-navigation,
+  #app .feed-main>.feed-content{
+    width:100%!important;
+  }
+}
