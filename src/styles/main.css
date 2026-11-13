@@ -8230,3 +8230,39 @@ html body #app .auth-shell--split .auth-panel {
     min-height:132px!important;
   }
 }
+
+
+/* Feed: reduzir os espaços verticais entre as seções da página inicial. */
+#app .feed-main>.feed-welcome{
+  min-height:104px!important;
+  margin-top:0!important;
+  margin-bottom:12px!important;
+}
+#app .feed-main>.newcomers-section{
+  margin-top:0!important;
+  margin-bottom:18px!important;
+}
+#app .feed-main>.newcomers-section .newcomers-section__heading{
+  margin-bottom:12px!important;
+  padding-bottom:12px!important;
+}
+#app .feed-main>.feed-navigation{
+  margin-top:0!important;
+  margin-bottom:12px!important;
+}
+#app .feed-main>.feed-content .section-heading{
+  margin-top:0!important;
+  margin-bottom:12px!important;
+}
+@media(max-width:760px){
+  #app .feed-main>.feed-welcome{
+    min-height:92px!important;
+    margin-bottom:10px!important;
+  }
+  #app .feed-main>.newcomers-section{
+    margin-bottom:14px!important;
+  }
+  #app .feed-main>.feed-navigation{
+    margin-bottom:10px!important;
+  }
+}
