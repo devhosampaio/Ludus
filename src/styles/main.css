@@ -7024,3 +7024,269 @@ html body #app .auth-shell--split .auth-panel {
   padding:12px 10px 4px!important;
   box-sizing:border-box!important;
 }
+
+/* Novo layout das avaliações: capa compacta e informações em coluna alinhada. */
+#app .feed-list>.review-card{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:stretch!important;
+  gap:0!important;
+  width:100%!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  margin:0!important;
+  padding:16px 0!important;
+  overflow:visible!important;
+  border:0!important;
+  border-bottom:1px solid rgb(201 191 176 / 18%)!important;
+  border-radius:2px!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+#app .review-card__game-layout{
+  position:relative!important;
+  display:grid!important;
+  grid-template-columns:52px minmax(0,1fr)!important;
+  grid-template-areas:"cover title"!important;
+  align-items:stretch!important;
+  gap:14px!important;
+  width:100%!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  margin:0!important;
+  padding:0!important;
+  overflow:visible!important;
+  background:transparent!important;
+  border:0!important;
+}
+#app .review-card__game-layout>.review-card__backdrop{
+  position:absolute!important;
+  z-index:-1!important;
+  inset:-8px -10px!important;
+  display:block!important;
+  overflow:hidden!important;
+  pointer-events:none!important;
+  opacity:.55!important;
+}
+#app .review-card__game-layout>.review-card__backdrop img{
+  width:100%!important;
+  height:100%!important;
+  object-fit:cover!important;
+  object-position:center!important;
+  opacity:.18!important;
+}
+#app .review-card__game-layout>.review-card__backdrop:after{
+  content:""!important;
+  position:absolute!important;
+  inset:0!important;
+  background:linear-gradient(90deg,rgba(48,44,61,.2),#302c3d 78%)!important;
+}
+#app .review-card__cover-column,
+#app .review-card__game-layout>.review-card__cover-column{
+  grid-area:cover!important;
+  align-self:stretch!important;
+  width:52px!important;
+  min-width:52px!important;
+  max-width:52px!important;
+  position:relative!important;
+  z-index:1!important;
+}
+#app .review-card__cover-column .review-card__cover-wrap,
+#app .review-card__game-layout>.review-card__cover-column .review-card__cover-wrap{
+  display:block!important;
+  width:52px!important;
+  min-width:52px!important;
+  max-width:52px!important;
+  height:76px!important;
+  aspect-ratio:auto!important;
+  overflow:hidden!important;
+  border:0!important;
+  border-radius:2px!important;
+  background:#211e2b!important;
+}
+#app .review-card__cover-column .review-card__cover{
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  object-fit:cover!important;
+  border-radius:0!important;
+}
+#app .review-card__body,
+#app .review-card__game-layout>.review-card__body{
+  grid-area:title!important;
+  display:flex!important;
+  flex-direction:column!important;
+  justify-content:space-between!important;
+  align-self:stretch!important;
+  align-items:stretch!important;
+  gap:5px!important;
+  width:auto!important;
+  min-width:0!important;
+  min-height:76px!important;
+  height:auto!important;
+  max-height:none!important;
+  margin:0!important;
+  padding:0!important;
+  position:relative!important;
+  z-index:1!important;
+}
+#app .review-card__body .review-card__header{
+  display:flex!important;
+  align-items:center!important;
+  width:100%!important;
+  min-height:0!important;
+  height:auto!important;
+  margin:0!important;
+}
+#app .review-card__body .review-card__meta{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  width:100%!important;
+  min-width:0!important;
+  gap:8px!important;
+}
+#app .review-card__body .review-card__author-line{
+  display:flex!important;
+  align-items:center!important;
+  flex-wrap:wrap!important;
+  gap:7px!important;
+  min-width:0!important;
+}
+#app .review-card__body .review-card__author{
+  display:inline-flex!important;
+  align-items:center!important;
+  gap:7px!important;
+  min-width:0!important;
+  font-size:11px!important;
+}
+#app .review-card__body .review-card__author-avatar{
+  width:20px!important;
+  height:20px!important;
+  flex:0 0 20px!important;
+  border:0!important;
+}
+#app .review-card__body .review-card__posted-at{
+  font-size:10px!important;
+  line-height:1.2!important;
+}
+#app .review-card__body .review-menu{margin-left:auto!important;flex:0 0 auto!important}
+#app .review-card__game-layout>.review-card__body h3{
+  display:block!important;
+  width:100%!important;
+  max-width:none!important;
+  height:auto!important;
+  margin:0!important;
+  align-self:auto!important;
+  color:#f5f0e6!important;
+  font-family:'Space Grotesk',sans-serif!important;
+  font-size:clamp(17px,2vw,22px)!important;
+  font-weight:700!important;
+  line-height:1.12!important;
+  letter-spacing:-.035em!important;
+  text-transform:none!important;
+  white-space:normal!important;
+  overflow:visible!important;
+  overflow-wrap:anywhere!important;
+}
+#app .review-card__body .review-card__details{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  flex-wrap:nowrap!important;
+  gap:8px!important;
+  width:100%!important;
+  min-height:0!important;
+  height:auto!important;
+  margin:0!important;
+}
+#app .review-card__details .review-card__stars{
+  display:inline-flex!important;
+  align-items:center!important;
+  font-size:15px!important;
+  line-height:1!important;
+  letter-spacing:1px!important;
+  white-space:nowrap!important;
+}
+#app .review-card__details .review-card__liked{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  margin:0!important;
+}
+#app .review-card__details .review-card__liked svg{
+  width:15px!important;
+  height:15px!important;
+}
+#app .review-card__details .review-card__status{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:flex-end!important;
+  gap:5px!important;
+  height:auto!important;
+  margin-left:auto!important;
+  color:#c9bfb0!important;
+  font:400 10px/1.2 'DM Sans',sans-serif!important;
+  white-space:nowrap!important;
+}
+#app .review-card__details .review-card__status svg{
+  display:block!important;
+  width:15px!important;
+  height:15px!important;
+  flex:0 0 15px!important;
+}
+#app .review-card__details .review-card__status-label{display:inline!important}
+#app .review-card>.review-card__text-wrap{
+  display:block!important;
+  width:100%!important;
+  height:auto!important;
+  max-height:none!important;
+  margin:22px 0 0!important;
+  padding:0!important;
+  overflow:visible!important;
+}
+#app .review-card>.review-card__text-wrap .review-card__text{
+  display:block!important;
+  height:auto!important;
+  max-height:none!important;
+  margin:0!important;
+  padding:0!important;
+  overflow:visible!important;
+  font-size:14px!important;
+  line-height:1.75!important;
+  white-space:pre-wrap!important;
+  overflow-wrap:anywhere!important;
+  -webkit-line-clamp:unset!important;
+  line-clamp:unset!important;
+}
+#app .review-card>.review-card__actions{
+  display:flex!important;
+  align-items:center!important;
+  width:100%!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  margin:22px 0 0!important;
+  padding:0!important;
+  border:0!important;
+  box-sizing:border-box!important;
+}
+#app .review-card__social-actions{
+  display:flex!important;
+  align-items:center!important;
+  flex-wrap:wrap!important;
+  gap:18px!important;
+}
+@media(max-width:520px){
+  #app .review-card__game-layout{grid-template-columns:48px minmax(0,1fr)!important;gap:11px!important}
+  #app .review-card__cover-column,
+  #app .review-card__game-layout>.review-card__cover-column{width:48px!important;min-width:48px!important;max-width:48px!important}
+  #app .review-card__cover-column .review-card__cover-wrap,
+  #app .review-card__game-layout>.review-card__cover-column .review-card__cover-wrap{width:48px!important;min-width:48px!important;max-width:48px!important;height:70px!important}
+  #app .review-card__body,
+  #app .review-card__game-layout>.review-card__body{min-height:70px!important}
+  #app .review-card__game-layout>.review-card__body h3{font-size:17px!important}
+  #app .review-card__details .review-card__status{font-size:9px!important}
+}
