@@ -7973,3 +7973,60 @@ html body #app .auth-shell--split .auth-panel {
 #app .review-card__game-heading{
   text-decoration:none!important;
 }
+
+
+/* Identidade visual compartilhada para títulos de início de seção. */
+:root{
+  --color-bg:#282533;
+  background:#282533;
+}
+#app .feed-section-heading{
+  display:flex!important;
+  align-items:flex-end!important;
+  justify-content:space-between!important;
+  gap:0!important;
+  margin:0 0 14px!important;
+  padding:0 0 10px!important;
+  border-bottom:1px solid rgb(201 191 176 / 25%)!important;
+}
+#app .feed-section-heading__title,
+#app .feed-section-heading h2{
+  margin:0!important;
+  color:var(--color-surface)!important;
+  font:500 17px/1.35 'Space Grotesk',sans-serif!important;
+  letter-spacing:-.035em!important;
+}
+#app .newcomers-section__heading{
+  flex-direction:row!important;
+  align-items:flex-end!important;
+  margin-bottom:14px!important;
+  padding-bottom:10px!important;
+}
+#app .newcomers-review__game{
+  overflow:hidden!important;
+  border-radius:4px!important;
+}
+#app .newcomers-review__cover,
+#app .newcomers-review__cover--empty{
+  border-radius:3px!important;
+}
+#app .newcomers-review__username{
+  font-size:13px!important;
+  line-height:1.4!important;
+}
+#app .newcomers-review__metadata{gap:7px!important;min-height:20px!important}
+#app .newcomers-review__stars{font-size:15px!important}
+#app .newcomers-review__liked,
+#app .newcomers-review__critique{
+  width:19px!important;
+  height:19px!important;
+}
+#app .newcomers-review__liked svg,
+#app .newcomers-review__critique svg{
+  width:17px!important;
+  height:17px!important;
+}
+@media(max-width:760px){
+  #app .newcomers-section__heading h2,
+  #app .feed-section-heading__title{font-size:17px!important}
+}
