@@ -8161,3 +8161,47 @@ html body #app .auth-shell--split .auth-panel {
   margin-right:auto!important;
   box-sizing:border-box!important;
 }
+
+
+/* NOVOS NO LUDUS — capas mais amplas, ícones monocromáticos e avatares menores. */
+#app .newcomers-list{
+  gap:clamp(4px,.65vw,8px)!important;
+}
+#app .newcomers-review__art{
+  width:112%!important;
+  margin-left:-6%!important;
+}
+#app .newcomers-review__avatar{
+  width:38px!important;
+  height:38px!important;
+  left:7px!important;
+  bottom:-13px!important;
+  border-width:2px!important;
+}
+#app .newcomers-review__liked,
+#app .newcomers-review__critique{
+  color:#bdb5ce!important;
+}
+#app .newcomers-review__liked svg,
+#app .newcomers-review__critique svg{
+  color:inherit!important;
+}
+@media(max-width:760px){
+  #app .newcomers-list{gap:6px!important}
+  #app .newcomers-review__art{
+    width:112%!important;
+    margin-left:-6%!important;
+  }
+  #app .newcomers-review__avatar{
+    width:36px!important;
+    height:36px!important;
+    bottom:-12px!important;
+  }
+}
+@media(max-width:420px){
+  #app .newcomers-review__avatar{
+    width:34px!important;
+    height:34px!important;
+    bottom:-11px!important;
+  }
+}
