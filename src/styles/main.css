@@ -8266,3 +8266,9 @@ html body #app .auth-shell--split .auth-panel {
     margin-bottom:10px!important;
   }
 }
+
+
+/* NOVOS NO LUDUS: estrelas na mesma tonalidade monocromática dos ícones. */
+#app .newcomers-review__stars{
+  color:#bdb5ce!important;
+}
