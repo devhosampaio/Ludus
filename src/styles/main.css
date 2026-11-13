@@ -6456,3 +6456,30 @@ html body #app .auth-shell--split .auth-panel {
   #app .sidebar-user__chevron{display:none!important}
   #app .feed-shell>.feed-main{padding:20px 8px 40px!important}
 }
+
+/* Feed em coluna única, ocupando toda a área disponível. */
+#app .feed-shell>.feed-main{
+  display:block!important;
+  width:100%!important;
+  max-width:1120px!important;
+  margin:0 auto!important;
+  padding:16px clamp(20px,3vw,40px) 64px!important;
+}
+#app .feed-main>.feed-ad{display:none!important}
+#app .feed-content{width:100%!important;max-width:none!important}
+#app .feed-list{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr)!important;
+  gap:18px!important;
+  columns:initial!important;
+}
+#app .feed-list>.review-card{
+  width:100%!important;
+  margin:0!important;
+}
+@media(max-width:760px){
+  #app .feed-shell>.feed-main{padding:14px 14px 48px!important}
+}
+@media(max-width:520px){
+  #app .feed-shell>.feed-main{padding:12px 10px 40px!important}
+}
