@@ -281,7 +281,8 @@ async function renderSignedIn(user) {
     <div class="feed-shell">
       <header class="app-topbar">
         <div class="app-topbar__content">
-        <div class="header-actions">
+          <a class="brand topbar__brand" href="./" aria-label="Ludus início">L<span>.</span></a>
+          <div class="header-actions">
           <div class="header-search">
             <button class="header-search__toggle" type="button" data-search-toggle aria-label="Abrir busca" aria-expanded="false" title="Buscar">
               <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"></circle><path d="m16 16 5 5"></path></svg>
@@ -290,12 +291,7 @@ async function renderSignedIn(user) {
             <div class="header-search__results" data-header-search-results hidden></div>
           </div>
           ${notificationControlMarkup()}
-        </div>
-        </div>
-      </header>
-      <aside class="sidebar">
-        <a class="brand sidebar__brand" href="./" aria-label="Ludus início">L<span>.</span></a>
-        <div class="sidebar__bottom">
+          </div>
           <details class="account-menu" data-account-details>
             <summary class="sidebar-user" data-account-menu>
               <span class="sidebar-user__avatar" data-avatar> L </span>
@@ -310,7 +306,7 @@ async function renderSignedIn(user) {
             </div>
           </details>
         </div>
-      </aside>
+      </header>
       <main class="feed-main">
         <aside class="feed-ad feed-ad--left" aria-label="Espaço reservado para publicidade"></aside>
         <section class="feed-content" aria-label="Atividade da comunidade">
@@ -605,17 +601,16 @@ async function renderSignedIn(user) {
       const body = review.body || '';
       const longReview = body.length >= 400;
       const reviewText = body ? '<div class="review-card__text-wrap"><p class="review-card__text' + (longReview ? ' is-truncated' : '') + '" data-review-text>' + escapeHTML(body) + '</p>' + (longReview ? '<button type="button" class="review-card__read-more" data-read-more>ler mais</button>' : '') + '</div>' : '';
+      const reviewAuthor = '<div class="review-card__header"><div class="review-card__meta"><div class="review-card__author-line"><button class="review-card__author" type="button" data-profile-username="' + escapeHTML(username) + '"><span class="review-card__author-avatar">' + avatarMarkup + '</span><span class="review-card__author-name">' + escapeHTML(author) + '</span></button><span class="review-card__posted-at">' + relativeTime(review.created_at) + '</span></div>' + menuMarkup + '</div></div>';
+      const reviewDetails = '<div class="review-card__details"><span class="review-card__stars" aria-label="Nota ' + review.rating + ' de 5">' + stars + '</span>' +
+        (review.liked_game ? '<span class="review-card__liked" aria-label="Gostei deste jogo" title="Gostei deste jogo"><svg class="ui-icon ui-icon--heart" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" stroke="none" d="M12 21s-8.8-5.9-8.8-12.2A4.8 4.8 0 0 1 12 6.4a4.8 4.8 0 0 1 8.8 2.4C20.8 15.1 12 21 12 21Z"></path></svg></span>' : '') +
+        (review.status ? '<span class="review-card__status" aria-label="' + statusLabel(review.status) + '" title="' + statusLabel(review.status) + '">' + statusIconMarkup(review.status) + '</span>' : '') + '</div>';
       return '<article class="review-card" data-review-id="' + review.id + '">' +
         '<div class="review-card__game-layout">' +
           (gameData.cover_url ? '<div class="review-card__backdrop" aria-hidden="true"><img src="' + escapeHTML(gameData.cover_url) + '" alt="" loading="lazy"></div>' : '') +
           '<div class="review-card__cover-column">' + cover + '</div>' +
-          '<div class="review-card__body"><h3>' + escapeHTML(game.toLocaleUpperCase('pt-BR')) + '</h3>' +
-          (gameMeta ? '<p class="review-card__game-meta">' + gameMeta + '</p>' : '') + '</div>' +
-        '</div>' +
-        '<div class="review-card__header"><div class="review-card__meta"><div class="review-card__author-line"><button class="review-card__author" type="button" data-profile-username="' + escapeHTML(username) + '"><span class="review-card__author-avatar">' + avatarMarkup + '</span><span class="review-card__author-name">' + escapeHTML(author) + '</span></button><span class="review-card__posted-at">' + relativeTime(review.created_at) + '</span></div>' + menuMarkup + '</div></div>' +
-        '<div class="review-card__details"><span class="review-card__stars" aria-label="Nota ' + review.rating + ' de 5">' + stars + '</span>' +
-          (review.liked_game ? '<span class="review-card__liked" aria-label="Gostei deste jogo" title="Gostei deste jogo"><svg class="ui-icon ui-icon--heart" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" stroke="none" d="M12 21s-8.8-5.9-8.8-12.2A4.8 4.8 0 0 1 12 6.4a4.8 4.8 0 0 1 8.8 2.4C20.8 15.1 12 21 12 21Z"></path></svg></span>' : '') +
-          (review.status ? '<span class="review-card__status" aria-label="' + statusLabel(review.status) + '" title="' + statusLabel(review.status) + '">' + statusIconMarkup(review.status) + '</span>' : '') +
+          '<div class="review-card__body">' + reviewAuthor + '<h3>' + escapeHTML(game.toLocaleUpperCase('pt-BR')) + '</h3>' +
+          (gameMeta ? '<p class="review-card__game-meta">' + gameMeta + '</p>' : '') + reviewDetails + '</div>' +
         '</div>' +
         reviewText +
         '<div class="review-card__actions">' + socialActions + '</div></article>';
