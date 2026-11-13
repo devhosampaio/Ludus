@@ -568,6 +568,12 @@ async function renderSignedIn(user) {
     .select('following_id').eq('follower_id', user.id));
   if (followedError) console.error('[Ludus] Falha ao carregar quem você segue:', followedError);
   const followedIds = new Set((followedProfiles || []).map((item) => item.following_id));
+
+  const gameTitleCounts = (reviews || []).reduce((counts, review) => {
+    const title = String(review.games?.title || '').trim().toLocaleLowerCase('pt-BR');
+    if (title) counts.set(title, (counts.get(title) || 0) + 1);
+    return counts;
+  }, new Map());
   const feedTabs = app.querySelector('[data-feed-mode="popular"]').closest('.feed-tabs');
   const newcomersSection = app.querySelector('.newcomers-section');
   const newcomersList = app.querySelector('[data-newcomers-list]');
@@ -657,6 +663,10 @@ async function renderSignedIn(user) {
       const gameData = review.games || {};
       const game = gameData.title || 'Jogo';
       const gameYear = gameData.release_year ? String(gameData.release_year) : '';
+      const normalizedGameTitle = game.trim().toLocaleLowerCase('pt-BR');
+      const showGameYear = Boolean(gameYear && (gameTitleCounts.get(normalizedGameTitle) || 0) > 1);
+      const gameTitleMarkup = '<span class="review-card__game-title">' + escapeHTML(game) + '</span>' +
+        (showGameYear ? '<span class="review-card__game-year">(' + escapeHTML(gameYear) + ')</span>' : '');
       const platformList = Array.isArray(gameData.platforms) ? gameData.platforms : [];
       const platformText = platformList.map((item) => typeof item === 'string' ? item : item?.name).filter(Boolean).join(', ');
       const gameMeta = [platformText, gameYear, gameData.developer].filter(Boolean).map(escapeHTML).join(' <span aria-hidden="true">·</span> ');
@@ -684,7 +694,7 @@ async function renderSignedIn(user) {
         '<div class="review-card__game-layout">' +
           (gameData.hero_url ? '<div class="review-card__backdrop" aria-hidden="true"><img src="' + escapeHTML(gameData.hero_url) + '" alt="" loading="lazy"></div>' : '') +
           '<div class="review-card__cover-column">' + cover + '</div>' +
-          '<div class="review-card__body">' + reviewAuthor + '<h3>' + escapeHTML(game) + '</h3>' + reviewDetails + '</div>' +
+          '<div class="review-card__body">' + reviewAuthor + '<h3 class="review-card__game-heading">' + gameTitleMarkup + '</h3>' + reviewDetails + '</div>' +
         '</div>' +
         reviewText +
         '<div class="review-card__actions">' + socialActions + '</div></article>';
