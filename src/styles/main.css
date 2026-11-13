@@ -7802,3 +7802,47 @@ html body #app .auth-shell--split .auth-panel {
     font-size:16px!important;
   }
 }
+
+
+/* NOVOS NO LUDUS: distribuir os seis cards por toda a largura disponível. */
+#app .feed-main>.newcomers-section{
+  width:100%!important;
+  max-width:none!important;
+}
+#app .newcomers-list{
+  display:grid!important;
+  grid-template-columns:repeat(6,minmax(0,1fr))!important;
+  gap:clamp(14px,2vw,26px)!important;
+  width:100%!important;
+}
+#app .newcomers-review{
+  width:100%!important;
+  min-width:0!important;
+}
+@media(max-width:760px){
+  #app .newcomers-list{
+    display:flex!important;
+    gap:14px!important;
+  }
+}
+
+/* Cabeçalho: centralizar o conteúdo no eixo real da página. */
+#app .app-topbar__content{
+  width:min(1120px,calc(100% - 48px))!important;
+  max-width:1120px!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+  padding-left:0!important;
+  padding-right:0!important;
+  box-sizing:border-box!important;
+}
+#app .app-topbar .header-actions{
+  margin-right:0!important;
+}
+@media(max-width:520px){
+  #app .app-topbar__content{
+    width:calc(100% - 24px)!important;
+    padding-left:0!important;
+    padding-right:0!important;
+  }
+}
