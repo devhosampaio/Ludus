@@ -333,7 +333,6 @@ async function renderSignedIn(user) {
         </section>
         <section class="newcomers-section" aria-labelledby="newcomers-title">
           <div class="newcomers-section__heading">
-            <p class="newcomers-section__eyebrow">A comunidade está crescendo</p>
             <h2 id="newcomers-title">NOVOS NO LUDUS</h2>
           </div>
           <div class="newcomers-list" data-newcomers-list>
