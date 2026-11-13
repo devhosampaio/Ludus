@@ -6918,3 +6918,11 @@ html body #app .auth-shell--split .auth-panel {
   }
   #app .review-card__body{width:auto!important}
 }
+
+/* Reviews: exibir a arte completa da capa, sem recorte. */
+#app .review-card__game-layout > .review-card__cover-column .review-card__cover {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+  object-position: center center !important;
+}
