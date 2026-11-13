@@ -8302,3 +8302,64 @@ html body #app .auth-shell--split .auth-panel {
     padding-top:22px!important;
   }
 }
+
+
+/* PARA VOCÊ: manter cada avaliação inteira e em uma única coluna.
+   Evita que o layout em colunas do Início fragmente os cards ao filtrar. */
+#app .feed-list.is-popular-feed{
+  display:flex!important;
+  flex-direction:column!important;
+  column-count:initial!important;
+  columns:initial!important;
+  column-gap:0!important;
+  column-fill:auto!important;
+  width:100%!important;
+  gap:22px!important;
+}
+#app .feed-list.is-popular-feed>.review-card{
+  display:flex!important;
+  flex:0 0 auto!important;
+  flex-direction:column!important;
+  width:100%!important;
+  max-width:100%!important;
+  margin:0!important;
+  box-sizing:border-box!important;
+  break-inside:avoid!important;
+  -webkit-column-break-inside:avoid!important;
+}
+#app .feed-list.is-popular-feed>.review-card>.review-card__game-layout{
+  display:grid!important;
+  grid-template-columns:66px minmax(0,1fr)!important;
+  grid-template-areas:"cover title"!important;
+  align-items:start!important;
+  width:100%!important;
+  min-width:0!important;
+}
+#app .feed-list.is-popular-feed .review-card__cover-column{
+  grid-area:cover!important;
+  width:66px!important;
+  min-width:66px!important;
+  max-width:66px!important;
+}
+#app .feed-list.is-popular-feed .review-card__body{
+  grid-area:title!important;
+  display:flex!important;
+  flex-direction:column!important;
+  min-width:0!important;
+  width:100%!important;
+}
+#app .feed-list.is-popular-feed>.review-card>.review-card__text-wrap,
+#app .feed-list.is-popular-feed>.review-card>.review-card__actions{
+  width:100%!important;
+  min-width:0!important;
+}
+@media(max-width:520px){
+  #app .feed-list.is-popular-feed>.review-card>.review-card__game-layout{
+    grid-template-columns:60px minmax(0,1fr)!important;
+  }
+  #app .feed-list.is-popular-feed .review-card__cover-column{
+    width:60px!important;
+    min-width:60px!important;
+    max-width:60px!important;
+  }
+}
