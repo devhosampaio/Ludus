@@ -633,19 +633,14 @@ async function renderSignedIn(user) {
   });
 
   const feedWelcome = app.querySelector('.feed-welcome');
+  const feedContent = app.querySelector('.feed-content');
   const renderFeed = (mode = 'home') => {
     const isHome = mode === 'home';
     feedWelcome.hidden = !isHome;
     newcomersSection.hidden = !isHome;
-    app.querySelector('.feed-content').hidden = isHome;
-    if (isHome) {
-      feedTabs.querySelectorAll('[data-feed-mode]').forEach((button) => {
-        const active = button.dataset.feedMode === 'home';
-        button.classList.toggle('is-active', active);
-        button.setAttribute('aria-selected', String(active));
-      });
-      return;
-    }
+    feedContent.hidden = false;
+    feedList.classList.toggle('is-popular-feed', mode === 'popular');
+
     let visibleReviews = [...(reviews || [])];
     if (mode === 'following') {
       visibleReviews = visibleReviews.filter((review) => followedIds.has(review.user_id));
@@ -661,7 +656,7 @@ async function renderSignedIn(user) {
 
     const feedTitle = app.querySelector('[data-feed-title]');
     const activeTab = feedTabs.querySelector('[data-feed-mode="' + mode + '"]');
-    if (feedTitle && activeTab) feedTitle.textContent = activeTab.textContent.trim();
+    if (feedTitle) feedTitle.textContent = isHome ? 'Últimas avaliações' : (activeTab?.textContent.trim() || 'Avaliações');
 
     feedTabs.querySelectorAll('[data-feed-mode]').forEach((button) => {
       const active = button.dataset.feedMode === mode;
