@@ -28,6 +28,29 @@ function formatDate(value) {
     .format(new Date(value)).replace('.', '');
 }
 
+function relativeTime(value) {
+  const seconds = Math.max(0, Math.floor((Date.now() - new Date(value).getTime()) / 1000));
+  if (seconds < 60) return 'agora';
+  const units = [
+    ['ano', 31536000], ['mês', 2592000], ['dia', 86400],
+    ['hora', 3600], ['minuto', 60]
+  ];
+  for (const [label, size] of units) {
+    const amount = Math.floor(seconds / size);
+    if (amount >= 1) return amount + ' ' + label + (amount > 1 && label !== 'mês' ? 's' : amount > 1 && label === 'mês' ? 'es' : '') + ' atrás';
+  }
+  return 'agora';
+}
+
+function statusIconMarkup(status) {
+  const icons = {
+    completed: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8v3a4 4 0 0 1-8 0V4ZM8 6H4v2a4 4 0 0 0 4 4m8-6h4v2a4 4 0 0 1-4 4m-4 0v4m-4 4h8m-6-4h4v4H8z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    playing: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 6h10a4 4 0 0 1 3.9 3.1l1.4 6.1a2.8 2.8 0 0 1-4.7 2.6l-2.2-2.1H8.6l-2.2 2.1a2.8 2.8 0 0 1-4.7-2.6l1.4-6.1A4 4 0 0 1 7 6Zm1.2 2.5v4m-2-2h4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    abandoned: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="15.5" cy="4.5" r="2" fill="currentColor"/><path d="m12 8 3-1 2 3 3 1m-8-3-3 4-3 1m6-5 2 4-2 4m-4-3-2 5m8-6 4 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+  };
+  return icons[status] || '';
+}
+
 function statusLabel(status) {
   return ({ playing: 'Jogando', completed: 'Zerado', abandoned: 'Abandonado' })[status] || '';
 }
@@ -476,7 +499,7 @@ async function renderSignedIn(user) {
 
   const feedList = app.querySelector('[data-feed-list]');
   const { data: reviews, error } = await fetchAllPages(() => supabase.from('reviews')
-    .select('id, user_id, game_id, rating, body, status, liked_game, created_at, profiles!reviews_user_id_fkey(username, display_name, avatar_url), games!reviews_game_id_fkey(title, cover_url, release_year, developer)')
+    .select('id, user_id, game_id, rating, body, status, liked_game, created_at, profiles!reviews_user_id_fkey(username, display_name, avatar_url), games!reviews_game_id_fkey(title, cover_url, release_year, developer, platforms)')
     .order('created_at', { ascending: false }));
 
   if (error) {
@@ -555,10 +578,14 @@ async function renderSignedIn(user) {
     feedList.innerHTML = visibleReviews.map((review) => {
       const username = review.profiles?.username || 'jogador';
       const author = username;
-      const game = review.games?.title || 'Jogo';
-      const gameYear = review.games?.release_year ? String(review.games.release_year) : '';
-      const cover = '<button class="review-card__cover-wrap" type="button" data-open-game="' + escapeHTML(review.game_id) + '" aria-label="Abrir página de ' + escapeHTML(game) + '">' + (review.games?.cover_url
-        ? '<img class="review-card__cover" src="' + escapeHTML(review.games.cover_url) + '" alt="Capa de ' + escapeHTML(game) + '" loading="lazy">'
+      const gameData = review.games || {};
+      const game = gameData.title || 'Jogo';
+      const gameYear = gameData.release_year ? String(gameData.release_year) : '';
+      const platformList = Array.isArray(gameData.platforms) ? gameData.platforms : [];
+      const platformText = platformList.map((item) => typeof item === 'string' ? item : item?.name).filter(Boolean).join(', ');
+      const gameMeta = [platformText, gameYear, gameData.developer].filter(Boolean).map(escapeHTML).join(' <span aria-hidden="true">·</span> ');
+      const cover = '<button class="review-card__cover-wrap" type="button" data-open-game="' + escapeHTML(review.game_id) + '" aria-label="Abrir página de ' + escapeHTML(game) + '">' + (gameData.cover_url
+        ? '<img class="review-card__cover" src="' + escapeHTML(gameData.cover_url) + '" alt="Capa de ' + escapeHTML(game) + '" loading="lazy">'
         : '<span class="review-card__cover review-card__cover--empty">L<span>.</span></span>') + '</button>';
       const stars = '★'.repeat(review.rating) + '<span class="review-card__stars-muted">' + '★'.repeat(5 - review.rating) + '</span>';
       const isLiked = likedReviewIds.has(review.id);
@@ -570,16 +597,21 @@ async function renderSignedIn(user) {
         (isOwner ? '<button type="button" data-review-action="edit">Editar review</button><button type="button" class="is-danger" data-review-action="delete">Excluir review</button>' : '<button type="button" data-review-action="report">Denunciar review</button>') + '</div></details>';
       const likeTotal = likeCounts[review.id] || 0;
       const commentTotal = commentCounts[review.id] || 0;
-      const socialActions = '<div class="review-card__social-actions"><button class="review-card__like' + (isLiked ? ' is-liked' : '') + '" type="button" data-like-review aria-label="Curtir avaliação" title="Curtir avaliação" aria-pressed="' + isLiked + '"><svg class="ui-icon ui-icon--heart" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" stroke="none" d="M12 21s-8.8-5.9-8.8-12.2A4.8 4.8 0 0 1 12 6.4a4.8 4.8 0 0 1 8.8 2.4C20.8 15.1 12 21 12 21Z"></path></svg><span class="review-card__like-count" data-like-count>' + String(likeTotal) + '</span></button><button type="button" class="review-card__comments-toggle" data-open-review-comments aria-label="Abrir comentários" title="Abrir comentários"><svg class="ui-icon ui-icon--comment" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" stroke="none" d="M4 3.5h16A2.5 2.5 0 0 1 22.5 6v9a2.5 2.5 0 0 1-2.5 2.5h-8l-5.8 4v-4H4A2.5 2.5 0 0 1 1.5 15V6A2.5 2.5 0 0 1 4 3.5Z"></path></svg><span class="review-card__comment-count" data-comment-count>' + String(commentTotal) + '</span></button></div><button type="button" class="review-card__bookmark" data-save-review aria-label="Salvar avaliação em uma lista" title="Salvar em lista"><svg class="ui-icon ui-icon--bookmark" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.75h12a1 1 0 0 1 1 1V21l-7-4.5L5 21V4.75a1 1 0 0 1 1-1Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg></button>'
+      const socialActions = '<div class="review-card__social-actions"><button class="review-card__like' + (isLiked ? ' is-liked' : '') + '" type="button" data-like-review aria-label="Curtir avaliação" title="Curtir avaliação" aria-pressed="' + isLiked + '"><svg class="ui-icon ui-icon--heart" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" stroke="none" d="M12 21s-8.8-5.9-8.8-12.2A4.8 4.8 0 0 1 12 6.4a4.8 4.8 0 0 1 8.8 2.4C20.8 15.1 12 21 12 21Z"></path></svg><span class="review-card__like-count" data-like-count>' + String(likeTotal) + '</span></button><button type="button" class="review-card__comments-toggle" data-open-review-comments aria-label="Abrir comentários" title="Abrir comentários"><svg class="ui-icon ui-icon--comment" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" stroke="none" d="M4 3.5h16A2.5 2.5 0 0 1 22.5 6v9a2.5 2.5 0 0 1-2.5 2.5h-8l-5.8 4v-4H4A2.5 2.5 0 0 1 1.5 15V6A2.5 2.5 0 0 1 4 3.5Z"></path></svg><span class="review-card__comment-count" data-comment-count>' + String(commentTotal) + '</span></button></div><button type="button" class="review-card__bookmark" data-save-review aria-label="Salvar avaliação em uma lista" title="Salvar em lista"><svg class="ui-icon ui-icon--bookmark" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.75h12a1 1 0 0 1 1 1V21l-7-4.5L5 21V4.75a1 1 0 0 1 1-1Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg></button>';
+      const body = review.body || '';
+      const longReview = body.length >= 400;
+      const reviewText = body ? '<div class="review-card__text-wrap"><p class="review-card__text' + (longReview ? ' is-truncated' : '') + '" data-review-text>' + escapeHTML(body) + '</p>' + (longReview ? '<button type="button" class="review-card__read-more" data-read-more>ler mais</button>' : '') + '</div>' : '';
       return '<article class="review-card" data-review-id="' + review.id + '">' +
-        '<div class="review-card__header"><div class="review-card__meta"><button class="review-card__author" type="button" data-profile-username="' + escapeHTML(username) + '"><span class="review-card__author-avatar">' + avatarMarkup + '</span><span class="review-card__author-name">' + escapeHTML(author) + '</span></button><span class="review-card__activity"><em>publicou uma avaliação de <strong>' + escapeHTML(game) + '</strong></em></span></div>' + menuMarkup + '</div>' +
-        '<div class="review-card__top-chip"><div class="review-card__cover-column">' + cover + '</div>' +
-        '<div class="review-card__body">' +
-        '<h3>' + escapeHTML(game) + (gameYear ? ' <small class="review-card__year">' + escapeHTML(gameYear) + '</small>' : '') + '</h3><div class="review-card__details"><span class="review-card__stars" aria-label="Nota ' + review.rating + ' de 5">' + stars + '</span>' +
-        (review.liked_game ? '<span class="review-card__liked" aria-label="Gostei deste jogo" title="Gostei deste jogo"><svg class="ui-icon ui-icon--heart" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" stroke="none" d="M12 21s-8.8-5.9-8.8-12.2A4.8 4.8 0 0 1 12 6.4a4.8 4.8 0 0 1 8.8 2.4C20.8 15.1 12 21 12 21Z"></path></svg></span>' : '') +
-        (review.status ? '<span class="review-card__status"><svg class="ui-icon ui-icon--gamepad" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" stroke="none" d="M7 6h10a4 4 0 0 1 3.9 3.1l1.4 6.1a2.8 2.8 0 0 1-4.7 2.6l-2.2-2.1H8.6l-2.2 2.1a2.8 2.8 0 0 1-4.7-2.6l1.4-6.1A4 4 0 0 1 7 6Zm1.2 2.5a.8.8 0 0 0-.8.8v1.2H6.2a.8.8 0 0 0 0 1.6h1.2v1.2a.8.8 0 0 0 1.6 0v-1.2h1.2a.8.8 0 0 0 0-1.6H9V9.3a.8.8 0 0 0-.8-.8Zm7.1 1.1a1 1 0 1 0 0 2 1 1 0 0 0 0-2Zm2.5 2.5a1 1 0 1 0 0 2 1 1 0 0 0 0-2Z"></path></svg>' + statusLabel(review.status) + '</span>' : '') + '</div></div></div>' +
-        (review.body ? '<p class="review-card__text">' + escapeHTML(review.body) + '</p>' : '') +
-        '<div class="review-card__actions">' + socialActions + '</div></article>';
+        '<div class="review-card__header"><div class="review-card__meta"><button class="review-card__author" type="button" data-profile-username="' + escapeHTML(username) + '"><span class="review-card__author-avatar">' + avatarMarkup + '</span><span class="review-card__author-name">' + escapeHTML(author) + '</span></button><span class="review-card__posted-at">' + relativeTime(review.created_at) + '</span></div>' + menuMarkup + '</div>' +
+        '<div class="review-card__game-layout">' +
+          '<div class="review-card__body"><h3>' + escapeHTML(game.toLocaleUpperCase('pt-BR')) + '</h3>' +
+          (gameMeta ? '<p class="review-card__game-meta">' + gameMeta + '</p>' : '') + '</div>' +
+          '<div class="review-card__cover-column">' + cover + '<div class="review-card__details"><span class="review-card__stars" aria-label="Nota ' + review.rating + ' de 5">' + stars + '</span>' +
+          (review.liked_game ? '<span class="review-card__liked" aria-label="Gostei deste jogo" title="Gostei deste jogo"><svg class="ui-icon ui-icon--heart" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" stroke="none" d="M12 21s-8.8-5.9-8.8-12.2A4.8 4.8 0 0 1 12 6.4a4.8 4.8 0 0 1 8.8 2.4C20.8 15.1 12 21 12 21Z"></path></svg></span>' : '') +
+          (review.status ? '<span class="review-card__status" aria-label="' + statusLabel(review.status) + '" title="' + statusLabel(review.status) + '">' + statusIconMarkup(review.status) + '</span>' : '') +
+          '</div></div></div>' +
+        reviewText +
+        '<div class="review-card__actions"><span class="review-card__actions-divider"></span>' + socialActions + '</div></article>';
     }).join('');
   };
 
@@ -621,6 +653,16 @@ async function renderSignedIn(user) {
   });
 
   feedList.addEventListener('click', async (event) => {
+    const readMore = event.target.closest('[data-read-more]');
+    if (readMore) {
+      const text = readMore.closest('.review-card__text-wrap')?.querySelector('[data-review-text]');
+      if (text) {
+        const expanded = text.classList.toggle('is-expanded');
+        text.classList.toggle('is-truncated', !expanded);
+        readMore.textContent = expanded ? 'ler menos' : 'ler mais';
+      }
+      return;
+    }
     const reviewAction = event.target.closest('[data-review-action]');
     if (reviewAction) {
       const card = reviewAction.closest('[data-review-id]');
