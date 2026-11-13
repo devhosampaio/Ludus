@@ -570,7 +570,7 @@ async function renderSignedIn(user) {
         (isOwner ? '<button type="button" data-review-action="edit">Editar review</button><button type="button" class="is-danger" data-review-action="delete">Excluir review</button>' : '<button type="button" data-review-action="report">Denunciar review</button>') + '</div></details>';
       const likeTotal = likeCounts[review.id] || 0;
       const commentTotal = commentCounts[review.id] || 0;
-      const socialActions = '<div class="review-card__social-actions"><button class="review-card__like' + (isLiked ? ' is-liked' : '') + '" type="button" data-like-review aria-label="Curtir avaliação" title="Curtir avaliação" aria-pressed="' + isLiked + '"><svg class="ui-icon ui-icon--heart" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" stroke="none" d="M12 21s-8.8-5.9-8.8-12.2A4.8 4.8 0 0 1 12 6.4a4.8 4.8 0 0 1 8.8 2.4C20.8 15.1 12 21 12 21Z"></path></svg><span class="review-card__like-count" data-like-count>' + (likeTotal || '') + '</span></button><button type="button" class="review-card__comments-toggle" data-open-review-comments aria-label="Abrir comentários" title="Abrir comentários"><svg class="ui-icon ui-icon--comment" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" stroke="none" d="M4 3.5h16A2.5 2.5 0 0 1 22.5 6v9a2.5 2.5 0 0 1-2.5 2.5h-8l-5.8 4v-4H4A2.5 2.5 0 0 1 1.5 15V6A2.5 2.5 0 0 1 4 3.5Z"></path></svg><span class="review-card__comment-count" data-comment-count>' + (commentTotal || '') + '</span></button></div><button type="button" class="review-card__bookmark" data-save-review aria-label="Salvar avaliação em uma lista" title="Salvar em lista"><svg class="ui-icon ui-icon--bookmark" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.75h12a1 1 0 0 1 1 1V21l-7-4.5L5 21V4.75a1 1 0 0 1 1-1Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg></button>'
+      const socialActions = '<div class="review-card__social-actions"><button class="review-card__like' + (isLiked ? ' is-liked' : '') + '" type="button" data-like-review aria-label="Curtir avaliação" title="Curtir avaliação" aria-pressed="' + isLiked + '"><svg class="ui-icon ui-icon--heart" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" stroke="none" d="M12 21s-8.8-5.9-8.8-12.2A4.8 4.8 0 0 1 12 6.4a4.8 4.8 0 0 1 8.8 2.4C20.8 15.1 12 21 12 21Z"></path></svg><span class="review-card__like-count" data-like-count>' + String(likeTotal) + '</span></button><button type="button" class="review-card__comments-toggle" data-open-review-comments aria-label="Abrir comentários" title="Abrir comentários"><svg class="ui-icon ui-icon--comment" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" stroke="none" d="M4 3.5h16A2.5 2.5 0 0 1 22.5 6v9a2.5 2.5 0 0 1-2.5 2.5h-8l-5.8 4v-4H4A2.5 2.5 0 0 1 1.5 15V6A2.5 2.5 0 0 1 4 3.5Z"></path></svg><span class="review-card__comment-count" data-comment-count>' + String(commentTotal) + '</span></button></div><button type="button" class="review-card__bookmark" data-save-review aria-label="Salvar avaliação em uma lista" title="Salvar em lista"><svg class="ui-icon ui-icon--bookmark" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3.75h12a1 1 0 0 1 1 1V21l-7-4.5L5 21V4.75a1 1 0 0 1 1-1Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg></button>'
       return '<article class="review-card" data-review-id="' + review.id + '">' +
         '<div class="review-card__header"><div class="review-card__meta"><button class="review-card__author" type="button" data-profile-username="' + escapeHTML(username) + '"><span class="review-card__author-avatar">' + avatarMarkup + '</span><span>' + escapeHTML(author) + '</span></button><span class="review-card__activity"><em>avaliou <strong>' + escapeHTML(game) + '</strong></em></span></div>' + menuMarkup + '</div>' +
         '<div class="review-card__top-chip"><div class="review-card__cover-column">' + cover + '</div>' +
@@ -808,6 +808,12 @@ async function renderSignedIn(user) {
     const wasLiked = button.getAttribute('aria-pressed') === 'true';
     const count = card.querySelector('[data-like-count]');
     if (!count) return;
+    const nextLiked = !wasLiked;
+    const previousCount = Number(count.textContent || 0);
+    const nextLikeCount = Math.max(0, previousCount + (nextLiked ? 1 : -1));
+    button.setAttribute('aria-pressed', String(nextLiked));
+    button.classList.toggle('is-liked', nextLiked);
+    count.textContent = String(nextLikeCount);
     button.disabled = true;
     button.setAttribute('aria-busy', 'true');
     const controller = new AbortController();
@@ -818,13 +824,11 @@ async function renderSignedIn(user) {
         : supabase.from('review_likes').insert({ review_id: reviewId, user_id: user.id }).abortSignal(controller.signal);
       const result = await request;
       if (result.error) throw result.error;
-      const nextLiked = !wasLiked;
-      const nextLikeCount = Math.max(0, Number(count.textContent || 0) + (nextLiked ? 1 : -1));
-      count.textContent = nextLikeCount ? String(nextLikeCount) : '';
-      button.setAttribute('aria-pressed', String(nextLiked));
-      button.classList.toggle('is-liked', nextLiked);
-      count.textContent = String(Math.max(0, Number(count.textContent || 0)));
+      // O estado visual já foi atualizado de forma otimista antes da resposta do servidor.
     } catch (error) {
+      button.setAttribute('aria-pressed', String(wasLiked));
+      button.classList.toggle('is-liked', wasLiked);
+      count.textContent = String(previousCount);
       console.error('[Ludus] Falha ao atualizar curtida:', error);
       if (controller.signal.aborted) {
         console.warn('[Ludus] A requisição de curtida excedeu 10 segundos e foi cancelada.');
@@ -1528,10 +1532,7 @@ function renderAuth(mode = 'login') {
     '<a class="brand" href="./" aria-label="Ludus início">L<span>.</span></a>',
     '<div class="auth-welcome-content">',
     '<h1>Todo jogo<br>deixa uma <em>história.</em></h1>',
-    '<div class="auth-welcome-actions">',
-    '<button class="auth-welcome-button auth-welcome-button--login" type="button" data-mode="login"><span>Entrar</span><span class="auth-welcome-button__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4M3 12h12m-5-5 5 5-5 5"/></svg></span></button>',
-    '<button class="auth-welcome-button auth-welcome-button--signup" type="button" data-mode="signup"><span>Criar conta</span><span class="auth-welcome-button__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="4"/><path d="M2.5 21a6.5 6.5 0 0 1 13 0M19 8v8m-4-4h8"/></svg></span></button>',
-    '</div></div>',
+    '</div>',
     '<span class="auth-intro__credit">GRAND THEFT AUTO VI — ROCKSTAR GAMES</span>',
     '</section>',
     '<section class="auth-panel" aria-label="' + (isSignup ? 'Criar conta' : 'Entrar no Ludus') + '"><div class="auth-panel__inner">',
