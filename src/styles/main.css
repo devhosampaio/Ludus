@@ -6211,8 +6211,8 @@ html body #app .auth-shell--split .auth-panel {
   display:block!important;
   width:100%!important;
   height:100%!important;
-  object-fit:cover!important;
-  object-position:center 38%!important;
+  object-fit:contain!important;
+  object-position:center center!important;
   opacity:.34!important;
   filter:saturate(.82)!important;
 }
@@ -6919,50 +6919,3 @@ html body #app .auth-shell--split .auth-panel {
   #app .review-card__body{width:auto!important}
 }
 
-/* Reviews: exibir a arte completa da capa, sem recorte. */
-#app .review-card__game-layout > .review-card__cover-column .review-card__cover {
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: contain !important;
-  object-position: center center !important;
-}
-
-/* A arte ambiental pertence ao card inteiro, não apenas à faixa da capa. */
-#app .feed-list > .review-card {
-  position: relative !important;
-  isolation: isolate !important;
-}
-#app .feed-list > .review-card > .review-card__backdrop {
-  position: absolute !important;
-  z-index: 0 !important;
-  inset: 0 !important;
-  display: block !important;
-  overflow: hidden !important;
-  pointer-events: none !important;
-}
-#app .feed-list > .review-card > .review-card__backdrop img {
-  display: block !important;
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: cover !important;
-  object-position: center 38% !important;
-  opacity: .34 !important;
-  filter: saturate(.82) !important;
-}
-#app .feed-list > .review-card > .review-card__backdrop::after {
-  content: "" !important;
-  position: absolute !important;
-  inset: 0 !important;
-  background: linear-gradient(90deg, rgba(48,44,61,.54), rgba(48,44,61,.68) 45%, rgba(48,44,61,.86)), linear-gradient(0deg, rgba(48,44,61,.72), rgba(48,44,61,.12)) !important;
-}
-#app .feed-list > .review-card > .review-card__game-layout {
-  position: relative !important;
-  z-index: 1 !important;
-  background: transparent !important;
-}
-#app .feed-list > .review-card > .review-card__text-wrap,
-#app .feed-list > .review-card > .review-card__actions {
-  position: relative !important;
-  z-index: 1 !important;
-  background: transparent !important;
-}
