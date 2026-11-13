@@ -660,10 +660,11 @@ async function renderSignedIn(user) {
     let visibleReviews = [...(reviews || [])];
     if (mode === 'following') {
       visibleReviews = visibleReviews.filter((review) => followedIds.has(review.user_id));
+      visibleReviews.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
     } else if (mode === 'saved') {
       visibleReviews = visibleReviews.filter((review) => savedReviewIds.has(review.id));
       visibleReviews.sort((a, b) => new Date(savedAtByReview.get(b.id) || b.created_at) - new Date(savedAtByReview.get(a.id) || a.created_at));
-    } else if (mode === 'popular') {
+    } else if (mode === 'popular' || mode === 'home') {
       visibleReviews.sort((a, b) => {
         const scoreA = (likeCounts[a.id] || 0) + (commentCounts[a.id] || 0) + (saveCounts[a.id] || 0);
         const scoreB = (likeCounts[b.id] || 0) + (commentCounts[b.id] || 0) + (saveCounts[b.id] || 0);
@@ -675,7 +676,9 @@ async function renderSignedIn(user) {
 
     const feedTitle = app.querySelector('[data-feed-title]');
     const activeTab = feedTabs.querySelector('[data-feed-mode="' + mode + '"]');
-    if (feedTitle) feedTitle.textContent = isHome ? 'Últimas avaliações' : (activeTab?.textContent.trim() || 'Avaliações');
+    if (feedTitle) feedTitle.textContent = mode === 'home' || mode === 'popular'
+      ? 'Para você'
+      : (activeTab?.textContent.trim() || 'Avaliações');
 
     feedTabs.querySelectorAll('[data-feed-mode]').forEach((button) => {
       const active = button.dataset.feedMode === mode;
