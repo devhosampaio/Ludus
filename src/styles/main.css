@@ -6365,6 +6365,7 @@ html body #app .auth-shell--split .auth-panel {
 
 /* Feed com navegação lateral e perfil fixo no rodapé. */
 #app .feed-shell{
+  display:grid!important;
   grid-template-columns:240px minmax(0,1fr)!important;
   align-items:start!important;
 }
