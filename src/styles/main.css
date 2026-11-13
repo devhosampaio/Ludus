@@ -7309,3 +7309,67 @@ html body #app .auth-shell--split .auth-panel {
 #app .feed-list>.review-card .review-card__cover-wrap{
   border:0!important;
 }
+
+
+/* Ajustes finais de acabamento dos cards de avaliação. */
+#app .feed-list>.review-card{
+  border:0!important;
+  border-bottom:1px solid rgb(201 191 176 / 24%)!important;
+  border-radius:0!important;
+}
+#app .review-card__cover-column .review-card__cover-wrap,
+#app .review-card__game-layout>.review-card__cover-column .review-card__cover-wrap,
+#app .review-card__cover-column .review-card__cover,
+#app .review-card__cover{
+  border-radius:0!important;
+}
+#app .review-card__details .review-card__stars{
+  font-size:17px!important;
+  letter-spacing:1.2px!important;
+}
+#app .review-card__details .review-card__liked svg{
+  width:17px!important;
+  height:17px!important;
+}
+#app .review-card__details .review-card__status{
+  font-size:11px!important;
+  gap:6px!important;
+}
+#app .review-card__details .review-card__status svg{
+  width:17px!important;
+  height:17px!important;
+  flex-basis:17px!important;
+}
+#app .review-card__body .review-card__author-line{
+  align-items:center!important;
+  gap:8px!important;
+  min-height:20px!important;
+}
+#app .review-card__body .review-card__author{
+  align-items:center!important;
+  line-height:20px!important;
+}
+#app .review-card__body .review-card__author-name,
+#app .review-card__body .review-card__posted-at{
+  display:inline-flex!important;
+  align-items:center!important;
+  line-height:20px!important;
+  vertical-align:middle!important;
+}
+#app .review-card__body .review-card__posted-at{
+  font-size:10px!important;
+  padding-top:1px!important;
+}
+#app .review-card__body .review-menu summary svg{
+  width:17px!important;
+  height:17px!important;
+}
+#app .review-card__body .review-menu summary{
+  width:28px!important;
+  height:28px!important;
+  display:grid!important;
+  place-items:center!important;
+}
+@media(max-width:520px){
+  #app .review-card__details .review-card__status{font-size:10px!important}
+}
