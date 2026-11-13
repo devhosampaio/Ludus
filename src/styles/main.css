@@ -7519,20 +7519,15 @@ html body #app .auth-shell--split .auth-panel {
   display:flex!important;
   flex-direction:column!important;
   align-items:flex-start!important;
-  gap:5px!important;
-  margin:0 0 23px!important;
-}
-#app .newcomers-section__eyebrow{
-  margin:0!important;
-  color:#bdb5ce!important;
-  font:10px/1.4 'DM Mono',monospace!important;
-  letter-spacing:.12em!important;
-  text-transform:uppercase!important;
+  gap:0!important;
+  margin:0 0 22px!important;
+  padding:0 0 22px!important;
+  border-bottom:1px solid rgb(201 191 176 / 25%)!important;
 }
 #app .newcomers-section__heading h2{
   margin:0!important;
-  color:#e8dfce!important;
-  font:500 25px/1.1 'Space Grotesk',sans-serif!important;
+  color:var(--color-surface)!important;
+  font:500 25px 'Space Grotesk',sans-serif!important;
   letter-spacing:-.04em!important;
 }
 #app .newcomers-list{
