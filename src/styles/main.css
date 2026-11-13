@@ -7471,10 +7471,8 @@ html body #app .auth-shell--split .auth-panel {
 }
 
 
-/* Feed: contornos discretos e fundo que aprofunda gradualmente ao descer. */
-#app .feed-shell{
-  background:linear-gradient(180deg,#7060ab 0%,#51456f 24%,#302c3d 62%,#211e2b 100%)!important;
-}
+/* Fundo original do feed restaurado: usa a cor base do tema. */
+#app .feed-shell{background:var(--color-bg)!important}
 #app .app-topbar .sidebar-user__avatar,
 #app .review-card__author-avatar{
   border:1px solid rgb(232 223 206 / 48%)!important;
@@ -7741,5 +7739,66 @@ html body #app .auth-shell--split .auth-panel {
     min-width:60px!important;
     max-width:60px!important;
     height:88px!important;
+  }
+}
+
+
+/* Ajustes de escala — NOVOS NO LUDUS e PARA VOCÊ. */
+#app .feed-main>.newcomers-section{
+  max-width:980px!important;
+}
+#app .newcomers-review__avatar{
+  width:44px!important;
+  height:44px!important;
+  left:8px!important;
+  bottom:-15px!important;
+}
+#app .newcomers-review__username{
+  font-size:12px!important;
+}
+@media(max-width:760px){
+  #app .newcomers-review{
+    flex-basis:140px!important;
+    width:140px!important;
+  }
+}
+@media(max-width:420px){
+  #app .newcomers-review{
+    flex-basis:128px!important;
+    width:128px!important;
+  }
+  #app .newcomers-review__avatar{
+    width:42px!important;
+    height:42px!important;
+    bottom:-14px!important;
+  }
+}
+
+/* PARA VOCÊ: ampliar ícones de avaliação, sem alterar os controles de interação. */
+#app .feed-list .review-card__details .review-card__stars{
+  font-size:20px!important;
+  letter-spacing:1.3px!important;
+}
+#app .feed-list .review-card__details .review-card__liked svg{
+  width:21px!important;
+  height:21px!important;
+}
+#app .feed-list .review-card__details .review-card__status{
+  gap:7px!important;
+  font-size:12px!important;
+}
+#app .feed-list .review-card__details .review-card__status svg{
+  width:20px!important;
+  height:20px!important;
+  flex-basis:20px!important;
+}
+#app .feed-list .review-card>.review-card__text-wrap .review-card__text{
+  font-family:Georgia, 'Times New Roman', serif!important;
+  font-size:17px!important;
+  line-height:1.75!important;
+}
+@media(max-width:560px){
+  #app .feed-list .review-card>.review-card__text-wrap .review-card__text{
+    font-size:16px!important;
   }
 }
