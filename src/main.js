@@ -327,6 +327,10 @@ async function renderSignedIn(user) {
       </header>
       <main class="feed-main">
         <aside class="feed-ad feed-ad--left" aria-label="Espaço reservado para publicidade"></aside>
+        <section class="feed-welcome" aria-label="Boas-vindas">
+          <h1>Bem-vindo de volta, <strong data-welcome-name></strong>. Aqui está o que andam jogando...</h1>
+          <p>A página inicial vai se adaptando conforme você segue novos jogadores no Ludus.</p>
+        </section>
         <section class="newcomers-section" aria-labelledby="newcomers-title">
           <div class="newcomers-section__heading">
             <p class="newcomers-section__eyebrow">A comunidade está crescendo</p>
@@ -379,13 +383,16 @@ async function renderSignedIn(user) {
     .select('username, display_name, avatar_url, banner_url, bio')
     .eq('id', user.id).maybeSingle();
 
+  const welcomeName = app.querySelector('[data-welcome-name]');
   if (profileResult.data) {
     username.textContent = profileResult.data.username || fallbackName;
+    welcomeName.textContent = profileResult.data.display_name || profileResult.data.username || fallbackName;
     if (profileResult.data.avatar_url) {
       avatar.innerHTML = '<img src="' + escapeHTML(profileResult.data.avatar_url) + '" alt="">';
     }
   } else {
     username.textContent = '';
+    welcomeName.textContent = fallbackName;
   }
 
   const accountDetails = app.querySelector('[data-account-details]');
