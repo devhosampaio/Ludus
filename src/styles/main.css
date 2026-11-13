@@ -5752,3 +5752,294 @@ html body #app .auth-shell--split .auth-panel {
 @media(max-width:1100px){#app .feed-list{grid-template-columns:minmax(0,1fr)!important}#app .review-card__game-layout{grid-template-columns:minmax(0,1fr) 150px!important}}
 @media(max-width:560px){#app .review-card{padding:16px!important;border-radius:14px!important}#app .review-card__header .review-card__author-avatar{width:36px!important;height:36px!important;flex-basis:36px!important}#app .review-card__header .review-card__author-name{font-size:14px!important}#app .review-card__posted-at{font-size:11px!important}#app .review-card__game-layout{grid-template-columns:minmax(0,1fr) 112px!important;gap:13px!important}#app .review-card__game-layout>.review-card__body h3{font-size:17px!important}#app .review-card__game-meta{font-size:10px!important}#app .review-card>.review-card__text-wrap .review-card__text{font-size:13px!important}}
 @media(max-width:360px){#app .review-card__game-layout{grid-template-columns:minmax(0,1fr) 94px!important;gap:10px!important}}
+
+
+/* LUDUS — avaliações em flat design, inspiradas na referência enviada */
+#app .feed-list{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  align-items:start!important;
+  gap:20px!important;
+  width:100%!important;
+  columns:auto!important;
+}
+#app .review-card{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:stretch!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:none!important;
+  margin:0!important;
+  padding:18px!important;
+  gap:0!important;
+  box-sizing:border-box!important;
+  border:1px solid rgb(201 191 176 / 22%)!important;
+  border-radius:12px!important;
+  background:#302c3d!important;
+  box-shadow:none!important;
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+}
+#app .review-card__game-layout{
+  display:grid!important;
+  grid-template-columns:112px minmax(0,1fr)!important;
+  align-items:center!important;
+  gap:18px!important;
+  width:100%!important;
+  min-width:0!important;
+  margin:0 0 18px!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  -webkit-backdrop-filter:none!important;
+  backdrop-filter:none!important;
+}
+#app .review-card__cover-column{
+  display:block!important;
+  width:112px!important;
+  min-width:0!important;
+  margin:0!important;
+  padding:0!important;
+}
+#app .review-card__cover-column .review-card__cover-wrap{
+  position:relative!important;
+  display:block!important;
+  width:112px!important;
+  height:150px!important;
+  aspect-ratio:auto!important;
+  margin:0!important;
+  padding:0!important;
+  overflow:hidden!important;
+  border:0!important;
+  border-radius:7px!important;
+  background:#24212e!important;
+  box-shadow:none!important;
+}
+#app .review-card__cover-column .review-card__cover-wrap:before,
+#app .review-card__cover-column .review-card__cover-wrap:after{display:none!important;content:none!important}
+#app .review-card__cover-column .review-card__cover{
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  object-fit:cover!important;
+  border:0!important;
+  border-radius:7px!important;
+  transform:none!important;
+  filter:none!important;
+}
+#app .review-card__game-layout>.review-card__body{
+  display:block!important;
+  grid-column:2!important;
+  grid-row:1!important;
+  align-self:center!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:none!important;
+  margin:0!important;
+  padding:0!important;
+  overflow-wrap:anywhere!important;
+}
+#app .review-card__game-layout .review-card__body h3{
+  margin:0 0 9px!important;
+  padding:0!important;
+  color:#f5f0e6!important;
+  font:700 clamp(17px,1.7vw,23px)/1.16 'Archivo Black',sans-serif!important;
+  letter-spacing:-.025em!important;
+  text-align:left!important;
+  overflow-wrap:anywhere!important;
+}
+#app .review-card__game-meta{
+  display:block!important;
+  margin:0!important;
+  color:#aaa3b2!important;
+  font:400 12px/1.55 'DM Mono',monospace!important;
+  text-align:left!important;
+  overflow-wrap:anywhere!important;
+}
+#app .review-card__header{
+  position:relative!important;
+  display:flex!important;
+  align-items:center!important;
+  width:100%!important;
+  min-width:0!important;
+  margin:0 0 16px!important;
+  padding:0 36px 0 0!important;
+  box-sizing:border-box!important;
+}
+#app .review-card__header .review-card__meta{
+  display:flex!important;
+  align-items:center!important;
+  width:100%!important;
+  min-width:0!important;
+  padding:0!important;
+}
+#app .review-card__author-line{
+  display:flex!important;
+  align-items:center!important;
+  flex-wrap:wrap!important;
+  gap:9px!important;
+  min-width:0!important;
+}
+#app .review-card__header .review-card__author{
+  display:inline-flex!important;
+  flex-direction:row!important;
+  align-items:center!important;
+  gap:10px!important;
+  min-width:0!important;
+  padding:0!important;
+  border:0!important;
+  background:transparent!important;
+  color:#f5f0e6!important;
+  font:600 14px/1.3 'DM Sans',sans-serif!important;
+}
+#app .review-card__header .review-card__author-avatar{
+  display:inline-grid!important;
+  flex:0 0 38px!important;
+  width:38px!important;
+  height:38px!important;
+  overflow:hidden!important;
+  border-radius:50%!important;
+}
+#app .review-card__header .review-card__author-avatar img{
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  object-fit:cover!important;
+}
+#app .review-card__posted-at{
+  color:#aaa3b2!important;
+  font:400 12px/1.3 'DM Sans',sans-serif!important;
+}
+#app .review-card__posted-at:before{content:"·";margin-right:9px;color:#8d8498}
+#app .review-card__header .review-menu{
+  position:absolute!important;
+  top:50%!important;
+  right:0!important;
+  transform:translateY(-50%)!important;
+}
+#app .review-card__details{
+  display:flex!important;
+  align-items:center!important;
+  flex-wrap:wrap!important;
+  gap:12px!important;
+  width:100%!important;
+  margin:0 0 14px!important;
+  padding:0!important;
+}
+#app .review-card__details .review-card__stars{
+  color:#d5a64a!important;
+  font-size:22px!important;
+  letter-spacing:2px!important;
+  white-space:nowrap!important;
+}
+#app .review-card__details .review-card__liked{
+  display:inline-flex!important;
+  align-items:center!important;
+  color:#ef5360!important;
+}
+#app .review-card__details .review-card__liked svg{width:25px!important;height:25px!important}
+#app .review-card__details .review-card__status{
+  display:inline-flex!important;
+  align-items:center!important;
+  gap:7px!important;
+  color:#d5a64a!important;
+  font:600 11px/1.2 'DM Mono',monospace!important;
+}
+#app .review-card__details .review-card__status svg{width:19px!important;height:19px!important}
+#app .review-card>.review-card__text-wrap{
+  display:block!important;
+  position:static!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:none!important;
+  margin:0 0 18px!important;
+  padding:0!important;
+}
+#app .review-card>.review-card__text-wrap .review-card__text{
+  display:block!important;
+  width:100%!important;
+  max-width:none!important;
+  margin:0!important;
+  padding:0!important;
+  color:#e1dce6!important;
+  font:400 14px/1.7 'DM Sans',sans-serif!important;
+  text-align:left!important;
+  overflow-wrap:anywhere!important;
+  background:transparent!important;
+  border:0!important;
+}
+#app .review-card>.review-card__text-wrap .review-card__text.is-truncated{
+  display:-webkit-box!important;
+  overflow:hidden!important;
+  -webkit-box-orient:vertical!important;
+  -webkit-line-clamp:3!important;
+  line-clamp:3!important;
+}
+#app .review-card>.review-card__text-wrap .review-card__text.is-expanded{display:block!important;overflow:visible!important}
+#app .review-card__read-more{
+  display:inline!important;
+  margin:0 0 0 5px!important;
+  padding:0!important;
+  border:0!important;
+  background:transparent!important;
+  color:#ef5360!important;
+  font:600 14px/1.7 'DM Sans',sans-serif!important;
+}
+#app .review-card>.review-card__actions{
+  display:block!important;
+  width:100%!important;
+  margin:0!important;
+  padding:12px 0 0!important;
+  border:0!important;
+}
+#app .review-card__actions-divider{
+  display:block!important;
+  width:100%!important;
+  height:1px!important;
+  margin:0 0 12px!important;
+  background:rgb(232 223 206 / 17%)!important;
+}
+#app .review-card__social-actions{
+  display:flex!important;
+  flex-direction:row!important;
+  align-items:center!important;
+  gap:28px!important;
+  width:100%!important;
+}
+#app .review-card__social-actions button{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:9px!important;
+  min-width:28px!important;
+  min-height:32px!important;
+  margin:0!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  color:#c9bfcf!important;
+  font:400 13px/1 'DM Sans',sans-serif!important;
+}
+#app .review-card__social-actions .ui-icon{width:23px!important;height:23px!important}
+#app .review-card__social-actions .review-card__like.is-liked{color:#ef5360!important}
+#app .review-card__social-actions .review-card__like:hover{color:#ff7780!important}
+@media(max-width:999px){#app .feed-list{grid-template-columns:minmax(0,1fr)!important}}
+@media(max-width:560px){
+ #app .review-card{padding:16px!important}
+ #app .review-card__game-layout{grid-template-columns:100px minmax(0,1fr)!important;gap:14px!important}
+ #app .review-card__cover-column,#app .review-card__cover-column .review-card__cover-wrap{width:100px!important}
+ #app .review-card__cover-column .review-card__cover-wrap{height:136px!important}
+ #app .review-card__game-layout .review-card__body h3{font-size:17px!important}
+ #app .review-card__game-meta{font-size:10px!important}
+ #app .review-card__details .review-card__stars{font-size:20px!important}
+}
+@media(max-width:360px){
+ #app .review-card__game-layout{grid-template-columns:86px minmax(0,1fr)!important;gap:11px!important}
+ #app .review-card__cover-column,#app .review-card__cover-column .review-card__cover-wrap{width:86px!important}
+ #app .review-card__cover-column .review-card__cover-wrap{height:120px!important}
+}
