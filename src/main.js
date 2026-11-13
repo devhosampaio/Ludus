@@ -624,8 +624,8 @@ async function renderSignedIn(user) {
         (review.liked_game ? '<span class="review-card__liked" aria-label="Gostei deste jogo" title="Gostei deste jogo"><svg class="ui-icon ui-icon--heart" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" stroke="none" d="M12 21s-8.8-5.9-8.8-12.2A4.8 4.8 0 0 1 12 6.4a4.8 4.8 0 0 1 8.8 2.4C20.8 15.1 12 21 12 21Z"></path></svg></span>' : '') +
         (review.status ? '<span class="review-card__status" aria-label="' + statusLabel(review.status) + '" title="' + statusLabel(review.status) + '">' + statusIconMarkup(review.status) + '</span>' : '') + '</div>';
       return '<article class="review-card" data-review-id="' + review.id + '">' +
+        (gameData.cover_url ? '<div class="review-card__backdrop" aria-hidden="true"><img src="' + escapeHTML(gameData.cover_url) + '" alt="" loading="lazy"></div>' : '') +
         '<div class="review-card__game-layout">' +
-          (gameData.cover_url ? '<div class="review-card__backdrop" aria-hidden="true"><img src="' + escapeHTML(gameData.cover_url) + '" alt="" loading="lazy"></div>' : '') +
           '<div class="review-card__cover-column">' + cover + '</div>' +
           '<div class="review-card__body">' + reviewAuthor + '<h3>' + escapeHTML(game.toLocaleUpperCase('pt-BR')) + '</h3>' +
           (gameMeta ? '<p class="review-card__game-meta">' + gameMeta + '</p>' : '') + reviewDetails + '</div>' +
