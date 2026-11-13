@@ -682,7 +682,7 @@ async function renderSignedIn(user) {
 
     const feedModeButtons = [...feedTabs.querySelectorAll('[data-feed-mode]')];
     const activeModeIndex = Math.max(0, feedModeButtons.findIndex((button) => button.dataset.feedMode === mode));
-    feedTabs.style.setProperty('--active-index', activeModeIndex);
+    feedTabs.style.setProperty('--active-offset', `${activeModeIndex * 100}%`);
     feedModeButtons.forEach((button) => {
       const active = button.dataset.feedMode === mode;
       button.classList.toggle('is-active', active);
