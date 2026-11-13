@@ -7436,3 +7436,36 @@ html body #app .auth-shell--split .auth-panel {
   #app .review-card__cover-column .review-card__cover-wrap,
   #app .review-card__game-layout>.review-card__cover-column .review-card__cover-wrap{width:52px!important;min-width:52px!important;max-width:52px!important;height:76px!important}
 }
+
+
+/* A capa das avaliações deve permanecer retangular, sem máscaras ou recortes arredondados. */
+#app .feed-list .review-card__game-layout .review-card__cover-column,
+#app .feed-list .review-card__game-layout .review-card__cover-wrap,
+#app .feed-list .review-card__game-layout .review-card__cover,
+#app .feed-list .review-card__game-layout .review-card__cover--empty {
+  border-radius: 0 !important;
+  clip-path: none !important;
+  -webkit-clip-path: none !important;
+  mask: none !important;
+  -webkit-mask: none !important;
+}
+#app .feed-list .review-card__game-layout .review-card__cover-column,
+#app .feed-list .review-card__game-layout .review-card__cover-wrap {
+  overflow: visible !important;
+  box-shadow: none !important;
+}
+#app .feed-list .review-card__game-layout .review-card__cover-wrap::before,
+#app .feed-list .review-card__game-layout .review-card__cover-wrap::after,
+#app .feed-list .review-card__game-layout .review-card__cover-column::before,
+#app .feed-list .review-card__game-layout .review-card__cover-column::after {
+  display: none !important;
+  content: none !important;
+}
+#app .feed-list .review-card__game-layout .review-card__cover {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  border: 0 !important;
+  object-fit: cover !important;
+  object-position: center !important;
+}
