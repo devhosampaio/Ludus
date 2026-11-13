@@ -20,7 +20,7 @@ function escapeHTML(value = '') {
 }
 
 function profilePlaceholderMarkup() {
-  return '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4.1"></circle><path d="M4.5 21a7.5 7.5 0 0 1 15 0"></path></svg>';
+  return '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.5" r="3.5"></circle><path d="M5 19.5c.6-3.6 3.1-5.6 7-5.6s6.4 2 7 5.6"></path></svg>';
 }
 
 function formatDate(value) {
