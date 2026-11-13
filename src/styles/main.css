@@ -8138,3 +8138,11 @@ html body #app .auth-shell--split .auth-panel {
     width:100%!important;
   }
 }
+
+
+/* Seção 1 — capas dos jogos ligeiramente maiores, sem alterar
+   o alinhamento dos nomes e das informações abaixo. */
+#app .newcomers-review__art{
+  width:106%!important;
+  margin-left:-3%!important;
+}
