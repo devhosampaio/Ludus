@@ -1577,7 +1577,7 @@ function renderAuth(mode = 'login') {
     '</section>',
     '<section class="auth-panel" aria-label="' + (isSignup ? 'Criar conta' : 'Entrar no Ludus') + '"><div class="auth-panel__inner">',
     '<nav class="auth-switch" aria-label="Acesso à conta"><button class="auth-switch__button ' + (!isSignup ? 'is-active' : '') + '" type="button" data-mode="login" ' + (!isSignup ? 'aria-current="page"' : '') + '>Entrar</button><button class="auth-switch__button ' + (isSignup ? 'is-active' : '') + '" type="button" data-mode="signup" ' + (isSignup ? 'aria-current="page"' : '') + '>Criar conta</button></nav>',
-    '<div class="auth-panel__heading">' + (isSignup ? '<p class="eyebrow">COMECE SUA JORNADA</p>' : ''),
+    '<div class="auth-panel__heading">',
     '<h2>' + (isSignup ? 'Crie sua conta.' : 'Entre no Ludus.') + '</h2>',
     '</div>',
 
