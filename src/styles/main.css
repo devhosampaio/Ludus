@@ -8125,3 +8125,16 @@ html body #app .auth-shell--split .auth-panel {
     width:100%!important;
   }
 }
+
+
+/* A lista salva continua disponível pelo marcador nas avaliações;
+   o destino Minha lista será definido em outra área do produto. */
+#app .feed-navigation .feed-tabs{
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+}
+@media(max-width:520px){
+  #app .feed-navigation .feed-tabs{
+    grid-template-columns:repeat(4,minmax(0,1fr))!important;
+    width:100%!important;
+  }
+}
