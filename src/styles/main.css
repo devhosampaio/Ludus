@@ -6770,7 +6770,6 @@ html body #app .auth-shell--split .auth-panel {
   -webkit-backdrop-filter:none!important;
   backdrop-filter:none!important;
 }
-#app .auth-shell,
 #app .feed-shell,
 #app .sidebar,
 #app .app-topbar,
@@ -6806,3 +6805,11 @@ html body #app .auth-shell--split .auth-panel {
   outline-offset:2px!important;
 }
 #app .notifications__item:hover{background-image:none!important;background-color:rgb(112 96 171 / 12%)!important}
+
+/* Acabamento flat arredondado para autenticação. */
+#app .auth-switch{border-radius:999px!important}
+#app .auth-switch__button{border-radius:999px!important}
+#app .field input,
+#app .password-field input{border-radius:999px!important}
+#app .password-toggle{border-radius:999px!important}
+#app .submit-button{border-radius:999px!important}
