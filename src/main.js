@@ -279,8 +279,8 @@ async function renderSignedIn(user) {
   const fallbackName = user.user_metadata?.display_name || user.email?.split('@')[0] || 'jogador';
   app.innerHTML = `
     <div class="feed-shell">
-      <header class="sidebar">
-        <a class="brand sidebar__brand" href="./" aria-label="Ludus início">L<span>.</span></a>
+      <header class="app-topbar">
+        <div class="app-topbar__content">
         <div class="header-actions">
           <div class="header-search">
             <button class="header-search__toggle" type="button" data-search-toggle aria-label="Abrir busca" aria-expanded="false" title="Buscar">
@@ -291,6 +291,10 @@ async function renderSignedIn(user) {
           </div>
           ${notificationControlMarkup()}
         </div>
+        </div>
+      </header>
+      <aside class="sidebar">
+        <a class="brand sidebar__brand" href="./" aria-label="Ludus início">L<span>.</span></a>
         <div class="sidebar__bottom">
           <details class="account-menu" data-account-details>
             <summary class="sidebar-user" data-account-menu>
@@ -306,7 +310,7 @@ async function renderSignedIn(user) {
             </div>
           </details>
         </div>
-      </header>
+      </aside>
       <main class="feed-main">
         <aside class="feed-ad feed-ad--left" aria-label="Espaço reservado para publicidade"></aside>
         <section class="feed-content" aria-label="Atividade da comunidade">
