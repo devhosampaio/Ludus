@@ -562,11 +562,12 @@ async function renderSignedIn(user) {
     counts[comment.review_id] = (counts[comment.review_id] || 0) + 1;
     return counts;
   }, {});
-  const { data: savedReviewRows, error: savedReviewsError } = await fetchAllPages(() => supabase
+  const { data: savedReviewRowsData, error: savedReviewsError } = await fetchAllPages(() => supabase
     .from('review_saves').select('review_id, created_at').eq('user_id', user.id).order('created_at', { ascending: false }));
   if (savedReviewsError) console.error('[Ludus] Falha ao carregar Minha lista:', savedReviewsError);
-  const savedReviewIds = new Set((savedReviewRows || []).map((saved) => saved.review_id));
-  const savedAtByReview = new Map((savedReviewRows || []).map((saved) => [saved.review_id, saved.created_at]));
+  const savedReviewRows = savedReviewRowsData || [];
+  const savedReviewIds = new Set(savedReviewRows.map((saved) => saved.review_id));
+  const savedAtByReview = new Map(savedReviewRows.map((saved) => [saved.review_id, saved.created_at]));
   const { data: saveCountRows, error: saveCountsError } = reviewIds.length
     ? await supabase.rpc('get_review_save_counts', { p_review_ids: reviewIds })
     : { data: [], error: null };
