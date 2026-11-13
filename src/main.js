@@ -332,8 +332,8 @@ async function renderSignedIn(user) {
           <p>A página inicial vai se adaptando conforme você segue novos jogadores no Ludus.</p>
         </section>
         <section class="newcomers-section" aria-labelledby="newcomers-title">
-          <div class="newcomers-section__heading">
-            <h2 id="newcomers-title">NOVOS NO LUDUS</h2>
+          <div class="newcomers-section__heading feed-section-heading">
+            <h2 class="feed-section-heading__title" id="newcomers-title">NOVOS NO LUDUS</h2>
           </div>
           <div class="newcomers-list" data-newcomers-list>
             <div class="newcomers-list__loading">Descobrindo novas histórias…</div>
@@ -341,7 +341,7 @@ async function renderSignedIn(user) {
         </section>
         <nav class="feed-navigation" aria-label="Navegação do feed"><div class="feed-tabs" role="tablist" aria-label="Navegação do feed"><button class="feed-tabs__button is-active" type="button" role="tab" aria-selected="true" data-feed-mode="home">Início</button><button class="feed-tabs__button" type="button" role="tab" aria-selected="false" data-feed-mode="popular">Para você</button><button class="feed-tabs__button" type="button" role="tab" aria-selected="false" data-feed-mode="following">Seguindo</button><button class="feed-tabs__button" type="button" role="tab" aria-selected="false" data-feed-mode="recent">Recentes</button></div></nav>
         <section class="feed-content" aria-label="Atividade da comunidade">
-          <div class="section-heading"><div class="feed-heading__inner"><h2 data-feed-title>Para você</h2></div></div>
+          <div class="section-heading feed-section-heading"><div class="feed-heading__inner"><h2 class="feed-section-heading__title" data-feed-title>Para você</h2></div></div>
           <div class="feed-list" data-feed-list><div class="feed-loading">Carregando as histórias da comunidade…</div></div>
         </section>
         <aside class="feed-ad feed-ad--right" aria-label="Espaço reservado para publicidade"></aside>
