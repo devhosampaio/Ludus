@@ -46,7 +46,7 @@ function statusIconMarkup(status) {
   const icons = {
     completed: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 3.5h8v3a4 4 0 0 1-8 0v-3ZM8 5.5H4v2a4 4 0 0 0 4 4m8-6h4v2a4 4 0 0 1-4 4m-4 0v3.5m-4 4h8m-6-4h4v4H8z" fill="currentColor" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
     playing: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 6h10a4 4 0 0 1 3.9 3.1l1.4 6.1a2.8 2.8 0 0 1-4.7 2.6l-2.2-2.1H8.6l-2.2 2.1a2.8 2.8 0 0 1-4.7-2.6l1.4-6.1A4 4 0 0 1 7 6Zm1.2 2.5v4m-2-2h4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>',
-    abandoned: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="15.5" cy="4.5" r="2" fill="currentColor"/><path d="m12 8 3-1 2 3 3 1m-8-3-3 4-3 1m6-5 2 4-2 4m-4-3-2 5m8-6 4 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+    abandoned: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="m8.5 8.5 7 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>'
   };
   return icons[status] || '';
 }
