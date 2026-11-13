@@ -8046,3 +8046,35 @@ html body #app .auth-shell--split .auth-panel {
   break-inside:avoid!important;
   -webkit-column-break-inside:avoid!important;
 }
+
+
+/* Minha lista: navegação e estado visual de avaliações salvas. */
+#app .feed-navigation .feed-tabs{
+  grid-template-columns:repeat(5,minmax(0,1fr))!important;
+  width:min(100%,620px)!important;
+}
+#app .review-card__actions .review-card__bookmark{
+  width:auto!important;
+  min-width:32px!important;
+  gap:5px!important;
+}
+#app .review-card__actions .review-card__bookmark .review-card__save-count{
+  color:#bdb5ce!important;
+  font:400 10px/1 'DM Mono',monospace!important;
+}
+#app .review-card__actions .review-card__bookmark:not(.is-saved) .ui-icon--bookmark path{
+  fill:none!important;
+}
+#app .review-card__actions .review-card__bookmark.is-saved,
+#app .review-card__actions .review-card__bookmark.is-saved .review-card__save-count{
+  color:#d96c55!important;
+}
+#app .review-card__actions .review-card__bookmark.is-saved .ui-icon--bookmark path{
+  fill:currentColor!important;
+}
+@media(max-width:520px){
+  #app .feed-navigation .feed-tabs{
+    grid-template-columns:repeat(5,minmax(76px,1fr))!important;
+    width:100%!important;
+  }
+}
