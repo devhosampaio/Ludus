@@ -7688,3 +7688,58 @@ html body #app .auth-shell--split .auth-panel {
   #app .newcomers-review{flex-basis:112px!important;width:112px!important}
   #app .newcomers-review__avatar{width:50px!important;height:50px!important;bottom:-17px!important}
 }
+
+
+/* Feed Para você: capas maiores, sombra projetada e identificação de títulos homônimos. */
+#app .feed-list .review-card__game-layout{
+  grid-template-columns:66px minmax(0,1fr)!important;
+}
+#app .feed-list .review-card__game-layout>.review-card__cover-column,
+#app .feed-list .review-card__game-layout .review-card__cover-column{
+  width:66px!important;
+  min-width:66px!important;
+  max-width:66px!important;
+}
+#app .feed-list .review-card__game-layout .review-card__cover-wrap{
+  width:66px!important;
+  min-width:66px!important;
+  max-width:66px!important;
+  height:96px!important;
+  box-shadow:0 7px 14px rgb(0 0 0 / 38%)!important;
+}
+#app .feed-list .review-card__game-layout .review-card__cover{
+  filter:drop-shadow(0 4px 6px rgb(0 0 0 / 24%))!important;
+}
+#app .feed-list .review-card__game-heading{
+  display:flex!important;
+  align-items:baseline!important;
+  flex-wrap:wrap!important;
+  gap:6px!important;
+  text-shadow:0 2px 7px rgb(0 0 0 / 42%)!important;
+}
+#app .feed-list .review-card__game-title,
+#app .feed-list .review-card__game-year{
+  font:inherit!important;
+  text-shadow:inherit!important;
+}
+#app .feed-list .review-card__game-year{
+  color:#aaa1bb!important;
+  font-weight:300!important;
+}
+@media(max-width:520px){
+  #app .feed-list .review-card__game-layout{
+    grid-template-columns:60px minmax(0,1fr)!important;
+  }
+  #app .feed-list .review-card__game-layout>.review-card__cover-column,
+  #app .feed-list .review-card__game-layout .review-card__cover-column{
+    width:60px!important;
+    min-width:60px!important;
+    max-width:60px!important;
+  }
+  #app .feed-list .review-card__game-layout .review-card__cover-wrap{
+    width:60px!important;
+    min-width:60px!important;
+    max-width:60px!important;
+    height:88px!important;
+  }
+}
