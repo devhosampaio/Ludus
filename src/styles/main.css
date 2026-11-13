@@ -8417,3 +8417,71 @@ html body #app .auth-shell--split .auth-panel {
     height:24px!important;
   }
 }
+
+
+/* Filtros do feed centralizados com indicador deslizante entre as opções. */
+#app .feed-main>.feed-navigation{
+  display:flex!important;
+  justify-content:center!important;
+  align-items:center!important;
+}
+#app .feed-main>.feed-navigation .feed-tabs{
+  position:relative!important;
+  isolation:isolate!important;
+  display:grid!important;
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  width:min(100%,540px)!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+  overflow:hidden!important;
+  background:#211e2b!important;
+  border:1px solid rgb(232 223 206 / 12%)!important;
+  border-radius:999px!important;
+}
+#app .feed-main>.feed-navigation .feed-tabs::before{
+  content:""!important;
+  position:absolute!important;
+  z-index:0!important;
+  top:4px!important;
+  bottom:4px!important;
+  left:4px!important;
+  width:calc((100% - 8px) / 4)!important;
+  border-radius:999px!important;
+  background:#f5f0e6!important;
+  transform:translateX(calc(var(--active-index,0) * 100%))!important;
+  transition:transform .38s cubic-bezier(.22,.8,.25,1)!important;
+  pointer-events:none!important;
+}
+#app .feed-main>.feed-navigation .feed-tabs__button{
+  position:relative!important;
+  z-index:1!important;
+  min-width:0!important;
+  padding:11px 12px!important;
+  border:0!important;
+  border-radius:999px!important;
+  background:transparent!important;
+  color:#aaa3b5!important;
+  transition:color .24s ease,transform .24s ease!important;
+}
+#app .feed-main>.feed-navigation .feed-tabs__button.is-active{
+  background:transparent!important;
+  color:#302c3d!important;
+}
+#app .feed-main>.feed-navigation .feed-tabs__button:active{
+  transform:scale(.96)!important;
+}
+@media(max-width:520px){
+  #app .feed-main>.feed-navigation .feed-tabs{
+    width:min(100%,540px)!important;
+  }
+  #app .feed-main>.feed-navigation .feed-tabs__button{
+    padding:10px 4px!important;
+    font-size:11px!important;
+  }
+}
+@media(prefers-reduced-motion:reduce){
+  #app .feed-main>.feed-navigation .feed-tabs::before,
+  #app .feed-main>.feed-navigation .feed-tabs__button{
+    transition:none!important;
+  }
+}
