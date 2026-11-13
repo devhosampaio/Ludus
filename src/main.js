@@ -93,7 +93,7 @@ async function setupNotifications(user) {
 
   const refresh = async () => {
     const { data, error } = await supabase.from('notifications')
-      .select('id, type, actor_id, review_id, created_at, read_at, profiles!notifications_actor_id_fkey(username, display_name)')
+      .select('id, type, actor_id, review_id, created_at, read_at, profiles!notifications_actor_id_fkey(username, display_name, avatar_url)')
       .order('created_at', { ascending: false })
       .limit(30);
 
@@ -121,13 +121,31 @@ async function setupNotifications(user) {
         : item.type === 'review_commented'
           ? 'comentou sua avaliação.'
           : 'começou a seguir você.';
-      return '<button class="notifications__item' + (item.read_at ? '' : ' is-unread') + '" type="button" data-notification-id="' + item.id + '" data-notification-type="' + item.type + '" data-review-id="' + (item.review_id || '') + '" data-actor-username="' + escapeHTML(username) + '">' +
-        '<span class="notifications__item-dot" aria-hidden="true"></span><span class="notifications__item-content"><span><strong>' + escapeHTML(actor) + '</strong> ' + message + '</span><time>' + formatDate(item.created_at) + '</time></span></button>';
+      const avatar = item.profiles?.avatar_url
+        ? '<img src="' + escapeHTML(item.profiles.avatar_url) + '" alt="">'
+        : profilePlaceholderMarkup();
+      return '<div class="notifications__item-row"><button class="notifications__item' + (item.read_at ? '' : ' is-unread') + '" type="button" data-notification-id="' + item.id + '" data-notification-type="' + item.type + '" data-review-id="' + (item.review_id || '') + '" data-actor-username="' + escapeHTML(username) + '">' +
+        '<span class="notifications__avatar" aria-hidden="true">' + avatar + '</span><span class="notifications__item-content"><span><strong>' + escapeHTML(actor) + '</strong> ' + message + '</span><time>' + formatDate(item.created_at) + '</time></span></button>' +
+        '<button class="notifications__delete" type="button" data-delete-notification="' + item.id + '" aria-label="Excluir notificação" title="Excluir notificação">×</button></div>';
     }).join('');
   };
   root._refreshNotifications = refresh;
 
   root.addEventListener('click', async (event) => {
+    const deleteButton = event.target.closest('[data-delete-notification]');
+    if (deleteButton) {
+      deleteButton.disabled = true;
+      const { error } = await supabase.from('notifications').delete()
+        .eq('id', deleteButton.dataset.deleteNotification).eq('recipient_id', user.id);
+      if (error) {
+        console.error('[Ludus] Falha ao excluir notificação:', error);
+        deleteButton.disabled = false;
+        return;
+      }
+      await refresh();
+      return;
+    }
+
     const readAll = event.target.closest('[data-notifications-read-all]');
     if (readAll) {
       readAll.disabled = true;

@@ -6813,3 +6813,108 @@ html body #app .auth-shell--split .auth-panel {
 #app .password-field input{border-radius:999px!important}
 #app .password-toggle{border-radius:999px!important}
 #app .submit-button{border-radius:999px!important}
+
+/* Refinamentos apontados no navegador. */
+#app .app-topbar .header-search__toggle,
+#app .app-topbar .header-search__toggle:hover,
+#app .app-topbar .header-search__toggle:focus-visible{
+  border-radius:50%!important;
+}
+#app .app-topbar .header-search.is-open:focus-within{
+  border-radius:999px!important;
+  outline:2px solid #a99be0!important;
+  outline-offset:2px!important;
+}
+#app .app-topbar .header-search input:focus,
+#app .app-topbar .header-search input:focus-visible{outline:none!important}
+#app .feed-shell>.feed-main{
+  max-width:950px!important;
+  box-sizing:border-box!important;
+  padding-left:0!important;
+  padding-right:0!important;
+}
+#app .feed-list{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  align-items:start!important;
+  justify-items:center!important;
+  gap:16px!important;
+}
+#app .feed-tabs{border-radius:999px!important}
+#app .feed-tabs__button{border-radius:999px!important}
+#app .review-card__game-layout{
+  grid-template-columns:64px 355px minmax(0,1fr)!important;
+  grid-template-areas:"cover title ."!important;
+  gap:12px!important;
+}
+#app .review-card__cover-column,
+#app .review-card__game-layout>.review-card__cover-column{width:64px!important;min-width:64px!important}
+#app .review-card__cover-column .review-card__cover-wrap{
+  width:64px!important;min-width:64px!important;max-width:64px!important;
+  height:94px!important;
+}
+#app .review-card__cover-column .review-card__cover{object-fit:contain!important}
+#app .review-card__body{width:355px!important;max-width:100%!important}
+#app .notifications__panel{background:#302c3d!important;color:#f5f0e6!important}
+#app .notifications__header{
+  background:#302c3d!important;
+  color:#f5f0e6!important;
+  border-bottom:1px solid rgb(201 191 176 / 20%)!important;
+}
+#app .notifications__header strong{color:#f5f0e6!important}
+#app .notifications__header button{color:#c3b4ff!important}
+#app .notifications__item-row{
+  display:flex!important;
+  align-items:center!important;
+  border-bottom:1px solid rgb(201 191 176 / 14%)!important;
+}
+#app .notifications__item-row .notifications__item{
+  flex:1 1 auto!important;
+  min-width:0!important;
+  border:0!important;
+  background:transparent!important;
+  color:#c9bfb0!important;
+}
+#app .notifications__item-row .notifications__item:hover,
+#app .notifications__item-row .notifications__item.is-unread{background:rgb(112 96 171 / 12%)!important}
+#app .notifications__avatar{
+  display:grid!important;
+  width:34px!important;
+  height:34px!important;
+  flex:0 0 34px!important;
+  place-items:center!important;
+  overflow:hidden!important;
+  border-radius:50%!important;
+  background:#454052!important;
+}
+#app .notifications__avatar img{width:100%!important;height:100%!important;object-fit:cover!important}
+#app .notifications__avatar svg{width:70%!important;height:70%!important;fill:none!important;stroke:#c9bfb0!important;stroke-width:1.5!important}
+#app .notifications__delete{
+  width:32px!important;
+  height:32px!important;
+  flex:0 0 32px!important;
+  margin-right:8px!important;
+  border:0!important;
+  border-radius:50%!important;
+  background:transparent!important;
+  color:#aaa3b2!important;
+  font-size:20px!important;
+}
+#app .notifications__delete:hover{background:rgb(239 83 96 / 14%)!important;color:#ff7780!important}
+#app .review-card__social-actions .ui-icon,
+#app .review-card__social-actions .ui-icon--bookmark{
+  width:24px!important;
+  height:24px!important;
+  flex:0 0 24px!important;
+}
+#app .review-card__social-actions .ui-icon--bookmark{transform:scale(1.12)!important}
+@media(max-width:999px){
+  #app .feed-list{grid-template-columns:minmax(0,1fr)!important}
+}
+@media(max-width:520px){
+  #app .feed-shell>.feed-main{padding-left:10px!important;padding-right:10px!important}
+  #app .review-card__game-layout{
+    grid-template-columns:64px minmax(0,1fr)!important;
+    grid-template-areas:"cover title"!important;
+  }
+  #app .review-card__body{width:auto!important}
+}
