@@ -5629,3 +5629,86 @@ html body #app .auth-shell--split .auth-panel {
 @media (max-width: 360px) {
   #app .review-card__game-layout { grid-template-columns: minmax(0, 1fr) 94px !important; }
 }
+
+
+/* Correção estrutural do feed: cards em grid real, sem CSS multicolunas.
+   As colunas do masonry estavam comprimindo os elementos internos dos cards. */
+#app .feed-list {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  align-items: start !important;
+  column-count: initial !important;
+  columns: initial !important;
+  column-gap: 20px !important;
+  row-gap: 20px !important;
+  width: 100% !important;
+}
+#app .review-card {
+  display: block !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+  margin: 0 !important;
+  break-inside: auto !important;
+  -webkit-column-break-inside: auto !important;
+}
+#app .review-card__header,
+#app .review-card__game-layout,
+#app .review-card__text-wrap,
+#app .review-card__actions {
+  min-width: 0 !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
+}
+#app .review-card__game-layout {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) 132px !important;
+  align-items: start !important;
+  gap: 16px !important;
+  width: 100% !important;
+}
+#app .review-card__game-layout > .review-card__body {
+  grid-column: 1 !important;
+  grid-row: 1 !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  overflow-wrap: anywhere;
+}
+#app .review-card__game-layout > .review-card__cover-column {
+  grid-column: 2 !important;
+  grid-row: 1 !important;
+  width: 100% !important;
+  min-width: 0 !important;
+}
+#app .review-card__game-layout .review-card__cover-wrap,
+#app .review-card__game-layout .review-card__cover {
+  display: block;
+  width: 100% !important;
+  height: auto !important;
+  max-width: 100% !important;
+}
+#app .review-card__text-wrap,
+#app .review-card__text {
+  width: 100% !important;
+  max-width: 100% !important;
+  overflow-wrap: anywhere;
+}
+@media (max-width: 999px) {
+  #app .feed-list {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+}
+@media (max-width: 560px) {
+  #app .review-card__game-layout {
+    grid-template-columns: minmax(0, 1fr) 108px !important;
+    gap: 13px !important;
+  }
+}
+@media (max-width: 360px) {
+  #app .review-card__game-layout {
+    grid-template-columns: minmax(0, 1fr) 94px !important;
+    gap: 10px !important;
+  }
+}
