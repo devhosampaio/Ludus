@@ -7373,3 +7373,66 @@ html body #app .auth-shell--split .auth-panel {
 @media(max-width:520px){
   #app .review-card__details .review-card__status{font-size:10px!important}
 }
+
+
+/* Refinos de avatar no topo e identificação das avaliações. */
+#app .review-card__body .review-card__author-name{
+  font-size:10px!important;
+}
+#app .app-topbar .sidebar-user__avatar{
+  display:grid!important;
+  width:24px!important;
+  height:24px!important;
+  min-width:24px!important;
+  max-width:24px!important;
+  flex:0 0 24px!important;
+  padding:0!important;
+  border:0!important;
+  outline:0!important;
+  border-radius:50%!important;
+  overflow:hidden!important;
+  box-shadow:none!important;
+  background:#777783!important;
+}
+#app .app-topbar .sidebar-user__avatar img{
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  border:0!important;
+  outline:0!important;
+  border-radius:50%!important;
+  object-fit:cover!important;
+}
+#app .app-topbar .sidebar-user__avatar:focus,
+#app .app-topbar .sidebar-user__avatar:focus-visible{
+  outline:0!important;
+  box-shadow:none!important;
+}
+#app .review-card__game-layout{
+  grid-template-columns:56px minmax(0,1fr)!important;
+}
+#app .review-card__cover-column,
+#app .review-card__game-layout>.review-card__cover-column{
+  width:56px!important;
+  min-width:56px!important;
+  max-width:56px!important;
+}
+#app .review-card__cover-column .review-card__cover-wrap,
+#app .review-card__game-layout>.review-card__cover-column .review-card__cover-wrap{
+  width:56px!important;
+  min-width:56px!important;
+  max-width:56px!important;
+  height:82px!important;
+  border-radius:0!important;
+}
+#app .review-card__cover-column .review-card__cover,
+#app .review-card__cover{
+  border-radius:0!important;
+}
+@media(max-width:520px){
+  #app .review-card__game-layout{grid-template-columns:52px minmax(0,1fr)!important}
+  #app .review-card__cover-column,
+  #app .review-card__game-layout>.review-card__cover-column{width:52px!important;min-width:52px!important;max-width:52px!important}
+  #app .review-card__cover-column .review-card__cover-wrap,
+  #app .review-card__game-layout>.review-card__cover-column .review-card__cover-wrap{width:52px!important;min-width:52px!important;max-width:52px!important;height:76px!important}
+}
