@@ -680,7 +680,10 @@ async function renderSignedIn(user) {
       ? 'Para você'
       : (activeTab?.textContent.trim() || 'Avaliações');
 
-    feedTabs.querySelectorAll('[data-feed-mode]').forEach((button) => {
+    const feedModeButtons = [...feedTabs.querySelectorAll('[data-feed-mode]')];
+    const activeModeIndex = Math.max(0, feedModeButtons.findIndex((button) => button.dataset.feedMode === mode));
+    feedTabs.style.setProperty('--active-index', activeModeIndex);
+    feedModeButtons.forEach((button) => {
       const active = button.dataset.feedMode === mode;
       button.classList.toggle('is-active', active);
       button.setAttribute('aria-selected', String(active));
