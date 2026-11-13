@@ -5246,3 +5246,37 @@ html body #app .auth-shell--split .auth-panel {
 .header-search__result:active { transform: translateY(1px); }
 .header-search__game-banner { box-shadow: inset -2px 0 5px rgb(0 0 0 / 25%); }
 
+
+
+/* Feed: ação posicionada abaixo do nome do autor */
+.review-card__header .review-card__meta {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  justify-content: flex-start !important;
+  gap: 2px !important;
+}
+.review-card__header .review-card__author {
+  font-weight: 800 !important;
+}
+.review-card__header .review-card__author-name {
+  font-weight: 800 !important;
+}
+.review-card__header .review-card__activity {
+  display: block !important;
+  margin: 0 0 0 37px !important;
+  font-size: 12px;
+  line-height: 1.35;
+}
+.review-card__header .review-card__activity em {
+  font-style: italic !important;
+}
+.review-card__header .review-card__activity strong {
+  font-weight: 800 !important;
+}
+@media (max-width: 420px) {
+  .review-card__header .review-card__activity {
+    margin-left: 34px !important;
+    font-size: 11px;
+  }
+}
