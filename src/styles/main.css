@@ -5515,3 +5515,29 @@ html body #app .auth-shell--split .auth-panel {
 @media (max-width: 360px) {
   #app .review-card__game-layout { grid-template-columns: minmax(0, 1fr) 82px !important; gap: 10px !important; }
 }
+
+
+/* Cabeçalho: autor e tempo na primeira linha; ação logo abaixo */
+#app .review-card__header .review-card__meta {
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 3px !important;
+}
+#app .review-card__author-line {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+#app .review-card__header .review-card__activity {
+  display: block !important;
+  margin: 0 0 0 45px !important;
+  color: #aaa4b3;
+  font-size: 11px;
+  line-height: 1.35;
+}
+#app .review-card__header .review-card__activity em { font-style: italic !important; }
+#app .review-card__header .review-card__activity strong { color: #e1dce6; font-weight: 700; }
+@media (max-width: 560px) {
+  #app .review-card__header .review-card__activity { margin-left: 43px !important; }
+}
