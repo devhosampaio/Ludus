@@ -8485,3 +8485,32 @@ html body #app .auth-shell--split .auth-panel {
     transition:none!important;
   }
 }
+
+
+/* No mobile, o perfil acompanha as ações do header e fica após as notificações. */
+@media(max-width:760px){
+  #app .app-topbar__content{
+    justify-content:flex-start!important;
+  }
+  #app .app-topbar .topbar__brand{
+    order:1!important;
+    flex:0 0 auto!important;
+  }
+  #app .app-topbar .header-actions{
+    order:2!important;
+    margin-left:auto!important;
+    margin-right:0!important;
+  }
+  #app .app-topbar .account-menu{
+    order:3!important;
+    flex:0 0 auto!important;
+    margin-left:10px!important;
+  }
+  #app .app-topbar .sidebar-user{
+    justify-content:center!important;
+    padding:0!important;
+  }
+}
+@media(max-width:520px){
+  #app .app-topbar .account-menu{margin-left:6px!important}
+}
