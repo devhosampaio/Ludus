@@ -7844,10 +7844,28 @@ html body #app .auth-shell--split .auth-panel {
 
 
 /* Boas-vindas antes da primeira seção do feed. */
+/* Início ocupa uma única coluna; a coluna de avaliações mantém seu próprio limite. */
+#app .feed-shell>.feed-main{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:stretch!important;
+}
+#app .feed-shell>.feed-main>.feed-welcome,
+#app .feed-shell>.feed-main>.newcomers-section{
+  width:100%!important;
+  max-width:none!important;
+  grid-column:1/-1!important;
+}
+#app .feed-shell>.feed-main>.feed-content{
+  width:100%!important;
+  max-width:850px!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+}
 #app .feed-welcome{
   width:100%!important;
-  max-width:1120px!important;
-  margin:0 auto 34px!important;
+  max-width:none!important;
+  margin:0 0 34px!important;
   padding:0!important;
 }
 #app .feed-welcome h1{
@@ -7875,5 +7893,16 @@ html body #app .auth-shell--split .auth-panel {
 #app .feed-list .review-card__game-layout .review-card__cover-wrap::after{
   box-shadow:none!important;
   content:none!important;
+  display:none!important;
+}
+
+
+/* Navegação do feed: quatro destinos, com Início como tela inicial. */
+#app .feed-tabs{
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+}
+#app .feed-welcome[hidden],
+#app .newcomers-section[hidden],
+#app .feed-content[hidden]{
   display:none!important;
 }
