@@ -801,7 +801,7 @@ async function renderSignedIn(user) {
       return;
     }
     const button = event.target.closest('[data-like-review]');
-    if (!button || button.disabled) return;
+    if (!button || button.dataset.likePending === 'true') return;
     const card = button.closest('[data-review-id]');
     const reviewId = card?.dataset.reviewId;
     if (!reviewId) return;
@@ -814,8 +814,7 @@ async function renderSignedIn(user) {
     button.setAttribute('aria-pressed', String(nextLiked));
     button.classList.toggle('is-liked', nextLiked);
     count.textContent = String(nextLikeCount);
-    button.disabled = true;
-    button.setAttribute('aria-busy', 'true');
+    button.dataset.likePending = 'true';
     const controller = new AbortController();
     const timeoutId = window.setTimeout(() => controller.abort(), 10000);
     try {
@@ -835,8 +834,7 @@ async function renderSignedIn(user) {
       }
     } finally {
       window.clearTimeout(timeoutId);
-      button.disabled = false;
-      button.removeAttribute('aria-busy');
+      delete button.dataset.likePending;
     }
   });
 }
