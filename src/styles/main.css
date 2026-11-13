@@ -8291,3 +8291,14 @@ html body #app .auth-shell--split .auth-panel {
     margin-left:0!important;
   }
 }
+
+
+/* Dar um pouco mais de respiro entre o cabeçalho e as boas-vindas. */
+#app .feed-shell>.feed-main{
+  padding-top:28px!important;
+}
+@media(max-width:760px){
+  #app .feed-shell>.feed-main{
+    padding-top:22px!important;
+  }
+}
