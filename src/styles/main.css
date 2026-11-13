@@ -8146,3 +8146,18 @@ html body #app .auth-shell--split .auth-panel {
   width:106%!important;
   margin-left:-3%!important;
 }
+
+
+
+/* Alinhamento final do feed: boas-vindas, seção de novidades,
+   navegação e avaliações compartilham exatamente o mesmo eixo. */
+#app .feed-shell>.feed-main>.feed-welcome,
+#app .feed-shell>.feed-main>.newcomers-section,
+#app .feed-shell>.feed-main>.feed-navigation,
+#app .feed-shell>.feed-main>.feed-content{
+  width:min(980px,100%)!important;
+  max-width:980px!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+  box-sizing:border-box!important;
+}
