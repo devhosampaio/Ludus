@@ -8761,3 +8761,29 @@ html body #app .auth-shell--split .auth-panel {
   #app .app-topbar .header-search__toggle{width:36px!important;min-width:36px!important;max-width:36px!important}
   #app .app-topbar .notifications__trigger{width:34px!important;height:36px!important}
 }
+
+
+/* A conta ocupa a última coluna, depois de busca e notificações. */
+#app .app-topbar__content{
+  grid-template-columns:minmax(120px,170px) minmax(320px,1fr) auto auto!important;
+}
+#app .app-topbar .header-actions{grid-column:3!important}
+#app .app-topbar .account-menu{grid-column:4!important;grid-row:1!important}
+@media(max-width:900px){
+  #app .app-topbar__content{
+    grid-template-columns:minmax(76px,110px) minmax(260px,1fr) auto auto!important;
+  }
+}
+@media(max-width:760px){
+  #app .app-topbar__content{
+    grid-template-columns:minmax(0,1fr) auto auto!important;
+  }
+  #app .app-topbar .header-actions{
+    grid-column:2!important;
+    grid-row:1!important;
+  }
+  #app .app-topbar .account-menu{
+    grid-column:3!important;
+    grid-row:1!important;
+  }
+}
