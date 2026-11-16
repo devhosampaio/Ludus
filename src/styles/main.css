@@ -8634,3 +8634,113 @@ html body #app .auth-shell--split .auth-panel {
 #app button {
   font-family:'Inter',sans-serif!important;
 }
+
+
+/* Hierarquia tipográfica — Inter com pesos e escalas consistentes. */
+#app{
+  font-size:14px!important;
+  line-height:1.55!important;
+  font-weight:400!important;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+#app h1,
+#app h2,
+#app h3,
+#app h4,
+#app h5,
+#app h6{
+  font-family:'Inter',sans-serif!important;
+  font-weight:700!important;
+  letter-spacing:-.035em!important;
+  line-height:1.2!important;
+}
+#app .feed-welcome h2{
+  font-size:clamp(30px,3.6vw,44px)!important;
+  font-weight:700!important;
+  line-height:1.08!important;
+  letter-spacing:-.055em!important;
+}
+#app .feed-section-heading__title,
+#app .feed-section-heading h2,
+#app .section-heading h2,
+#app .profile-page__section-heading h2{
+  font-size:20px!important;
+  font-weight:700!important;
+  line-height:1.25!important;
+  letter-spacing:-.035em!important;
+}
+#app .review-card__game-layout>.review-card__body h3,
+#app .review-card__body h3,
+#app .review-detail__content h1{
+  font-size:clamp(18px,1.8vw,23px)!important;
+  font-weight:700!important;
+  line-height:1.25!important;
+  letter-spacing:-.035em!important;
+}
+#app .composer h2,
+#app .profile-editor__title,
+#app .terms-modal__dialog h3{
+  font-size:clamp(23px,2.4vw,29px)!important;
+  font-weight:700!important;
+  line-height:1.2!important;
+  letter-spacing:-.04em!important;
+}
+#app .profile-page__heading h1{
+  font-size:28px!important;
+  font-weight:700!important;
+  line-height:1.2!important;
+  letter-spacing:-.04em!important;
+}
+#app .review-card__text,
+#app .review-detail__body{
+  font-family:'Inter',sans-serif!important;
+  font-size:14px!important;
+  font-weight:400!important;
+  line-height:1.75!important;
+  letter-spacing:0!important;
+}
+#app .feed-welcome p,
+#app .profile-page__bio{
+  font-size:13px!important;
+  font-weight:400!important;
+  line-height:1.65!important;
+}
+#app button,
+#app .button,
+#app input,
+#app select,
+#app textarea{
+  font-family:'Inter',sans-serif!important;
+  font-size:13px;
+}
+#app .eyebrow,
+#app .section-heading__index,
+#app .review-card__year,
+#app .review-card__like-count,
+#app .notifications__item-content time{
+  font-size:10px!important;
+  font-weight:600!important;
+  letter-spacing:.035em!important;
+}
+#app .review-card__game-meta,
+#app .review-card__details,
+#app .newcomers-review__username{
+  font-size:12px!important;
+  font-weight:500!important;
+  line-height:1.5!important;
+}
+#app .sidebar__label,
+#app .feed-topbar__mark,
+#app .feed-empty__note{
+  font-size:10px!important;
+  font-weight:600!important;
+  letter-spacing:.08em!important;
+}
+@media(max-width:760px){
+  #app .feed-welcome h2{font-size:clamp(28px,7vw,36px)!important}
+  #app .profile-page__heading h1{font-size:23px!important}
+  #app .section-heading h2,
+  #app .feed-section-heading__title,
+  #app .feed-section-heading h2{font-size:18px!important}
+}
