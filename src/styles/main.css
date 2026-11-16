@@ -8744,3 +8744,9 @@ html body #app .auth-shell--split .auth-panel {
   #app .feed-section-heading__title,
   #app .feed-section-heading h2{font-size:18px!important}
 }
+
+
+/* Cor solicitada para o fundo do cabeçalho. */
+#app .feed-shell>.app-topbar{
+  background-color:#212121!important;
+}
