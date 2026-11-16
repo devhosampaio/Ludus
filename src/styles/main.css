@@ -8790,3 +8790,62 @@ body,
     font-size:18px!important;
   }
 }
+
+
+/* Ajustes tipográficos solicitados para cabeçalho, feed e cards de avaliações. */
+#app .app-topbar .sidebar-user__identity strong{
+  font-size:16px!important;
+}
+@media(max-width:760px){
+  #app .app-topbar .sidebar-user__identity strong{
+    font-size:16px!important;
+  }
+}
+
+/* Página inicial e feed. */
+#app .feed-main>.feed-welcome h1{
+  font-size:24px!important;
+  line-height:1.25!important;
+}
+#app .feed-main>.feed-welcome>p{
+  font-size:16px!important;
+  line-height:1.5!important;
+}
+#app .feed-section-heading__title,
+#app .feed-section-heading h2,
+#app .section-heading h2{
+  font-size:16px!important;
+  line-height:1.3!important;
+}
+#app .newcomers-review__username{
+  font-size:14px!important;
+  line-height:1.4!important;
+}
+
+/* Cards de avaliações. */
+#app .review-card__author-name{
+  font-size:14px!important;
+  line-height:1.4!important;
+}
+#app .review-card__posted-at{
+  font-size:14px!important;
+  line-height:1.4!important;
+}
+#app .review-card__text{
+  font-size:16px!important;
+  line-height:1.65!important;
+}
+#app .review-card__stars{
+  font-size:16px!important;
+  line-height:1!important;
+}
+#app .review-card__status,
+#app .review-card__status-label{
+  font-size:16px!important;
+  line-height:1.3!important;
+}
+#app .review-card__like-count,
+#app .review-card__comment-count{
+  font-size:16px!important;
+  line-height:1.3!important;
+}
