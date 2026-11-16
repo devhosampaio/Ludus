@@ -8750,3 +8750,17 @@ html body #app .auth-shell--split .auth-panel {
 #app .feed-shell>.app-topbar{
   background-color:#212121!important;
 }
+
+
+/* Fundo principal do site em preto suave, mantendo cards e superfícies intactos. */
+:root{
+  --color-bg:#212121!important;
+  background-color:#212121!important;
+}
+html,
+body,
+#app,
+#app .feed-shell,
+#app .feed-shell>.feed-main{
+  background-color:#212121!important;
+}
