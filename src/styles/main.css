@@ -8570,3 +8570,54 @@ html body #app .auth-shell--split .auth-panel {
     padding:22px 22px max(18px,env(safe-area-inset-bottom))!important;
   }
 }
+
+
+/* Aproveitar melhor a largura da tela, reduzindo as margens laterais do feed. */
+#app .app-topbar__content{
+  width:100%!important;
+  max-width:none!important;
+  margin-left:0!important;
+  margin-right:0!important;
+  padding-left:clamp(16px,2.2vw,32px)!important;
+  padding-right:clamp(16px,2.2vw,32px)!important;
+}
+#app .feed-shell>.feed-main{
+  width:100%!important;
+  max-width:none!important;
+  margin-left:0!important;
+  margin-right:0!important;
+  padding-left:clamp(16px,2.2vw,32px)!important;
+  padding-right:clamp(16px,2.2vw,32px)!important;
+}
+#app .feed-shell>.feed-main>.feed-welcome,
+#app .feed-shell>.feed-main>.newcomers-section,
+#app .feed-shell>.feed-main>.feed-navigation,
+#app .feed-shell>.feed-main>.feed-content{
+  width:100%!important;
+  max-width:none!important;
+  margin-left:0!important;
+  margin-right:0!important;
+}
+#app .feed-shell>.feed-main>.feed-content{
+  max-width:none!important;
+}
+@media(max-width:760px){
+  #app .app-topbar__content{
+    padding-left:14px!important;
+    padding-right:14px!important;
+  }
+  #app .feed-shell>.feed-main{
+    padding-left:14px!important;
+    padding-right:14px!important;
+  }
+}
+@media(max-width:520px){
+  #app .app-topbar__content{
+    padding-left:10px!important;
+    padding-right:10px!important;
+  }
+  #app .feed-shell>.feed-main{
+    padding-left:10px!important;
+    padding-right:10px!important;
+  }
+}
