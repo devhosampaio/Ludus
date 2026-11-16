@@ -6550,7 +6550,7 @@ html body #app .auth-shell--split .auth-panel {
 /* Cabeçalho superior e busca expansível por ícone. */
 #app .feed-shell{
   grid-template-columns:240px minmax(0,1fr)!important;
-  grid-template-rows:72px minmax(0,1fr)!important;
+  grid-template-rows:80px minmax(0,1fr)!important;
 }
 #app .feed-shell>.app-topbar{
   position:sticky!important;
@@ -6560,8 +6560,8 @@ html body #app .auth-shell--split .auth-panel {
   grid-column:1/-1!important;
   grid-row:1!important;
   width:min(100%,1520px)!important;
-  height:72px!important;
-  min-height:72px!important;
+  height:80px!important;
+  min-height:80px!important;
   margin:0 auto!important;
   padding:0!important;
   border-bottom:1px solid rgb(201 191 176 / 18%)!important;
@@ -6573,7 +6573,7 @@ html body #app .auth-shell--split .auth-panel {
   align-items:center!important;
   justify-content:flex-end!important;
   width:min(950px,calc(100% - 32px))!important;
-  height:72px!important;
+  height:80px!important;
   margin:0 auto!important;
   padding:0 16px!important;
   box-sizing:border-box!important;
@@ -6637,8 +6637,8 @@ html body #app .auth-shell--split .auth-panel {
   grid-column:1!important;
   grid-row:2!important;
   position:sticky!important;
-  top:72px!important;
-  height:calc(100vh - 72px)!important;
+  top:80px!important;
+  height:calc(100vh - 80px)!important;
   min-height:0!important;
 }
 #app .feed-shell>.feed-main{grid-column:2!important;grid-row:2!important}
@@ -6651,7 +6651,7 @@ html body #app .auth-shell--split .auth-panel {
 }
 
 /* Topbar completo, sem menu lateral. */
-#app .feed-shell{grid-template-columns:minmax(0,1fr)!important;grid-template-rows:72px minmax(0,1fr)!important}
+#app .feed-shell{grid-template-columns:minmax(0,1fr)!important;grid-template-rows:80px minmax(0,1fr)!important}
 #app .feed-shell>.app-topbar{grid-column:1!important;grid-row:1!important}
 #app .app-topbar__content{justify-content:space-between!important}
 #app .topbar__brand{flex:0 0 auto!important;margin:0!important}
