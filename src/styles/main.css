@@ -8776,3 +8776,17 @@ body,
     padding:14px 16px!important;
   }
 }
+
+
+/* Nome do usuário no cabeçalho com altura visual equivalente aos ícones. */
+#app .app-topbar .sidebar-user__identity strong{
+  font-size:20px!important;
+  font-weight:600!important;
+  line-height:1!important;
+  letter-spacing:-.035em!important;
+}
+@media(max-width:760px){
+  #app .app-topbar .sidebar-user__identity strong{
+    font-size:18px!important;
+  }
+}
