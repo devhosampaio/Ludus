@@ -6465,7 +6465,7 @@ html body #app .auth-shell--split .auth-panel {
   margin:0 auto!important;
   padding:16px clamp(20px,3vw,40px) 64px!important;
 }
-#app .feed-main>.feed-ad{display:none!important}
+#app .feed-main__container>.feed-ad{display:none!important}
 #app .feed-content{width:100%!important;max-width:none!important}
 #app .feed-list{
   display:grid!important;
@@ -7509,7 +7509,7 @@ html body #app .auth-shell--split .auth-panel {
 }
 
 /* NOVOS NO LUDUS — seis avaliações recentes em uma faixa horizontal. */
-#app .feed-main>.newcomers-section{
+#app .feed-main__container>.newcomers-section{
   width:100%!important;
   max-width:850px!important;
   margin:0 0 54px!important;
@@ -7659,7 +7659,7 @@ html body #app .auth-shell--split .auth-panel {
   font:12px/1.6 'DM Sans',sans-serif!important;
 }
 @media(max-width:760px){
-  #app .feed-main>.newcomers-section{margin-bottom:42px!important}
+  #app .feed-main__container>.newcomers-section{margin-bottom:42px!important}
   #app .newcomers-list{
     display:flex!important;
     gap:14px!important;
@@ -7739,7 +7739,7 @@ html body #app .auth-shell--split .auth-panel {
 
 
 /* Ajustes de escala — NOVOS NO LUDUS e PARA VOCÊ. */
-#app .feed-main>.newcomers-section{
+#app .feed-main__container>.newcomers-section{
   max-width:980px!important;
 }
 #app .newcomers-review__avatar{
@@ -7800,7 +7800,7 @@ html body #app .auth-shell--split .auth-panel {
 
 
 /* NOVOS NO LUDUS: distribuir os seis cards por toda a largura disponível. */
-#app .feed-main>.newcomers-section{
+#app .feed-main__container>.newcomers-section{
   width:100%!important;
   max-width:none!important;
 }
@@ -7850,13 +7850,13 @@ html body #app .auth-shell--split .auth-panel {
   flex-direction:column!important;
   align-items:stretch!important;
 }
-#app .feed-shell>.feed-main>.feed-welcome,
-#app .feed-shell>.feed-main>.newcomers-section{
+#app .feed-shell>.feed-main__container>.feed-welcome,
+#app .feed-shell>.feed-main__container>.newcomers-section{
   width:100%!important;
   max-width:none!important;
   grid-column:1/-1!important;
 }
-#app .feed-shell>.feed-main>.feed-content{
+#app .feed-shell>.feed-main__container>.feed-content{
   width:100%!important;
   max-width:850px!important;
   margin-left:auto!important;
@@ -8091,26 +8091,26 @@ html body #app .auth-shell--split .auth-panel {
   padding-right:0!important;
   box-sizing:border-box!important;
 }
-#app .feed-main>.feed-welcome,
-#app .feed-main>.newcomers-section,
-#app .feed-main>.feed-navigation,
-#app .feed-main>.feed-content{
+#app .feed-main__container>.feed-welcome,
+#app .feed-main__container>.newcomers-section,
+#app .feed-main__container>.feed-navigation,
+#app .feed-main__container>.feed-content{
   width:100%!important;
   max-width:980px!important;
   margin-left:auto!important;
   margin-right:auto!important;
   box-sizing:border-box!important;
 }
-#app .feed-main>.newcomers-section{
+#app .feed-main__container>.newcomers-section{
   max-width:980px!important;
 }
-#app .feed-main>.feed-navigation{
+#app .feed-main__container>.feed-navigation{
   margin-bottom:22px!important;
 }
-#app .feed-main>.feed-content{
+#app .feed-main__container>.feed-content{
   max-width:980px!important;
 }
-#app .feed-main>.feed-navigation .feed-tabs{
+#app .feed-main__container>.feed-navigation .feed-tabs{
   margin-left:0!important;
   margin-right:auto!important;
 }
@@ -8118,10 +8118,10 @@ html body #app .auth-shell--split .auth-panel {
   #app .app-topbar__content{
     width:calc(100% - 24px)!important;
   }
-  #app .feed-main>.feed-welcome,
-  #app .feed-main>.newcomers-section,
-  #app .feed-main>.feed-navigation,
-  #app .feed-main>.feed-content{
+  #app .feed-main__container>.feed-welcome,
+  #app .feed-main__container>.newcomers-section,
+  #app .feed-main__container>.feed-navigation,
+  #app .feed-main__container>.feed-content{
     width:100%!important;
   }
 }
@@ -8151,10 +8151,10 @@ html body #app .auth-shell--split .auth-panel {
 
 /* Alinhamento final do feed: boas-vindas, seção de novidades,
    navegação e avaliações compartilham exatamente o mesmo eixo. */
-#app .feed-shell>.feed-main>.feed-welcome,
-#app .feed-shell>.feed-main>.newcomers-section,
-#app .feed-shell>.feed-main>.feed-navigation,
-#app .feed-shell>.feed-main>.feed-content{
+#app .feed-shell>.feed-main__container>.feed-welcome,
+#app .feed-shell>.feed-main__container>.newcomers-section,
+#app .feed-shell>.feed-main__container>.feed-navigation,
+#app .feed-shell>.feed-main__container>.feed-content{
   width:min(980px,100%)!important;
   max-width:980px!important;
   margin-left:auto!important;
@@ -8208,7 +8208,7 @@ html body #app .auth-shell--split .auth-panel {
 
 
 /* Boas-vindas: título e apoio empilhados e centralizados no eixo vertical e horizontal. */
-#app .feed-main>.feed-welcome{
+#app .feed-main__container>.feed-welcome{
   display:flex!important;
   flex-direction:column!important;
   align-items:center!important;
@@ -8216,53 +8216,53 @@ html body #app .auth-shell--split .auth-panel {
   min-height:150px!important;
   text-align:center!important;
 }
-#app .feed-main>.feed-welcome h1,
-#app .feed-main>.feed-welcome p{
+#app .feed-main__container>.feed-welcome h1,
+#app .feed-main__container>.feed-welcome p{
   width:100%!important;
   max-width:720px!important;
   text-align:center!important;
 }
-#app .feed-main>.feed-welcome p{
+#app .feed-main__container>.feed-welcome p{
   margin-top:10px!important;
 }
 @media(max-width:520px){
-  #app .feed-main>.feed-welcome{
+  #app .feed-main__container>.feed-welcome{
     min-height:132px!important;
   }
 }
 
 
 /* Feed: reduzir os espaços verticais entre as seções da página inicial. */
-#app .feed-main>.feed-welcome{
+#app .feed-main__container>.feed-welcome{
   min-height:104px!important;
   margin-top:0!important;
   margin-bottom:12px!important;
 }
-#app .feed-main>.newcomers-section{
+#app .feed-main__container>.newcomers-section{
   margin-top:0!important;
   margin-bottom:18px!important;
 }
-#app .feed-main>.newcomers-section .newcomers-section__heading{
+#app .feed-main__container>.newcomers-section .newcomers-section__heading{
   margin-bottom:12px!important;
   padding-bottom:12px!important;
 }
-#app .feed-main>.feed-navigation{
+#app .feed-main__container>.feed-navigation{
   margin-top:0!important;
   margin-bottom:12px!important;
 }
-#app .feed-main>.feed-content .section-heading{
+#app .feed-main__container>.feed-content .section-heading{
   margin-top:0!important;
   margin-bottom:12px!important;
 }
 @media(max-width:760px){
-  #app .feed-main>.feed-welcome{
+  #app .feed-main__container>.feed-welcome{
     min-height:92px!important;
     margin-bottom:10px!important;
   }
-  #app .feed-main>.newcomers-section{
+  #app .feed-main__container>.newcomers-section{
     margin-bottom:14px!important;
   }
-  #app .feed-main>.feed-navigation{
+  #app .feed-main__container>.feed-navigation{
     margin-bottom:10px!important;
   }
 }
@@ -8366,11 +8366,11 @@ html body #app .auth-shell--split .auth-panel {
 
 
 /* Ajustes de alinhamento do feed e do avatar no cabeçalho. */
-#app .feed-main>.feed-navigation{
+#app .feed-main__container>.feed-navigation{
   display:flex!important;
   align-items:center!important;
 }
-#app .feed-main>.feed-navigation .feed-tabs{
+#app .feed-main__container>.feed-navigation .feed-tabs{
   align-self:center!important;
 }
 #app .feed-shell>.feed-main{
@@ -8420,12 +8420,12 @@ html body #app .auth-shell--split .auth-panel {
 
 
 /* Filtros do feed centralizados com indicador deslizante entre as opções. */
-#app .feed-main>.feed-navigation{
+#app .feed-main__container>.feed-navigation{
   display:flex!important;
   justify-content:center!important;
   align-items:center!important;
 }
-#app .feed-main>.feed-navigation .feed-tabs{
+#app .feed-main__container>.feed-navigation .feed-tabs{
   position:relative!important;
   isolation:isolate!important;
   display:grid!important;
@@ -8438,7 +8438,7 @@ html body #app .auth-shell--split .auth-panel {
   border:1px solid rgb(232 223 206 / 12%)!important;
   border-radius:999px!important;
 }
-#app .feed-main>.feed-navigation .feed-tabs::before{
+#app .feed-main__container>.feed-navigation .feed-tabs::before{
   content:""!important;
   position:absolute!important;
   z-index:0!important;
@@ -8452,7 +8452,7 @@ html body #app .auth-shell--split .auth-panel {
   transition:transform .38s cubic-bezier(.22,.8,.25,1)!important;
   pointer-events:none!important;
 }
-#app .feed-main>.feed-navigation .feed-tabs__button{
+#app .feed-main__container>.feed-navigation .feed-tabs__button{
   position:relative!important;
   z-index:1!important;
   min-width:0!important;
@@ -8463,25 +8463,25 @@ html body #app .auth-shell--split .auth-panel {
   color:#aaa3b5!important;
   transition:color .24s ease,transform .24s ease!important;
 }
-#app .feed-main>.feed-navigation .feed-tabs__button.is-active{
+#app .feed-main__container>.feed-navigation .feed-tabs__button.is-active{
   background:transparent!important;
   color:#302c3d!important;
 }
-#app .feed-main>.feed-navigation .feed-tabs__button:active{
+#app .feed-main__container>.feed-navigation .feed-tabs__button:active{
   transform:scale(.96)!important;
 }
 @media(max-width:520px){
-  #app .feed-main>.feed-navigation .feed-tabs{
+  #app .feed-main__container>.feed-navigation .feed-tabs{
     width:min(100%,540px)!important;
   }
-  #app .feed-main>.feed-navigation .feed-tabs__button{
+  #app .feed-main__container>.feed-navigation .feed-tabs__button{
     padding:10px 4px!important;
     font-size:11px!important;
   }
 }
 @media(prefers-reduced-motion:reduce){
-  #app .feed-main>.feed-navigation .feed-tabs::before,
-  #app .feed-main>.feed-navigation .feed-tabs__button{
+  #app .feed-main__container>.feed-navigation .feed-tabs::before,
+  #app .feed-main__container>.feed-navigation .feed-tabs__button{
     transition:none!important;
   }
 }
@@ -8589,16 +8589,16 @@ html body #app .auth-shell--split .auth-panel {
   padding-left:clamp(16px,2.2vw,32px)!important;
   padding-right:clamp(16px,2.2vw,32px)!important;
 }
-#app .feed-shell>.feed-main>.feed-welcome,
-#app .feed-shell>.feed-main>.newcomers-section,
-#app .feed-shell>.feed-main>.feed-navigation,
-#app .feed-shell>.feed-main>.feed-content{
+#app .feed-shell>.feed-main__container>.feed-welcome,
+#app .feed-shell>.feed-main__container>.newcomers-section,
+#app .feed-shell>.feed-main__container>.feed-navigation,
+#app .feed-shell>.feed-main__container>.feed-content{
   width:100%!important;
   max-width:none!important;
   margin-left:0!important;
   margin-right:0!important;
 }
-#app .feed-shell>.feed-main>.feed-content{
+#app .feed-shell>.feed-main__container>.feed-content{
   max-width:none!important;
 }
 @media(max-width:760px){
@@ -8803,11 +8803,11 @@ body,
 }
 
 /* Página inicial e feed. */
-#app .feed-main>.feed-welcome h1{
+#app .feed-main__container>.feed-welcome h1{
   font-size:24px!important;
   line-height:1.25!important;
 }
-#app .feed-main>.feed-welcome>p{
+#app .feed-main__container>.feed-welcome>p{
   font-size:16px!important;
   line-height:1.5!important;
 }
@@ -8885,6 +8885,45 @@ body,
     padding-left:16px!important;
     padding-right:16px!important;
   }
+  #app .feed-shell>.feed-main{
+    padding-left:16px!important;
+    padding-right:16px!important;
+  }
+}
+
+
+/* Container central que reúne todo o conteúdo principal do feed. */
+#app .feed-shell>.feed-main{
+  width:100%!important;
+  max-width:none!important;
+  margin:0 auto!important;
+  padding-left:clamp(22px,5vw,76px)!important;
+  padding-right:clamp(22px,5vw,76px)!important;
+  box-sizing:border-box!important;
+}
+#app .feed-main__container{
+  display:flow-root!important;
+  width:min(100%,1200px)!important;
+  max-width:1200px!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+  box-sizing:border-box!important;
+}
+#app .feed-main__container>.feed-welcome,
+#app .feed-main__container>.feed-navigation,
+#app .feed-main__container>.newcomers-section,
+#app .feed-main__container>.feed-content{
+  width:100%!important;
+  max-width:100%!important;
+  box-sizing:border-box!important;
+}
+@media(max-width:760px){
+  #app .feed-shell>.feed-main{
+    padding-left:22px!important;
+    padding-right:22px!important;
+  }
+}
+@media(max-width:520px){
   #app .feed-shell>.feed-main{
     padding-left:16px!important;
     padding-right:16px!important;
