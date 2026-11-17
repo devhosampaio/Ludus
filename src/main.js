@@ -327,6 +327,7 @@ async function renderSignedIn(user) {
         </div>
       </header>
       <main class="feed-main">
+        <div class="feed-main__container">
         <aside class="feed-ad feed-ad--left" aria-label="Espaço reservado para publicidade"></aside>
         <section class="feed-welcome" aria-label="Boas-vindas">
           <h1>Bem-vindo de volta, <strong data-welcome-name></strong>. Aqui está o que andam jogando...</h1>
@@ -347,6 +348,7 @@ async function renderSignedIn(user) {
           <div class="feed-list" data-feed-list><div class="feed-loading">Carregando as histórias da comunidade…</div></div>
         </section>
         <aside class="feed-ad feed-ad--right" aria-label="Espaço reservado para publicidade"></aside>
+        </div>
       </main>
     </div>`;
 
