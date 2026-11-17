@@ -338,6 +338,7 @@ async function renderSignedIn(user) {
                 <section class="newcomers-section" aria-labelledby="newcomers-title">
           <div class="newcomers-section__heading feed-section-heading">
             <h2 class="feed-section-heading__title" id="newcomers-title">NOVOS NO LUDUS</h2>
+            <button class="newcomers-section__more" type="button" data-newcomers-more aria-expanded="false">Ver mais</button>
           </div>
           <div class="newcomers-list" data-newcomers-list>
             <div class="newcomers-list__loading">Descobrindo novas histórias…</div>
@@ -602,15 +603,27 @@ async function renderSignedIn(user) {
   const feedTabs = app.querySelector('[data-feed-mode="popular"]').closest('.feed-tabs');
   const newcomersSection = app.querySelector('.newcomers-section');
   const newcomersList = app.querySelector('[data-newcomers-list]');
+  let showAllNewcomers = false;
+  const newcomersMoreButton = app.querySelector('[data-newcomers-more]');
   const renderNewcomers = () => {
-    const newestReviews = [...(reviews || [])]
+    const newestReviewsByGame = new Map();
+    [...(reviews || [])]
       .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-      .slice(0, 6);
+      .forEach((review) => {
+        if (review.game_id && !newestReviewsByGame.has(review.game_id)) {
+          newestReviewsByGame.set(review.game_id, review);
+        }
+      });
+    const newestReviews = [...newestReviewsByGame.values()];
+    const visibleNewcomers = showAllNewcomers ? newestReviews : newestReviews.slice(0, 7);
+    newcomersMoreButton.hidden = newestReviews.length <= 7;
+    newcomersMoreButton.textContent = showAllNewcomers ? 'Ver menos' : 'Ver mais';
+    newcomersMoreButton.setAttribute('aria-expanded', String(showAllNewcomers));
     if (!newestReviews.length) {
-      newcomersList.innerHTML = '<p class="newcomers-list__empty">As primeiras avaliações da comunidade aparecerão aqui.</p>';
+      newcomersList.innerHTML = '<p class="newcomers-list__empty">Os jogos avaliados pela comunidade aparecerão aqui.</p>';
       return;
     }
-    newcomersList.innerHTML = newestReviews.map((review) => {
+    newcomersList.innerHTML = visibleNewcomers.map((review) => {
       const profile = review.profiles || {};
       const username = profile.username || 'jogador';
       const gameData = review.games || {};
@@ -640,6 +653,10 @@ async function renderSignedIn(user) {
     }).join('');
   };
   renderNewcomers();
+  newcomersMoreButton.addEventListener('click', () => {
+    showAllNewcomers = !showAllNewcomers;
+    renderNewcomers();
+  });
   newcomersSection.addEventListener('click', (event) => {
     const gameButton = event.target.closest('[data-open-game]');
     if (gameButton?.dataset.openGame) {
