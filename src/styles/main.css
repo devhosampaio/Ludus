@@ -8849,3 +8849,44 @@ body,
   font-size:16px!important;
   line-height:1.3!important;
 }
+
+
+/* Restaurar margens laterais e largura centralizada do layout. */
+#app .app-topbar__content{
+  width:min(100%,1600px)!important;
+  max-width:1600px!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+  padding-left:clamp(22px,5vw,76px)!important;
+  padding-right:clamp(22px,5vw,76px)!important;
+  box-sizing:border-box!important;
+}
+#app .feed-shell>.feed-main{
+  width:min(100%,1600px)!important;
+  max-width:1600px!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+  padding-left:clamp(36px,8vw,150px)!important;
+  padding-right:clamp(36px,8vw,150px)!important;
+  box-sizing:border-box!important;
+}
+@media(max-width:760px){
+  #app .app-topbar__content{
+    padding-left:22px!important;
+    padding-right:22px!important;
+  }
+  #app .feed-shell>.feed-main{
+    padding-left:22px!important;
+    padding-right:22px!important;
+  }
+}
+@media(max-width:520px){
+  #app .app-topbar__content{
+    padding-left:16px!important;
+    padding-right:16px!important;
+  }
+  #app .feed-shell>.feed-main{
+    padding-left:16px!important;
+    padding-right:16px!important;
+  }
+}
