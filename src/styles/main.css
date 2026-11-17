@@ -8929,3 +8929,13 @@ body,
     padding-right:16px!important;
   }
 }
+
+
+/* Cabeçalho ocupa toda a largura do monitor; o conteúdo interno mantém seu alinhamento. */
+#app .feed-shell>.app-topbar{
+  width:100%!important;
+  max-width:none!important;
+  margin-left:0!important;
+  margin-right:0!important;
+  box-sizing:border-box!important;
+}
