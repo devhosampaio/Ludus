@@ -7511,19 +7511,35 @@ html body #app .auth-shell--split .auth-panel {
 /* NOVOS NO LUDUS — seis avaliações recentes em uma faixa horizontal. */
 #app .feed-main__container>.newcomers-section{
   width:100%!important;
-  max-width:850px!important;
+  max-width:100%!important;
   margin:0 0 54px!important;
   padding:0!important;
 }
 #app .newcomers-section__heading{
   display:flex!important;
-  flex-direction:column!important;
-  align-items:flex-start!important;
-  gap:0!important;
+  flex-direction:row!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:16px!important;
   margin:0 0 22px!important;
   padding:0 0 22px!important;
   border-bottom:1px solid rgb(201 191 176 / 25%)!important;
 }
+#app .newcomers-section__more{
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  flex:0 0 auto!important;
+  margin:0 0 0 auto!important;
+  padding:6px 0 6px 12px!important;
+  border:0!important;
+  background:transparent!important;
+  color:#d96c55!important;
+  font:600 13px/1.3 'Inter',sans-serif!important;
+  cursor:pointer!important;
+}
+#app .newcomers-section__more:hover{color:#f5f0e6!important}
+#app .newcomers-section__more[hidden]{display:none!important}
 #app .newcomers-section__heading h2{
   margin:0!important;
   color:var(--color-surface)!important;
@@ -7532,7 +7548,7 @@ html body #app .auth-shell--split .auth-panel {
 }
 #app .newcomers-list{
   display:grid!important;
-  grid-template-columns:repeat(6,minmax(0,1fr))!important;
+  grid-template-columns:repeat(7,minmax(0,1fr))!important;
   align-items:start!important;
   gap:15px!important;
   width:100%!important;
@@ -8979,4 +8995,19 @@ body,
     color:#e8dfce!important;
     background:transparent!important;
   }
+}
+
+
+/* Sete jogos em destaque, com o acesso a mais títulos no cabeçalho da seção. */
+@media(min-width:761px){
+  #app .newcomers-list{grid-template-columns:repeat(7,minmax(0,1fr))!important}
+}
+@media(max-width:760px){
+  #app .newcomers-section__heading{
+    flex-direction:row!important;
+    align-items:center!important;
+    justify-content:space-between!important;
+  }
+  #app .newcomers-section__heading h2{min-width:0!important}
+  #app .newcomers-section__more{font-size:12px!important}
 }
