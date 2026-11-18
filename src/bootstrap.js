@@ -1,3 +1,5 @@
+import './devtools.js';
+
 import('./main.js').catch((error) => {
   console.error('[Ludus] Falha ao iniciar a aplicação:', error);
   const app = document.querySelector('#app');
