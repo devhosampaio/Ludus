@@ -61,7 +61,7 @@ let notificationChannel = null;
 function notificationControlMarkup() {
   return '<div class="notifications" data-notifications>' +
     '<button class="notifications__trigger" type="button" data-notifications-toggle aria-label="Notificações" aria-expanded="false" title="Notificações">' +
-    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"></path><path d="M10 21h4"></path></svg>' +
+    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"></path><path d="M10 21h4"></path></svg><span class="notifications__label">Notificações</span>' +
     '<span class="notifications__count" data-notification-count hidden>0</span></button>' +
     '<section class="notifications__panel" data-notifications-panel hidden>' +
     '<header class="notifications__header"><strong>Notificações</strong><button type="button" data-notifications-read-all>Marcar todas como lidas</button></header>' +
@@ -302,6 +302,17 @@ async function renderSignedIn(user) {
           <span class="topbar-brand__icon" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M7 4v24h22" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="square" stroke-linejoin="miter"/></svg></span>
           <span class="topbar-brand__name">Ludus</span>
         </a>
+        <div class="side-menu__navigation" aria-label="Navegação principal">
+          <button class="side-menu__item is-active" type="button" data-feed-mode="home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z"/></svg><span>Página inicial</span></button>
+          <button class="side-menu__item" type="button" data-feed-mode="popular"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 5 5M8 10h6M11 7v6"/></svg><span>Explorar</span></button>
+          <div class="side-menu__notifications">${notificationControlMarkup()}</div>
+          <button class="side-menu__item" type="button" data-side-settings><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z"/><path d="m19.4 15 .1.1 1.4 1.1-1.4 2.4-1.7-.7a8 8 0 0 1-1.5.9l-.3 1.8h-2.8l-.3-1.8a8 8 0 0 1-1.5-.9l-1.7.7-1.4-2.4 1.4-1.1a7 7 0 0 1 0-1.8l-1.4-1.1 1.4-2.4 1.7.7a8 8 0 0 1 1.5-.9l.3-1.8h2.8l.3 1.8a8 8 0 0 1 1.5.9l1.7-.7 1.4 2.4-1.4 1.1a7 7 0 0 1 0 1.8Z"/></svg><span>Configurações</span></button>
+          <button class="side-menu__item" type="button" data-feed-mode="saved"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4.5A1.5 1.5 0 0 1 7.5 3h9A1.5 1.5 0 0 1 18 4.5V21l-6-4-6 4Z"/></svg><span>Listas salvas</span></button>
+        </div>
+        <button class="side-menu__profile" type="button" data-side-profile>
+          <span class="side-menu__avatar" data-side-avatar>${profilePlaceholderMarkup()}</span>
+          <span class="side-menu__profile-name" data-side-username>${escapeHTML(fallbackName)}</span>
+        </button>
       </nav>
       <div class="feed-center-column">
       <header class="app-topbar app-topbar__content">
@@ -383,6 +394,10 @@ async function renderSignedIn(user) {
   if (profileResult.data) {
     if (username) username.textContent = profileResult.data.username || fallbackName;
     if (welcomeName) welcomeName.textContent = profileResult.data.display_name || profileResult.data.username || fallbackName;
+    const sideUsername = app.querySelector('[data-side-username]');
+    const sideAvatar = app.querySelector('[data-side-avatar]');
+    if (sideUsername) sideUsername.textContent = profileResult.data.display_name || profileResult.data.username || fallbackName;
+    if (sideAvatar && profileResult.data.avatar_url) sideAvatar.innerHTML = '<img src="' + escapeHTML(profileResult.data.avatar_url) + '" alt="">';
     if (avatar && profileResult.data.avatar_url) {
       avatar.innerHTML = '<img src="' + escapeHTML(profileResult.data.avatar_url) + '" alt="">';
     }
@@ -406,6 +421,12 @@ async function renderSignedIn(user) {
   app.querySelector('[data-account-settings]')?.addEventListener('click', () => {
     closeAccountMenu();
     if (profileResult.data) openProfileEditor(user, profileResult.data);
+  });
+  app.querySelector('[data-side-settings]')?.addEventListener('click', () => {
+    if (profileResult.data) openProfileEditor(user, profileResult.data);
+  });
+  app.querySelector('[data-side-profile]')?.addEventListener('click', () => {
+    if (profileResult.data?.username) navigateToProfile(user, profileResult.data.username);
   });
   app.querySelector('[data-signout]')?.addEventListener('click', async () => {
     try { await signOut(); renderAuth('login'); }
