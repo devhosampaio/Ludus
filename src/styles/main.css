@@ -9968,3 +9968,49 @@ html{
   margin:28px auto!important;
   overflow:visible!important;
 }
+
+
+/* Perfil e páginas de detalhe usam a mesma estrutura de três colunas do feed. */
+#app .feed-shell>.feed-main.profile-main{
+  grid-column:2!important;
+  grid-row:2!important;
+  width:100%!important;
+  max-width:770px!important;
+  min-width:0!important;
+  margin:0 auto!important;
+  padding:0 clamp(18px,2vw,30px) 48px!important;
+  box-sizing:border-box!important;
+}
+#app .feed-shell>.feed-main.profile-main>.feed-main__container{
+  display:block!important;
+  width:100%!important;
+  max-width:none!important;
+  margin:0!important;
+  padding:0!important;
+}
+#app .feed-shell>.feed-main.profile-main .profile-page__content{
+  width:100%!important;
+  max-width:900px!important;
+  margin:0 auto!important;
+  padding:36px 0 80px!important;
+  box-sizing:border-box!important;
+}
+@media(max-width:900px){
+  #app .feed-shell>.feed-main.profile-main{
+    grid-column:1!important;
+    grid-row:2!important;
+    max-width:770px!important;
+    padding-left:18px!important;
+    padding-right:18px!important;
+  }
+}
+@media(max-width:760px){
+  #app .feed-shell>.feed-main.profile-main{
+    max-width:none!important;
+    padding-left:14px!important;
+    padding-right:14px!important;
+  }
+  #app .feed-shell>.feed-main.profile-main .profile-page__content{
+    padding-top:24px!important;
+  }
+}
