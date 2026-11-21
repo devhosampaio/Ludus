@@ -9281,3 +9281,18 @@ body,
   justify-self:stretch!important;
   box-sizing:border-box!important;
 }
+
+
+/* Alinha o conteúdo do feed aos limites visuais internos do cabeçalho. */
+@media(min-width:761px){
+  #app .feed-shell>main.feed-main{
+    padding-left:clamp(32px,7.15vw,55px)!important;
+    padding-right:clamp(28px,5.45vw,42px)!important;
+  }
+  #app .feed-shell>main.feed-main>.feed-main__container{
+    width:100%!important;
+    max-width:none!important;
+    margin-left:0!important;
+    margin-right:0!important;
+  }
+}
