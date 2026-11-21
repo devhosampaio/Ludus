@@ -79,6 +79,9 @@ root.innerHTML = `
       <label>Alinhamento do texto
         <select data-style="textAlign"><option value="">Original</option><option value="left">Esquerda</option><option value="center">Centro</option><option value="right">Direita</option><option value="justify">Justificado</option></select>
       </label>
+      <label>Tipo de layout
+        <select data-style="display"><option value="">Original</option><option value="block">Bloco</option><option value="flex">Flexível (flex)</option><option value="grid">Grade (grid)</option></select>
+      </label>
       <label>Alinhamento horizontal (flex)
         <select data-style="justifyContent"><option value="">Original</option><option value="flex-start">Início</option><option value="center">Centro</option><option value="flex-end">Fim</option><option value="space-between">Espaço entre</option><option value="space-around">Espaço ao redor</option></select>
       </label>
@@ -241,7 +244,7 @@ function renderCssPreview() {
     .filter(([, value]) => value !== '')
     .map(([property, value]) => '  ' + property.replace(/[A-Z]/g, (letter) => '-' + letter.toLowerCase()) + ': ' + value + ';');
   cssPreview.textContent = declarations.length
-    ? lastSelector + ' {\\n' + declarations.join('\\n') + '\\n}'
+    ? lastSelector + ' {\\n' + declarations.join('\n') + '\\n}'
     : 'Nenhum ajuste aplicado. Use os controles acima.';
 }
 
