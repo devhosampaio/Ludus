@@ -293,7 +293,6 @@ function renderCommentsSection(reviewId, comments, likes, user) {
     '<form class="review-comments__form" data-comment-form><textarea rows="2" maxlength="1000" placeholder="Comentar nesta review..." required></textarea><button type="submit" aria-label="Enviar comentário" title="Enviar comentário"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg></button></form>' +
     '</section>';
 }
-async 
 function sharedSideMenuMarkup(user) {
   const fallbackName = user.user_metadata?.display_name || user.email?.split('@')[0] || 'jogador';
   return `  <header class="side-menu side-menu--left">
