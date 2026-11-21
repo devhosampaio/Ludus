@@ -615,15 +615,6 @@ async function renderSignedIn(user) {
     counts[saved.review_id] = Number(saved.save_count || 0);
     return counts;
   }, {});
-  const commentIds = (commentRows || []).map((comment) => comment.id);
-  const { data: commentLikeRows, error: commentLikesError } = await fetchCommentLikeRows(commentIds);
-  if (commentLikesError) console.error('[Ludus] Falha ao carregar curtidas dos comentários:', commentLikesError);
-  const commentsByReview = (commentRows || []).reduce((grouped, comment) => {
-    if (!grouped[comment.review_id]) grouped[comment.review_id] = [];
-    grouped[comment.review_id].push(comment);
-    return grouped;
-  }, {});
-
   const followedIds = new Set((followedProfiles || []).map((item) => item.following_id));
 
   const gameTitleCounts = (reviews || []).reduce((counts, review) => {
