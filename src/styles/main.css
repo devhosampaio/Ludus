@@ -9260,3 +9260,9 @@ body,
   margin-left:auto!important;
   margin-right:auto!important;
 }
+
+
+/* Remove o espaçamento interno do contêiner principal do feed. */
+#app .feed-shell>main.feed-main>.feed-main__container{
+  padding:0!important;
+}
