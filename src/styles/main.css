@@ -9875,3 +9875,35 @@ html{
 #app .feed-shell>main.feed-main .feed-main__container>*+*{
   margin-top:30px!important;
 }
+
+
+/* Ação circular para iniciar uma nova avaliação na navegação do feed. */
+#app .feed-shell>.feed-center-column>.app-topbar .feed-tabs__create{
+  display:inline-grid!important;
+  flex:0 0 12px!important;
+  width:12px!important;
+  min-width:12px!important;
+  height:12px!important;
+  min-height:12px!important;
+  align-self:center!important;
+  place-items:center!important;
+  margin:0 2px!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:50%!important;
+  background:#7060AB!important;
+  color:#F5F0E6!important;
+  cursor:pointer!important;
+}
+#app .feed-shell>.feed-center-column>.app-topbar .feed-tabs__create svg{
+  display:block!important;
+  width:8px!important;
+  height:8px!important;
+  fill:none!important;
+  stroke:currentColor!important;
+  stroke-width:1.8!important;
+  stroke-linecap:round!important;
+}
+#app .feed-shell>.feed-center-column>.app-topbar .feed-tabs__create:hover{
+  background:#D96C55!important;
+}
