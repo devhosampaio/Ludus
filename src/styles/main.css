@@ -9011,3 +9011,58 @@ body,
   #app .newcomers-section__heading h2{min-width:0!important}
   #app .newcomers-section__more{font-size:12px!important}
 }
+
+
+/* Ajustes temporários do cabeçalho solicitados pelo usuário. */
+#app .feed-shell{
+  grid-template-rows:60px minmax(0,1fr)!important;
+}
+#app .app-topbar{
+  height:60px!important;
+  min-height:60px!important;
+}
+#app .app-topbar__content{
+  height:60px!important;
+  min-height:60px!important;
+  justify-content:flex-end!important;
+  gap:16px!important;
+}
+#app .app-topbar .account-menu{
+  order:1!important;
+  flex:0 0 auto!important;
+  margin:0!important;
+}
+#app .app-topbar .header-actions{
+  order:2!important;
+  display:flex!important;
+  flex:0 1 280px!important;
+  width:280px!important;
+  max-width:280px!important;
+  margin:0!important;
+}
+#app .app-topbar .header-search{
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+  margin:0!important;
+}
+#app .app-topbar .header-search input[data-header-search]{
+  width:100%!important;
+  min-width:0!important;
+}
+@media(max-width:760px){
+  #app .app-topbar__content{gap:10px!important}
+  #app .app-topbar .header-actions{
+    flex:0 1 220px!important;
+    width:min(220px,calc(100vw - 100px))!important;
+    max-width:220px!important;
+    margin-left:0!important;
+  }
+}
+@media(max-width:520px){
+  #app .app-topbar .header-actions{
+    flex:1 1 auto!important;
+    width:auto!important;
+    max-width:none!important;
+  }
+}
