@@ -299,8 +299,7 @@ async function renderSignedIn(user) {
     <div class="feed-shell">
       <header class="app-topbar">
         <div class="app-topbar__content">
-          <a class="brand topbar__brand" href="./" aria-label="Ludus início">L<span>.</span></a>
-          
+
           <div class="header-actions">
           <div class="header-search">
             <button class="header-search__toggle" type="button" data-search-toggle aria-label="Abrir busca" aria-expanded="false" title="Buscar">
@@ -309,7 +308,6 @@ async function renderSignedIn(user) {
             <input type="search" data-header-search placeholder="Buscar..." autocomplete="off" aria-label="Buscar jogos ou jogadores">
             <div class="header-search__results" data-header-search-results hidden></div>
           </div>
-          ${notificationControlMarkup()}
           </div>
           <details class="account-menu" data-account-details>
             <summary class="sidebar-user" data-account-menu>
