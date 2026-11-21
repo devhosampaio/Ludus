@@ -1233,7 +1233,14 @@ async function renderGamePage(currentUser, gameId) {
     <div class="feed-shell">
       ${sharedSideMenuMarkup(currentUser)}
       <main class="feed-center-column feed-main profile-main">
-        ${sharedFeedHeaderMarkup()}
+        <div class="app-topbar app-topbar__content">
+          <nav class="feed-navigation feed-navigation--header" aria-label="Navegação do perfil">
+            <div class="feed-tabs">
+              <span class="feed-tabs__button is-active">Seguidores</span>
+              <span class="feed-tabs__button">Seguindo</span>
+            </div>
+          </nav>
+        </div>
         <div class="feed-main__container">
           <div class="profile-page__content">
             <div class="profile-page__loading">Carregando jogo…</div>
