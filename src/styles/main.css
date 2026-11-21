@@ -8764,21 +8764,21 @@ html body #app .auth-shell--split .auth-panel {
 
 /* Cor solicitada para o fundo do cabeçalho. */
 #app .feed-shell>.app-topbar{
-  background-color:#212121!important;
+  background-color:#090B16!important;
 }
 
 
 /* Fundo principal do site em preto suave, mantendo cards e superfícies intactos. */
 :root{
-  --color-bg:#212121!important;
-  background-color:#212121!important;
+  --color-bg:#090B16!important;
+  background-color:#090B16!important;
 }
 html,
 body,
 #app,
 #app .feed-shell,
 #app .feed-shell>.feed-main{
-  background-color:#212121!important;
+  background-color:#090B16!important;
 }
 
 
