@@ -1487,11 +1487,13 @@ async function renderProfilePage(currentUser, username) {
 }
 
 async function openProfileEditor(user, profile) {
-  app.querySelector('.profile-editor-overlay')?.remove();
-  const overlay = document.createElement('div');
-  overlay.className = 'profile-editor-overlay';
-  overlay.innerHTML = `
-    <section class="profile-editor" role="dialog" aria-modal="true" aria-labelledby="profile-editor-title">
+  const returnToProfile = window.location.hash.startsWith('#/perfil/');
+  await renderSignedIn(user);
+  const pageContainer = app.querySelector('.feed-main__container');
+  if (!pageContainer) return;
+  pageContainer.innerHTML = `
+    <aside class="feed-ad feed-ad--left" aria-label="Espaço reservado"></aside>
+    <section class="profile-editor profile-editor--page" aria-labelledby="profile-editor-title">
       <button class="profile-editor__close" type="button" data-close aria-label="Fechar">×</button>
       <p class="eyebrow">SUA IDENTIDADE NO LUDUS</p>
       <h2 id="profile-editor-title">Editar perfil<span>.</span></h2>
@@ -1506,14 +1508,17 @@ async function openProfileEditor(user, profile) {
         <p class="profile-editor__message" data-editor-message role="status"></p>
         <div class="profile-editor__actions"><button type="button" data-cancel>Cancelar</button><button type="submit">Salvar perfil ↗</button></div>
       </form>
-    </section>`;
-  app.append(overlay);
-  const form = overlay.querySelector('[data-profile-form]');
-  const message = overlay.querySelector('[data-editor-message]');
-  const close = () => overlay.remove();
-  overlay.querySelector('[data-close]').addEventListener('click', close);
-  overlay.querySelector('[data-cancel]').addEventListener('click', close);
-  overlay.addEventListener('click', (event) => { if (event.target === overlay) close(); });
+    </section>
+    <aside class="feed-ad feed-ad--right" aria-label="Espaço reservado"></aside>`;
+  const editor = pageContainer.querySelector('.profile-editor');
+  const form = editor.querySelector('[data-profile-form]');
+  const message = editor.querySelector('[data-editor-message]');
+  const close = () => {
+    if (returnToProfile) renderProfilePage(user, profile.username);
+    else renderSignedIn(user);
+  };
+  editor.querySelector('[data-close]').addEventListener('click', close);
+  editor.querySelector('[data-cancel]').addEventListener('click', close);
 
   for (const [field, previewSelector] of [['avatar', '[data-avatar-preview]'], ['banner', '[data-banner-preview]']]) {
     const input = form.elements[field];
@@ -1564,7 +1569,6 @@ async function openProfileEditor(user, profile) {
 
       const { error: updateError } = await supabase.from('profiles').update(updates).eq('id', user.id);
       if (updateError) throw updateError;
-      close();
       window.history.replaceState({ page: 'profile' }, '', '#/perfil/' + encodeURIComponent(username));
       await renderProfilePage(user, username);
     } catch (error) {
