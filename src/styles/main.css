@@ -9630,3 +9630,44 @@ body,
 @media(max-width:900px){
   #app .feed-shell>.side-menu--left>.side-menu__brand{display:none!important}
 }
+
+
+/* Logo lateral no desenho exato da referência enviada. */
+#app .feed-shell>.side-menu--left>.side-menu__brand{
+  position:fixed!important;
+  top:12px!important;
+  left:8px!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+  gap:6px!important;
+  width:max-content!important;
+  height:26px!important;
+  margin:0!important;
+  padding:0!important;
+  color:#F5F0E6!important;
+  text-decoration:none!important;
+  white-space:nowrap!important;
+}
+#app .feed-shell>.side-menu--left>.side-menu__brand .topbar-brand__icon{
+  display:block!important;
+  flex:0 0 26px!important;
+  width:26px!important;
+  height:26px!important;
+  color:#D96C55!important;
+}
+#app .feed-shell>.side-menu--left>.side-menu__brand .topbar-brand__icon svg{
+  display:block!important;
+  width:26px!important;
+  height:26px!important;
+  overflow:visible!important;
+}
+#app .feed-shell>.side-menu--left>.side-menu__brand .topbar-brand__name{
+  display:block!important;
+  color:#F5F0E6!important;
+  font:700 19px/1 'Arial',sans-serif!important;
+  letter-spacing:-.055em!important;
+}
+@media(max-width:900px){
+  #app .feed-shell>.side-menu--left>.side-menu__brand{display:none!important}
+}
