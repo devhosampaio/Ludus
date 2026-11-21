@@ -9746,3 +9746,12 @@ body,
   padding:0 8px!important;
   align-self:center!important;
 }
+
+
+/* Aumenta o respiro do indicador da aba ativa dentro do contêiner. */
+#app .feed-main__container>.feed-navigation .feed-tabs::before{
+  top:8px!important;
+  bottom:8px!important;
+  left:8px!important;
+  width:calc((100% - 16px) / 4)!important;
+}
