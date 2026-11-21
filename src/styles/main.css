@@ -9635,7 +9635,7 @@ body,
 /* Logo lateral no desenho exato da referência enviada. */
 #app .feed-shell>.side-menu--left>.side-menu__brand{
   position:fixed!important;
-  top:12px!important;
+  top:27px!important;
   left:8px!important;
   display:inline-flex!important;
   align-items:center!important;
