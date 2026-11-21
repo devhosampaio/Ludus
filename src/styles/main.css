@@ -9722,15 +9722,27 @@ body,
 }
 
 
-/* Ajusta a tipografia das abas e reduz a altura do botão Página inicial. */
+/* Ajusta as dimensões das abas de navegação do feed. */
 #app .feed-shell>.feed-center-column>.app-topbar .feed-tabs,
 #app .feed-shell>.feed-center-column>.app-topbar .feed-tabs *{
   font-size:12px!important;
 }
+#app .feed-shell>.feed-center-column>.app-topbar nav.feed-navigation--header{
+  flex:1 1 auto!important;
+  width:100%!important;
+  min-width:0!important;
+}
+#app .feed-shell>.feed-center-column>.app-topbar nav.feed-navigation--header .feed-tabs{
+  display:flex!important;
+  justify-content:space-between!important;
+  width:100%!important;
+  min-width:0!important;
+}
 #app .feed-shell>.feed-center-column>.app-topbar button[data-feed-mode="home"]{
+  flex:0 0 52px!important;
+  width:52px!important;
   height:34px!important;
   min-height:34px!important;
-  padding-top:0!important;
-  padding-bottom:0!important;
+  padding:0 8px!important;
   align-self:center!important;
 }
