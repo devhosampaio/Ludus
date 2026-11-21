@@ -364,8 +364,8 @@ async function renderSignedIn(user) {
 
   const username = app.querySelector('[data-username]');
   const avatar = app.querySelector('[data-avatar]');
-  username.textContent = fallbackName;
-  avatar.innerHTML = profilePlaceholderMarkup();
+  if (username) username.textContent = fallbackName;
+  if (avatar) avatar.innerHTML = profilePlaceholderMarkup();
 
   const profileResult = await supabase.from('profiles')
     .select('username, display_name, avatar_url, banner_url, bio')
@@ -373,33 +373,33 @@ async function renderSignedIn(user) {
 
   const welcomeName = app.querySelector('[data-welcome-name]');
   if (profileResult.data) {
-    username.textContent = profileResult.data.username || fallbackName;
-    welcomeName.textContent = profileResult.data.display_name || profileResult.data.username || fallbackName;
-    if (profileResult.data.avatar_url) {
+    if (username) username.textContent = profileResult.data.username || fallbackName;
+    if (welcomeName) welcomeName.textContent = profileResult.data.display_name || profileResult.data.username || fallbackName;
+    if (avatar && profileResult.data.avatar_url) {
       avatar.innerHTML = '<img src="' + escapeHTML(profileResult.data.avatar_url) + '" alt="">';
     }
   } else {
-    username.textContent = '';
-    welcomeName.textContent = fallbackName;
+    if (username) username.textContent = '';
+    if (welcomeName) welcomeName.textContent = fallbackName;
   }
 
   const accountDetails = app.querySelector('[data-account-details]');
-  const closeAccountMenu = () => { accountDetails.open = false; };
+  const closeAccountMenu = () => { if (accountDetails) accountDetails.open = false; };
   document.addEventListener('click', (event) => {
     if (!(event.target instanceof Element) || !event.target.closest('[data-account-details]')) closeAccountMenu();
   });
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') closeAccountMenu();
   });
-  app.querySelector('[data-open-own-profile]').addEventListener('click', () => {
+  app.querySelector('[data-open-own-profile]')?.addEventListener('click', () => {
     closeAccountMenu();
     if (profileResult.data?.username) navigateToProfile(user, profileResult.data.username);
   });
-  app.querySelector('[data-account-settings]').addEventListener('click', () => {
+  app.querySelector('[data-account-settings]')?.addEventListener('click', () => {
     closeAccountMenu();
     if (profileResult.data) openProfileEditor(user, profileResult.data);
   });
-  app.querySelector('[data-signout]').addEventListener('click', async () => {
+  app.querySelector('[data-signout]')?.addEventListener('click', async () => {
     try { await signOut(); renderAuth('login'); }
     catch (error) { console.error('[Ludus] Falha ao sair:', error); }
   });
