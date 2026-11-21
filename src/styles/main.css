@@ -9231,3 +9231,23 @@ body,
 @media(prefers-reduced-motion:reduce){
   #app .skeleton-shimmer::after{animation:none!important}
 }
+
+
+/* Cabeçalho em largura total, preservando o feed central para futuras barras laterais. */
+#app .feed-shell>.app-topbar{
+  width:100vw!important;
+  max-width:none!important;
+  margin-left:calc(50% - 50vw)!important;
+  margin-right:calc(50% - 50vw)!important;
+  box-sizing:border-box!important;
+}
+#app .feed-shell>.app-topbar.app-topbar__content{
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+  margin-top:0!important;
+  margin-bottom:0!important;
+  padding-left:clamp(16px,3vw,48px)!important;
+  padding-right:clamp(16px,3vw,48px)!important;
+  box-sizing:border-box!important;
+}
