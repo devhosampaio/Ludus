@@ -9463,3 +9463,72 @@ body,
     padding-right:14px!important;
   }
 }
+
+
+/* Header centralizado na primeira linha; feed independente logo abaixo. */
+#app .feed-shell{
+  grid-template-columns:minmax(0,1fr) minmax(0,min(770px,62vw)) minmax(0,1fr)!important;
+  grid-template-rows:80px minmax(0,1fr)!important;
+}
+#app .feed-shell>.feed-center-column{
+  grid-column:2!important;
+  grid-row:1!important;
+  display:block!important;
+  width:100%!important;
+  max-width:770px!important;
+  min-width:0!important;
+  height:80px!important;
+  margin:0 auto!important;
+}
+#app .feed-shell>.feed-center-column>.app-topbar{
+  position:sticky!important;
+  top:0!important;
+  width:100%!important;
+  max-width:none!important;
+  height:80px!important;
+  min-height:80px!important;
+  margin:0!important;
+}
+#app .feed-shell>main.feed-main{
+  grid-column:2!important;
+  grid-row:2!important;
+  width:100%!important;
+  max-width:770px!important;
+  min-width:0!important;
+  margin:0 auto!important;
+  padding-left:clamp(18px,2vw,30px)!important;
+  padding-right:clamp(18px,2vw,30px)!important;
+  box-sizing:border-box!important;
+}
+#app .feed-shell>.side-menu{
+  grid-row:1/3!important;
+  min-height:100vh!important;
+}
+#app .feed-shell>.side-menu--left{grid-column:1!important}
+#app .feed-shell>.side-menu--right{grid-column:3!important}
+@media(max-width:900px){
+  #app .feed-shell{
+    grid-template-columns:minmax(0,1fr)!important;
+    grid-template-rows:80px minmax(0,1fr)!important;
+  }
+  #app .feed-shell>.side-menu{display:none!important}
+  #app .feed-shell>.feed-center-column{
+    grid-column:1!important;
+    grid-row:1!important;
+    max-width:770px!important;
+  }
+  #app .feed-shell>main.feed-main{
+    grid-column:1!important;
+    grid-row:2!important;
+    max-width:770px!important;
+    padding-left:18px!important;
+    padding-right:18px!important;
+  }
+}
+@media(max-width:760px){
+  #app .feed-shell>main.feed-main{
+    max-width:none!important;
+    padding-left:14px!important;
+    padding-right:14px!important;
+  }
+}
