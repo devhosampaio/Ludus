@@ -9857,3 +9857,18 @@ html{
   opacity:1!important;
   transform:scaleX(1)!important;
 }
+
+/* Espaçamento simétrico do título de boas-vindas e recuo uniforme no conteúdo principal. */
+#app .feed-shell>main.feed-main .feed-welcome>h1{
+  padding-top:16px!important;
+  padding-bottom:16px!important;
+}
+#app .feed-shell>main.feed-main{
+  padding-left:10px!important;
+  padding-right:10px!important;
+}
+#app .feed-shell>main.feed-main .feed-main__container>*{
+  padding-left:10px!important;
+  padding-right:10px!important;
+  box-sizing:border-box!important;
+}
