@@ -727,6 +727,9 @@ async function renderSignedIn(user) {
       button.classList.toggle('is-active', active);
       button.setAttribute('aria-selected', String(active));
     });
+    app.querySelectorAll('.side-menu__item[data-feed-mode]').forEach((button) => {
+      button.classList.toggle('is-active', button.dataset.feedMode === mode);
+    });
 
     if (!visibleReviews.length) {
       const message = mode === 'following'
@@ -784,8 +787,8 @@ async function renderSignedIn(user) {
     }).join('');
   };
 
-  feedTabs.addEventListener('click', (event) => {
-    const button = event.target.closest('[data-feed-mode]');
+  app.addEventListener('click', (event) => {
+    const button = event.target.closest('.side-menu__item[data-feed-mode]');
     if (button) renderFeed(button.dataset.feedMode);
   });
   renderFeed('home');
