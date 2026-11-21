@@ -324,15 +324,7 @@ async function renderSignedIn(user) {
       <div class="feed-center-column">
       <header class="app-topbar app-topbar__content">
           <nav class="feed-navigation feed-navigation--header" aria-label="Navegação do feed"><div class="feed-tabs" role="tablist" aria-label="Navegação do feed"><button class="feed-tabs__button is-active" type="button" role="tab" aria-selected="true" data-feed-mode="home">Início</button><button class="feed-tabs__button" type="button" role="tab" aria-selected="false" data-feed-mode="popular">Para você</button><button class="feed-tabs__button" type="button" role="tab" aria-selected="false" data-feed-mode="following">Seguindo</button><button class="feed-tabs__button" type="button" role="tab" aria-selected="false" data-feed-mode="recent">Recentes</button><button class="feed-tabs__create" type="button" data-create-review aria-label="Publicar nova avaliação" title="Publicar nova avaliação"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 2v8M2 6h8"></path></svg></button></div></nav>
-          <div class="header-actions">
-          <div class="header-search">
-            <button class="header-search__toggle" type="button" data-search-toggle aria-label="Abrir busca" aria-expanded="false" title="Buscar">
-              <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"></circle><path d="m16 16 5 5"></path></svg>
-            </button>
-            <input type="search" data-header-search placeholder="Buscar..." autocomplete="off" aria-label="Buscar jogos ou jogadores">
-            <div class="header-search__results" data-header-search-results hidden></div>
-          </div>
-          </div>
+
 
       </header>
       </div>
@@ -362,30 +354,6 @@ async function renderSignedIn(user) {
       <nav class="side-menu side-menu--right" aria-label="Menu lateral direito"></nav>
     </div>`;
 
-  const earlySearchWrap = app.querySelector('.header-search');
-  const earlySearchToggle = app.querySelector('[data-search-toggle]');
-  const earlySearchInput = app.querySelector('[data-header-search]');
-  const earlySearchResults = app.querySelector('[data-header-search-results]');
-  earlySearchToggle.addEventListener('click', (event) => {
-    event.preventDefault();
-    event.stopPropagation();
-    const opening = !earlySearchWrap.classList.contains('is-open');
-    earlySearchWrap.classList.toggle('is-open', opening);
-    earlySearchToggle.setAttribute('aria-expanded', String(opening));
-    if (opening) earlySearchInput.focus();
-    else {
-      earlySearchInput.value = '';
-      earlySearchResults.hidden = true;
-      earlySearchResults.innerHTML = '';
-    }
-  });
-  document.addEventListener('click', (event) => {
-    if (!earlySearchWrap.contains(event.target) && earlySearchWrap.classList.contains('is-open')) {
-      earlySearchWrap.classList.remove('is-open');
-      earlySearchToggle.setAttribute('aria-expanded', 'false');
-      earlySearchResults.hidden = true;
-    }
-  });
   setupNotifications(user);
 
   const username = app.querySelector('[data-username]');
@@ -440,55 +408,6 @@ async function renderSignedIn(user) {
     catch (error) { console.error('[Ludus] Falha ao sair:', error); }
   });
 
-  const headerSearch = app.querySelector('[data-header-search]');
-  const searchResults = app.querySelector('[data-header-search-results]');
-  const searchWrap = app.querySelector('.header-search');
-  const searchToggle = app.querySelector('[data-search-toggle]');
-  let searchTimer;
-  headerSearch.addEventListener('input', () => {
-    window.clearTimeout(searchTimer);
-    const query = headerSearch.value.trim().replace(/^@/, '');
-    if (query.length < 2) {
-      searchResults.hidden = true;
-      searchResults.innerHTML = '';
-      app.querySelectorAll('.review-card').forEach((card) => { card.hidden = false; });
-      return;
-    }
-    searchTimer = window.setTimeout(async () => {
-      const safeQuery = query.replace(/[,%()]/g, ' ').trim();
-      const [players, games, steamGrid] = await Promise.all([
-        supabase.from('profiles').select('username, display_name, avatar_url').or('username.ilike.%' + safeQuery + '%,display_name.ilike.%' + safeQuery + '%').limit(5),
-        supabase.from('games').select('id, title, release_year, cover_url').ilike('title', '%' + safeQuery + '%').limit(5),
-        supabase.functions.invoke('steamgriddb', { body: { action: 'search', query: safeQuery } })
-      ]);
-      if (headerSearch.value.trim().replace(/^@/, '') !== query) return;
-      const playerItems = (players.data || []).map((profile) =>
-        '<button type="button" class="header-search__result header-search__result--player" data-search-profile="' + escapeHTML(profile.username) + '">' +
-        (profile.avatar_url ? '<img src="' + escapeHTML(profile.avatar_url) + '" alt="">' : '<span class="header-search__avatar">' + profilePlaceholderMarkup() + '</span>') +
-        '<strong>' + escapeHTML(profile.username) + '</strong></button>'
-      ).join('');
-      const localGames = (games.data || []).map((game) => ({ ...game, source: 'local' }));
-      const localTitles = new Set(localGames.map((game) => game.title.trim().toLocaleLowerCase()));
-      const externalGames = (steamGrid.data?.data || [])
-        .filter((game) => !localTitles.has(String(game.name || '').trim().toLocaleLowerCase()))
-        .map((game) => ({
-          id: game.id,
-          title: game.name,
-          release_year: game.release_year || null,
-          cover_url: game.cover_url || null,
-          source: 'steamgrid'
-        }));
-      const uniqueGames = [...new Map([...localGames, ...externalGames].map((game) => [game.source + ':' + game.id, game])).values()];
-      const gameItems = uniqueGames.slice(0, 8).map((game) =>
-        '<button type="button" class="header-search__result header-search__result--game" ' +
-        (game.source === 'steamgrid' ? 'data-search-steamgrid-id="' + escapeHTML(game.id) + '" data-search-steamgrid-name="' + escapeHTML(game.title) + '"' : 'data-search-game-id="' + escapeHTML(game.id) + '"') + '>' +
-        (game.cover_url ? '<span class="header-search__game-banner" style="background-image:linear-gradient(90deg, transparent 45%, #302c3d 100%),url(&quot;' + escapeHTML(game.cover_url) + '&quot;)"></span>' : '<span class="header-search__game-banner header-search__game-banner--empty"></span>') +
-        '<strong>' + escapeHTML(game.title) + (game.release_year ? ' <small>(' + escapeHTML(game.release_year) + ')</small>' : '') + '</strong></button>'
-      ).join('');
-      searchResults.innerHTML = playerItems + gameItems || '<p class="header-search__empty">Nenhum resultado encontrado.</p>';
-      searchResults.hidden = false;
-    }, 220);
-  });
   const notificationRoot = app.querySelector('[data-notifications]');
   const notificationsButton = notificationRoot?.querySelector('[data-notifications-toggle]');
   const notificationPanel = notificationRoot?.querySelector('[data-notifications-panel]');
@@ -504,38 +423,6 @@ async function renderSignedIn(user) {
     if (event.key === 'Escape') {
       if (notificationPanel) notificationPanel.hidden = true;
       notificationsButton?.setAttribute('aria-expanded', 'false');
-      searchWrap.classList.remove('is-open');
-      searchToggle.setAttribute('aria-expanded', 'false');
-      searchResults.hidden = true;
-    }
-  });
-
-  searchResults.addEventListener('click', async (event) => {
-    const player = event.target.closest('[data-search-profile]');
-    const game = event.target.closest('[data-search-game-id]');
-    const steamGridGame = event.target.closest('[data-search-steamgrid-id]');
-    if (player) {
-      searchResults.hidden = true;
-      navigateToProfile(user, player.dataset.searchProfile);
-    } else if (game) {
-      searchResults.hidden = true;
-      headerSearch.blur();
-      navigateToGame(user, game.dataset.searchGameId);
-    } else if (steamGridGame) {
-      steamGridGame.disabled = true;
-      steamGridGame.classList.add('is-loading');
-      const { data, error } = await supabase.functions.invoke('steamgriddb', {
-        body: { action: 'save', game: { id: steamGridGame.dataset.searchSteamgridId, name: steamGridGame.dataset.searchSteamgridName } }
-      });
-      if (error || !data?.game?.id) {
-        console.error('[Ludus] Não foi possível adicionar o jogo encontrado:', error || data?.error);
-        steamGridGame.disabled = false;
-        steamGridGame.classList.remove('is-loading');
-        return;
-      }
-      searchResults.hidden = true;
-      headerSearch.blur();
-      navigateToGame(user, data.game.id);
     }
   });
 
