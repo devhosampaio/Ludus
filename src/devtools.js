@@ -27,6 +27,14 @@ style.textContent = `
   #${ROOT_ID} .devtools-property__value{min-width:0;color:#f5f0e6;font:10px/1.4 ui-monospace,monospace;overflow-wrap:anywhere;user-select:text}
   #${ROOT_ID} .devtools-panel__actions button:first-child{background:#d96c55;color:#211e2b;border-color:#d96c55}
   #${ROOT_ID} .devtools-status{min-height:16px;margin-top:8px;color:#a9d5b5;font-size:11px}
+  #${ROOT_ID} .devtools-editor{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px;padding-top:12px;border-top:1px solid #ffffff20}
+  #${ROOT_ID} .devtools-editor__title{grid-column:1/-1;font-size:11px;font-weight:700}
+  #${ROOT_ID} .devtools-editor label{display:grid;gap:4px;color:#c2bdca;font-size:10px}
+  #${ROOT_ID} .devtools-editor input,#${ROOT_ID} .devtools-editor select{width:100%;min-width:0;padding:7px;border:1px solid #ffffff30;border-radius:6px;background:#17151d;color:#f5f0e6;font-size:11px}
+  #${ROOT_ID} .devtools-editor__code{grid-column:1/-1;max-height:100px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;padding:8px;background:#17151d;border-radius:6px;color:#f5f0e6;font:10px/1.5 ui-monospace,monospace;user-select:text}
+  #${ROOT_ID} .devtools-editor__actions{grid-column:1/-1;display:flex;gap:8px}
+  #${ROOT_ID} .devtools-editor__actions button{flex:1}
+
   #${ROOT_ID} .devtools-measure{margin-top:12px;padding-top:12px;border-top:1px solid #ffffff20}
   #${ROOT_ID} .devtools-measure__values{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:9px}
   #${ROOT_ID} .devtools-measure__value{padding:8px;background:#17151d;border-radius:6px}
@@ -66,6 +74,35 @@ root.innerHTML = `
       <span class="devtools-property__name">font-size</span><code class="devtools-property__value" data-prop-font-size>—</code>
       <span class="devtools-property__name">outline</span><code class="devtools-property__value" data-prop-outline>—</code>
     </div>
+    <div class="devtools-editor" data-dev-editor>
+      <strong class="devtools-editor__title">Ajustar elemento em tempo real</strong>
+      <label>Alinhamento do texto
+        <select data-style="textAlign"><option value="">Original</option><option value="left">Esquerda</option><option value="center">Centro</option><option value="right">Direita</option><option value="justify">Justificado</option></select>
+      </label>
+      <label>Alinhamento horizontal (flex)
+        <select data-style="justifyContent"><option value="">Original</option><option value="flex-start">Início</option><option value="center">Centro</option><option value="flex-end">Fim</option><option value="space-between">Espaço entre</option><option value="space-around">Espaço ao redor</option></select>
+      </label>
+      <label>Alinhamento vertical (flex)
+        <select data-style="alignItems"><option value="">Original</option><option value="flex-start">Topo</option><option value="center">Centro</option><option value="flex-end">Base</option><option value="stretch">Esticar</option></select>
+      </label>
+      <label>Largura
+        <input data-style="width" type="text" placeholder="Original (ex.: 100%, 320px)">
+      </label>
+      <label>Altura
+        <input data-style="height" type="text" placeholder="Original (ex.: auto, 200px)">
+      </label>
+      <label>Deslocamento X (px)
+        <input data-style="translateX" type="number" step="1" placeholder="0">
+      </label>
+      <label>Deslocamento Y (px)
+        <input data-style="translateY" type="number" step="1" placeholder="0">
+      </label>
+      <code class="devtools-editor__code" data-dev-css-preview>Selecione um elemento para começar.</code>
+      <div class="devtools-editor__actions">
+        <button type="button" data-dev-copy-css>Copiar código CSS</button>
+        <button type="button" data-dev-reset-css>Limpar ajustes</button>
+      </div>
+    </div>
     <div class="devtools-measure">
       <button type="button" data-dev-measure aria-pressed="false">⌖ Medir distância entre elementos</button>
       <p class="devtools-panel__hint" data-dev-measure-hint>Ative e clique em dois elementos para comparar suas posições.</p>
@@ -92,6 +129,11 @@ const nameOutput = root.querySelector('[data-dev-name]');
 const selectorOutput = root.querySelector('[data-dev-selector]');
 const classesOutput = root.querySelector('[data-dev-classes]');
 const statusOutput = root.querySelector('[data-dev-status]');
+const editor = root.querySelector('[data-dev-editor]');
+const cssPreview = root.querySelector('[data-dev-css-preview]');
+const styleInputs = [...editor.querySelectorAll('[data-style]')];
+const editedStyles = new Map();
+
 const propertiesOutput = root.querySelector('[data-dev-properties]');
 const measureButton = root.querySelector('[data-dev-measure]');
 const measureHint = root.querySelector('[data-dev-measure-hint]');
@@ -190,6 +232,52 @@ function updateProperties(element) {
   propertiesOutput.hidden = false;
 }
 
+function renderCssPreview() {
+  if (!selected) {
+    cssPreview.textContent = 'Selecione um elemento para começar.';
+    return;
+  }
+  const declarations = [...editedStyles.entries()]
+    .filter(([, value]) => value !== '')
+    .map(([property, value]) => '  ' + property.replace(/[A-Z]/g, (letter) => '-' + letter.toLowerCase()) + ': ' + value + ';');
+  cssPreview.textContent = declarations.length
+    ? lastSelector + ' {\\n' + declarations.join('\\n') + '\\n}'
+    : 'Nenhum ajuste aplicado. Use os controles acima.';
+}
+
+function applyEditorValue(input) {
+  if (!selected) return;
+  const property = input.dataset.style;
+  const value = input.value.trim();
+  if (property === 'translateX' || property === 'translateY') {
+    const x = Number(editor.querySelector('[data-style="translateX"]').value || 0);
+    const y = Number(editor.querySelector('[data-style="translateY"]').value || 0);
+    const hasOffset = editor.querySelector('[data-style="translateX"]').value !== '' ||
+      editor.querySelector('[data-style="translateY"]').value !== '';
+    selected.style.transform = hasOffset ? 'translate(' + x + 'px, ' + y + 'px)' : '';
+    editedStyles.set('transform', hasOffset ? 'translate(' + x + 'px, ' + y + 'px)' : '');
+  } else {
+    selected.style[property] = value;
+    editedStyles.set(property, value);
+  }
+  renderCssPreview();
+  updateProperties(selected);
+}
+
+function loadEditorValues(element) {
+  editedStyles.clear();
+  for (const input of styleInputs) {
+    const property = input.dataset.style;
+    const inlineValue = element.style[property] || '';
+    if (property === 'translateX' || property === 'translateY') {
+      input.value = '';
+    } else {
+      input.value = inlineValue;
+    }
+  }
+  cssPreview.textContent = 'Ajuste os controles para gerar o CSS.';
+}
+
 function showSelection(element) {
   if (selected) selected.classList.remove(SELECTED_CLASS);
   selected = element;
@@ -202,7 +290,8 @@ function showSelection(element) {
   selectorOutput.textContent = details.selector;
   classesOutput.textContent = details.classes;
   updateProperties(selected);
-  statusOutput.textContent = 'Elemento selecionado. Você pode copiar e enviar aqui no chat.';
+  loadEditorValues(selected);
+  statusOutput.textContent = 'Elemento selecionado. Ajuste os controles e copie o CSS para enviar no chat.';
 }
 
 function clearMeasurement() {
@@ -287,6 +376,25 @@ async function copyText(value) {
   }
 }
 
+styleInputs.forEach((input) => {
+  input.addEventListener('input', () => applyEditorValue(input));
+  input.addEventListener('change', () => applyEditorValue(input));
+});
+root.querySelector('[data-dev-copy-css]').addEventListener('click', () => {
+  if (!selected) return;
+  copyText(cssPreview.textContent.includes(' {') ? cssPreview.textContent : '');
+});
+root.querySelector('[data-dev-reset-css]').addEventListener('click', () => {
+  if (!selected) return;
+  for (const input of styleInputs) input.value = '';
+  for (const property of ['textAlign','justifyContent','alignItems','width','height','transform']) {
+    selected.style[property] = '';
+  }
+  editedStyles.clear();
+  renderCssPreview();
+  updateProperties(selected);
+  statusOutput.textContent = 'Ajustes temporários removidos.';
+});
 toggle.addEventListener('click', () => setActive(!active));
 root.querySelector('[data-dev-close]').addEventListener('click', () => setActive(false));
 measureButton.addEventListener('click', () => {
