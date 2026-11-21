@@ -9722,8 +9722,15 @@ body,
 }
 
 
-/* Reduz o tamanho dos textos das abas de navegação do feed. */
+/* Ajusta a tipografia das abas e reduz a altura do botão Página inicial. */
 #app .feed-shell>.feed-center-column>.app-topbar .feed-tabs,
 #app .feed-shell>.feed-center-column>.app-topbar .feed-tabs *{
-  font-size:10px!important;
+  font-size:12px!important;
+}
+#app .feed-shell>.feed-center-column>.app-topbar button[data-feed-mode="home"]{
+  height:34px!important;
+  min-height:34px!important;
+  padding-top:0!important;
+  padding-bottom:0!important;
+  align-self:center!important;
 }
