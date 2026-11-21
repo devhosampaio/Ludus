@@ -309,19 +309,7 @@ async function renderSignedIn(user) {
             <div class="header-search__results" data-header-search-results hidden></div>
           </div>
           </div>
-          <details class="account-menu" data-account-details>
-            <summary class="sidebar-user" data-account-menu>
-              <span class="sidebar-user__avatar" data-avatar> L </span>
-              <span class="sidebar-user__identity"><strong data-username></strong></span>
-              <svg class="sidebar-user__chevron" viewBox="0 0 24 24" aria-hidden="true"><path d="m7 10 5 5 5-5"></path></svg>
-            </summary>
-            <div class="account-menu__panel" data-account-panel>
-              <button type="button" data-open-own-profile>Ver perfil</button>
-              <button type="button" data-account-settings>Configurações da conta</button>
-              <div></div>
-              <button type="button" data-signout>Encerrar sessão <span>↗</span></button>
-            </div>
-          </details>
+          
         </div>
       </header>
       <main class="feed-main">
