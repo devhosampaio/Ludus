@@ -304,13 +304,13 @@ function sharedSideMenuMarkup(user) {
     <div class="side-menu__navigation" aria-label="Navegação principal">
       <button class="side-menu__item is-active" type="button" data-feed-mode="home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z"/></svg><span>Página inicial</span></button>
       <button class="side-menu__item" type="button" data-feed-mode="popular"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 5 5M8 10h6M11 7v6"/></svg><span>Explorar</span></button>
-      <div class="side-menu__notifications">\${notificationControlMarkup()}</div>
+      <div class="side-menu__notifications">${notificationControlMarkup()}</div>
       <button class="side-menu__item" type="button" data-side-settings><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z"/><path d="m19.4 15 .1.1 1.4 1.1-1.4 2.4-1.7-.7a8 8 0 0 1-1.5.9l-.3 1.8h-2.8l-.3-1.8a8 8 0 0 1-1.5-.9l-1.7.7-1.4-2.4 1.4-1.1a7 7 0 0 1 0-1.8l-1.4-1.1 1.4-2.4 1.7.7a8 8 0 0 1 1.5-.9l.3-1.8h2.8l.3 1.8a8 8 0 0 1 1.5.9l1.7-.7 1.4 2.4-1.4 1.1a7 7 0 0 1 0 1.8Z"/></svg><span>Configurações</span></button>
       <button class="side-menu__item" type="button" data-feed-mode="saved"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4.5A1.5 1.5 0 0 1 7.5 3h9A1.5 1.5 0 0 1 18 4.5V21l-6-4-6 4Z"/></svg><span>Listas salvas</span></button>
     </div>
     <button class="side-menu__profile" type="button" data-side-profile>
-      <span class="side-menu__avatar" data-side-avatar>\${profilePlaceholderMarkup()}</span>
-      <span class="side-menu__profile-name" data-side-username>\${escapeHTML(fallbackName)}</span>
+      <span class="side-menu__avatar" data-side-avatar>${profilePlaceholderMarkup()}</span>
+      <span class="side-menu__profile-name" data-side-username>${escapeHTML(fallbackName)}</span>
     </button>
   </nav>`;
 }
@@ -323,9 +323,16 @@ function sharedFeedHeaderMarkup() {
   </header>`;
 }
 
-function setupSharedSideMenu(user, profile = null) {
+async function setupSharedSideMenu(user, profile = null) {
   const root = app.querySelector('.side-menu--left');
   if (!root) return;
+  if (!profile) {
+    const { data } = await supabase.from('profiles')
+      .select('username, display_name, avatar_url, bio')
+      .eq('id', user.id).maybeSingle();
+    profile = data;
+  }
+  if (!root.isConnected) return;
   const username = root.querySelector('[data-side-username]');
   const avatar = root.querySelector('[data-side-avatar]');
   if (username) username.textContent = profile?.display_name || profile?.username || user.user_metadata?.display_name || user.email?.split('@')[0] || 'jogador';
@@ -339,6 +346,10 @@ function setupSharedSideMenu(user, profile = null) {
   root.querySelectorAll('[data-feed-mode]').forEach((button) => {
     button.addEventListener('click', () => navigateToFeed(user));
   });
+  app.querySelectorAll('.feed-center-column [data-feed-mode]').forEach((button) => {
+    button.addEventListener('click', () => navigateToFeed(user));
+  });
+  app.querySelector('[data-create-review]')?.addEventListener('click', () => openReviewComposer(user));
   setupNotifications(user);
 }
 
@@ -1325,10 +1336,6 @@ async function renderProfilePage(currentUser, username) {
     .select('id, username, display_name, bio, avatar_url, banner_url')
     .eq('username', username).maybeSingle();
   if (requestId !== renderProfilePage.requestId) return;
-  const { data: currentProfile } = await supabase.from('profiles')
-    .select('username, display_name, avatar_url, bio')
-    .eq('id', currentUser.id).maybeSingle();
-  setupSharedSideMenu(currentUser, currentProfile);
   if (profileError || !profile) {
     app.querySelector('.profile-page__content').innerHTML = '<div class="profile-page__empty"><p class="eyebrow">PERFIL INDISPONÍVEL</p><h1>Não encontramos este jogador.</h1><button type="button" class="profile-page__back" data-profile-back>← Voltar ao feed</button></div>';
     app.querySelector('[data-profile-back]')?.addEventListener('click', () => navigateToFeed(currentUser));
