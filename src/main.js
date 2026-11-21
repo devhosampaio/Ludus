@@ -297,8 +297,7 @@ async function renderSignedIn(user) {
   const fallbackName = user.user_metadata?.display_name || user.email?.split('@')[0] || 'jogador';
   app.innerHTML = `
     <div class="feed-shell">
-      <header class="app-topbar">
-        <div class="app-topbar__content">
+      <header class="app-topbar app-topbar__content">
 
           <nav class="feed-navigation feed-navigation--header" aria-label="Navegação do feed"><div class="feed-tabs" role="tablist" aria-label="Navegação do feed"><button class="feed-tabs__button is-active" type="button" role="tab" aria-selected="true" data-feed-mode="home">Início</button><button class="feed-tabs__button" type="button" role="tab" aria-selected="false" data-feed-mode="popular">Para você</button><button class="feed-tabs__button" type="button" role="tab" aria-selected="false" data-feed-mode="following">Seguindo</button><button class="feed-tabs__button" type="button" role="tab" aria-selected="false" data-feed-mode="recent">Recentes</button></div></nav>
           <div class="header-actions">
@@ -310,8 +309,7 @@ async function renderSignedIn(user) {
             <div class="header-search__results" data-header-search-results hidden></div>
           </div>
           </div>
-          
-        </div>
+
       </header>
       <main class="feed-main">
         <div class="feed-main__container">
