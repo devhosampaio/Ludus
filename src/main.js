@@ -311,6 +311,7 @@ async function renderSignedIn(user) {
           </div>
 
       </header>
+      <nav class="side-menu side-menu--left" aria-label="Menu lateral esquerdo"></nav>
       <main class="feed-main">
         <div class="feed-main__container">
         <aside class="feed-ad feed-ad--left" aria-label="Espaço reservado para publicidade"></aside>
@@ -334,6 +335,7 @@ async function renderSignedIn(user) {
         <aside class="feed-ad feed-ad--right" aria-label="Espaço reservado para publicidade"></aside>
         </div>
       </main>
+      <nav class="side-menu side-menu--right" aria-label="Menu lateral direito"></nav>
     </div>`;
 
   const earlySearchWrap = app.querySelector('.header-search');
