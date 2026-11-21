@@ -9097,3 +9097,51 @@ body,
     max-width:100%!important;
   }
 }
+
+
+/* Navegação do feed integrada ao cabeçalho, antes da busca. */
+#app .app-topbar__content{
+  justify-content:space-between!important;
+  gap:20px!important;
+}
+#app .app-topbar .feed-navigation--header{
+  display:flex!important;
+  flex:0 1 auto!important;
+  width:auto!important;
+  max-width:none!important;
+  min-width:0!important;
+  margin:0 auto 0 0!important;
+}
+#app .app-topbar .feed-navigation--header .feed-tabs{
+  display:flex!important;
+  align-items:center!important;
+  gap:4px!important;
+  width:auto!important;
+  max-width:none!important;
+  margin:0!important;
+  padding:0!important;
+  background:transparent!important;
+}
+#app .app-topbar .feed-navigation--header .feed-tabs__button{
+  padding:10px 13px!important;
+  color:#bdb8ca!important;
+  background:transparent!important;
+  font-size:13px!important;
+}
+#app .app-topbar .feed-navigation--header .feed-tabs__button:hover,
+#app .app-topbar .feed-navigation--header .feed-tabs__button.is-active{
+  color:#f5f0e6!important;
+  background:rgb(112 96 171 / 22%)!important;
+}
+#app .app-topbar .header-actions{
+  flex:0 0 auto!important;
+  margin:0!important;
+}
+@media(max-width:600px){
+  #app .app-topbar__content{gap:8px!important}
+  #app .app-topbar .feed-navigation--header .feed-tabs{gap:0!important}
+  #app .app-topbar .feed-navigation--header .feed-tabs__button{
+    padding:9px 7px!important;
+    font-size:11px!important;
+  }
+}
