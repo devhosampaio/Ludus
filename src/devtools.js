@@ -21,6 +21,10 @@ style.textContent = `
   #${ROOT_ID} .devtools-field label{display:block;color:#c2bdca;font-size:10px;text-transform:uppercase;letter-spacing:.07em;margin-bottom:4px}
   #${ROOT_ID} .devtools-field code{display:block;max-height:78px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;padding:8px;background:#17151d;border-radius:6px;color:#f5f0e6;font:11px/1.5 ui-monospace,monospace;user-select:text}
   #${ROOT_ID} .devtools-panel__actions{display:flex;gap:8px;margin-top:12px}
+  #${ROOT_ID} .devtools-properties{display:grid;grid-template-columns:105px minmax(0,1fr);gap:6px 10px;margin-top:14px;padding-top:12px;border-top:1px solid #ffffff20}
+  #${ROOT_ID} .devtools-properties__title{grid-column:1/-1;color:#f5f0e6;font-size:11px;font-weight:700;margin-bottom:2px}
+  #${ROOT_ID} .devtools-property__name{color:#c2bdca;font-size:10px;align-self:center}
+  #${ROOT_ID} .devtools-property__value{min-width:0;color:#f5f0e6;font:10px/1.4 ui-monospace,monospace;overflow-wrap:anywhere;user-select:text}
   #${ROOT_ID} .devtools-panel__actions button:first-child{background:#d96c55;color:#211e2b;border-color:#d96c55}
   #${ROOT_ID} .devtools-status{min-height:16px;margin-top:8px;color:#a9d5b5;font-size:11px}
   .${HIGHLIGHT_CLASS}{outline:2px solid #ffbd4a!important;outline-offset:3px!important;cursor:crosshair!important}
@@ -42,6 +46,16 @@ root.innerHTML = `
     <div class="devtools-field"><label>Elemento</label><code data-dev-name>Nenhum elemento selecionado</code></div>
     <div class="devtools-field"><label>Seletor CSS</label><code data-dev-selector>—</code></div>
     <div class="devtools-field"><label>Classes</label><code data-dev-classes>—</code></div>
+    <div class="devtools-properties" data-dev-properties hidden>
+      <strong class="devtools-properties__title">Propriedades computadas</strong>
+      <span class="devtools-property__name">width</span><code class="devtools-property__value" data-prop-width>—</code>
+      <span class="devtools-property__name">height</span><code class="devtools-property__value" data-prop-height>—</code>
+      <span class="devtools-property__name">border</span><code class="devtools-property__value" data-prop-border>—</code>
+      <span class="devtools-property__name">color</span><code class="devtools-property__value" data-prop-color>—</code>
+      <span class="devtools-property__name">font-family</span><code class="devtools-property__value" data-prop-font-family>—</code>
+      <span class="devtools-property__name">font-size</span><code class="devtools-property__value" data-prop-font-size>—</code>
+      <span class="devtools-property__name">outline</span><code class="devtools-property__value" data-prop-outline>—</code>
+    </div>
     <div class="devtools-panel__actions">
       <button type="button" data-dev-copy>Copiar identificação</button>
       <button type="button" data-dev-copy-selector>Copiar seletor</button>
@@ -58,6 +72,7 @@ const nameOutput = root.querySelector('[data-dev-name]');
 const selectorOutput = root.querySelector('[data-dev-selector]');
 const classesOutput = root.querySelector('[data-dev-classes]');
 const statusOutput = root.querySelector('[data-dev-status]');
+const propertiesOutput = root.querySelector('[data-dev-properties]');
 let active = false;
 let hovered = null;
 let selected = null;
@@ -122,6 +137,27 @@ function setHovered(element) {
   if (hovered && hovered !== selected) hovered.classList.add(HIGHLIGHT_CLASS);
 }
 
+function updateProperties(element) {
+  // Ignora temporariamente o contorno do próprio inspetor para mostrar o outline real do elemento.
+  element.classList.remove(SELECTED_CLASS);
+  const computed = window.getComputedStyle(element);
+  const values = {
+    width: computed.width,
+    height: computed.height,
+    border: computed.border,
+    color: computed.color,
+    'font-family': computed.fontFamily,
+    'font-size': computed.fontSize,
+    outline: computed.outline
+  };
+  element.classList.add(SELECTED_CLASS);
+  for (const [property, value] of Object.entries(values)) {
+    const output = propertiesOutput.querySelector('[data-prop-' + property.replace(/[^a-z-]/g, '') + ']');
+    if (output) output.textContent = value;
+  }
+  propertiesOutput.hidden = false;
+}
+
 function showSelection(element) {
   if (selected) selected.classList.remove(SELECTED_CLASS);
   selected = element;
@@ -133,6 +169,7 @@ function showSelection(element) {
   nameOutput.textContent = details.name;
   selectorOutput.textContent = details.selector;
   classesOutput.textContent = details.classes;
+  updateProperties(selected);
   statusOutput.textContent = 'Elemento selecionado. Você pode copiar e enviar aqui no chat.';
 }
 
