@@ -297,6 +297,8 @@ async function renderSignedIn(user) {
   const fallbackName = user.user_metadata?.display_name || user.email?.split('@')[0] || 'jogador';
   app.innerHTML = `
     <div class="feed-shell">
+      <nav class="side-menu side-menu--left" aria-label="Menu lateral esquerdo"></nav>
+      <div class="feed-center-column">
       <header class="app-topbar app-topbar__content">
 
           <nav class="feed-navigation feed-navigation--header" aria-label="Navegação do feed"><div class="feed-tabs" role="tablist" aria-label="Navegação do feed"><button class="feed-tabs__button is-active" type="button" role="tab" aria-selected="true" data-feed-mode="home">Início</button><button class="feed-tabs__button" type="button" role="tab" aria-selected="false" data-feed-mode="popular">Para você</button><button class="feed-tabs__button" type="button" role="tab" aria-selected="false" data-feed-mode="following">Seguindo</button><button class="feed-tabs__button" type="button" role="tab" aria-selected="false" data-feed-mode="recent">Recentes</button></div></nav>
@@ -311,7 +313,6 @@ async function renderSignedIn(user) {
           </div>
 
       </header>
-      <nav class="side-menu side-menu--left" aria-label="Menu lateral esquerdo"></nav>
       <main class="feed-main">
         <div class="feed-main__container">
         <aside class="feed-ad feed-ad--left" aria-label="Espaço reservado para publicidade"></aside>
@@ -335,6 +336,7 @@ async function renderSignedIn(user) {
         <aside class="feed-ad feed-ad--right" aria-label="Espaço reservado para publicidade"></aside>
         </div>
       </main>
+      </div>
       <nav class="side-menu side-menu--right" aria-label="Menu lateral direito"></nav>
     </div>`;
 
