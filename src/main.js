@@ -296,31 +296,31 @@ function renderCommentsSection(reviewId, comments, likes, user) {
 async 
 function sharedSideMenuMarkup(user) {
   const fallbackName = user.user_metadata?.display_name || user.email?.split('@')[0] || 'jogador';
-  return `  <nav class="side-menu side-menu--left" aria-label="Menu lateral esquerdo">
+  return `  <header class="side-menu side-menu--left">
     <a class="topbar-brand side-menu__brand" href="#inicio" aria-label="Ludus — início">
       <span class="topbar-brand__icon" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M7 4v24h22" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="square" stroke-linejoin="miter"/></svg></span>
       <span class="topbar-brand__name">Ludus</span>
     </a>
-    <div class="side-menu__navigation" aria-label="Navegação principal">
+    <nav class="side-menu__navigation" aria-label="Navegação principal">
       <button class="side-menu__item is-active" type="button" data-feed-mode="home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z"/></svg><span>Página inicial</span></button>
       <button class="side-menu__item" type="button" data-feed-mode="popular"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 5 5M8 10h6M11 7v6"/></svg><span>Explorar</span></button>
       <div class="side-menu__notifications">${notificationControlMarkup()}</div>
       <button class="side-menu__item" type="button" data-side-settings><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z"/><path d="m19.4 15 .1.1 1.4 1.1-1.4 2.4-1.7-.7a8 8 0 0 1-1.5.9l-.3 1.8h-2.8l-.3-1.8a8 8 0 0 1-1.5-.9l-1.7.7-1.4-2.4 1.4-1.1a7 7 0 0 1 0-1.8l-1.4-1.1 1.4-2.4 1.7.7a8 8 0 0 1 1.5-.9l.3-1.8h2.8l.3 1.8a8 8 0 0 1 1.5.9l1.7-.7 1.4 2.4-1.4 1.1a7 7 0 0 1 0 1.8Z"/></svg><span>Configurações</span></button>
       <button class="side-menu__item" type="button" data-feed-mode="saved"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4.5A1.5 1.5 0 0 1 7.5 3h9A1.5 1.5 0 0 1 18 4.5V21l-6-4-6 4Z"/></svg><span>Listas salvas</span></button>
-    </div>
+    </nav>
     <button class="side-menu__profile" type="button" data-side-profile>
       <span class="side-menu__avatar" data-side-avatar>${profilePlaceholderMarkup()}</span>
       <span class="side-menu__profile-name" data-side-username>${escapeHTML(fallbackName)}</span>
     </button>
-  </nav>`;
+  </header>`;
 }
 
 function sharedFeedHeaderMarkup() {
-  return `  <header class="app-topbar app-topbar__content">
+  return `  <div class="app-topbar app-topbar__content">
       <nav class="feed-navigation feed-navigation--header" aria-label="Navegação do feed"><div class="feed-tabs" role="tablist" aria-label="Navegação do feed"><button class="feed-tabs__button is-active" type="button" role="tab" aria-selected="true" data-feed-mode="home">Início</button><button class="feed-tabs__button" type="button" role="tab" aria-selected="false" data-feed-mode="popular">Para você</button><button class="feed-tabs__button" type="button" role="tab" aria-selected="false" data-feed-mode="following">Seguindo</button><button class="feed-tabs__button" type="button" role="tab" aria-selected="false" data-feed-mode="recent">Recentes</button><button class="feed-tabs__create" type="button" data-create-review aria-label="Publicar nova avaliação" title="Publicar nova avaliação"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 2v8M2 6h8"></path></svg></button></div></nav>
 
 
-  </header>`;
+  </div>`;
 }
 
 async function setupSharedSideMenu(user, profile = null) {
@@ -365,10 +365,8 @@ function renderSignedIn(user) {
   app.innerHTML = `
     <div class="feed-shell">
       ${sharedSideMenuMarkup(user)}
-      <div class="feed-center-column">
+      <main class="feed-center-column feed-main">
       ${sharedFeedHeaderMarkup()}
-      </div>
-      <main class="feed-main">
         <div class="feed-main__container">
         <aside class="feed-ad feed-ad--left" aria-label="Espaço reservado para publicidade"></aside>
         <section class="feed-welcome" aria-label="Boas-vindas">
@@ -388,10 +386,9 @@ function renderSignedIn(user) {
           <div class="section-heading feed-section-heading"><div class="feed-heading__inner"><h2 class="feed-section-heading__title" data-feed-title>Para você</h2></div></div>
           <div class="feed-list feed-list--loading" data-feed-list aria-busy="true" aria-label="Carregando avaliações"><article class="feed-skeleton-card" aria-hidden="true"><div class="feed-skeleton-card__cover skeleton-shimmer"></div><div class="feed-skeleton-card__body"><div class="feed-skeleton-card__author"><span class="feed-skeleton-card__avatar skeleton-shimmer"></span><span class="feed-skeleton-card__line feed-skeleton-card__line--author skeleton-shimmer"></span><span class="feed-skeleton-card__line feed-skeleton-card__line--date skeleton-shimmer"></span></div><div class="feed-skeleton-card__line feed-skeleton-card__line--title skeleton-shimmer"></div><div class="feed-skeleton-card__line feed-skeleton-card__line--meta skeleton-shimmer"></div><div class="feed-skeleton-card__line feed-skeleton-card__line--text skeleton-shimmer"></div><div class="feed-skeleton-card__line feed-skeleton-card__line--text-short skeleton-shimmer"></div><div class="feed-skeleton-card__actions"><span class="skeleton-shimmer"></span><span class="skeleton-shimmer"></span><span class="skeleton-shimmer"></span></div></div></article><article class="feed-skeleton-card" aria-hidden="true"><div class="feed-skeleton-card__cover skeleton-shimmer"></div><div class="feed-skeleton-card__body"><div class="feed-skeleton-card__author"><span class="feed-skeleton-card__avatar skeleton-shimmer"></span><span class="feed-skeleton-card__line feed-skeleton-card__line--author skeleton-shimmer"></span><span class="feed-skeleton-card__line feed-skeleton-card__line--date skeleton-shimmer"></span></div><div class="feed-skeleton-card__line feed-skeleton-card__line--title skeleton-shimmer"></div><div class="feed-skeleton-card__line feed-skeleton-card__line--meta skeleton-shimmer"></div><div class="feed-skeleton-card__line feed-skeleton-card__line--text skeleton-shimmer"></div><div class="feed-skeleton-card__line feed-skeleton-card__line--text-short skeleton-shimmer"></div><div class="feed-skeleton-card__actions"><span class="skeleton-shimmer"></span><span class="skeleton-shimmer"></span><span class="skeleton-shimmer"></span></div></div></article><article class="feed-skeleton-card" aria-hidden="true"><div class="feed-skeleton-card__cover skeleton-shimmer"></div><div class="feed-skeleton-card__body"><div class="feed-skeleton-card__author"><span class="feed-skeleton-card__avatar skeleton-shimmer"></span><span class="feed-skeleton-card__line feed-skeleton-card__line--author skeleton-shimmer"></span><span class="feed-skeleton-card__line feed-skeleton-card__line--date skeleton-shimmer"></span></div><div class="feed-skeleton-card__line feed-skeleton-card__line--title skeleton-shimmer"></div><div class="feed-skeleton-card__line feed-skeleton-card__line--meta skeleton-shimmer"></div><div class="feed-skeleton-card__line feed-skeleton-card__line--text skeleton-shimmer"></div><div class="feed-skeleton-card__line feed-skeleton-card__line--text-short skeleton-shimmer"></div><div class="feed-skeleton-card__actions"><span class="skeleton-shimmer"></span><span class="skeleton-shimmer"></span><span class="skeleton-shimmer"></span></div></div></article><article class="feed-skeleton-card" aria-hidden="true"><div class="feed-skeleton-card__cover skeleton-shimmer"></div><div class="feed-skeleton-card__body"><div class="feed-skeleton-card__author"><span class="feed-skeleton-card__avatar skeleton-shimmer"></span><span class="feed-skeleton-card__line feed-skeleton-card__line--author skeleton-shimmer"></span><span class="feed-skeleton-card__line feed-skeleton-card__line--date skeleton-shimmer"></span></div><div class="feed-skeleton-card__line feed-skeleton-card__line--title skeleton-shimmer"></div><div class="feed-skeleton-card__line feed-skeleton-card__line--meta skeleton-shimmer"></div><div class="feed-skeleton-card__line feed-skeleton-card__line--text skeleton-shimmer"></div><div class="feed-skeleton-card__line feed-skeleton-card__line--text-short skeleton-shimmer"></div><div class="feed-skeleton-card__actions"><span class="skeleton-shimmer"></span><span class="skeleton-shimmer"></span><span class="skeleton-shimmer"></span></div></div></article></div>
         </section>
-        <aside class="feed-ad feed-ad--right" aria-label="Espaço reservado para publicidade"></aside>
         </div>
       </main>
-      <nav class="side-menu side-menu--right" aria-label="Menu lateral direito"></nav>
+      <footer class="side-menu side-menu--right" aria-label="Coluna lateral direita"><aside class="feed-ad feed-ad--right" aria-label="Espaço reservado para publicidade"></aside></footer>
     </div>`;
 
   setupNotifications(user);
@@ -1095,7 +1092,7 @@ function getReviewIdFromLocation() {
 async function renderReviewPage(currentUser, reviewId) {
   const requestId = (renderReviewPage.requestId || 0) + 1;
   renderReviewPage.requestId = requestId;
-  app.innerHTML = `<div class="feed-shell">${sharedSideMenuMarkup(currentUser)}<div class="feed-center-column">${sharedFeedHeaderMarkup()}</div><main class="feed-main profile-main"><div class="feed-main__container"><div class="profile-page__content"><div class="profile-page__loading">Carregando avaliação…</div></div></div></main></div>`;
+  app.innerHTML = `<div class="feed-shell">${sharedSideMenuMarkup(currentUser)}<main class="feed-center-column feed-main profile-main">${sharedFeedHeaderMarkup()}<div class="feed-main__container"><div class="profile-page__content"><div class="profile-page__loading">Carregando avaliação…</div></div></div></main><footer class="side-menu side-menu--right" aria-label="Coluna lateral direita"></footer></div>`;
   setupSharedSideMenu(currentUser);
   const { data: review, error } = await supabase.from('reviews')
     .select('id, user_id, game_id, rating, body, status, liked_game, created_at, profiles!reviews_user_id_fkey(username, display_name, avatar_url), games!reviews_game_id_fkey(title, cover_url, release_year, developer)')
@@ -1234,14 +1231,15 @@ async function renderGamePage(currentUser, gameId) {
   app.innerHTML = `
     <div class="feed-shell">
       ${sharedSideMenuMarkup(currentUser)}
-      <div class="feed-center-column">${sharedFeedHeaderMarkup()}</div>
-      <main class="feed-main profile-main">
+      <main class="feed-center-column feed-main profile-main">
+        ${sharedFeedHeaderMarkup()}
         <div class="feed-main__container">
           <div class="profile-page__content">
             <div class="profile-page__loading">Carregando jogo…</div>
           </div>
         </div>
       </main>
+      <footer class="side-menu side-menu--right" aria-label="Coluna lateral direita"></footer>
     </div>`;
   setupSharedSideMenu(currentUser);
 
@@ -1321,14 +1319,15 @@ async function renderProfilePage(currentUser, username) {
   app.innerHTML = `
     <div class="feed-shell">
       ${sharedSideMenuMarkup(currentUser)}
-      <div class="feed-center-column">${sharedFeedHeaderMarkup()}</div>
-      <main class="feed-main profile-main">
+      <main class="feed-center-column feed-main profile-main">
+        ${sharedFeedHeaderMarkup()}
         <div class="feed-main__container">
           <div class="profile-page__content">
             <div class="profile-page__loading">Carregando perfil…</div>
           </div>
         </div>
       </main>
+      <footer class="side-menu side-menu--right" aria-label="Coluna lateral direita"></footer>
     </div>`;
   setupSharedSideMenu(currentUser);
 
