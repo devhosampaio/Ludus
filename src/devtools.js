@@ -227,6 +227,7 @@ function measureElement(element) {
   const dy = y2 - y1;
   const distance = Math.hypot(dx, dy);
   const ns = 'http://www.w3.org/2000/svg';
+  measureOverlay.setAttribute('viewBox', '0 0 ' + window.innerWidth + ' ' + window.innerHeight);
   measureOverlay.innerHTML = '';
   const line = document.createElementNS(ns, 'line');
   line.setAttribute('x1', x1); line.setAttribute('y1', y1);
