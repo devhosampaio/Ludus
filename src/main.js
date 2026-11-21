@@ -788,7 +788,7 @@ async function renderSignedIn(user) {
   };
 
   app.addEventListener('click', (event) => {
-    const button = event.target.closest('.side-menu__item[data-feed-mode]');
+    const button = event.target.closest('.side-menu__item[data-feed-mode], .feed-tabs [data-feed-mode]');
     if (button) renderFeed(button.dataset.feedMode);
   });
   renderFeed('home');
