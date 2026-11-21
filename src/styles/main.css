@@ -9066,3 +9066,14 @@ body,
     max-width:none!important;
   }
 }
+
+
+/* Alinhamento vertical da busca no cabeçalho. */
+#app .app-topbar .header-search,
+#app .app-topbar .header-search input[data-header-search]{
+  align-self:center!important;
+}
+#app .app-topbar .header-search{
+  display:flex!important;
+  align-items:center!important;
+}
