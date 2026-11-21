@@ -9800,3 +9800,60 @@ html{
     box-sizing:border-box!important;
   }
 }
+
+/* Navegação do feed sem caixa ou pílulas: apenas texto e sublinhado roxo na aba ativa. */
+#app .feed-shell>.feed-center-column>.app-topbar nav.feed-navigation--header .feed-tabs{
+  display:flex!important;
+  align-items:stretch!important;
+  justify-content:space-between!important;
+  gap:clamp(12px,2vw,26px)!important;
+  width:100%!important;
+  min-width:0!important;
+  height:100%!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+#app .app-topbar .feed-navigation--header .feed-tabs__button,
+#app .feed-main__container>.feed-navigation .feed-tabs__button{
+  position:relative!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  min-height:100%!important;
+  padding:0 2px!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  color:#BDB8CA!important;
+  font:500 12px/1 'Inter',sans-serif!important;
+  white-space:nowrap!important;
+  transition:color .18s ease!important;
+}
+#app .app-topbar .feed-navigation--header .feed-tabs__button::after,
+#app .feed-main__container>.feed-navigation .feed-tabs__button::after{
+  position:absolute!important;
+  right:0!important;
+  bottom:0!important;
+  left:0!important;
+  height:2px!important;
+  background:#7060AB!important;
+  content:""!important;
+  opacity:0!important;
+  transform:scaleX(.55)!important;
+  transform-origin:center!important;
+  transition:opacity .18s ease,transform .18s ease!important;
+}
+#app .app-topbar .feed-navigation--header .feed-tabs__button.is-active,
+#app .feed-main__container>.feed-navigation .feed-tabs__button.is-active{
+  background:transparent!important;
+  color:#F5F0E6!important;
+}
+#app .app-topbar .feed-navigation--header .feed-tabs__button.is-active::after,
+#app .feed-main__container>.feed-navigation .feed-tabs__button.is-active::after{
+  opacity:1!important;
+  transform:scaleX(1)!important;
+}
