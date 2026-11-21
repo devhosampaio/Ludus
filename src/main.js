@@ -526,6 +526,8 @@ async function renderSignedIn(user) {
 
   if (error) {
     console.error('[Ludus] Falha ao carregar feed:', error);
+    feedList.classList.remove('feed-list--loading');
+    feedList.setAttribute('aria-busy', 'false');
     feedList.innerHTML = '<div class="feed-empty"><span class="feed-empty__number">!</span><h3>Não foi possível carregar o feed.</h3><p>Verifique sua conexão e tente atualizar a página.</p><button type="button" class="feed-retry" data-retry> Tentar novamente ↗</button></div>';
     feedList.querySelector('[data-retry]').addEventListener('click', () => renderSignedIn(user));
     return;
@@ -589,6 +591,8 @@ async function renderSignedIn(user) {
   let showAllNewcomers = false;
   const newcomersMoreButton = app.querySelector('[data-newcomers-more]');
   const renderNewcomers = () => {
+    newcomersList.classList.remove('is-loading');
+    newcomersList.setAttribute('aria-busy', 'false');
     const newestReviewsByGame = new Map();
     [...(reviews || [])]
       .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
@@ -654,6 +658,8 @@ async function renderSignedIn(user) {
   const feedContent = app.querySelector('.feed-content');
   let activeFeedMode = 'home';
   const renderFeed = (mode = 'home') => {
+    feedList.classList.remove('feed-list--loading');
+    feedList.setAttribute('aria-busy', 'false');
     activeFeedMode = mode;
     const isHome = mode === 'home';
     feedWelcome.hidden = !isHome;
