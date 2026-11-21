@@ -323,7 +323,7 @@ async function renderSignedIn(user) {
       </nav>
       <div class="feed-center-column">
       <header class="app-topbar app-topbar__content">
-          <nav class="feed-navigation feed-navigation--header" aria-label="Navegação do feed"><div class="feed-tabs" role="tablist" aria-label="Navegação do feed"><button class="feed-tabs__button is-active" type="button" role="tab" aria-selected="true" data-feed-mode="home">Início</button><button class="feed-tabs__button" type="button" role="tab" aria-selected="false" data-feed-mode="popular">Para você</button><button class="feed-tabs__button" type="button" role="tab" aria-selected="false" data-feed-mode="following">Seguindo</button><button class="feed-tabs__button" type="button" role="tab" aria-selected="false" data-feed-mode="recent">Recentes</button></div></nav>
+          <nav class="feed-navigation feed-navigation--header" aria-label="Navegação do feed"><div class="feed-tabs" role="tablist" aria-label="Navegação do feed"><button class="feed-tabs__button is-active" type="button" role="tab" aria-selected="true" data-feed-mode="home">Início</button><button class="feed-tabs__button" type="button" role="tab" aria-selected="false" data-feed-mode="popular">Para você</button><button class="feed-tabs__button" type="button" role="tab" aria-selected="false" data-feed-mode="following">Seguindo</button><button class="feed-tabs__button" type="button" role="tab" aria-selected="false" data-feed-mode="recent">Recentes</button><button class="feed-tabs__create" type="button" data-create-review aria-label="Publicar nova avaliação" title="Publicar nova avaliação"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 2v8M2 6h8"></path></svg></button></div></nav>
           <div class="header-actions">
           <div class="header-search">
             <button class="header-search__toggle" type="button" data-search-toggle aria-label="Abrir busca" aria-expanded="false" title="Buscar">
@@ -589,6 +589,7 @@ async function renderSignedIn(user) {
     return counts;
   }, new Map());
   const feedTabs = app.querySelector('.feed-tabs');
+  feedTabs?.querySelector('[data-create-review]')?.addEventListener('click', () => openReviewComposer(user));
   const newcomersSection = app.querySelector('.newcomers-section');
   const newcomersList = app.querySelector('[data-newcomers-list]');
   let showAllNewcomers = false;
