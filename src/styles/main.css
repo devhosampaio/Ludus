@@ -9959,3 +9959,12 @@ html{
   min-width:36px!important;
   flex-basis:36px!important;
 }
+
+
+/* Edição de perfil dentro da coluna central do layout principal. */
+#app .profile-editor--page{
+  width:min(100%,620px)!important;
+  max-height:none!important;
+  margin:28px auto!important;
+  overflow:visible!important;
+}
