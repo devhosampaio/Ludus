@@ -9615,3 +9615,18 @@ body,
     font-size:17px!important;
   }
 }
+
+
+/* A marca fica na coluna lateral esquerda, independente do cabeçalho central. */
+#app .feed-shell>.side-menu--left{
+  position:relative!important;
+}
+#app .feed-shell>.side-menu--left>.side-menu__brand{
+  position:fixed!important;
+  top:24px!important;
+  left:clamp(22px,3vw,48px)!important;
+  z-index:151!important;
+}
+@media(max-width:900px){
+  #app .feed-shell>.side-menu--left>.side-menu__brand{display:none!important}
+}
