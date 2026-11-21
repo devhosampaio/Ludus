@@ -9914,19 +9914,24 @@ html{
 #app .app-topbar .header-search.is-open{
   height:32px!important;
   min-height:32px!important;
-  flex-basis:32px!important;
 }
 #app .app-topbar .header-search:not(.is-open){
-  width:32px!important;
-  min-width:32px!important;
-  max-width:32px!important;
+  width:40px!important;
+  min-width:40px!important;
+  max-width:40px!important;
+  flex:0 0 40px!important;
+}
+#app .app-topbar .header-search.is-open{
+  width:min(240px,60vw)!important;
+  max-width:min(240px,60vw)!important;
+  flex:0 1 240px!important;
 }
 #app .app-topbar .header-search__toggle{
-  width:32px!important;
-  min-width:32px!important;
+  width:40px!important;
+  min-width:40px!important;
   height:32px!important;
   min-height:32px!important;
-  flex-basis:32px!important;
+  flex:0 0 40px!important;
   place-items:center!important;
 }
 #app .app-topbar .header-search input,
@@ -9950,7 +9955,7 @@ html{
   min-height:32px!important;
 }
 #app .app-topbar .sidebar-user__avatar{
-  width:32px!important;
-  min-width:32px!important;
-  flex-basis:32px!important;
+  width:36px!important;
+  min-width:36px!important;
+  flex-basis:36px!important;
 }
