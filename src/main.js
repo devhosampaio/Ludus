@@ -353,7 +353,7 @@ async function setupSharedSideMenu(user, profile = null) {
   setupNotifications(user);
 }
 
-function renderSignedIn(user) {
+async function renderSignedIn(user) {
   // Evita reconstruir o feed quando o Supabase restaura/renova a sessão ao voltar à aba.
   // A tela já está montada e os dados permanecem visíveis, sem piscar para o estado de carregamento.
   if (activeUser?.id === user.id && app.querySelector('[data-feed-list]') &&
