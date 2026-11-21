@@ -9251,3 +9251,12 @@ body,
   padding-right:clamp(16px,3vw,48px)!important;
   box-sizing:border-box!important;
 }
+
+
+/* Largura do cabeçalho ajustada conforme inspeção visual. */
+#app .feed-shell>.app-topbar.app-topbar__content{
+  width:min(770px,100%)!important;
+  max-width:770px!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+}
