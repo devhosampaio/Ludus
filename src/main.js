@@ -207,6 +207,13 @@ async function fetchAllPages(buildQuery) {
   }
 }
 
+function withRequestTimeout(promise, milliseconds, fallback) {
+  return Promise.race([
+    promise,
+    new Promise((resolve) => window.setTimeout(() => resolve(fallback), milliseconds))
+  ]).catch((error) => ({ ...fallback, error }));
+}
+
 async function fetchReviewRows(table, columns, reviewIds) {
   const batches = [];
   for (let index = 0; index < reviewIds.length; index += 100) {
@@ -549,9 +556,13 @@ async function renderSignedIn(user) {
   }
 
   const feedList = app.querySelector('[data-feed-list]');
-  const { data: reviews, error } = await fetchAllPages(() => supabase.from('reviews')
-    .select('id, user_id, game_id, rating, body, status, liked_game, created_at, profiles!reviews_user_id_fkey(username, display_name, avatar_url), games!reviews_game_id_fkey(title, cover_url, hero_url, release_year, developer, platforms)')
-    .order('created_at', { ascending: false }));
+  const { data: reviews, error } = await withRequestTimeout(
+    fetchAllPages(() => supabase.from('reviews')
+      .select('id, user_id, game_id, rating, body, status, liked_game, created_at, profiles!reviews_user_id_fkey(username, display_name, avatar_url), games!reviews_game_id_fkey(title, cover_url, hero_url, release_year, developer, platforms)')
+      .order('created_at', { ascending: false })),
+    15000,
+    { data: [], error: new Error('A consulta principal do feed excedeu o tempo limite.') }
+  );
 
   if (error) {
     console.error('[Ludus] Falha ao carregar feed:', error);
@@ -563,34 +574,43 @@ async function renderSignedIn(user) {
   }
 
   const reviewIds = reviews.map((review) => review.id);
-  const { data: likes, error: likesError } = reviewIds.length
-    ? await fetchReviewRows('review_likes', 'review_id, user_id', reviewIds)
-    : { data: [], error: null };
+  const emptyResult = { data: [], error: null };
+  const [likesResult, commentsResult, savedResult, saveCountsResult, followedResult] = await Promise.all([
+    reviewIds.length
+      ? withRequestTimeout(fetchReviewRows('review_likes', 'review_id, user_id', reviewIds), 8000, { data: [], error: new Error('Tempo limite ao carregar curtidas.') })
+      : emptyResult,
+    reviewIds.length
+      ? withRequestTimeout(fetchReviewRows('review_comments', 'id, review_id, user_id, body, created_at, parent_comment_id, profiles!review_comments_user_id_fkey(username, display_name, avatar_url)', reviewIds), 8000, { data: [], error: new Error('Tempo limite ao carregar comentários.') })
+      : emptyResult,
+    withRequestTimeout(fetchAllPages(() => supabase.from('review_saves').select('review_id, created_at').eq('user_id', user.id).order('created_at', { ascending: false })), 8000, { data: [], error: new Error('Tempo limite ao carregar Minha lista.') }),
+    reviewIds.length
+      ? withRequestTimeout(supabase.rpc('get_review_save_counts', { p_review_ids: reviewIds }), 8000, { data: [], error: new Error('Tempo limite ao carregar contagem de itens salvos.') })
+      : emptyResult,
+    withRequestTimeout(fetchAllPages(() => supabase.from('follows').select('following_id').eq('follower_id', user.id)), 8000, { data: [], error: new Error('Tempo limite ao carregar quem você segue.') })
+  ]);
+  const { data: likes, error: likesError } = likesResult;
+  const { data: commentRows, error: commentsCountError } = commentsResult;
+  const { data: savedReviewRowsData, error: savedReviewsError } = savedResult;
+  const { data: saveCountRows, error: saveCountsError } = saveCountsResult;
+  const { data: followedProfiles, error: followedError } = followedResult;
   if (likesError) console.error('[Ludus] Falha ao carregar curtidas:', likesError);
+  if (commentsCountError) console.error('[Ludus] Falha ao carregar comentários:', commentsCountError);
+  if (savedReviewsError) console.error('[Ludus] Falha ao carregar Minha lista:', savedReviewsError);
+  if (saveCountsError) console.error('[Ludus] Falha ao carregar contagem de itens salvos:', saveCountsError);
+  if (followedError) console.error('[Ludus] Falha ao carregar quem você segue:', followedError);
   const likeRows = likes || [];
   const likeCounts = likeRows.reduce((counts, like) => {
     counts[like.review_id] = (counts[like.review_id] || 0) + 1;
     return counts;
   }, {});
   const likedReviewIds = new Set(likeRows.filter((like) => like.user_id === user.id).map((like) => like.review_id));
-  const { data: commentRows, error: commentsCountError } = reviewIds.length
-    ? await fetchReviewRows('review_comments', 'id, review_id, user_id, body, created_at, parent_comment_id, profiles!review_comments_user_id_fkey(username, display_name, avatar_url)', reviewIds)
-    : { data: [], error: null };
-  if (commentsCountError) console.error('[Ludus] Falha ao carregar comentários:', commentsCountError);
   const commentCounts = (commentRows || []).reduce((counts, comment) => {
     counts[comment.review_id] = (counts[comment.review_id] || 0) + 1;
     return counts;
   }, {});
-  const { data: savedReviewRowsData, error: savedReviewsError } = await fetchAllPages(() => supabase
-    .from('review_saves').select('review_id, created_at').eq('user_id', user.id).order('created_at', { ascending: false }));
-  if (savedReviewsError) console.error('[Ludus] Falha ao carregar Minha lista:', savedReviewsError);
   const savedReviewRows = savedReviewRowsData || [];
   const savedReviewIds = new Set(savedReviewRows.map((saved) => saved.review_id));
   const savedAtByReview = new Map(savedReviewRows.map((saved) => [saved.review_id, saved.created_at]));
-  const { data: saveCountRows, error: saveCountsError } = reviewIds.length
-    ? await supabase.rpc('get_review_save_counts', { p_review_ids: reviewIds })
-    : { data: [], error: null };
-  if (saveCountsError) console.error('[Ludus] Falha ao carregar contagem de itens salvos:', saveCountsError);
   const saveCounts = (saveCountRows || []).reduce((counts, saved) => {
     counts[saved.review_id] = Number(saved.save_count || 0);
     return counts;
@@ -604,9 +624,6 @@ async function renderSignedIn(user) {
     return grouped;
   }, {});
 
-  const { data: followedProfiles, error: followedError } = await fetchAllPages(() => supabase.from('follows')
-    .select('following_id').eq('follower_id', user.id));
-  if (followedError) console.error('[Ludus] Falha ao carregar quem você segue:', followedError);
   const followedIds = new Set((followedProfiles || []).map((item) => item.following_id));
 
   const gameTitleCounts = (reviews || []).reduce((counts, review) => {
