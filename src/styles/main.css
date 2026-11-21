@@ -9296,3 +9296,16 @@ body,
     margin-right:0!important;
   }
 }
+
+
+/* Usa exatamente os mesmos recuos internos no cabeçalho e nas seções do feed. */
+@media(min-width:761px){
+  #app .feed-shell>.app-topbar.app-topbar__content{
+    padding-left:clamp(32px,7.15vw,55px)!important;
+    padding-right:clamp(28px,5.45vw,42px)!important;
+  }
+  #app .feed-shell>main.feed-main{
+    padding-left:clamp(32px,7.15vw,55px)!important;
+    padding-right:clamp(28px,5.45vw,42px)!important;
+  }
+}
