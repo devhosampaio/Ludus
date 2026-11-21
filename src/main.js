@@ -1412,7 +1412,6 @@ async function openProfileEditor(user, profile) {
   const pageContainer = app.querySelector('.feed-main__container');
   if (!pageContainer) return;
   pageContainer.innerHTML = `
-    <aside class="feed-ad feed-ad--left" aria-label="Espaço reservado"></aside>
     <section class="profile-editor profile-editor--page" aria-labelledby="profile-editor-title">
       <button class="profile-editor__close" type="button" data-close aria-label="Fechar">×</button>
       <p class="eyebrow">SUA IDENTIDADE NO LUDUS</p>
@@ -1428,8 +1427,7 @@ async function openProfileEditor(user, profile) {
         <p class="profile-editor__message" data-editor-message role="status"></p>
         <div class="profile-editor__actions"><button type="button" data-cancel>Cancelar</button><button type="submit">Salvar perfil ↗</button></div>
       </form>
-    </section>
-    <aside class="feed-ad feed-ad--right" aria-label="Espaço reservado"></aside>`;
+    </section>`;
   const editor = pageContainer.querySelector('.profile-editor');
   const form = editor.querySelector('[data-profile-form]');
   const message = editor.querySelector('[data-editor-message]');
