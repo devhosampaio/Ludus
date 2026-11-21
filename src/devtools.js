@@ -66,6 +66,16 @@ root.innerHTML = `
       <span class="devtools-property__name">font-size</span><code class="devtools-property__value" data-prop-font-size>—</code>
       <span class="devtools-property__name">outline</span><code class="devtools-property__value" data-prop-outline>—</code>
     </div>
+    <div class="devtools-measure">
+      <button type="button" data-dev-measure aria-pressed="false">⌖ Medir distância entre elementos</button>
+      <p class="devtools-panel__hint" data-dev-measure-hint>Ative e clique em dois elementos para comparar suas posições.</p>
+      <div class="devtools-measure__values" data-dev-measure-values hidden>
+        <div class="devtools-measure__value"><span>Horizontal</span><strong data-measure-x>—</strong></div>
+        <div class="devtools-measure__value"><span>Vertical</span><strong data-measure-y>—</strong></div>
+        <div class="devtools-measure__value"><span>Entre centros</span><strong data-measure-distance>—</strong></div>
+      </div>
+      <button type="button" data-dev-measure-clear>Limpar medição</button>
+    </div>
     <div class="devtools-panel__actions">
       <button type="button" data-dev-copy>Copiar identificação</button>
       <button type="button" data-dev-copy-selector>Copiar seletor</button>
