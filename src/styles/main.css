@@ -9542,6 +9542,7 @@ body,
   transform:translateX(-50%)!important;
   width:min(770px,62vw)!important;
   max-width:770px!important;
+  background:#090B16!important;
   border-bottom:1px solid rgb(201 191 176 / 18%)!important;
   box-sizing:border-box!important;
   z-index:150!important;
