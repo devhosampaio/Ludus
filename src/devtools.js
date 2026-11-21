@@ -244,7 +244,7 @@ function renderCssPreview() {
     .filter(([, value]) => value !== '')
     .map(([property, value]) => '  ' + property.replace(/[A-Z]/g, (letter) => '-' + letter.toLowerCase()) + ': ' + value + ';');
   cssPreview.textContent = declarations.length
-    ? lastSelector + ' {\\n' + declarations.join('\n') + '\\n}'
+    ? [lastSelector + ' {', ...declarations, '}'].join(String.fromCharCode(10))
     : 'Nenhum ajuste aplicado. Use os controles acima.';
 }
 
