@@ -9266,3 +9266,18 @@ body,
 #app .feed-shell>main.feed-main>.feed-main__container{
   padding:0!important;
 }
+
+
+/* Todas as seções da página inicial acompanham a largura total do main. */
+#app .feed-shell>main.feed-main>.feed-main__container>section,
+#app .feed-shell>main.feed-main>.feed-main__container>.feed-welcome,
+#app .feed-shell>main.feed-main>.feed-main__container>.feed-navigation,
+#app .feed-shell>main.feed-main>.feed-main__container>.feed-content{
+  width:100%!important;
+  max-width:none!important;
+  min-width:0!important;
+  margin-left:0!important;
+  margin-right:0!important;
+  justify-self:stretch!important;
+  box-sizing:border-box!important;
+}
