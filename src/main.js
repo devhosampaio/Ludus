@@ -588,7 +588,7 @@ async function renderSignedIn(user) {
     if (title) counts.set(title, (counts.get(title) || 0) + 1);
     return counts;
   }, new Map());
-  const feedTabs = app.querySelector('[data-feed-mode="popular"]').closest('.feed-tabs');
+  const feedTabs = app.querySelector('.feed-tabs');
   const newcomersSection = app.querySelector('.newcomers-section');
   const newcomersList = app.querySelector('[data-newcomers-list]');
   let showAllNewcomers = false;
