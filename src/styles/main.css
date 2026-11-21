@@ -9713,3 +9713,10 @@ body,
   margin-right:auto!important;
   box-sizing:border-box!important;
 }
+
+
+/* Aumenta a tipografia dos itens da navegação lateral. */
+#app .feed-shell>.side-menu--left>.side-menu__navigation .side-menu__item,
+#app .feed-shell>.side-menu--left>.side-menu__navigation .side-menu__notifications .notifications__trigger{
+  font-size:18px!important;
+}
