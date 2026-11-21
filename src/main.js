@@ -322,6 +322,8 @@ function sharedFeedHeaderMarkup() {
 async function setupSharedSideMenu(user, profile = null) {
   const root = app.querySelector('.side-menu--left');
   if (!root) return;
+  // A navegação não deve depender da resposta da consulta de perfil.
+  root.querySelector('[data-open-search]')?.addEventListener('click', () => navigateToSearch(user));
   if (!profile) {
     const { data } = await supabase.from('profiles')
       .select('username, display_name, avatar_url, bio')
@@ -342,7 +344,6 @@ async function setupSharedSideMenu(user, profile = null) {
   root.querySelectorAll('[data-feed-mode]').forEach((button) => {
     button.addEventListener('click', () => navigateToFeed(user));
   });
-  root.querySelector('[data-open-search]')?.addEventListener('click', () => navigateToSearch(user));
   app.querySelectorAll('.feed-center-column [data-feed-mode]').forEach((button) => {
     button.addEventListener('click', () => navigateToFeed(user));
   });
