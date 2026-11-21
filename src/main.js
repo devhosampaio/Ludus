@@ -300,6 +300,7 @@ async function renderSignedIn(user) {
       <header class="app-topbar">
         <div class="app-topbar__content">
 
+          <nav class="feed-navigation feed-navigation--header" aria-label="Navegação do feed"><div class="feed-tabs" role="tablist" aria-label="Navegação do feed"><button class="feed-tabs__button is-active" type="button" role="tab" aria-selected="true" data-feed-mode="home">Início</button><button class="feed-tabs__button" type="button" role="tab" aria-selected="false" data-feed-mode="popular">Para você</button><button class="feed-tabs__button" type="button" role="tab" aria-selected="false" data-feed-mode="following">Seguindo</button><button class="feed-tabs__button" type="button" role="tab" aria-selected="false" data-feed-mode="recent">Recentes</button></div></nav>
           <div class="header-actions">
           <div class="header-search">
             <button class="header-search__toggle" type="button" data-search-toggle aria-label="Abrir busca" aria-expanded="false" title="Buscar">
@@ -320,7 +321,7 @@ async function renderSignedIn(user) {
           <p>A página inicial vai se adaptando conforme você segue novos jogadores no Ludus.</p>
         </section>
         
-<nav class="feed-navigation" aria-label="Navegação do feed"><div class="feed-tabs" role="tablist" aria-label="Navegação do feed"><button class="feed-tabs__button is-active" type="button" role="tab" aria-selected="true" data-feed-mode="home">Início</button><button class="feed-tabs__button" type="button" role="tab" aria-selected="false" data-feed-mode="popular">Para você</button><button class="feed-tabs__button" type="button" role="tab" aria-selected="false" data-feed-mode="following">Seguindo</button><button class="feed-tabs__button" type="button" role="tab" aria-selected="false" data-feed-mode="recent">Recentes</button></div></nav>
+
                 <section class="newcomers-section" aria-labelledby="newcomers-title">
           <div class="newcomers-section__heading feed-section-heading">
             <h2 class="feed-section-heading__title" id="newcomers-title">NOVOS NO LUDUS</h2>
