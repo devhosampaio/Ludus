@@ -9755,3 +9755,31 @@ body,
   left:8px!important;
   width:calc((100% - 16px) / 4)!important;
 }
+
+
+/* Indicador da aba ativa como fundo aplicado diretamente ao texto. */
+#app .feed-main__container>.feed-navigation .feed-tabs::before{
+  display:none!important;
+  content:none!important;
+}
+#app .feed-main__container>.feed-navigation .feed-tabs__button{
+  position:relative!important;
+  z-index:1!important;
+  background:transparent!important;
+  border-radius:999px!important;
+  transition:background .2s ease,color .2s ease!important;
+}
+#app .feed-main__container>.feed-navigation .feed-tabs__button.is-active{
+  background:#7060AB!important;
+  color:#F5F0E6!important;
+}
+#app .app-topbar .feed-navigation--header .feed-tabs__button.is-active{
+  border-radius:999px!important;
+  background:rgb(112 96 171 / 32%)!important;
+  color:#F5F0E6!important;
+}
+
+/* Mantém a largura do layout estável quando a página não tem rolagem. */
+html{
+  scrollbar-gutter:stable!important;
+}
