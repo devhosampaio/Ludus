@@ -9720,3 +9720,10 @@ body,
 #app .feed-shell>.side-menu--left>.side-menu__navigation .side-menu__notifications .notifications__trigger{
   font-size:18px!important;
 }
+
+
+/* Reduz o tamanho dos textos das abas de navegação do feed. */
+#app .feed-shell>.feed-center-column>.app-topbar .feed-tabs,
+#app .feed-shell>.feed-center-column>.app-topbar .feed-tabs *{
+  font-size:10px!important;
+}
