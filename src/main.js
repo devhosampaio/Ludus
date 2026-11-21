@@ -574,6 +574,7 @@ async function renderSignedIn(user) {
   }
 
   const reviewIds = reviews.map((review) => review.id);
+  const emptyResult = { data: [], error: null };
   let likeCounts = {};
   let likedReviewIds = new Set();
   let commentCounts = {};
