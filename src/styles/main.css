@@ -9783,3 +9783,20 @@ body,
 html{
   scrollbar-gutter:stable!important;
 }
+
+/* Mantém o menu lateral esquerdo visível durante toda a rolagem, como o cabeçalho central. */
+@media(min-width:901px){
+  #app .feed-shell>.side-menu--left{
+    position:fixed!important;
+    top:0!important;
+    left:0!important;
+    width:calc((100vw - min(770px,62vw))/2)!important;
+    height:100vh!important;
+    min-height:100vh!important;
+    max-height:100vh!important;
+    overflow-y:auto!important;
+    overscroll-behavior:contain!important;
+    z-index:140!important;
+    box-sizing:border-box!important;
+  }
+}
