@@ -9907,3 +9907,50 @@ html{
 #app .feed-shell>.feed-center-column>.app-topbar .feed-tabs__create:hover{
   background:#D96C55!important;
 }
+
+
+/* Padroniza a altura dos controles e itens do cabeçalho em 32px. */
+#app .app-topbar .header-search,
+#app .app-topbar .header-search.is-open{
+  height:32px!important;
+  min-height:32px!important;
+  flex-basis:32px!important;
+}
+#app .app-topbar .header-search:not(.is-open){
+  width:32px!important;
+  min-width:32px!important;
+  max-width:32px!important;
+}
+#app .app-topbar .header-search__toggle{
+  width:32px!important;
+  min-width:32px!important;
+  height:32px!important;
+  min-height:32px!important;
+  flex-basis:32px!important;
+  place-items:center!important;
+}
+#app .app-topbar .header-search input,
+#app .app-topbar .header-search.is-open input{
+  height:32px!important;
+  min-height:32px!important;
+}
+#app .app-topbar .feed-navigation--header .feed-tabs{
+  height:32px!important;
+  min-height:32px!important;
+  align-items:center!important;
+}
+#app .app-topbar .feed-navigation--header .feed-tabs__button{
+  height:32px!important;
+  min-height:32px!important;
+  align-self:center!important;
+}
+#app .app-topbar .sidebar-user,
+#app .app-topbar .sidebar-user__avatar{
+  height:32px!important;
+  min-height:32px!important;
+}
+#app .app-topbar .sidebar-user__avatar{
+  width:32px!important;
+  min-width:32px!important;
+  flex-basis:32px!important;
+}
