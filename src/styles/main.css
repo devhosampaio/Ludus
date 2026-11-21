@@ -10131,3 +10131,6 @@ html{
 #app .search-result__info{display:grid;gap:4px;min-width:0}
 #app .search-result__info strong{font-weight:600}
 #app .search-result__info small{color:rgba(245,240,230,.58)}
+
+/* Abas do perfil usam cinza claro, sem o destaque branco do feed. */
+#app .profile-main .app-topbar .feed-tabs__button{color:#BFC0C8!important}
