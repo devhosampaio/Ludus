@@ -9872,3 +9872,6 @@ html{
   padding-right:10px!important;
   box-sizing:border-box!important;
 }
+#app .feed-shell>main.feed-main .feed-main__container>*+*{
+  margin-top:30px!important;
+}
