@@ -9532,3 +9532,27 @@ body,
     padding-right:14px!important;
   }
 }
+
+
+/* Separador inferior e cabeçalho fixo durante a rolagem. */
+#app .feed-shell>.feed-center-column>.app-topbar{
+  position:fixed!important;
+  top:0!important;
+  left:50%!important;
+  transform:translateX(-50%)!important;
+  width:min(770px,62vw)!important;
+  max-width:770px!important;
+  border-bottom:1px solid rgb(201 191 176 / 18%)!important;
+  box-sizing:border-box!important;
+  z-index:150!important;
+}
+@media(max-width:900px){
+  #app .feed-shell>.feed-center-column>.app-topbar{
+    width:min(770px,100vw)!important;
+  }
+}
+@media(max-width:760px){
+  #app .feed-shell>.feed-center-column>.app-topbar{
+    width:100vw!important;
+  }
+}
