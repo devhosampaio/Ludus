@@ -299,7 +299,7 @@ async function renderSignedIn(user) {
     <div class="feed-shell">
       <nav class="side-menu side-menu--left" aria-label="Menu lateral esquerdo">
         <a class="topbar-brand side-menu__brand" href="#inicio" aria-label="Ludus — início">
-          <span class="topbar-brand__icon" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M10 6v20h16" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="square" stroke-linejoin="miter"/></svg></span>
+          <span class="topbar-brand__icon" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M7 4v24h22" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="square" stroke-linejoin="miter"/></svg></span>
           <span class="topbar-brand__name">Ludus</span>
         </a>
       </nav>
