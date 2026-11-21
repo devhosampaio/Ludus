@@ -661,6 +661,7 @@ async function renderSignedIn(user) {
   const feedContent = app.querySelector('.feed-content');
   let activeFeedMode = 'home';
   const renderFeed = (mode = 'home') => {
+    try {
     feedList.classList.remove('feed-list--loading');
     feedList.setAttribute('aria-busy', 'false');
     activeFeedMode = mode;
@@ -759,6 +760,12 @@ async function renderSignedIn(user) {
         reviewText +
         '<div class="review-card__actions">' + socialActions + '</div></article>';
     }).join('');
+    } catch (renderError) {
+      console.error('[Ludus] Falha ao montar as publicações do feed:', renderError);
+      feedList.classList.remove('feed-list--loading');
+      feedList.setAttribute('aria-busy', 'false');
+      feedList.innerHTML = '<div class="feed-empty"><span class="feed-empty__number">!</span><h3>As avaliações foram carregadas, mas não puderam ser exibidas.</h3><p>Ocorreu um erro ao montar as publicações. Atualize a página e tente novamente.</p><small class="feed-empty__note">' + escapeHTML(renderError?.message || 'Erro desconhecido') + '</small></div>';
+    }
   };
 
   app.addEventListener('click', (event) => {
