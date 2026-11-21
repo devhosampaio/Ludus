@@ -9077,3 +9077,23 @@ body,
   display:flex!important;
   align-items:center!important;
 }
+
+
+/* Largura solicitada para a área principal da página inicial. */
+#app .feed-shell>main.feed-main{
+  width:min(770px,100%)!important;
+  max-width:770px!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+  box-sizing:border-box!important;
+}
+#app .feed-main__container{
+  width:100%!important;
+  max-width:100%!important;
+}
+@media(max-width:760px){
+  #app .feed-shell>main.feed-main{
+    width:100%!important;
+    max-width:100%!important;
+  }
+}
