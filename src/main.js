@@ -302,7 +302,7 @@ function sharedSideMenuMarkup(user) {
     </a>
     <nav class="side-menu__navigation" aria-label="Navegação principal">
       <button class="side-menu__item is-active" type="button" data-feed-mode="home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z"/></svg><span>Página inicial</span></button>
-      <button class="side-menu__item" type="button" data-feed-mode="popular"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m15.8 15.8 5 5"/></svg><span>Buscar</span></button>
+      <button class="side-menu__item" type="button" data-open-search><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m15.8 15.8 5 5"/></svg><span>Buscar</span></button>
       <div class="side-menu__notifications">${notificationControlMarkup()}</div>
       <button class="side-menu__item" type="button" data-side-profile><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.7-3.6 3.1-5.5 7-5.5s6.3 1.9 7 5.5"/></svg><span>Perfil</span></button>
       <button class="side-menu__item" type="button" data-side-settings><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8.2a3.8 3.8 0 1 0 0 7.6 3.8 3.8 0 0 0 0-7.6Z"/><path d="M19.4 13.5a7.7 7.7 0 0 0 0-3l1.5-1.1-1.8-3.1-1.8.7a7.8 7.8 0 0 0-2.6-1.5L14.4 3h-4.8L9.3 5.5a7.8 7.8 0 0 0-2.6 1.5l-1.8-.7-1.8 3.1 1.5 1.1a7.7 7.7 0 0 0 0 3l-1.5 1.1 1.8 3.1 1.8-.7a7.8 7.8 0 0 0 2.6 1.5l.3 2.5h4.8l.3-2.5a7.8 7.8 0 0 0 2.6-1.5l1.8.7 1.8-3.1Z"/></svg><span>Configurações</span></button>
@@ -342,6 +342,7 @@ async function setupSharedSideMenu(user, profile = null) {
   root.querySelectorAll('[data-feed-mode]').forEach((button) => {
     button.addEventListener('click', () => navigateToFeed(user));
   });
+  root.querySelector('[data-open-search]')?.addEventListener('click', () => navigateToSearch(user));
   app.querySelectorAll('.feed-center-column [data-feed-mode]').forEach((button) => {
     button.addEventListener('click', () => navigateToFeed(user));
   });
@@ -462,6 +463,10 @@ async function renderSignedIn(user) {
   const routeUsername = getProfileUsernameFromLocation();
   if (routeUsername) {
     await renderProfilePage(user, routeUsername);
+    return;
+  }
+  if (window.location.hash === '#/buscar') {
+    await renderSearchPage(user);
     return;
   }
   const routeGameId = getGameIdFromLocation();
@@ -1302,6 +1307,94 @@ function navigateToProfile(currentUser, username) {
   renderProfilePage(currentUser, username);
 }
 
+function navigateToSearch(currentUser, query = '') {
+  const nextHash = '#/buscar';
+  if (window.location.hash !== nextHash) window.history.pushState({ page: 'search' }, '', nextHash);
+  renderSearchPage(currentUser, query);
+}
+
+async function renderSearchPage(currentUser, initialQuery = '') {
+  const requestId = (renderSearchPage.requestId || 0) + 1;
+  renderSearchPage.requestId = requestId;
+  app.innerHTML = `
+    <div class="feed-shell">
+      ${sharedSideMenuMarkup(currentUser)}
+      <main class="feed-center-column feed-main profile-main">
+        <div class="app-topbar app-topbar__content search-topbar">
+          <form class="search-page__form" role="search">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m15.8 15.8 5 5"/></svg>
+            <input class="search-page__input" type="search" name="q" placeholder="Buscar jogos ou jogadores..." autocomplete="off" aria-label="Buscar jogos ou jogadores">
+          </form>
+        </div>
+        <div class="feed-main__container search-page__container">
+          <section class="search-page__results" aria-live="polite"></section>
+        </div>
+      </main>
+      <footer class="side-menu side-menu--right" aria-label="Coluna lateral direita"></footer>
+    </div>`;
+  setupSharedSideMenu(currentUser);
+  const form = app.querySelector('.search-page__form');
+  const input = form?.querySelector('input');
+  const results = app.querySelector('.search-page__results');
+  if (!input || !results) return;
+  input.value = initialQuery;
+  let timer = null;
+  let sequence = 0;
+  const runSearch = async () => {
+    const query = input.value.trim();
+    const currentSequence = ++sequence;
+    if (query.length < 2) { results.innerHTML = ''; return; }
+    results.innerHTML = '<p class="search-page__status">Buscando...</p>';
+    const safeQuery = query.replace(/[%,()]/g, ' ').trim();
+    const [usersResult, gamesResult] = await Promise.all([
+      supabase.from('profiles').select('username, display_name, avatar_url, bio')
+        .ilike('username', '%' + safeQuery + '%').limit(8),
+      supabase.functions.invoke('steamgriddb', { body: { action: 'search', query } })
+    ]);
+    if (currentSequence !== sequence || input.value.trim() !== query) return;
+    const users = usersResult.data || [];
+    const games = gamesResult.data?.data || [];
+    const userMarkup = users.map((profile) => {
+      const avatar = profile.avatar_url
+        ? '<img src="' + escapeHTML(profile.avatar_url) + '" alt="">'
+        : profilePlaceholderMarkup();
+      return '<button class="search-result search-result--user" type="button" data-search-username="' + escapeHTML(profile.username) + '">' +
+        '<span class="search-result__avatar">' + avatar + '</span><span class="search-result__info"><strong>' + escapeHTML(profile.display_name || profile.username) + '</strong><small>@' + escapeHTML(profile.username) + '</small></span></button>';
+    }).join('');
+    const gameMarkup = games.slice(0, 12).map((game) => {
+      const date = Number(game.release_date);
+      const year = Number.isFinite(date) && date > 0 ? new Date(date * 1000).getUTCFullYear() : null;
+      return '<button class="search-result search-result--game" type="button" data-search-game-id="' + Number(game.id) + '" data-search-game-name="' + escapeHTML(game.name) + '" data-search-game-year="' + (year || '') + '">' +
+        '<span class="search-result__info"><strong>' + escapeHTML(game.name) + '</strong><small>' + (year || 'Ano não informado') + '</small></span></button>';
+    }).join('');
+    results.innerHTML = (userMarkup ? '<div class="search-results-group">' + userMarkup + '</div>' : '') +
+      (gameMarkup ? '<div class="search-results-group">' + gameMarkup + '</div>' : '') +
+      (!userMarkup && !gameMarkup ? '<p class="search-page__status">Nenhum resultado encontrado.</p>' : '');
+  };
+  input.addEventListener('input', () => {
+    clearTimeout(timer);
+    timer = setTimeout(runSearch, 300);
+  });
+  form.addEventListener('submit', (event) => { event.preventDefault(); clearTimeout(timer); runSearch(); });
+  results.addEventListener('click', async (event) => {
+    const userButton = event.target.closest('[data-search-username]');
+    if (userButton) { navigateToProfile(currentUser, userButton.dataset.searchUsername); return; }
+    const gameButton = event.target.closest('[data-search-game-id]');
+    if (!gameButton) return;
+    results.innerHTML = '<p class="search-page__status">Abrindo jogo...</p>';
+    const { data, error } = await supabase.functions.invoke('steamgriddb', {
+      body: { action: 'save', game: { id: Number(gameButton.dataset.searchGameId), name: gameButton.dataset.searchGameName, release_year: Number(gameButton.dataset.searchGameYear) || null } }
+    });
+    if (error || data?.error || !data?.game) {
+      results.innerHTML = '<p class="search-page__status">Não foi possível abrir este jogo.</p>';
+      return;
+    }
+    navigateToGame(currentUser, data.game.id);
+  });
+  if (initialQuery.trim()) runSearch();
+  else input.focus();
+}
+
 function navigateToFeed(currentUser) {
   if (window.location.hash !== '#inicio') {
     window.history.pushState({ page: 'feed' }, '', '#inicio');
@@ -1868,5 +1961,6 @@ window.addEventListener('hashchange', () => {
   if (username) renderProfilePage(activeUser, username);
   else if (gameId) renderGamePage(activeUser, gameId);
   else if (reviewId) renderReviewPage(activeUser, reviewId);
+  else if (window.location.hash === '#/buscar') renderSearchPage(activeUser);
   else renderSignedIn(activeUser);
 });
