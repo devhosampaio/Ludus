@@ -297,13 +297,14 @@ async function renderSignedIn(user) {
   const fallbackName = user.user_metadata?.display_name || user.email?.split('@')[0] || 'jogador';
   app.innerHTML = `
     <div class="feed-shell">
-      <nav class="side-menu side-menu--left" aria-label="Menu lateral esquerdo"></nav>
+      <nav class="side-menu side-menu--left" aria-label="Menu lateral esquerdo">
+        <a class="topbar-brand side-menu__brand" href="#inicio" aria-label="Ludus — início">
+          <span class="topbar-brand__icon" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M10 6v20h16" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="square" stroke-linejoin="miter"/></svg></span>
+          <span class="topbar-brand__name">Ludus</span>
+        </a>
+      </nav>
       <div class="feed-center-column">
       <header class="app-topbar app-topbar__content">
-          <a class="topbar-brand" href="#inicio" aria-label="Ludus — início">
-            <span class="topbar-brand__icon" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M10 6v20h16" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="square" stroke-linejoin="miter"/></svg></span>
-            <span class="topbar-brand__name">Ludus</span>
-          </a>
           <nav class="feed-navigation feed-navigation--header" aria-label="Navegação do feed"><div class="feed-tabs" role="tablist" aria-label="Navegação do feed"><button class="feed-tabs__button is-active" type="button" role="tab" aria-selected="true" data-feed-mode="home">Início</button><button class="feed-tabs__button" type="button" role="tab" aria-selected="false" data-feed-mode="popular">Para você</button><button class="feed-tabs__button" type="button" role="tab" aria-selected="false" data-feed-mode="following">Seguindo</button><button class="feed-tabs__button" type="button" role="tab" aria-selected="false" data-feed-mode="recent">Recentes</button></div></nav>
           <div class="header-actions">
           <div class="header-search">
