@@ -214,11 +214,16 @@ img { max-width: 100%; }
 
 /* Navegação fixa do feed, logo abaixo do cabeçalho. */
 .feed-navigation--header {
-  position: sticky;
+  position: fixed;
   top: 60px;
-  z-index: 99;
+  left: 0;
+  right: 0;
+  z-index: 101;
   background: #fff;
   border-bottom: 1px solid #ddd;
+}
+.feed-navigation--header + .feed-main__container {
+  padding-top: 46px;
 }
 .feed-navigation--header .feed-tabs {
   display: grid;
