@@ -6,10 +6,10 @@ import('./main.js').catch((error) => {
   if (app) {
     const detail = error?.message || String(error);
     app.innerHTML = `
-      <main style="min-height:100vh;display:grid;place-items:center;padding:32px;background:#302c3d;color:#f5f0e6;font:16px system-ui,sans-serif;text-align:center">
+      <main style="min-height:100vh;display:grid;place-items:center;padding:32px;background:#fff;color:#333;font:14px Arial,sans-serif;text-align:center">
         <div style="max-width:560px">
           <p style="font-size:20px">Não foi possível iniciar o Ludus.</p>
-          <p style="opacity:.75;overflow-wrap:anywhere">${detail.replace(/[&<>"]/g, (char) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[char]))}</p>
+          <p style="color:#777;overflow-wrap:anywhere">${detail.replace(/[&<>"]/g, (char) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[char]))}</p>
           <button onclick="location.reload()" style="margin-top:18px;padding:12px 20px">Tentar novamente</button>
         </div>
       </main>`;

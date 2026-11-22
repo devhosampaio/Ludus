@@ -2,7 +2,7 @@ import { supabase } from './lib/supabase.js';
 import { signIn, signOut, signUp, requestPasswordReset } from './lib/auth.js';
 
 const app = document.querySelector('#app');
-document.title = 'Ludus | Rede Social dos Gamers';
+document.title = 'Ludus | Comunidade de jogos';
 let activeUser = null;
 
 function showMessage(message, type = 'info') {
@@ -296,10 +296,7 @@ function renderCommentsSection(reviewId, comments, likes, user) {
 function sharedSideMenuMarkup(user) {
   const fallbackName = user.user_metadata?.display_name || user.email?.split('@')[0] || 'jogador';
   return `  <header class="side-menu side-menu--left">
-    <a class="topbar-brand side-menu__brand" href="#inicio" aria-label="Ludus — início">
-      <span class="topbar-brand__icon" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M7 4v24h22" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="square" stroke-linejoin="miter"/></svg></span>
-      <span class="topbar-brand__name">Ludus</span>
-    </a>
+    <a class="topbar-brand side-menu__brand" href="#inicio" aria-label="Ludus — início">Ludus</a>
     <nav class="side-menu__navigation" aria-label="Navegação principal">
       <button class="side-menu__item is-active" type="button" data-feed-mode="home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z"/></svg><span>Página inicial</span></button>
       <button class="side-menu__item" type="button" data-open-search><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m15.8 15.8 5 5"/></svg><span>Buscar</span></button>
@@ -1780,28 +1777,17 @@ function renderAuth(mode = 'login') {
 
   if (isWelcome) {
     app.innerHTML = `
-      <main class="auth-shell auth-shell--welcome">
-        <section class="auth-intro" aria-label="Ludus">
-          <a class="brand" href="./" aria-label="Ludus início">L<span>.</span></a>
-          <div class="auth-welcome-content">
-            <h1>Todo jogo<br>deixa uma <em>história.</em></h1>
-            <div class="auth-welcome-actions">
-              <button class="auth-welcome-button auth-welcome-button--login" type="button" data-mode="login">
-                <span>Entrar</span>
-                <span class="auth-welcome-button__icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24"><path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4M3 12h12m-5-5 5 5-5 5"/></svg>
-                </span>
-              </button>
-              <button class="auth-welcome-button auth-welcome-button--signup" type="button" data-mode="signup">
-                <span>Criar conta</span>
-                <span class="auth-welcome-button__icon" aria-hidden="true">
-                  <svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="4"/><path d="M2.5 21a6.5 6.5 0 0 1 13 0M19 8v8m-4-4h8"/></svg>
-                </span>
-              </button>
-            </div>
-          </div>
-          <span class="auth-intro__credit">GRAND THEFT AUTO VI — ROCKSTAR GAMES</span>
-        </section>
+      <main class="container auth-shell auth-shell--welcome">
+        <div class="row">
+          <section class="col-sm-8 col-sm-offset-2 text-center">
+            <h1>Ludus</h1>
+            <p class="lead">Uma comunidade para compartilhar o que você joga.</p>
+            <p>
+              <button class="btn btn-default" type="button" data-mode="login">Entrar</button>
+              <button class="btn btn-primary" type="button" data-mode="signup">Criar conta</button>
+            </p>
+          </section>
+        </div>
       </main>`;
 
     app.querySelectorAll('[data-mode]').forEach((button) => {
@@ -1817,29 +1803,24 @@ function renderAuth(mode = 'login') {
   const passwordAutocomplete = isSignup ? 'new-password' : 'current-password';
 
   app.innerHTML = [
-    '<main class="auth-shell auth-shell--split">',
-    '<section class="auth-intro" aria-label="Ludus">',
-    '<a class="brand" href="./" aria-label="Ludus início">L<span>.</span></a>',
-    '<div class="auth-welcome-content">',
-    '<h1>Todo jogo<br>deixa uma <em>história.</em></h1>',
-    '</div>',
-    '<span class="auth-intro__credit">GRAND THEFT AUTO VI — ROCKSTAR GAMES</span>',
+    '<main class="container auth-shell auth-shell--split">',
+    '<div class="row">',
+    '<section class="col-sm-6 col-md-5 col-md-offset-1">',
+    '<h1>Ludus</h1>',
+    '<p class="lead">Entre para acompanhar avaliações e compartilhar seus jogos.</p>',
     '</section>',
-    '<section class="auth-panel" aria-label="' + (isSignup ? 'Criar conta' : 'Entrar no Ludus') + '"><div class="auth-panel__inner">',
-    '<nav class="auth-switch" aria-label="Acesso à conta"><button class="auth-switch__button ' + (!isSignup ? 'is-active' : '') + '" type="button" data-mode="login" ' + (!isSignup ? 'aria-current="page"' : '') + '>Entrar</button><button class="auth-switch__button ' + (isSignup ? 'is-active' : '') + '" type="button" data-mode="signup" ' + (isSignup ? 'aria-current="page"' : '') + '>Criar conta</button></nav>',
-    '<div class="auth-panel__heading">',
-    '<h2>' + (isSignup ? 'Crie sua conta.' : 'Entre no Ludus.') + '</h2>',
-    '</div>',
-
+    '<section class="col-sm-6 col-md-5 auth-panel panel panel-default" aria-label="' + (isSignup ? 'Criar conta' : 'Entrar no Ludus') + '"><div class="panel-body auth-panel__inner">',
+    '<nav class="auth-switch btn-group btn-group-justified" aria-label="Acesso à conta"><div class="btn-group"><button class="btn btn-default auth-switch__button ' + (!isSignup ? 'is-active' : '') + '" type="button" data-mode="login" ' + (!isSignup ? 'aria-current="page"' : '') + '>Entrar</button></div><div class="btn-group"><button class="btn btn-default auth-switch__button ' + (isSignup ? 'is-active' : '') + '" type="button" data-mode="signup" ' + (isSignup ? 'aria-current="page"' : '') + '>Criar conta</button></div></nav>',
+    '<div class="auth-panel__heading"><h2>' + (isSignup ? 'Criar conta' : 'Entrar no Ludus') + '</h2></div>',
     '<form class="auth-form" id="auth-form">' + fields,
-    '<label class="field"><span>' + (isSignup ? 'E-mail' : 'E-mail ou nome de usuário') + '</span><input name="' + (isSignup ? 'email' : 'identifier') + '" type="' + (isSignup ? 'email' : 'text') + '" placeholder="' + (isSignup ? 'voce@email.com' : 'E-mail ou usuário') + '" autocomplete="' + (isSignup ? 'email' : 'username') + '" required></label>',
-    '<label class="field"><span>Senha</span><div class="password-field"><input name="password" type="password" minlength="6" placeholder="Mínimo de 6 caracteres" autocomplete="' + passwordAutocomplete + '" required><button class="password-toggle" type="button" data-password-toggle aria-label="Mostrar senha" title="Mostrar senha"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg></button></div></label>',
-    (!isSignup ? '<button class="text-button" type="button" data-reset>Esqueceu sua senha?</button>' : ''),
-    (isSignup ? '<div class="auth-consents"><label class="auth-consent"><input type="checkbox" name="age_confirmed" required><span>Tenho mais de 16 anos</span></label><label class="auth-consent"><input type="checkbox" name="terms_accepted" required><span>Concordo com os <button class="terms-link" type="button" data-terms-open>termos de serviço</button></span></label></div>' : ''),
-    '<button class="submit-button" type="submit"><span>' + (isSignup ? 'Criar minha conta' : 'Entrar') + '</span><span class="submit-button__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4M3 12h12m-5-5 5 5-5 5"/></svg></span></button>',
-    '<p class="form-message" data-message role="status" aria-live="polite" hidden></p></form>',
-    '<div class="terms-modal" data-terms-modal hidden><div class="terms-modal__backdrop" data-terms-close></div><section class="terms-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="terms-title"><button class="terms-modal__close" type="button" data-terms-close aria-label="Fechar">×</button><p class="eyebrow">LUDUS · COMUNIDADE</p><h3 id="terms-title">Termos de serviço</h3><p>Este é um texto provisório. Os termos oficiais de serviço do Ludus ainda serão publicados.</p><p>Ao utilizar a plataforma, esperamos que todas as pessoas tratem a comunidade com respeito, não publiquem conteúdo ilegal ou ofensivo e respeitem os direitos de terceiros.</p><p>As funcionalidades, regras de convivência, privacidade e condições de uso serão detalhadas nesta página quando os termos oficiais forem definidos.</p><p class="terms-modal__note">VERSÃO PLACEHOLDER — NÃO É O TEXTO FINAL</p></section></div>',
-    '</div></section></main>'
+    '<div class="form-group"><label class="field"><span>' + (isSignup ? 'E-mail' : 'E-mail ou nome de usuário') + '</span><input class="form-control" name="' + (isSignup ? 'email' : 'identifier') + '" type="' + (isSignup ? 'email' : 'text') + '" placeholder="' + (isSignup ? 'voce@email.com' : 'E-mail ou usuário') + '" autocomplete="' + (isSignup ? 'email' : 'username') + '" required></label></div>',
+    '<div class="form-group"><label class="field"><span>Senha</span><div class="password-field"><input class="form-control" name="password" type="password" minlength="6" placeholder="Mínimo de 6 caracteres" autocomplete="' + passwordAutocomplete + '" required><button class="btn btn-default password-toggle" type="button" data-password-toggle aria-label="Mostrar senha" title="Mostrar senha">Mostrar</button></div></label></div>',
+    (!isSignup ? '<button class="btn btn-link text-button" type="button" data-reset>Esqueceu sua senha?</button>' : ''),
+    (isSignup ? '<div class="auth-consents"><div class="checkbox"><label><input type="checkbox" name="age_confirmed" required> Tenho mais de 16 anos</label></div><div class="checkbox"><label><input type="checkbox" name="terms_accepted" required> Concordo com os <button class="btn btn-link terms-link" type="button" data-terms-open>termos de serviço</button></label></div></div>' : ''),
+    '<button class="btn btn-primary btn-block submit-button" type="submit">' + (isSignup ? 'Criar minha conta' : 'Entrar') + '</button>',
+    '<p class="form-message alert alert-info" data-message role="status" aria-live="polite" hidden></p></form>',
+    '<div class="terms-modal" data-terms-modal hidden><div class="terms-modal__backdrop" data-terms-close></div><section class="terms-modal__dialog panel panel-default" role="dialog" aria-modal="true" aria-labelledby="terms-title"><div class="panel-body"><button class="close terms-modal__close" type="button" data-terms-close aria-label="Fechar">×</button><h3 id="terms-title">Termos de serviço</h3><p>Este é um texto provisório. Os termos oficiais de serviço do Ludus ainda serão publicados.</p><p>Ao utilizar a plataforma, esperamos que todas as pessoas tratem a comunidade com respeito, não publiquem conteúdo ilegal ou ofensivo e respeitem os direitos de terceiros.</p><p>As funcionalidades, regras de convivência, privacidade e condições de uso serão detalhadas nesta página quando os termos oficiais forem definidos.</p><p>Versão provisória — não é o texto final.</p></div></section></div>',
+    '</div></section></div></main>'
   ].join('');
 
   app.querySelectorAll('[data-mode]').forEach((button) => {
@@ -1930,7 +1911,7 @@ function renderAuth(mode = 'login') {
 }
 
 if (!supabase) {
-  app.innerHTML = '<main class="setup-shell"><a class="brand" href="./">L<span>.</span></a><p class="eyebrow">CONFIGURAÇÃO NECESSÁRIA</p><h1>Estamos preparando<br><em>o Ludus.</em></h1><p>As credenciais públicas do Supabase ainda não foram carregadas nesta publicação.</p></main>';
+  app.innerHTML = '<main class="container"><div class="alert alert-warning" role="alert"><h1>Configuração necessária</h1><p>As credenciais públicas do serviço ainda não foram carregadas nesta publicação.</p></div></main>';
 } else {
   renderAuth('login');
   let authReady = false;

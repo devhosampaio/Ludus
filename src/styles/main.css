@@ -1,9 +1,118 @@
-/* Entrada central dos estilos do Ludus. */
-@import './tokens.css';
-@import './base.css';
-@import './legacy.css';
-@import './layout.css';
-@import './feed.css';
-@import './profile.css';
-@import './search.css';
-@import './header.css';
+/* Base simples do Ludus com Bootstrap 3.4.1. */
+/* Este arquivo cuida apenas da estrutura que não é fornecida pelo grid do Bootstrap. */
+
+[hidden] { display: none !important; }
+#app { min-height: 100vh; }
+body { min-width: 320px; }
+button, input, textarea, select { font: inherit; }
+button { cursor: pointer; }
+button:disabled { cursor: not-allowed; opacity: .65; }
+img { max-width: 100%; }
+
+.auth-shell { padding-top: 48px; padding-bottom: 48px; }
+.auth-shell--split { max-width: 1000px; }
+.auth-shell--split > .row { display: flex; align-items: flex-start; flex-wrap: wrap; }
+.auth-panel { margin-top: 24px; }
+.auth-panel__inner { padding: 24px; }
+.auth-switch { margin-bottom: 24px; }
+.auth-switch .is-active { font-weight: 700; }
+.auth-panel__heading { margin-bottom: 20px; }
+.auth-panel__heading h2 { margin-top: 0; }
+.auth-form .field { display: block; margin-bottom: 12px; }
+.auth-form .field > span { display: block; margin-bottom: 5px; font-weight: 600; }
+.auth-form .field small { display: block; margin-top: 5px; color: #777; }
+.password-field { display: flex; gap: 6px; }
+.password-field .form-control { flex: 1; min-width: 0; }
+.auth-consents { margin: 16px 0; }
+.auth-consents .checkbox { margin: 8px 0; }
+.text-button, .terms-link { padding-left: 0; }
+.form-message { margin-top: 16px; white-space: normal; }
+.terms-modal { position: fixed; z-index: 2000; inset: 0; display: flex; align-items: center; justify-content: center; padding: 20px; }
+.terms-modal__backdrop { position: absolute; inset: 0; background: rgba(0,0,0,.45); }
+.terms-modal__dialog { position: relative; width: min(100%, 620px); max-height: 85vh; overflow: auto; margin: 0; }
+.terms-modal__close { float: right; }
+
+.feed-shell { display: grid; grid-template-columns: 210px minmax(0, 760px); gap: 24px; max-width: 1120px; margin: 0 auto; padding: 20px; }
+.feed-center-column { min-width: 0; }
+.side-menu { min-width: 0; }
+.side-menu__brand { display: inline-block; margin: 0 0 20px; font-size: 22px; font-weight: 700; }
+.side-menu__navigation { display: flex; flex-direction: column; gap: 6px; }
+.side-menu__item { display: block; width: 100%; padding: 10px 12px; text-align: left; }
+.side-menu__item svg { width: 18px; height: 18px; margin-right: 8px; vertical-align: middle; }
+.app-topbar { position: sticky; top: 0; z-index: 100; padding: 10px 0; background: #fff; }
+.feed-tabs { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.feed-tabs__button { padding: 8px 12px; }
+.feed-tabs__create { min-width: 36px; min-height: 34px; }
+.feed-tabs__create svg { width: 14px; height: 14px; }
+.feed-main__container { min-width: 0; }
+.feed-welcome { margin: 18px 0 28px; padding: 20px; border: 1px solid #ddd; }
+.feed-welcome h1 { margin-top: 0; font-size: 24px; }
+.feed-content { width: 100%; }
+.section-heading { margin: 20px 0 12px; }
+.section-heading h2 { font-size: 22px; }
+.feed-list { min-width: 0; }
+.review-card { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 16px; padding: 18px 0; border-bottom: 1px solid #ddd; }
+.review-card__cover { width: 96px; max-height: 140px; object-fit: cover; }
+.review-card__body { min-width: 0; }
+.review-card__meta, .review-card__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.review-card__actions { margin-top: 12px; }
+.review-card__body p { overflow-wrap: anywhere; }
+.notifications { position: relative; }
+.notifications__panel { position: absolute; z-index: 300; top: 100%; left: 0; width: min(340px, 85vw); max-height: 420px; overflow: auto; padding: 12px; border: 1px solid #ddd; background: #fff; box-shadow: 0 3px 8px rgba(0,0,0,.12); }
+.notifications__header, .notifications__item-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; padding: 8px 0; }
+.notifications__item { display: flex; gap: 8px; width: 100%; padding: 8px; text-align: left; }
+.notifications__avatar { flex: 0 0 32px; width: 32px; height: 32px; overflow: hidden; }
+.notifications__avatar img { width: 100%; height: 100%; object-fit: cover; }
+.notifications__item-content { display: flex; flex-direction: column; gap: 4px; }
+.notifications__item-content time, .notifications__empty { color: #777; font-size: 12px; }
+
+.profile-page, .search-page { width: 100%; }
+.profile-page__topbar { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; padding: 16px; border-bottom: 1px solid #ddd; }
+.profile-page__content { width: min(100% - 30px, 900px); margin: 0 auto; padding: 24px 0; }
+.profile-page__hero, .profile-editor { padding: 20px; border: 1px solid #ddd; }
+.profile-page__banner { height: 140px; overflow: hidden; }
+.profile-page__banner-image, .profile-page__banner-empty { width: 100%; height: 100%; object-fit: cover; }
+.profile-page__identity { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin-top: 12px; }
+.profile-page__avatar { display: grid; place-items: center; width: 72px; height: 72px; overflow: hidden; border: 1px solid #ddd; border-radius: 50%; }
+.profile-page__avatar img { width: 100%; height: 100%; object-fit: cover; }
+.profile-page__bio { margin-top: 16px; white-space: pre-wrap; }
+.profile-page__stats { display: flex; flex-wrap: wrap; gap: 24px; margin-top: 18px; padding-top: 16px; border-top: 1px solid #ddd; }
+.profile-page__stats div { display: flex; flex-direction: column; gap: 4px; }
+.profile-page__reviews { margin-top: 28px; }
+.profile-editor__form { display: grid; gap: 14px; }
+.profile-editor__field, .profile-editor__upload { display: block; }
+.profile-editor__field > span, .profile-editor__upload > span { display: block; margin-bottom: 5px; font-weight: 600; }
+.profile-editor__uploads { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.profile-editor__preview { display: grid; place-items: center; min-height: 90px; margin: 8px 0; border: 1px solid #ddd; overflow: hidden; }
+.profile-editor__preview img { max-width: 100%; max-height: 160px; object-fit: contain; }
+.profile-editor__actions { display: flex; gap: 8px; }
+
+.search-topbar { padding: 12px 0; }
+.search-page__form { display: flex; align-items: center; gap: 8px; }
+.search-page__form svg { width: 18px; height: 18px; flex: 0 0 18px; }
+.search-page__input { flex: 1; min-width: 0; }
+.search-page__results { max-width: 760px; margin: 0 auto; padding: 20px 0; }
+.search-results-group { margin-bottom: 16px; }
+.search-result { display: flex; align-items: center; gap: 12px; width: 100%; padding: 10px; text-align: left; border-bottom: 1px solid #eee; }
+.search-result__avatar { display: grid; place-items: center; flex: 0 0 42px; width: 42px; height: 42px; overflow: hidden; border-radius: 50%; }
+.search-result__avatar img { width: 100%; height: 100%; object-fit: cover; }
+.search-result__info { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.search-result__info small { color: #777; }
+
+.composer-overlay { position: fixed; z-index: 1000; inset: 0; display: flex; align-items: center; justify-content: center; padding: 16px; background: rgba(0,0,0,.45); }
+.composer { width: min(100%, 620px); max-height: 90vh; overflow: auto; padding: 20px; border: 1px solid #ddd; background: #fff; }
+.composer input, .composer textarea, .composer select,
+.profile-editor input, .profile-editor textarea { width: 100%; }
+[data-message], [data-editor-message] { overflow-wrap: anywhere; }
+
+@media (max-width: 767px) {
+  .feed-shell { display: block; padding: 12px; }
+  .side-menu { margin-bottom: 16px; }
+  .side-menu__navigation { flex-direction: row; flex-wrap: wrap; }
+  .side-menu__item { width: auto; }
+  .feed-tabs { gap: 2px; }
+  .feed-tabs__button { padding: 7px 8px; }
+  .review-card { grid-template-columns: 76px minmax(0, 1fr); gap: 12px; }
+  .review-card__cover { width: 76px; }
+  .profile-editor__uploads { grid-template-columns: 1fr; }
+}
