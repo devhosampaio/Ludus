@@ -133,7 +133,7 @@ img { max-width: 100%; }
 
 @media (max-width: 767px) {
   .feed-shell { display: block; padding: 12px; }
-  .side-menu { margin-bottom: 16px; }
+  .side-menu--left { display: none; }
   .side-menu__navigation { flex-direction: row; flex-wrap: wrap; }
   .side-menu__item { width: auto; }
   .feed-tabs { gap: 2px; }
