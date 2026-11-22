@@ -309,11 +309,28 @@ function sharedSideMenuMarkup(user) {
 }
 
 function sharedFeedHeaderMarkup() {
-  return `  <div class="app-topbar app-topbar__content">
-      <nav class="feed-navigation feed-navigation--header" aria-label="Navegação do feed"><div class="feed-tabs" role="tablist" aria-label="Navegação do feed"><button class="feed-tabs__button is-active" type="button" role="tab" aria-selected="true" data-feed-mode="home">Início</button><button class="feed-tabs__button" type="button" role="tab" aria-selected="false" data-feed-mode="popular">Para você</button><button class="feed-tabs__button" type="button" role="tab" aria-selected="false" data-feed-mode="following">Seguindo</button><button class="feed-tabs__button" type="button" role="tab" aria-selected="false" data-feed-mode="recent">Recentes</button><button class="feed-tabs__create" type="button" data-create-review aria-label="Publicar nova avaliação" title="Publicar nova avaliação"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 2v8M2 6h8"></path></svg></button></div></nav>
-
-
-  </div>`;
+  return `  <header class="app-topbar">
+      <div class="container-fluid">
+        <div class="row app-topbar__row">
+          <div class="col-xs-4 app-topbar__left">
+            <span class="app-topbar__avatar" data-header-avatar aria-label="Foto do perfil">${profilePlaceholderMarkup()}</span>
+          </div>
+          <div class="col-xs-4 app-topbar__center">
+            <a class="app-topbar__brand" href="#inicio" aria-label="Ludus — início">Ludus</a>
+          </div>
+          <div class="col-xs-4 app-topbar__right"></div>
+        </div>
+      </div>
+    </header>
+    <nav class="feed-navigation feed-navigation--header" aria-label="Navegação do feed">
+      <div class="feed-tabs" role="tablist" aria-label="Navegação do feed">
+        <button class="feed-tabs__button is-active" type="button" role="tab" aria-selected="true" data-feed-mode="home">Início</button>
+        <button class="feed-tabs__button" type="button" role="tab" aria-selected="false" data-feed-mode="popular">Para você</button>
+        <button class="feed-tabs__button" type="button" role="tab" aria-selected="false" data-feed-mode="following">Seguindo</button>
+        <button class="feed-tabs__button" type="button" role="tab" aria-selected="false" data-feed-mode="recent">Recentes</button>
+        <button class="feed-tabs__create" type="button" data-create-review aria-label="Publicar nova avaliação" title="Publicar nova avaliação"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 2v8M2 6h8"></path></svg></button>
+      </div>
+    </nav>`;
 }
 
 async function setupSharedSideMenu(user, profile = null) {
@@ -395,6 +412,10 @@ async function renderSignedIn(user) {
     .eq('id', user.id).maybeSingle();
 
   const welcomeName = app.querySelector('[data-welcome-name]');
+  const headerAvatar = app.querySelector('[data-header-avatar]');
+  if (headerAvatar && profileResult.data?.avatar_url) {
+    headerAvatar.innerHTML = '<img src="' + escapeHTML(profileResult.data.avatar_url) + '" alt="Foto do perfil">';
+  }
   if (profileResult.data) {
     if (username) username.textContent = profileResult.data.username || fallbackName;
     if (welcomeName) welcomeName.textContent = profileResult.data.display_name || profileResult.data.username || fallbackName;
