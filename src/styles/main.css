@@ -1,2 +1,4 @@
-/* Ponto único de entrada dos estilos do Ludus. */
+/* Entrada central dos estilos do Ludus. */
+@import './tokens.css';
+@import './base.css';
 @import './legacy.css';
