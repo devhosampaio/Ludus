@@ -544,7 +544,7 @@ async function renderSignedIn(user) {
         : profilePlaceholderMarkup();
       const cover = gameData.cover_url
         ? '<img class="newcomers-review__cover" src="' + escapeHTML(gameData.cover_url) + '" alt="Capa de ' + escapeHTML(game) + '" loading="lazy">'
-        : '<span class="newcomers-review__cover newcomers-review__cover--empty">L<span>.</span></span>';
+        : '<span class="newcomers-review__cover newcomers-review__cover--empty">Sem capa</span>';
       const rating = Math.max(0, Math.min(5, Number(review.rating) || 0));
       const ratingMarkup = '<span class="newcomers-review__stars" aria-label="' + rating + ' de 5 estrelas">' + '★'.repeat(rating) + '</span>';
       const likedMarkup = review.liked_game
@@ -652,7 +652,7 @@ async function renderSignedIn(user) {
       const gameMeta = [platformText, gameYear, gameData.developer].filter(Boolean).map(escapeHTML).join(' <span aria-hidden="true">·</span> ');
       const cover = '<button class="review-card__cover-wrap" type="button" data-open-game="' + escapeHTML(review.game_id) + '" aria-label="Abrir página de ' + escapeHTML(game) + '">' + (gameData.cover_url
         ? '<img class="review-card__cover" src="' + escapeHTML(gameData.cover_url) + '" alt="Capa de ' + escapeHTML(game) + '" loading="lazy">'
-        : '<span class="review-card__cover review-card__cover--empty">L<span>.</span></span>') + '</button>';
+        : '<span class="review-card__cover review-card__cover--empty">Sem capa</span>') + '</button>';
       const stars = '★'.repeat(review.rating) + '<span class="review-card__stars-muted">' + '★'.repeat(5 - review.rating) + '</span>';
       const isLiked = likedReviewIds.has(review.id);
       const avatarMarkup = review.profiles?.avatar_url
@@ -1267,11 +1267,11 @@ async function renderGamePage(currentUser, gameId) {
   if (requestId !== renderGamePage.requestId) return;
 
   const bannerStyle = game.hero_url
-    ? 'style="background-image:linear-gradient(90deg, rgb(48 44 61 / 18%), #302c3d 100%),url(&quot;' + escapeHTML(game.hero_url) + '&quot;)"'
+    ? 'style="background-image:url(&quot;' + escapeHTML(game.hero_url) + '&quot;)"'
     : '';
   const cover = game.cover_url
     ? '<img class="game-page__cover" src="' + escapeHTML(game.cover_url) + '" alt="">'
-    : '<div class="game-page__cover game-page__cover--empty">L.</div>';
+    : '<div class="game-page__cover game-page__cover--empty">Sem capa</div>';
   const genres = (game.genres || []).slice(0, 5).map((item) => '<span>' + escapeHTML(item) + '</span>').join('');
   const platforms = (game.platforms || []).slice(0, 5).map((item) => '<span>' + escapeHTML(item) + '</span>').join('');
   const reviewCards = (reviewsResult.data || []).map((review) => {
@@ -1456,7 +1456,7 @@ async function renderProfilePage(currentUser, username) {
     const year = review.games?.release_year ? ' (' + escapeHTML(review.games.release_year) + ')' : '';
     const cover = review.games?.cover_url
       ? '<img class="profile-review__cover" src="' + escapeHTML(review.games.cover_url) + '" alt="">'
-      : '<div class="profile-review__cover profile-review__cover--empty">L.</div>';
+      : '<div class="profile-review__cover profile-review__cover--empty">Sem capa</div>';
     return '<article class="profile-review">' + cover + '<div><strong>' + escapeHTML(game) + year + '</strong><div class="profile-review__meta"><span class="profile-review__stars">' + '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating) + '</span><span>' + statusLabel(review.status) + '</span><time>' + formatDate(review.created_at) + '</time></div>' + (review.body ? '<p>' + escapeHTML(review.body) + '</p>' : '') + (review.liked_game ? '<small class="profile-review__liked"><svg class="ui-icon ui-icon--heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 8.8c0 5.1-8.8 11-8.8 11s-8.8-5.9-8.8-11A4.8 4.8 0 0 1 12 6.4a4.8 4.8 0 0 1 8.8 2.4Z"></path></svg> Gostei deste jogo</small>' : '') + '</div></article>';
   }).join('');
 
@@ -1638,7 +1638,7 @@ async function openReviewComposer(user, existingReview = null, preselectedGame =
     selected.hidden = false;
     selected.innerHTML = (game.cover_url
       ? '<img class="composer__game-cover" src="' + escapeHTML(game.cover_url) + '" alt="">'
-      : '<span class="composer__cover-empty">L.</span>') +
+      : '<span class="composer__cover-empty">Sem capa</span>') +
       '<span class="composer__game-info"><strong>' + escapeHTML(game.title || 'Jogo') + '</strong>' +
       (game.release_year ? '<small class="composer__game-year">' + escapeHTML(game.release_year) + '</small>' : '') +
       '<span class="composer__average" data-game-average>Calculando média…</span><small class="composer__selected-caption">' + caption + '</small></span>' +
