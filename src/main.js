@@ -324,11 +324,8 @@ function sharedFeedHeaderMarkup() {
     </header>
     <nav class="feed-navigation feed-navigation--header" aria-label="Navegação do feed">
       <div class="feed-tabs" role="tablist" aria-label="Navegação do feed">
-        <button class="feed-tabs__button is-active" type="button" role="tab" aria-selected="true" data-feed-mode="home">Início</button>
-        <button class="feed-tabs__button" type="button" role="tab" aria-selected="false" data-feed-mode="popular">Para você</button>
+        <button class="feed-tabs__button is-active" type="button" role="tab" aria-selected="true" data-feed-mode="home">Para Você</button>
         <button class="feed-tabs__button" type="button" role="tab" aria-selected="false" data-feed-mode="following">Seguindo</button>
-        <button class="feed-tabs__button" type="button" role="tab" aria-selected="false" data-feed-mode="recent">Recentes</button>
-        <button class="feed-tabs__create" type="button" data-create-review aria-label="Publicar nova avaliação" title="Publicar nova avaliação"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="M6 2v8M2 6h8"></path></svg></button>
       </div>
     </nav>`;
 }
