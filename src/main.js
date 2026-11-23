@@ -317,7 +317,7 @@ function sharedFeedHeaderMarkup() {
           <div class="col-xs-4 app-topbar__center">
             <a class="app-topbar__brand" href="#inicio" aria-label="Ludus — início">Ludus</a>
           </div>
-          <div class="col-xs-4 app-topbar__right"></div>
+          <div class="col-xs-4 app-topbar__right"><button class="btn btn-default app-topbar__add-button" type="button" aria-label="Adicionar"><i class="fa-solid fa-plus" aria-hidden="true"></i></button></div>
         </div>
       </div>
     </header>
