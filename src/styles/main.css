@@ -133,6 +133,7 @@ img { max-width: 100%; }
 
 @media (max-width: 767px) {
   .feed-shell { display: block; padding: 12px; }
+  .feed-main > .feed-main__container { padding-top: 77px; }
   .side-menu--left { display: none; }
   .side-menu__navigation { flex-direction: row; flex-wrap: wrap; }
   .side-menu__item { width: auto; }
