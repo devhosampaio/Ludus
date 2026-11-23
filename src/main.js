@@ -347,7 +347,7 @@ function sharedFeedHeaderMarkup() {
       <nav class="mobile-drawer__navigation" aria-label="Navegação principal">
         <button class="mobile-drawer__item" type="button" data-drawer-home><i class="fa-solid fa-house" aria-hidden="true"></i><span>Página Inicial</span></button>
         <button class="mobile-drawer__item" type="button" data-drawer-search><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i><span>Pesquisar</span></button>
-        <button class="mobile-drawer__item" type="button" data-drawer-profile><i class="fa-regular fa-user" aria-hidden="true"></i><span>Meu Perfil</span></button>
+        <button class="mobile-drawer__item" type="button" data-drawer-profile><i class="fa-solid fa-user" aria-hidden="true"></i><span>Meu Perfil</span></button>
         <button class="mobile-drawer__item" type="button" data-drawer-saved><i class="fa-solid fa-bookmark" aria-hidden="true"></i><span>Listas Salvas</span></button>
         <button class="mobile-drawer__item" type="button" data-drawer-settings><i class="fa-solid fa-gear" aria-hidden="true"></i><span>Configurações</span></button>
       </nav>
