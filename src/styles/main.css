@@ -937,3 +937,12 @@ img { max-width: 100%; }
   .profile-crop-dialog__viewport { height: 46vh; min-height: 180px; }
   .profile-crop-dialog__actions .btn { flex: 1; min-width: 0; }
 }
+
+/* Inicia o conteúdo do perfil imediatamente abaixo do cabeçalho fixo. */
+.feed-shell--profile .feed-main__container {
+  padding-top: 60px;
+}
+.feed-shell--profile .profile-page__content {
+  margin-top: 0;
+  padding-top: 0;
+}
