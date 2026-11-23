@@ -383,6 +383,16 @@ img { max-width: 100%; }
   color: #666;
   font-weight: 400;
 }
+.mobile-drawer__review-container {
+  margin-top: 8px;
+  padding-top: 12px;
+  border-top: 1px solid #dedede;
+}
+.mobile-drawer__review {
+  background-color: #7060ab;
+  border-color: #7060ab;
+  font-weight: 700;
+}
 .mobile-drawer__navigation {
   display: flex;
   flex-direction: column;
