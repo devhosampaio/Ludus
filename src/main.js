@@ -1,5 +1,5 @@
 import { supabase } from './lib/supabase.js';
-import { signIn, signOut, signUp, requestPasswordReset } from './lib/auth.js';
+import { signIn, signOut, signUp, resendSignupConfirmation, requestPasswordReset } from './lib/auth.js';
 
 const app = document.querySelector('#app');
 document.title = 'Ludus | Comunidade de jogos';
@@ -2260,7 +2260,9 @@ function renderAuth(mode = 'login') {
     (!isSignup ? '<button class="btn btn-link text-button" type="button" data-reset>Esqueceu sua senha?</button>' : ''),
     (isSignup ? '<div class="auth-consents"><div class="checkbox"><label><input type="checkbox" name="age_confirmed" required> Tenho mais de 16 anos</label></div><div class="checkbox"><label><input type="checkbox" name="terms_accepted" required> Concordo com os <button class="btn btn-link terms-link" type="button" data-terms-open>termos de serviço</button></label></div></div>' : ''),
     '<button class="btn btn-primary btn-block submit-button" type="submit">' + (isSignup ? 'Criar minha conta' : 'Entrar') + '</button>',
-    '<p class="form-message alert alert-info" data-message role="status" aria-live="polite" hidden></p></form>',
+    '<p class="form-message alert alert-info" data-message role="status" aria-live="polite" hidden></p>',
+    (isSignup ? '<button class="btn btn-link" type="button" data-resend-confirmation hidden>Reenviar e-mail de confirmação</button>' : ''),
+    '</form>',
     '<div class="terms-modal" data-terms-modal hidden><div class="terms-modal__backdrop" data-terms-close></div><section class="terms-modal__dialog panel panel-default" role="dialog" aria-modal="true" aria-labelledby="terms-title"><div class="panel-body"><button class="close terms-modal__close" type="button" data-terms-close aria-label="Fechar">×</button><h3 id="terms-title">Termos de serviço</h3><p>Este é um texto provisório. Os termos oficiais de serviço do Ludus ainda serão publicados.</p><p>Ao utilizar a plataforma, esperamos que todas as pessoas tratem a comunidade com respeito, não publiquem conteúdo ilegal ou ofensivo e respeitem os direitos de terceiros.</p><p>As funcionalidades, regras de convivência, privacidade e condições de uso serão detalhadas nesta página quando os termos oficiais forem definidos.</p><p>Versão provisória — não é o texto final.</p></div></section></div>',
     '</div></section></div></main>'
   ].join('');
@@ -2317,8 +2319,27 @@ function renderAuth(mode = 'login') {
     try {
       if (isSignup) {
         const result = await signUp(values);
-        if (result.session?.user) renderSignedIn(result.user);
-        else showMessage('Cadastro recebido! Confira seu e-mail para confirmar a conta.', 'success');
+        if (result.session?.user) {
+          renderSignedIn(result.user);
+        } else {
+          const resendButton = app.querySelector('[data-resend-confirmation]');
+          const emailAlreadyRegistered = result.user?.identities?.length === 0;
+          showMessage(
+            emailAlreadyRegistered
+              ? 'Já existe uma conta associada a esse e-mail e ela pode estar aguardando confirmação. Confira sua caixa de entrada ou solicite um novo envio abaixo.'
+              : 'Cadastro recebido. O Ludus solicitou o envio do e-mail de confirmação. Confira também as pastas de spam e promoções.',
+            'success'
+          );
+          if (resendButton) {
+            resendButton.hidden = false;
+            resendButton.disabled = true;
+            resendButton.textContent = 'Aguarde 60 segundos para reenviar';
+            window.setTimeout(() => {
+              resendButton.disabled = false;
+              resendButton.textContent = 'Reenviar e-mail de confirmação';
+            }, 60000);
+          }
+        }
       } else {
         const identifier = values.identifier.trim();
         const result = identifier.includes('@')
@@ -2330,6 +2351,38 @@ function renderAuth(mode = 'login') {
       showMessage(error.message || 'Não foi possível concluir. Tente novamente.', 'error');
       submit.disabled = false;
       submit.innerHTML = '<span>' + (isSignup ? 'Criar minha conta' : 'Entrar') + '</span><span class="submit-button__icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4M3 12h12m-5-5 5 5-5 5"/></svg></span>';
+    }
+  });
+
+  const resendButton = app.querySelector('[data-resend-confirmation]');
+  resendButton?.addEventListener('click', async () => {
+    const email = app.querySelector('[name="email"]')?.value.trim();
+    if (!email || !email.includes('@')) {
+      showMessage('Informe um endereço de e-mail válido para reenviar a confirmação.', 'error');
+      return;
+    }
+
+    resendButton.disabled = true;
+    resendButton.textContent = 'Enviando…';
+    showMessage('');
+    try {
+      await resendSignupConfirmation(email);
+      showMessage('Solicitação enviada. Confira sua caixa de entrada e também as pastas de spam e promoções.', 'success');
+      resendButton.textContent = 'Aguarde 60 segundos para reenviar';
+      window.setTimeout(() => {
+        resendButton.disabled = false;
+        resendButton.textContent = 'Reenviar e-mail de confirmação';
+      }, 60000);
+    } catch (error) {
+      const code = error.code || error.error || '';
+      const message = code === 'email_address_not_authorized'
+        ? 'O serviço de e-mail atual não permite enviar para esse endereço. É necessário configurar um SMTP próprio.'
+        : code === 'over_email_send_rate_limit' || error.status === 429
+          ? 'O limite de envio de e-mails foi atingido. Aguarde antes de tentar novamente.'
+          : error.message || 'Não foi possível reenviar o e-mail. Tente novamente mais tarde.';
+      showMessage(message, 'error');
+      resendButton.disabled = false;
+      resendButton.textContent = 'Reenviar e-mail de confirmação';
     }
   });
 
