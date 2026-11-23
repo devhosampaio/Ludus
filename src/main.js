@@ -1081,16 +1081,197 @@ async function renderSignedIn(user, initialFeedMode = 'home') {
     const shareButton = event.target.closest('[data-share-review]');
     if (shareButton) {
       const shareCard = shareButton.closest('[data-review-id]');
-      const shareUrl = new URL('#/review/' + shareCard.dataset.reviewId, window.location.href).toString();
-      try {
-        if (navigator.share) await navigator.share({ title: 'Avaliação no Ludus', url: shareUrl });
-        else if (navigator.clipboard?.writeText) {
-          await navigator.clipboard.writeText(shareUrl);
-          shareButton.querySelector('span').textContent = 'Link copiado';
-        } else window.prompt('Copie o link da avaliação:', shareUrl);
-      } catch (error) {
-        if (error.name !== 'AbortError') console.error('[Ludus] Falha ao compartilhar avaliação:', error);
+      const review = reviews.find((item) => String(item.id) === String(shareCard?.dataset.reviewId));
+      if (!review) return;
+      const shareUrl = new URL('#/review/' + review.id, window.location.href).toString();
+      const game = review.games || {};
+      const storyModal = document.createElement('div');
+      storyModal.className = 'story-share-modal';
+      storyModal.setAttribute('role', 'dialog');
+      storyModal.setAttribute('aria-modal', 'true');
+      storyModal.setAttribute('aria-label', 'Compartilhar avaliação');
+      storyModal.innerHTML = '<div class="story-share-modal__panel">' +
+        '<div class="story-share-modal__header"><strong>Compartilhar avaliação</strong><button type="button" class="story-share-modal__close" data-story-close aria-label="Fechar"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button></div>' +
+        '<div class="story-share-modal__preview"><canvas class="story-share-modal__canvas" width="1080" height="1920" aria-label="Prévia do card de compartilhamento"></canvas></div>' +
+        '<div class="story-share-modal__actions"><button type="button" class="btn btn-default" data-story-download><i class="fa-solid fa-download" aria-hidden="true"></i> Baixar imagem</button><button type="button" class="btn btn-primary" data-story-share><i class="fa-solid fa-share-nodes" aria-hidden="true"></i> Compartilhar</button></div></div>';
+      document.body.appendChild(storyModal);
+      const canvas = storyModal.querySelector('canvas');
+      const context = canvas.getContext('2d');
+      const loadStoryImage = (url) => new Promise((resolve) => {
+        if (!url) return resolve(null);
+        const image = new Image();
+        image.crossOrigin = 'anonymous';
+        image.onload = () => resolve(image);
+        image.onerror = () => resolve(null);
+        image.src = url;
+      });
+      const [coverImage, avatarImage] = await Promise.all([
+        loadStoryImage(game.cover_url),
+        loadStoryImage(review.profiles?.avatar_url)
+      ]);
+      const roundRectPath = (ctx, x, y, width, height, radius) => {
+        const r = Math.min(radius, width / 2, height / 2);
+        ctx.beginPath();
+        ctx.moveTo(x + r, y);
+        ctx.arcTo(x + width, y, x + width, y + height, r);
+        ctx.arcTo(x + width, y + height, x, y + height, r);
+        ctx.arcTo(x, y + height, x, y, r);
+        ctx.arcTo(x, y, x + width, y, r);
+        ctx.closePath();
+      };
+      const drawWrappedText = (ctx, text, x, y, maxWidth, lineHeight, maxLines) => {
+        const words = String(text || '').trim().split(/\\s+/).filter(Boolean);
+        let line = '';
+        let lineCount = 0;
+        for (const word of words) {
+          const candidate = line ? line + ' ' + word : word;
+          if (ctx.measureText(candidate).width > maxWidth && line) {
+            ctx.fillText(line, x, y + lineCount * lineHeight);
+            lineCount += 1;
+            line = word;
+            if (lineCount >= maxLines) break;
+          } else line = candidate;
+        }
+        if (line && lineCount < maxLines) {
+          if (lineCount === maxLines - 1 && words.length) {
+            while (ctx.measureText(line + '…').width > maxWidth && line.length > 1) line = line.slice(0, -1);
+            ctx.fillText(line + (line.length < String(text).trim().length ? '…' : ''), x, y + lineCount * lineHeight);
+          } else ctx.fillText(line, x, y + lineCount * lineHeight);
+        }
+      };
+      context.fillStyle = '#222831';
+      context.fillRect(0, 0, 1080, 1920);
+      const backdrop = context.createLinearGradient(0, 0, 1080, 1920);
+      backdrop.addColorStop(0, 'rgba(112,96,171,0.28)');
+      backdrop.addColorStop(0.48, 'rgba(34,40,49,0)');
+      backdrop.addColorStop(1, 'rgba(112,96,171,0.16)');
+      context.fillStyle = backdrop;
+      context.fillRect(0, 0, 1080, 1920);
+      context.fillStyle = '#ffffff';
+      context.font = '700 42px Arial, sans-serif';
+      context.fillText('LUDUS', 84, 112);
+      context.fillStyle = '#9a8bd0';
+      context.beginPath();
+      context.arc(235, 98, 7, 0, Math.PI * 2);
+      context.fill();
+      context.fillStyle = 'rgba(255,255,255,0.65)';
+      context.font = '500 22px Arial, sans-serif';
+      context.fillText('MINHA AVALIAÇÃO', 84, 164);
+      const coverX = 270, coverY = 220, coverW = 540, coverH = 700;
+      context.save();
+      roundRectPath(context, coverX, coverY, coverW, coverH, 20);
+      context.clip();
+      if (coverImage) {
+        const scale = Math.max(coverW / coverImage.width, coverH / coverImage.height);
+        const sw = coverW / scale, sh = coverH / scale;
+        context.drawImage(coverImage, (coverImage.width - sw) / 2, (coverImage.height - sh) / 2, sw, sh, coverX, coverY, coverW, coverH);
+      } else {
+        const coverGradient = context.createLinearGradient(coverX, coverY, coverX + coverW, coverY + coverH);
+        coverGradient.addColorStop(0, '#7060ab');
+        coverGradient.addColorStop(1, '#3a4554');
+        context.fillStyle = coverGradient;
+        context.fillRect(coverX, coverY, coverW, coverH);
+        context.fillStyle = '#ffffff';
+        context.font = '700 34px Arial, sans-serif';
+        context.textAlign = 'center';
+        context.fillText('CAPA DO JOGO', 540, 570);
+        context.textAlign = 'left';
       }
+      context.restore();
+      const gameTitle = game.title || 'Jogo';
+      context.fillStyle = '#ffffff';
+      context.font = '700 52px Arial, sans-serif';
+      drawWrappedText(context, gameTitle, 84, 1030, 912, 62, 2);
+      const rating = Number(review.rating || 0);
+      context.fillStyle = '#d5a64a';
+      context.font = '700 42px Arial, sans-serif';
+      context.fillText('★'.repeat(Math.max(0, Math.min(5, Math.round(rating)))), 84, 1152);
+      context.fillStyle = '#ffffff';
+      context.font = '700 34px Arial, sans-serif';
+      context.fillText(rating.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + ' / 5', 330, 1152);
+      let tagX = 84;
+      context.font = '700 20px Arial, sans-serif';
+      for (const tag of [review.liked_game ? 'FAVORITO' : '', review.status === 'completed' ? 'ZERADO' : ''].filter(Boolean)) {
+        const tagWidth = context.measureText(tag).width + 34;
+        context.fillStyle = 'rgba(112,96,171,0.32)';
+        roundRectPath(context, tagX, 1190, tagWidth, 42, 21);
+        context.fill();
+        context.fillStyle = '#d8d0f5';
+        context.fillText(tag, tagX + 17, 1218);
+        tagX += tagWidth + 12;
+      }
+      if (review.body) {
+        context.fillStyle = 'rgba(255,255,255,0.88)';
+        context.font = '400 30px Arial, sans-serif';
+        drawWrappedText(context, '“' + review.body + '”', 84, 1320, 912, 48, 5);
+      }
+      context.fillStyle = 'rgba(255,255,255,0.14)';
+      context.fillRect(84, 1630, 912, 1);
+      if (avatarImage) {
+        context.save();
+        context.beginPath();
+        context.arc(130, 1710, 38, 0, Math.PI * 2);
+        context.clip();
+        context.drawImage(avatarImage, 92, 1672, 76, 76);
+        context.restore();
+      } else {
+        context.fillStyle = '#7060ab';
+        context.beginPath();
+        context.arc(130, 1710, 38, 0, Math.PI * 2);
+        context.fill();
+      }
+      context.fillStyle = '#ffffff';
+      context.font = '700 30px Arial, sans-serif';
+      context.fillText(review.profiles?.display_name || review.profiles?.username || 'jogador', 194, 1702);
+      context.fillStyle = 'rgba(255,255,255,0.62)';
+      context.font = '400 24px Arial, sans-serif';
+      context.fillText('@' + (review.profiles?.username || 'jogador'), 194, 1740);
+      context.fillStyle = '#9a8bd0';
+      context.font = '700 24px Arial, sans-serif';
+      context.fillText('CADA JOGO TEM UMA HISTÓRIA.', 84, 1840);
+      context.fillStyle = 'rgba(255,255,255,0.58)';
+      context.font = '400 20px Arial, sans-serif';
+      context.fillText('ludus.app  ·  ' + shareUrl.replace(/^https?:\\/\\//, ''), 84, 1880);
+      const closeStoryModal = () => storyModal.remove();
+      storyModal.addEventListener('click', (modalEvent) => {
+        if (modalEvent.target === storyModal || modalEvent.target.closest('[data-story-close]')) closeStoryModal();
+      });
+      storyModal.querySelector('[data-story-download]').addEventListener('click', () => {
+        canvas.toBlob((blob) => {
+          if (!blob) return;
+          const downloadUrl = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = downloadUrl;
+          link.download = 'ludus-review-' + review.id + '.png';
+          link.click();
+          URL.revokeObjectURL(downloadUrl);
+        }, 'image/png');
+      });
+      storyModal.querySelector('[data-story-share]').addEventListener('click', async () => {
+        canvas.toBlob(async (blob) => {
+          if (!blob) return;
+          const file = new File([blob], 'ludus-review-' + review.id + '.png', { type: 'image/png' });
+          try {
+            if (navigator.canShare?.({ files: [file] })) await navigator.share({ files: [file], title: 'Minha avaliação no Ludus', text: shareUrl });
+            else {
+              const link = document.createElement('a');
+              link.href = URL.createObjectURL(blob);
+              link.download = file.name;
+              link.click();
+              setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+            }
+          } catch (error) {
+            if (error.name !== 'AbortError') console.error('[Ludus] Falha ao compartilhar imagem:', error);
+          }
+        }, 'image/png');
+      });
+      const closeOnEscape = (keyEvent) => {
+        if (keyEvent.key === 'Escape') {
+          closeStoryModal();
+          document.removeEventListener('keydown', closeOnEscape);
+        }
+      };
+      document.addEventListener('keydown', closeOnEscape);
       return;
     }
     const saveButton = event.target.closest('[data-save-review]');
