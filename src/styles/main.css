@@ -910,3 +910,29 @@ img { max-width: 100%; }
   padding-top: 12px;
   padding-bottom: 12px;
 }
+
+
+.profile-crop-overlay { position: fixed; z-index: 2500; inset: 0; display: flex; align-items: center; justify-content: center; padding: 16px; background: rgba(0,0,0,.78); }
+.profile-crop-overlay[hidden] { display: none; }
+.profile-crop-dialog { display: flex; flex-direction: column; gap: 14px; width: min(100%, 680px); max-height: 94vh; padding: 18px; overflow: auto; border: 1px solid #3a4554; background: #222831; color: #fff; }
+.profile-crop-dialog__header, .profile-crop-dialog__actions { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.profile-crop-dialog__header h3 { margin: 0; font-size: 18px; }
+.profile-crop-dialog__header button { border: 0; background: transparent; color: #fff; font-size: 26px; }
+.profile-crop-dialog__viewport { width: 100%; height: min(54vh, 420px); min-height: 220px; overflow: hidden; background: #111; }
+.profile-crop-dialog__viewport img { display: block; max-width: 100%; }
+.profile-crop-dialog__zoom { display: flex; align-items: center; gap: 12px; }
+.profile-crop-dialog__zoom label { margin: 0; }
+.profile-crop-dialog__zoom input { flex: 1; }
+.profile-crop-dialog__actions .btn { min-width: 120px; }
+.profile-crop-dialog__actions .btn-primary { border-color: #7060ab; background: #7060ab; color: #fff; }
+.profile-crop-dialog .cropper-view-box, .profile-crop-dialog .cropper-face { border-radius: 0; }
+.profile-crop-dialog .cropper-view-box { outline: 1px solid #fff; box-shadow: 0 0 0 1px rgba(0,0,0,.5); }
+.profile-crop-dialog .cropper-line, .profile-crop-dialog .cropper-point { display: none; }
+.profile-crop-dialog .cropper-dashed { border-color: rgba(255,255,255,.55); }
+.profile-crop-dialog .cropper-bg { background-image: none; background-color: #111; }
+@media (max-width: 767px) {
+  .profile-crop-overlay { padding: 8px; }
+  .profile-crop-dialog { max-height: 96vh; padding: 12px; }
+  .profile-crop-dialog__viewport { height: 46vh; min-height: 180px; }
+  .profile-crop-dialog__actions .btn { flex: 1; min-width: 0; }
+}
