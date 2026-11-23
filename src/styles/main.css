@@ -458,6 +458,22 @@ img { max-width: 100%; }
   justify-content: space-between;
   margin-bottom: 12px;
 }
+.review-card__identity {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+.review-card__timestamp-separator {
+  flex: 0 0 auto;
+  font-size: 4px;
+  line-height: 1;
+}
+.review-card__timestamp {
+  font-size: 12px;
+  line-height: 1;
+  opacity: .7;
+}
 .review-menu > summary {
   display: inline-flex;
   width: 36px;
