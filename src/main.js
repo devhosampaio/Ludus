@@ -310,7 +310,7 @@ function sharedSideMenuMarkup(user) {
     <button class="bottom-nav__item" type="button" data-bottom-search aria-label="Pesquisar" title="Pesquisar"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></button>
     <button class="bottom-nav__item bottom-nav__review" type="button" data-bottom-review aria-label="Avaliar" title="Avaliar"><i class="fa-solid fa-plus" aria-hidden="true"></i></button>
     ${notificationControlMarkup()}
-    <button class="bottom-nav__item" type="button" data-bottom-profile aria-label="Perfil" title="Perfil"><i class="fa-solid fa-user" aria-hidden="true"></i></button>
+    <button class="bottom-nav__item" type="button" data-bottom-profile aria-label="Perfil" title="Perfil"><span class="bottom-nav__profile-avatar" data-bottom-profile-avatar aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.5" r="3.5"></circle><path d="M5 19.5c.6-3.6 3.1-5.6 7-5.6s6.4 2 7 5.6"></path></svg></span></button>
   </nav>`;
 }
 
@@ -494,6 +494,12 @@ async function setupSharedSideMenu(user, profile = null) {
     profile = data;
   }
   if (!root.isConnected) return;
+  const bottomProfileAvatar = app.querySelector('[data-bottom-profile-avatar]');
+  if (bottomProfileAvatar) {
+    bottomProfileAvatar.innerHTML = profile?.avatar_url
+      ? '<img src="' + escapeHTML(profile.avatar_url) + '" alt="">'
+      : '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.5" r="3.5"></circle><path d="M5 19.5c.6-3.6 3.1-5.6 7-5.6s6.4 2 7 5.6"></path></svg>';
+  }
   setupMobileDrawer(user, profile);
   const username = root.querySelector('[data-side-username]');
   const avatar = root.querySelector('[data-side-avatar]');
