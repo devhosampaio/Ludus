@@ -332,8 +332,8 @@ img { max-width: 100%; }
 }
 .mobile-drawer__avatar {
   display: block;
-  width: 76px;
-  height: 76px;
+  width: 38px;
+  height: 38px;
   overflow: hidden;
   border-radius: 50%;
   background: #f1f1f1;
