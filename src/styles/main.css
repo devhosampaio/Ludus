@@ -189,6 +189,15 @@ img { max-width: 100%; }
 .app-topbar__left { justify-content: flex-start; }
 .app-topbar__center { justify-content: center; }
 .app-topbar__right { justify-content: flex-end; min-height: 1px; }
+.app-topbar__add-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: 50%;
+}
 .app-topbar__avatar {
   display: block;
   width: 36px;
