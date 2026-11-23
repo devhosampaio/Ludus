@@ -388,9 +388,13 @@ img { max-width: 100%; }
   padding-top: 12px;
   border-top: 1px solid #3a4554;
 }
-.mobile-drawer__review {
-  background-color: #fff;
-  border-color: #3a4554;
+.mobile-drawer__review,
+.mobile-drawer__review:hover,
+.mobile-drawer__review:focus,
+.mobile-drawer__review:active {
+  background-color: #7060ab;
+  border-color: #7060ab;
+  color: #fff;
   font-weight: 700;
 }
 .mobile-drawer__review:disabled,
