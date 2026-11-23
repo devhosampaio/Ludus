@@ -768,9 +768,9 @@ async function renderSignedIn(user, initialFeedMode = 'home') {
       const platformList = Array.isArray(gameData.platforms) ? gameData.platforms : [];
       const platformText = platformList.map((item) => typeof item === 'string' ? item : item?.name).filter(Boolean).join(', ');
       const gameMeta = [platformText, gameYear, gameData.developer].filter(Boolean).map(escapeHTML).join(' <span aria-hidden="true">·</span> ');
-      const cover = '<button class="review-card__cover-wrap" type="button" data-open-game="' + escapeHTML(review.game_id) + '" aria-label="Abrir página de ' + escapeHTML(game) + '">' + (gameData.cover_url
+      const cover = '<a class="review-card__cover-wrap" href="#/jogo/' + encodeURIComponent(review.game_id) + '" data-open-game="' + escapeHTML(review.game_id) + '" aria-label="Abrir página de ' + escapeHTML(game) + '">' + (gameData.cover_url
         ? '<img class="review-card__cover" src="' + escapeHTML(gameData.cover_url) + '" alt="Capa de ' + escapeHTML(game) + '" loading="lazy">'
-        : '<span class="review-card__cover review-card__cover--empty">Sem capa</span>') + '</button>';
+        : '<span class="review-card__cover review-card__cover--empty">Sem capa</span>') + '</a>';
       const stars = '★'.repeat(review.rating) + '<span class="review-card__stars-muted">' + '★'.repeat(5 - review.rating) + '</span>';
       const isLiked = likedReviewIds.has(review.id);
       const avatarMarkup = review.profiles?.avatar_url
@@ -789,7 +789,7 @@ async function renderSignedIn(user, initialFeedMode = 'home') {
       const reviewDetails = '<div class="review-card__details"><span class="review-card__rating"><i class="fa-solid fa-star" aria-hidden="true"></i><span>' + ratingValue + '</span></span>' +
         (review.liked_game ? '<i class="fa-solid fa-heart review-card__liked" aria-label="Favorito" title="Favorito"></i>' : '') +
         (review.status === 'completed' ? '<i class="fa-solid fa-trophy review-card__completed" aria-label="Zerado" title="Zerado"></i>' : '') + '</div>';
-      const reviewAuthor = '<div class="review-card__header"><button class="review-card__author" type="button" data-profile-username="' + escapeHTML(username) + '"><span class="review-card__author-avatar">' + avatarMarkup + '</span><span class="review-card__author-name">' + escapeHTML(author) + '</span></button>' + menuMarkup + '</div>';
+      const reviewAuthor = '<div class="review-card__header"><a class="review-card__author" href="#/perfil/' + encodeURIComponent(username) + '" data-profile-username="' + escapeHTML(username) + '"><span class="review-card__author-avatar">' + avatarMarkup + '</span><span class="review-card__author-name">' + escapeHTML(author) + '</span></a>' + menuMarkup + '</div>';
       const socialActions = '<div class="review-card__social-actions">' +
         '<button class="review-card__like' + (isLiked ? ' is-liked' : '') + '" type="button" data-like-review aria-pressed="' + isLiked + '"><i class="fa-regular fa-heart" aria-hidden="true"></i><span>Curtir</span><span class="review-card__like-count" data-like-count>' + String(likeTotal) + '</span></button>' +
         '<button type="button" class="review-card__comments-toggle" data-open-review-comments><i class="fa-regular fa-comment" aria-hidden="true"></i><span>Comentar</span><span class="review-card__comment-count" data-comment-count>' + String(commentTotal) + '</span></button>' +
@@ -946,15 +946,17 @@ async function renderSignedIn(user, initialFeedMode = 'home') {
       return;
     }
 
-    const gameCoverButton = event.target.closest('[data-open-game]');
-    if (gameCoverButton) {
-      const gameId = gameCoverButton.dataset.openGame;
+    const gameCoverLink = event.target.closest('[data-open-game]');
+    if (gameCoverLink) {
+      event.preventDefault();
+      const gameId = gameCoverLink.dataset.openGame;
       if (gameId) navigateToGame(user, gameId);
       return;
     }
-    const profileButton = event.target.closest('[data-profile-username]');
-    if (profileButton?.dataset.profileUsername) {
-      navigateToProfile(user, profileButton.dataset.profileUsername);
+    const profileLink = event.target.closest('[data-profile-username]');
+    if (profileLink?.dataset.profileUsername) {
+      event.preventDefault();
+      navigateToProfile(user, profileLink.dataset.profileUsername);
       return;
     }
     const openReviewComments = event.target.closest('[data-open-review-comments]');
