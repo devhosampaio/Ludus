@@ -597,7 +597,7 @@ async function renderSignedIn(user) {
     feedList.setAttribute('aria-busy', 'false');
     activeFeedMode = mode;
     const isHome = mode === 'home';
-    newcomersSection.hidden = !isHome;
+    newcomersSection.hidden = true;
     feedContent.hidden = true;
     feedList.classList.toggle('is-popular-feed', mode === 'popular');
 
