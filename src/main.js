@@ -1120,7 +1120,7 @@ async function renderSignedIn(user, initialFeedMode = 'home') {
         ctx.closePath();
       };
       const drawWrappedText = (ctx, text, x, y, maxWidth, lineHeight, maxLines) => {
-        const words = String(text || '').trim().split(/\\s+/).filter(Boolean);
+        const words = String(text || '').trim().split(/\s+/).filter(Boolean);
         let line = '';
         let lineCount = 0;
         for (const word of words) {
@@ -1231,7 +1231,7 @@ async function renderSignedIn(user, initialFeedMode = 'home') {
       context.fillText('CADA JOGO TEM UMA HISTÓRIA.', 84, 1840);
       context.fillStyle = 'rgba(255,255,255,0.58)';
       context.font = '400 20px Arial, sans-serif';
-      context.fillText('ludus.app  ·  ' + shareUrl.replace(/^https?:\\/\\//, ''), 84, 1880);
+      context.fillText('ludus.app', 84, 1880);
       const closeStoryModal = () => storyModal.remove();
       storyModal.addEventListener('click', (modalEvent) => {
         if (modalEvent.target === storyModal || modalEvent.target.closest('[data-story-close]')) closeStoryModal();
