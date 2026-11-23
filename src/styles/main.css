@@ -611,3 +611,21 @@ img { max-width: 100%; }
   .review-card__game-layout { grid-template-columns: 76px minmax(0, 1fr); }
   .review-card__cover { width: 76px; }
 }
+
+
+/* Story sharing card */
+.story-share-modal { position: fixed; inset: 0; z-index: 1500; display: flex; align-items: center; justify-content: center; padding: 16px; background: rgba(0,0,0,.78); }
+.story-share-modal__panel { display: flex; flex-direction: column; gap: 14px; width: min(100%, 460px); max-height: 94vh; padding: 16px; overflow: auto; border: 1px solid #3a4554; background: #222831; }
+.story-share-modal__header { display: flex; align-items: center; justify-content: space-between; color: #fff; }
+.story-share-modal__close { width: 36px; height: 36px; border: 0; background: transparent; color: #fff; font-size: 20px; }
+.story-share-modal__preview { display: flex; justify-content: center; min-height: 0; overflow: hidden; }
+.story-share-modal__canvas { display: block; width: auto; height: min(66vh, 620px); max-width: 100%; object-fit: contain; }
+.story-share-modal__actions { display: flex; gap: 8px; }
+.story-share-modal__actions .btn { flex: 1 1 0; min-height: 42px; }
+.story-share-modal__actions .btn-primary { border-color: #7060ab; background: #7060ab; color: #fff; }
+@media (max-width: 480px) {
+  .story-share-modal { padding: 8px; }
+  .story-share-modal__panel { max-height: 96vh; padding: 12px; }
+  .story-share-modal__canvas { height: min(64vh, 560px); }
+  .story-share-modal__actions { flex-direction: column; }
+}
