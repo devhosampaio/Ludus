@@ -1005,3 +1005,50 @@ img { max-width: 100%; }
 }
 
 
+
+
+/* Escala tipográfica global: leitura mais confortável e hierarquia proporcional. */
+body {
+  font-size: 16px;
+}
+
+.btn,
+.form-control,
+button:not(.btn),
+input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
+textarea,
+select {
+  font-size: 16px;
+}
+
+.side-menu__brand { font-size: 25px; }
+.feed-welcome h1 { font-size: 28px; }
+.section-heading h2 { font-size: 25px; }
+.notifications__item-content time,
+.notifications__empty { font-size: 13px; }
+
+.profile-page__identity h1 { font-size: 27px; }
+.profile-page__favorites-heading h2 { font-size: 20px; }
+
+.search-result__info small { font-size: 13px; }
+
+.app-topbar__brand { font-size: 22px; }
+.mobile-drawer__header { font-size: 22px; }
+.mobile-drawer__username { font-size: 25px; }
+.mobile-drawer__stats { font-size: 16px; }
+.mobile-drawer__item,
+.mobile-drawer__notifications .notifications__trigger,
+.mobile-drawer button:not(.btn) { font-size: 20px; }
+
+.review-card__timestamp { font-size: 13px; }
+.review-card__game-heading { font-size: 20px; }
+.review-card__details,
+.review-card__liked,
+.review-card__completed { font-size: 13px; }
+.review-card__game-year { font-size: 16px; }
+
+.profile-crop-dialog__header h3 { font-size: 20px; }
+
+@media (max-width: 767px) {
+  .feed-tabs__button { font-size: 16px; }
+}
