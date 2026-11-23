@@ -338,7 +338,6 @@ img { max-width: 100%; }
   flex-direction: column;
   align-items: flex-start;
   padding: 0;
-  border-top: 1px solid #3a4554;
   margin-bottom: 12px;
 }
 .mobile-drawer__avatar {
@@ -398,6 +397,7 @@ img { max-width: 100%; }
   flex-direction: column;
   gap: 4px;
   align-items: flex-start;
+  border-top: 1px solid #3a4554;
 }
 .mobile-drawer__item,
 .mobile-drawer__notifications .notifications__trigger,
