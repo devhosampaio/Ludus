@@ -233,7 +233,7 @@ img { max-width: 100%; }
   background: #222831;
   border-bottom: 1px solid #3a4554;
 }
-.feed-navigation--header + .feed-main__container {
+.feed-main > .feed-main__container {
   padding-top: 107px;
 }
 .feed-navigation--header .feed-tabs {
