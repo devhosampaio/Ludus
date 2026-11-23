@@ -345,6 +345,7 @@ function sharedFeedHeaderMarkup() {
         <button class="mobile-drawer__item" type="button" data-drawer-saved><i class="fa-regular fa-bookmark" aria-hidden="true"></i><span>Listas Salvas</span></button>
         <button class="mobile-drawer__item" type="button" data-drawer-settings><i class="fa-regular fa-address-card" aria-hidden="true"></i><span>Configurações</span></button>
       </nav>
+      <button class="mobile-drawer__review" type="button" data-drawer-review>Avaliar</button>
     </aside>`;
 }
 
@@ -419,6 +420,10 @@ function setupMobileDrawer(user, profile = null) {
   drawer.querySelector('[data-drawer-settings]')?.addEventListener('click', () => {
     close();
     if (profile) openProfileEditor(user, profile);
+  });
+  drawer.querySelector('[data-drawer-review]')?.addEventListener('click', () => {
+    close();
+    openReviewComposer(user);
   });
 
   Promise.all([
