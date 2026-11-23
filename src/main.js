@@ -796,9 +796,9 @@ async function renderSignedIn(user, initialFeedMode = 'home') {
         (review.status === 'completed' ? '<i class="fa-solid fa-trophy review-card__completed" aria-label="Zerado" title="Zerado"></i>' : '') + '</div>';
       const reviewAuthor = '<div class="review-card__header"><div class="review-card__identity"><a class="review-card__author" href="#/perfil/' + encodeURIComponent(username) + '" data-profile-username="' + escapeHTML(username) + '"><span class="review-card__author-avatar">' + avatarMarkup + '</span><span class="review-card__author-name">' + escapeHTML(author) + '</span></a><i class="fa-solid fa-circle review-card__timestamp-separator" aria-hidden="true"></i><time class="review-card__timestamp" datetime="' + escapeHTML(review.created_at) + '">' + escapeHTML(relativeTime(review.created_at)) + '</time></div>' + menuMarkup + '</div>';
       const socialActions = '<div class="review-card__social-actions">' +
-        '<button class="review-card__like' + (isLiked ? ' is-liked' : '') + '" type="button" data-like-review aria-label="Curtir avaliação" title="Curtir avaliação" aria-pressed="' + isLiked + '"><i class="fa-regular fa-heart" aria-hidden="true"></i><span class="review-card__like-count" data-like-count>' + String(likeTotal) + '</span></button>' +
+        '<button class="review-card__like' + (isLiked ? ' is-liked' : '') + '" type="button" data-like-review aria-label="Curtir avaliação" title="Curtir avaliação" aria-pressed="' + isLiked + '"><i class="' + (isLiked ? 'fa-solid' : 'fa-regular') + ' fa-heart" aria-hidden="true"></i><span class="review-card__like-count" data-like-count>' + String(likeTotal) + '</span></button>' +
         '<button type="button" class="review-card__comments-toggle" data-open-review-comments aria-label="Comentar" title="Comentar"><i class="fa-regular fa-comment" aria-hidden="true"></i><span class="review-card__comment-count" data-comment-count>' + String(commentTotal) + '</span></button>' +
-        '<button type="button" class="review-card__bookmark' + (isSaved ? ' is-saved' : '') + '" data-save-review aria-label="Salvar avaliação" title="Salvar avaliação" aria-pressed="' + isSaved + '"><i class="fa-regular fa-bookmark" aria-hidden="true"></i><span class="review-card__save-count" data-save-count>' + String(saveTotal) + '</span></button>' +
+        '<button type="button" class="review-card__bookmark' + (isSaved ? ' is-saved' : '') + '" data-save-review aria-label="Salvar avaliação" title="Salvar avaliação" aria-pressed="' + isSaved + '"><i class="' + (isSaved ? 'fa-solid' : 'fa-regular') + ' fa-bookmark" aria-hidden="true"></i><span class="review-card__save-count" data-save-count>' + String(saveTotal) + '</span></button>' +
         '<button type="button" class="review-card__share" data-share-review aria-label="Compartilhar avaliação" title="Compartilhar avaliação"><i class="fa-solid fa-share" aria-hidden="true"></i></button></div>';
       return '<article class="review-card" data-review-id="' + review.id + '">' +
         reviewAuthor +
@@ -1418,6 +1418,9 @@ async function renderSignedIn(user, initialFeedMode = 'home') {
     const nextLikeCount = Math.max(0, previousCount + (nextLiked ? 1 : -1));
     button.setAttribute('aria-pressed', String(nextLiked));
     button.classList.toggle('is-liked', nextLiked);
+    const heartIcon = button.querySelector('i');
+    heartIcon?.classList.toggle('fa-solid', nextLiked);
+    heartIcon?.classList.toggle('fa-regular', !nextLiked);
     count.textContent = String(nextLikeCount);
     button.dataset.likePending = 'true';
     const controller = new AbortController();
@@ -1432,6 +1435,8 @@ async function renderSignedIn(user, initialFeedMode = 'home') {
     } catch (error) {
       button.setAttribute('aria-pressed', String(wasLiked));
       button.classList.toggle('is-liked', wasLiked);
+      heartIcon?.classList.toggle('fa-solid', wasLiked);
+      heartIcon?.classList.toggle('fa-regular', !wasLiked);
       count.textContent = String(previousCount);
       console.error('[Ludus] Falha ao atualizar curtida:', error);
       if (controller.signal.aborted) {
