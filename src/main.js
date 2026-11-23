@@ -798,7 +798,6 @@ async function renderSignedIn(user, initialFeedMode = 'home') {
       const socialActions = '<div class="review-card__social-actions">' +
         '<button class="review-card__like' + (isLiked ? ' is-liked' : '') + '" type="button" data-like-review aria-label="Curtir avaliação" title="Curtir avaliação" aria-pressed="' + isLiked + '"><i class="' + (isLiked ? 'fa-solid' : 'fa-regular') + ' fa-heart" aria-hidden="true"></i><span class="review-card__like-count" data-like-count>' + String(likeTotal) + '</span></button>' +
         '<button type="button" class="review-card__comments-toggle" data-open-review-comments aria-label="Comentar" title="Comentar"><i class="fa-regular fa-comment" aria-hidden="true"></i><span class="review-card__comment-count" data-comment-count>' + String(commentTotal) + '</span></button>' +
-        '<button type="button" class="review-card__bookmark' + (isSaved ? ' is-saved' : '') + '" data-save-review aria-label="Salvar avaliação" title="Salvar avaliação" aria-pressed="' + isSaved + '"><i class="' + (isSaved ? 'fa-solid' : 'fa-regular') + ' fa-bookmark" aria-hidden="true"></i><span class="review-card__save-count" data-save-count>' + String(saveTotal) + '</span></button>' +
         '<button type="button" class="review-card__share" data-share-review aria-label="Compartilhar avaliação" title="Compartilhar avaliação"><i class="fa-solid fa-share" aria-hidden="true"></i></button></div>';
       return '<article class="review-card" data-review-id="' + review.id + '">' +
         reviewAuthor +
