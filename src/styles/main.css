@@ -258,17 +258,13 @@ img { max-width: 100%; }
 
 /* Menu lateral acionado pela foto do perfil. */
 .app-topbar__avatar {
-  display: grid;
-  place-items: center;
+  display: block;
   padding: 0;
   border: 0;
   border-radius: 50%;
   background: transparent;
   box-shadow: none;
   cursor: pointer;
-}
-.app-topbar__avatar:focus-visible {
-  outline: none;
 }
 .app-topbar__avatar:focus-visible,
 .mobile-drawer__item:focus-visible,
