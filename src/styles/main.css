@@ -849,7 +849,7 @@ img { max-width: 100%; }
   padding-bottom: 10px;
 }
 .review-card__actions {
-  padding-bottom: 14px;
+  padding-bottom: 0;
 }
 
 
