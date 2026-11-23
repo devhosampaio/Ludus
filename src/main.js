@@ -1858,7 +1858,7 @@ async function renderProfilePage(currentUser, username) {
       <main class="feed-center-column feed-main profile-main">
         ${sharedFeedHeaderMarkup()}
         <div class="feed-main__container">
-          <div class="profile-page__content">
+          <div class="profile-page__content profile-page__content--full">
             <div class="profile-page__loading">Carregando perfil…</div>
           </div>
         </div>
