@@ -300,7 +300,6 @@ function sharedSideMenuMarkup(user) {
     <nav class="side-menu__navigation" aria-label="Navegação principal">
       <button class="side-menu__item is-active" type="button" data-feed-mode="home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z"/></svg><span>Página inicial</span></button>
       <button class="side-menu__item" type="button" data-open-search><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m15.8 15.8 5 5"/></svg><span>Buscar</span></button>
-      <div class="side-menu__notifications">${notificationControlMarkup()}</div>
       <button class="side-menu__item" type="button" data-side-profile><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.7-3.6 3.1-5.5 7-5.5s6.3 1.9 7 5.5"/></svg><span>Perfil</span></button>
       <button class="side-menu__item" type="button" data-side-settings><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8.2a3.8 3.8 0 1 0 0 7.6 3.8 3.8 0 0 0 0-7.6Z"/><path d="M19.4 13.5a7.7 7.7 0 0 0 0-3l1.5-1.1-1.8-3.1-1.8.7a7.8 7.8 0 0 0-2.6-1.5L14.4 3h-4.8L9.3 5.5a7.8 7.8 0 0 0-2.6 1.5l-1.8-.7-1.8 3.1 1.5 1.1a7.7 7.7 0 0 0 0 3l-1.5 1.1 1.8 3.1 1.8-.7a7.8 7.8 0 0 0 2.6 1.5l.3 2.5h4.8l.3-2.5a7.8 7.8 0 0 0 2.6-1.5l1.8.7 1.8-3.1Z"/></svg><span>Configurações</span></button>
       <button class="side-menu__item" type="button" data-feed-mode="saved"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4.5A1.5 1.5 0 0 1 7.5 3h9A1.5 1.5 0 0 1 18 4.5V21l-6-4-6 4Z"/></svg><span>Listas salvas</span></button>
@@ -313,7 +312,7 @@ function sharedFeedHeaderMarkup() {
       <div class="container-fluid">
         <div class="row app-topbar__row">
           <div class="col-xs-4 app-topbar__left">
-            <span class="app-topbar__avatar" data-header-avatar aria-label="Foto do perfil">${profilePlaceholderMarkup()}</span>
+            <button class="app-topbar__avatar" type="button" data-header-avatar aria-label="Abrir menu" aria-haspopup="dialog" aria-expanded="false">${profilePlaceholderMarkup()}</button>
           </div>
           <div class="col-xs-4 app-topbar__center">
             <a class="app-topbar__brand" href="#inicio" aria-label="Ludus — início">Ludus</a>
@@ -327,7 +326,63 @@ function sharedFeedHeaderMarkup() {
         <button class="feed-tabs__button is-active" type="button" role="tab" aria-selected="true" data-feed-mode="home">Para Você</button>
         <button class="feed-tabs__button" type="button" role="tab" aria-selected="false" data-feed-mode="following">Seguindo</button>
       </div>
-    </nav>`;
+    </nav>
+    <div class="mobile-drawer-backdrop" data-drawer-close hidden></div>
+    <aside class="mobile-drawer" data-mobile-drawer role="dialog" aria-modal="true" aria-label="Menu principal" hidden>
+      <div class="mobile-drawer__header">
+        <strong>Ludus</strong>
+        <button class="mobile-drawer__close" type="button" data-drawer-close aria-label="Fechar menu">&times;</button>
+      </div>
+      <nav class="mobile-drawer__navigation" aria-label="Navegação principal">
+        <button class="mobile-drawer__item" type="button" data-drawer-home><i class="fa-regular fa-compass" aria-hidden="true"></i><span>Página Inicial</span></button>
+        <button class="mobile-drawer__item" type="button" data-drawer-search><i class="fa-regular fa-map" aria-hidden="true"></i><span>Pesquisar</span></button>
+        <div class="mobile-drawer__notifications">${notificationControlMarkup()}</div>
+        <button class="mobile-drawer__item" type="button" data-drawer-profile><i class="fa-regular fa-user" aria-hidden="true"></i><span>Meu Perfil</span></button>
+        <button class="mobile-drawer__item" type="button" data-drawer-saved><i class="fa-regular fa-bookmark" aria-hidden="true"></i><span>Listas Salvas</span></button>
+        <button class="mobile-drawer__item" type="button" data-drawer-settings><i class="fa-regular fa-address-card" aria-hidden="true"></i><span>Configurações</span></button>
+      </nav>
+    </aside>`;
+}
+
+function setupMobileDrawer(user, profile = null) {
+  const trigger = app.querySelector('[data-header-avatar]');
+  const drawer = app.querySelector('[data-mobile-drawer]');
+  const backdrop = app.querySelector('.mobile-drawer-backdrop');
+  if (!trigger || !drawer || trigger.dataset.drawerBound) return;
+  trigger.dataset.drawerBound = 'true';
+
+  const close = () => {
+    drawer.hidden = true;
+    backdrop.hidden = true;
+    trigger.setAttribute('aria-expanded', 'false');
+  };
+  const open = () => {
+    drawer.hidden = false;
+    backdrop.hidden = false;
+    trigger.setAttribute('aria-expanded', 'true');
+  };
+
+  trigger.addEventListener('click', () => drawer.hidden ? open() : close());
+  backdrop.addEventListener('click', close);
+  drawer.querySelector('[data-drawer-close]')?.addEventListener('click', close);
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && !drawer.hidden) {
+      close();
+      trigger.focus();
+    }
+  });
+
+  drawer.querySelector('[data-drawer-home]')?.addEventListener('click', () => { close(); navigateToFeed(user); });
+  drawer.querySelector('[data-drawer-search]')?.addEventListener('click', () => { close(); navigateToSearch(user); });
+  drawer.querySelector('[data-drawer-profile]')?.addEventListener('click', () => {
+    close();
+    if (profile?.username) navigateToProfile(user, profile.username);
+  });
+  drawer.querySelector('[data-drawer-saved]')?.addEventListener('click', () => { close(); navigateToFeed(user, 'saved'); });
+  drawer.querySelector('[data-drawer-settings]')?.addEventListener('click', () => {
+    close();
+    if (profile) openProfileEditor(user, profile);
+  });
 }
 
 async function setupSharedSideMenu(user, profile = null) {
@@ -408,6 +463,7 @@ async function renderSignedIn(user) {
   if (headerAvatar && profileResult.data?.avatar_url) {
     headerAvatar.innerHTML = '<img src="' + escapeHTML(profileResult.data.avatar_url) + '" alt="Foto do perfil">';
   }
+  setupMobileDrawer(user, profileResult.data);
   if (profileResult.data) {
     if (username) username.textContent = profileResult.data.username || fallbackName;
     const sideUsername = app.querySelector('[data-side-username]');
