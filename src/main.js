@@ -1889,7 +1889,7 @@ async function renderProfilePage(currentUser, username) {
   ]);
   if (requestId !== renderProfilePage.requestId) return;
   let isFollowing = Boolean(followState.data);
-  const displayName = profile.display_name || profile.username;
+  const displayName = profile.username;
   const avatar = profile.avatar_url
     ? '<img src="' + escapeHTML(profile.avatar_url) + '" alt="">'
     : '<span>' + escapeHTML(displayName.trim().charAt(0).toUpperCase() || 'L') + '</span>';
