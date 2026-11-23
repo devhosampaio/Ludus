@@ -330,7 +330,6 @@ function sharedFeedHeaderMarkup() {
     <div class="mobile-drawer-backdrop" data-drawer-close hidden></div>
     <aside class="mobile-drawer" data-mobile-drawer role="dialog" aria-modal="true" aria-label="Menu principal" hidden>
       <div class="mobile-drawer__header">
-        <strong>Ludus</strong>
         <button class="mobile-drawer__close" type="button" data-drawer-close aria-label="Fechar menu">&times;</button>
       </div>
       <nav class="mobile-drawer__navigation" aria-label="Navegação principal">
