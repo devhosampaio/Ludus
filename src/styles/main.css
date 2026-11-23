@@ -174,7 +174,7 @@ img { max-width: 100%; }
   z-index: 102;
   padding: 8px 0;
   background: #222831;
-  border-bottom: 1px solid #3a4554;
+  border-bottom: 0;
 }
 .app-topbar__row {
   display: flex;
