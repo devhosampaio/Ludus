@@ -586,7 +586,7 @@ img { max-width: 100%; }
   border-bottom: 0;
 }
 .review-card__text { margin: 0; overflow-wrap: anywhere; white-space: pre-wrap; }
-.review-card__actions { margin-top: 10px; }
+.review-card__actions { margin-top: 10px; padding-bottom: 12px; border-bottom: 1px solid #3a4554; }
 .review-card__social-actions {
   display: flex;
   flex-wrap: wrap;
