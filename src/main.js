@@ -312,7 +312,7 @@ function sharedFeedHeaderMarkup() {
       <div class="container-fluid">
         <div class="row app-topbar__row">
           <div class="col-xs-4 app-topbar__left">
-            <button class="app-topbar__avatar" type="button" data-header-avatar aria-label="Abrir menu" aria-haspopup="dialog" aria-expanded="false">${profilePlaceholderMarkup()}</button>
+            <span class="app-topbar__avatar" data-header-avatar role="button" tabindex="0" aria-label="Abrir menu" aria-haspopup="dialog" aria-expanded="false">${profilePlaceholderMarkup()}</span>
           </div>
           <div class="col-xs-4 app-topbar__center">
             <a class="app-topbar__brand" href="#inicio" aria-label="Ludus — início">Ludus</a>
@@ -364,6 +364,12 @@ function setupMobileDrawer(user, profile = null) {
   };
 
   trigger.addEventListener('click', () => drawer.hidden ? open() : close());
+  trigger.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      drawer.hidden ? open() : close();
+    }
+  });
   backdrop.addEventListener('click', close);
   drawer.querySelector('[data-drawer-close]')?.addEventListener('click', close);
   document.addEventListener('keydown', (event) => {
