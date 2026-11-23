@@ -98,7 +98,13 @@ img { max-width: 100%; }
 .profile-page__content { width: min(100% - 30px, 900px); margin: 0 auto; padding: 24px 0; }
 .profile-page__hero { padding: 0; border: 0; box-sizing: border-box; }
 .profile-editor { padding: 20px; border: 1px solid #3a4554; }
-.profile-page__banner { height: 140px; overflow: hidden; }
+.profile-page__banner {
+  position: relative;
+  width: 100vw;
+  height: 140px;
+  margin-left: calc(326px - 50vw);
+  overflow: hidden;
+}
 .profile-page__banner-image, .profile-page__banner-empty { width: 100%; height: 100%; object-fit: cover; }
 .profile-page__identity { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin-top: 12px; }
 .profile-page__avatar { display: grid; place-items: center; width: 72px; height: 72px; overflow: hidden; border: 1px solid #3a4554; border-radius: 50%; }
@@ -135,6 +141,7 @@ img { max-width: 100%; }
 
 @media (max-width: 767px) {
   .feed-shell { display: block; padding: 12px; }
+  .profile-page__banner { width: calc(100% + 24px); margin-left: -12px; }
   .feed-main > .feed-main__container { padding-top: 65px; }
   .side-menu--left { display: none; }
   .side-menu__navigation { flex-direction: row; flex-wrap: wrap; }
