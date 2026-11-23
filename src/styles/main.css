@@ -96,7 +96,7 @@ img { max-width: 100%; }
 .profile-page__content--full { width: 100%; max-width: none; margin-left: 0; margin-right: 0; padding: 0; }
 .profile-page__topbar { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; padding: 16px; border-bottom: 1px solid #3a4554; }
 .profile-page__content { width: min(100% - 30px, 900px); margin: 0 auto; padding: 24px 0; }
-.profile-page__hero { padding: 0; border: 0; box-sizing: border-box; }
+.profile-page__hero { margin-left: 0; margin-right: 0; padding: 0; border: 0; box-sizing: border-box; }
 .profile-editor { padding: 20px; border: 1px solid #3a4554; }
 .profile-page__banner {
   position: relative;
