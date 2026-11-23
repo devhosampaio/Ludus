@@ -77,7 +77,7 @@ img { max-width: 100%; }
 .section-heading { margin: 20px 0 12px; }
 .section-heading h2 { font-size: 22px; }
 .feed-list { min-width: 0; }
-.review-card { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 16px; padding: 18px 0; border-bottom: 1px solid #3a4554; }
+.review-card { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 16px; padding: 10px 0; border-bottom: 1px solid #3a4554; }
 .review-card__cover { width: 96px; max-height: 140px; object-fit: cover; }
 .review-card__body { min-width: 0; }
 .review-card__meta, .review-card__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
