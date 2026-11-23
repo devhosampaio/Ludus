@@ -338,7 +338,7 @@ img { max-width: 100%; }
   flex-direction: column;
   align-items: flex-start;
   padding: 0;
-  border-bottom: 1px solid #dedede;
+  border-top: 1px solid #dedede;
   margin-bottom: 12px;
 }
 .mobile-drawer__avatar {
