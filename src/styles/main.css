@@ -403,7 +403,7 @@ img { max-width: 100%; }
   gap: 14px;
   width: 100%;
   min-height: 48px;
-  padding: 10px 12px;
+  padding: 0;
   border: 0 !important;
   border-radius: 0;
   background: transparent;
