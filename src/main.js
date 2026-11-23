@@ -310,7 +310,7 @@ function sharedSideMenuMarkup(user) {
     <button class="bottom-nav__item" type="button" data-bottom-search aria-label="Pesquisar" title="Pesquisar"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></button>
     <button class="bottom-nav__item bottom-nav__review" type="button" data-bottom-review aria-label="Avaliar" title="Avaliar"><i class="fa-solid fa-plus" aria-hidden="true"></i></button>
     ${notificationControlMarkup()}
-    <button class="bottom-nav__item" type="button" data-bottom-profile aria-label="Perfil" title="Perfil"><i class="fa-regular fa-user" aria-hidden="true"></i></button>
+    <button class="bottom-nav__item" type="button" data-bottom-profile aria-label="Perfil" title="Perfil"><i class="fa-solid fa-user" aria-hidden="true"></i></button>
   </nav>`;
 }
 
@@ -348,7 +348,7 @@ function sharedFeedHeaderMarkup() {
         <button class="mobile-drawer__item" type="button" data-drawer-home><i class="fa-solid fa-house" aria-hidden="true"></i><span>Página Inicial</span></button>
         <button class="mobile-drawer__item" type="button" data-drawer-search><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i><span>Pesquisar</span></button>
         <button class="mobile-drawer__item" type="button" data-drawer-profile><i class="fa-regular fa-user" aria-hidden="true"></i><span>Meu Perfil</span></button>
-        <button class="mobile-drawer__item" type="button" data-drawer-saved><i class="fa-regular fa-bookmark" aria-hidden="true"></i><span>Listas Salvas</span></button>
+        <button class="mobile-drawer__item" type="button" data-drawer-saved><i class="fa-solid fa-bookmark" aria-hidden="true"></i><span>Listas Salvas</span></button>
         <button class="mobile-drawer__item" type="button" data-drawer-settings><i class="fa-solid fa-gear" aria-hidden="true"></i><span>Configurações</span></button>
       </nav>
       <div class="mobile-drawer__review-container"><button class="btn btn-primary btn-block mobile-drawer__review" type="button" data-drawer-review>Avaliar</button></div>
