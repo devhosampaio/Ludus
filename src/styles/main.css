@@ -108,7 +108,7 @@ img { max-width: 100%; }
 .profile-page__banner-image, .profile-page__banner-empty { width: 100%; height: 100%; object-fit: cover; }
 .profile-page__banner-image { margin-top: 0; }
 .profile-page__hero { position: relative; }
-.profile-page__identity { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 16px; min-height: 80px; margin-top: 16px; padding-left: 96px; }
+.profile-page__identity { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 16px; min-height: 40px; margin-top: 0; padding-left: 96px; }
 .profile-page__identity h1 { margin: 0; font-size: 32px; line-height: 1.1; }
 .profile-page__avatar { position: absolute; top: 140px; left: 12px; display: grid; place-items: center; width: 80px; height: 80px; overflow: hidden; border: 1px solid #3a4554; border-radius: 50%; }
 .profile-page__avatar img { width: 100%; height: 100%; object-fit: cover; }
