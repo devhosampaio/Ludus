@@ -3,7 +3,7 @@
 
 [hidden] { display: none !important; }
 #app { min-height: 100vh; }
-body { min-width: 320px; }
+body { min-width: 320px; background: #222831; color: #fff; }
 button, input, textarea, select { font: inherit; }
 button { cursor: pointer; }
 button:not(.btn) {
