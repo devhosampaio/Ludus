@@ -93,16 +93,16 @@ img { max-width: 100%; }
 .notifications__item-content time, .notifications__empty { color: #fff; font-size: 12px; }
 
 .profile-page, .search-page { width: 100%; }
-.profile-page__content--full { width: 100%; max-width: none; margin-left: 0; margin-right: 0; padding: 0; }
+.profile-page__content--full { width: 100vw; max-width: none; margin-left: calc(326px - 50vw); margin-right: 0; padding: 0; }
 .profile-page__topbar { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; padding: 16px; border-bottom: 1px solid #3a4554; }
 .profile-page__content { width: min(100% - 30px, 900px); margin: 0 auto; padding: 24px 0; }
 .profile-page__hero { margin-left: 0; margin-right: 0; padding: 0; border: 0; box-sizing: border-box; }
 .profile-editor { padding: 20px; border: 1px solid #3a4554; }
 .profile-page__banner {
   position: relative;
-  width: 100vw;
+  width: 100%;
   height: 140px;
-  margin-left: calc(326px - 50vw);
+  margin-left: 0;
   overflow: hidden;
 }
 .profile-page__banner-image, .profile-page__banner-empty { width: 100%; height: 100%; object-fit: cover; }
@@ -141,7 +141,8 @@ img { max-width: 100%; }
 
 @media (max-width: 767px) {
   .feed-shell { display: block; padding: 12px; }
-  .profile-page__banner { width: calc(100% + 24px); margin-left: -12px; }
+  .profile-page__content--full { width: calc(100% + 24px); margin-left: -12px; }
+  .profile-page__banner { width: 100%; margin-left: 0; }
   .feed-main > .feed-main__container { padding-top: 65px; }
   .side-menu--left { display: none; }
   .side-menu__navigation { flex-direction: row; flex-wrap: wrap; }
