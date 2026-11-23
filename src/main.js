@@ -1911,9 +1911,9 @@ async function renderProfilePage(currentUser, username) {
 
   app.querySelector('.profile-page__content').innerHTML =
     '<section class="profile-page__hero"><div class="profile-page__banner">' + banner + '</div>' +
-    '<div class="profile-page__identity"><div class="profile-page__avatar">' + avatar + '</div>' +
-    '<div class="profile-page__heading"><h1>' + escapeHTML(displayName) + '</h1></div>' +
-    (profile.id !== currentUser.id ? '<button class="profile-follow' + (isFollowing ? ' is-following' : '') + '" type="button" data-profile-follow>' + (isFollowing ? 'Seguindo' : 'Seguir') + '</button>' : '<button class="profile-panel__you profile-edit-trigger" type="button" data-edit-profile>Editar perfil ↗</button>') +
+    '<div class="profile-page__avatar">' + avatar + '</div>' +
+    '<div class="profile-page__identity"><div class="profile-page__heading"><h1>' + escapeHTML(displayName) + '</h1></div>' +
+    (profile.id !== currentUser.id ? '<button class="profile-follow' + (isFollowing ? ' is-following' : '') + '" type="button" data-profile-follow>' + (isFollowing ? 'Seguindo' : 'Seguir') + '</button>' : '') +
     '</div></section>';
 
   const followButton = app.querySelector('[data-profile-follow]');
@@ -1937,8 +1937,6 @@ async function renderProfilePage(currentUser, username) {
     });
   }
 
-  const editProfileButton = app.querySelector('[data-edit-profile]');
-  editProfileButton?.addEventListener('click', () => openProfileEditor(currentUser, profile));
 }
 async function openProfileEditor(user, profile) {
   const returnToProfile = window.location.hash.startsWith('#/perfil/');
