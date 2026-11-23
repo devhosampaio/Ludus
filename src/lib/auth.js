@@ -19,6 +19,18 @@ export async function signUp({ username, displayName, email, password }) {
   return data;
 }
 
+export async function resendSignupConfirmation(email) {
+  const client = requireClient();
+  const { error } = await client.auth.resend({
+    type: 'signup',
+    email: email.trim().toLowerCase(),
+    options: {
+      emailRedirectTo: window.location.origin + window.location.pathname
+    }
+  });
+  if (error) throw error;
+}
+
 export async function signIn({ email, password }) {
   const { data, error } = await requireClient().auth.signInWithPassword({ email, password });
   if (error) throw error;
