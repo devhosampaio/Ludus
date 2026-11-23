@@ -777,7 +777,7 @@ async function renderSignedIn(user, initialFeedMode = 'home') {
         ? '<img src="' + escapeHTML(review.profiles.avatar_url) + '" alt="" loading="lazy">'
         : profilePlaceholderMarkup();
       const isOwner = review.user_id === user.id;
-      const menuMarkup = '<details class="review-menu"><summary aria-label="Mais opções da review" title="Mais opções"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="5" r="1.6"></circle><circle cx="12" cy="12" r="1.6"></circle><circle cx="12" cy="19" r="1.6"></circle></svg></summary><div class="review-menu__panel">' +
+      const menuMarkup = '<details class="review-menu"><summary aria-label="Mais opções da review" title="Mais opções"><i class="fa-solid fa-ellipsis-vertical" aria-hidden="true"></i></summary><div class="review-menu__panel">' +
         (isOwner ? '<button type="button" data-review-action="edit">Editar review</button><button type="button" class="is-danger" data-review-action="delete">Excluir review</button>' : '<button type="button" data-review-action="report">Denunciar review</button>') + '</div></details>';
       const likeTotal = likeCounts[review.id] || 0;
       const commentTotal = commentCounts[review.id] || 0;
