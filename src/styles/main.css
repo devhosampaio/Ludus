@@ -862,3 +862,11 @@ img { max-width: 100%; }
 .review-card__bookmark.is-saved i {
   color: #2eaf65 !important;
 }
+
+
+.review-card__game-year {
+  margin-left: 6px;
+  color: #737b87;
+  font-size: 14px;
+  font-weight: 400;
+}
