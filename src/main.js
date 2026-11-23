@@ -59,9 +59,9 @@ function statusLabel(status) {
 let notificationChannel = null;
 
 function notificationControlMarkup() {
-  return '<div class="notifications" data-notifications>' +
-    '<button class="notifications__trigger" type="button" data-notifications-toggle aria-label="Notificações" aria-expanded="false" title="Notificações">' +
-    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"></path><path d="M10 21h4"></path></svg><span class="notifications__label">Notificações</span>' +
+  return '<div class="notifications bottom-nav__notifications" data-notifications>' +
+    '<button class="notifications__trigger bottom-nav__item" type="button" data-notifications-toggle aria-label="Notificações" aria-expanded="false" title="Notificações">' +
+    '<i class="fa-regular fa-bell" aria-hidden="true"></i>' +
     '<span class="notifications__count" data-notification-count hidden>0</span></button>' +
     '<section class="notifications__panel" data-notifications-panel hidden>' +
     '<header class="notifications__header"><strong>Notificações</strong><button type="button" data-notifications-read-all>Marcar todas como lidas</button></header>' +
@@ -304,7 +304,14 @@ function sharedSideMenuMarkup(user) {
       <button class="side-menu__item" type="button" data-side-settings><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8.2a3.8 3.8 0 1 0 0 7.6 3.8 3.8 0 0 0 0-7.6Z"/><path d="M19.4 13.5a7.7 7.7 0 0 0 0-3l1.5-1.1-1.8-3.1-1.8.7a7.8 7.8 0 0 0-2.6-1.5L14.4 3h-4.8L9.3 5.5a7.8 7.8 0 0 0-2.6 1.5l-1.8-.7-1.8 3.1 1.5 1.1a7.7 7.7 0 0 0 0 3l-1.5 1.1 1.8 3.1 1.8-.7a7.8 7.8 0 0 0 2.6 1.5l.3 2.5h4.8l.3-2.5a7.8 7.8 0 0 0 2.6-1.5l1.8.7 1.8-3.1Z"/></svg><span>Configurações</span></button>
       <button class="side-menu__item" type="button" data-feed-mode="saved"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4.5A1.5 1.5 0 0 1 7.5 3h9A1.5 1.5 0 0 1 18 4.5V21l-6-4-6 4Z"/></svg><span>Listas salvas</span></button>
     </nav>
-  </header>`;
+  </header>
+  <nav class="bottom-nav" aria-label="Navegação inferior">
+    <button class="bottom-nav__item is-active" type="button" data-bottom-home aria-label="Início" title="Início"><i class="fa-solid fa-house" aria-hidden="true"></i></button>
+    <button class="bottom-nav__item" type="button" data-bottom-search aria-label="Pesquisar" title="Pesquisar"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></button>
+    <button class="bottom-nav__item bottom-nav__review" type="button" data-bottom-review aria-label="Avaliar" title="Avaliar"><i class="fa-solid fa-plus" aria-hidden="true"></i></button>
+    ${notificationControlMarkup()}
+    <button class="bottom-nav__item" type="button" data-bottom-profile aria-label="Perfil" title="Perfil"><i class="fa-regular fa-user" aria-hidden="true"></i></button>
+  </nav>`;
 }
 
 function sharedFeedHeaderMarkup() {
@@ -317,7 +324,7 @@ function sharedFeedHeaderMarkup() {
           <div class="col-xs-4 app-topbar__center">
             <a class="app-topbar__brand" href="#inicio" aria-label="Ludus — início">Ludus</a>
           </div>
-          <div class="col-xs-4 app-topbar__right"><button class="btn btn-default app-topbar__add-button" type="button" aria-label="Adicionar"><i class="fa-solid fa-plus" aria-hidden="true"></i></button></div>
+          <div class="col-xs-4 app-topbar__right"></div>
         </div>
       </div>
     </header>
@@ -340,7 +347,6 @@ function sharedFeedHeaderMarkup() {
       <nav class="mobile-drawer__navigation" aria-label="Navegação principal">
         <button class="mobile-drawer__item" type="button" data-drawer-home><i class="fa-solid fa-house" aria-hidden="true"></i><span>Página Inicial</span></button>
         <button class="mobile-drawer__item" type="button" data-drawer-search><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i><span>Pesquisar</span></button>
-        <div class="mobile-drawer__notifications">${notificationControlMarkup()}</div>
         <button class="mobile-drawer__item" type="button" data-drawer-profile><i class="fa-regular fa-user" aria-hidden="true"></i><span>Meu Perfil</span></button>
         <button class="mobile-drawer__item" type="button" data-drawer-saved><i class="fa-regular fa-bookmark" aria-hidden="true"></i><span>Listas Salvas</span></button>
         <button class="mobile-drawer__item" type="button" data-drawer-settings><i class="fa-solid fa-gear" aria-hidden="true"></i><span>Configurações</span></button>
@@ -442,6 +448,14 @@ async function setupSharedSideMenu(user, profile = null) {
   if (!root) return;
   // A navegação não deve depender da resposta da consulta de perfil.
   root.querySelector('[data-open-search]')?.addEventListener('click', () => navigateToSearch(user));
+  app.querySelector('[data-bottom-home]')?.addEventListener('click', () => navigateToFeed(user));
+  app.querySelector('[data-bottom-search]')?.addEventListener('click', () => navigateToSearch(user));
+  app.querySelector('[data-bottom-review]')?.addEventListener('click', () => openReviewComposer(user));
+  app.querySelector('[data-bottom-profile]')?.addEventListener('click', () => {
+    if (profile?.username) navigateToProfile(user, profile.username);
+    else supabase.from('profiles').select('username').eq('id', user.id).maybeSingle()
+      .then(({ data }) => { if (data?.username) navigateToProfile(user, data.username); });
+  });
   if (!profile) {
     const { data } = await supabase.from('profiles')
       .select('username, display_name, avatar_url, bio')
@@ -466,7 +480,6 @@ async function setupSharedSideMenu(user, profile = null) {
   app.querySelectorAll('.feed-center-column [data-feed-mode]').forEach((button) => {
     button.addEventListener('click', () => navigateToFeed(user));
   });
-  app.querySelector('[data-create-review]')?.addEventListener('click', () => openReviewComposer(user));
   setupNotifications(user);
 }
 
