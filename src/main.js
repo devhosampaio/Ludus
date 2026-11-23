@@ -1867,6 +1867,55 @@ function navigateToFeed(currentUser, mode = 'home') {
   renderSignedIn(currentUser, mode);
 }
 
+function openFavoriteGamePicker(onSelect, excludedGameIds = []) {
+  const existing = app.querySelector('.favorite-picker-overlay');
+  existing?.remove();
+  const overlay = document.createElement('div');
+  overlay.className = 'composer-overlay favorite-picker-overlay';
+  overlay.innerHTML = '<section class="composer" role="dialog" aria-modal="true" aria-labelledby="favorite-picker-title">' +
+    '<button class="composer__close" type="button" aria-label="Fechar" data-close>×</button>' +
+    '<h2 id="favorite-picker-title">Adicionar jogo favorito</h2>' +
+    '<input class="composer__search" type="search" placeholder="Buscar pelo nome do jogo…" autocomplete="off" data-favorite-search>' +
+    '<div class="composer__results" data-favorite-results aria-live="polite"></div>' +
+    '<p class="composer__message" data-favorite-message role="status"></p></section>';
+  app.append(overlay);
+  const search = overlay.querySelector('[data-favorite-search]');
+  const results = overlay.querySelector('[data-favorite-results]');
+  const message = overlay.querySelector('[data-favorite-message]');
+  let timer = null;
+  let busy = false;
+  const close = () => overlay.remove();
+  overlay.querySelector('[data-close]').addEventListener('click', close);
+  overlay.addEventListener('click', (event) => { if (event.target === overlay) close(); });
+  search.addEventListener('input', () => {
+    window.clearTimeout(timer);
+    const query = search.value.trim();
+    if (query.length < 2) { results.innerHTML = ''; return; }
+    results.innerHTML = '<p class="composer__hint">Buscando jogos…</p>';
+    timer = window.setTimeout(async () => {
+      const { data, error } = await supabase.functions.invoke('steamgriddb', { body: { action: 'search', query } });
+      if (search.value.trim() !== query) return;
+      if (error || data?.error) { results.innerHTML = '<p class="composer__hint">Não foi possível buscar jogos.</p>'; return; }
+      const games = (data?.data || []).filter((game) => !excludedGameIds.includes(String(game.id)));
+      results.innerHTML = games.length ? games.map((game) => {
+        const releaseDate = Number(game.release_date);
+        const releaseYear = Number.isFinite(releaseDate) && releaseDate > 0 ? new Date(releaseDate * 1000).getUTCFullYear() : null;
+        return '<button class="composer__result" type="button" data-game-id="' + Number(game.id) + '" data-game-name="' + escapeHTML(game.name) + '" data-game-year="' + (releaseYear || '') + '">' +
+          '<span class="composer__result-info"><strong>' + escapeHTML(game.name) + '</strong><small>(' + (releaseYear || 'Ano não informado') + ')</small></span><span>Selecionar ↗</span></button>';
+      }).join('') : '<p class="composer__hint">Nenhum jogo encontrado.</p>';
+    }, 350);
+  });
+  results.addEventListener('click', async (event) => {
+    const button = event.target.closest('[data-game-id]');
+    if (!button || busy) return;
+    busy = true; button.disabled = true; message.textContent = 'Adicionando jogo…';
+    const { data, error } = await supabase.functions.invoke('steamgriddb', { body: { action: 'save', game: { id: Number(button.dataset.gameId), name: button.dataset.gameName, release_year: Number(button.dataset.gameYear) || null } } });
+    if (error || data?.error || !data?.game) { message.textContent = data?.error || 'Não foi possível adicionar este jogo.'; button.disabled = false; busy = false; return; }
+    const saved = await onSelect(data.game);
+    if (saved) close(); else { message.textContent = 'Não foi possível salvar o jogo no perfil.'; button.disabled = false; busy = false; }
+  });
+  search.focus();
+}
 async function renderProfilePage(currentUser, username) {
   const requestId = (renderProfilePage.requestId || 0) + 1;
   renderProfilePage.requestId = requestId;
@@ -1894,6 +1943,11 @@ async function renderProfilePage(currentUser, username) {
     app.querySelector('[data-profile-back]')?.addEventListener('click', () => navigateToFeed(currentUser));
     return;
   }
+
+  const { data: favoriteRows, error: favoriteError } = await supabase.from('profile_favorite_games')
+    .select('position, games(id, title, cover_url, release_year)')
+    .eq('user_id', profile.id).order('position', { ascending: true });
+  if (favoriteError) console.error('[Ludus] Falha ao carregar jogos favoritos:', favoriteError);
 
   const followState = currentUser.id === profile.id
     ? { data: null }
@@ -1939,8 +1993,49 @@ async function renderProfilePage(currentUser, username) {
     '<span><strong data-profile-stat="lists">' + (savedListsCountResult.count ?? 0) + '</strong><span>Listas</span></span>' +
     '</div>' +
     (profile.bio?.trim() ? '<div class="profile-page__bio">' + escapeHTML(profile.bio.trim()) + '</div>' : '') +
+    '<section class="profile-page__favorites" aria-label="Jogos favoritos"><div class="profile-page__favorites-heading"><h2>Jogos favoritos</h2></div><div class="profile-page__favorites-list" data-profile-favorites></div></section>' +
     '</section>';
 
+  let favoriteGames = (favoriteRows || []).filter((row) => row.games).map((row) => ({ position: Number(row.position), game: row.games }));
+  const favoritesList = app.querySelector('[data-profile-favorites]');
+  const isOwnProfile = profile.id === currentUser.id;
+  const renderFavoriteGames = () => {
+    if (!favoritesList) return;
+    const byPosition = new Map(favoriteGames.map((item) => [item.position, item]));
+    const slots = isOwnProfile ? [1, 2, 3, 4, 5].map((position) => byPosition.get(position) || { position, empty: true }) : favoriteGames;
+    favoritesList.innerHTML = slots.length ? slots.map((item) => item.empty
+      ? '<button class="profile-page__favorite-slot" type="button" data-favorite-add>+ Adicionar jogo</button>'
+      : '<article class="profile-page__favorite" data-favorite-position="' + item.position + '">' +
+        (item.game.cover_url ? '<img src="' + escapeHTML(item.game.cover_url) + '" alt="Capa de ' + escapeHTML(item.game.title) + '" loading="lazy">' : '<span class="profile-page__favorite-empty">Sem capa</span>') +
+        '<span>' + escapeHTML(item.game.title) + '</span>' +
+        (isOwnProfile ? '<button type="button" data-favorite-remove="' + item.position + '" aria-label="Remover ' + escapeHTML(item.game.title) + ' dos favoritos">×</button>' : '') + '</article>').join('')
+      : '<p class="profile-page__favorites-empty">Nenhum jogo favorito destacado.</p>';
+    favoritesList.querySelectorAll('[data-favorite-add]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const usedIds = favoriteGames.map((item) => String(item.game.id));
+        openFavoriteGamePicker(async (game) => {
+          const position = [1, 2, 3, 4, 5].find((slot) => !favoriteGames.some((item) => item.position === slot));
+          if (!position) return false;
+          const { error } = await supabase.from('profile_favorite_games').insert({ user_id: currentUser.id, game_id: game.id, position });
+          if (error) { console.error('[Ludus] Falha ao salvar jogo favorito:', error); return false; }
+          favoriteGames.push({ position, game }); favoriteGames.sort((a, b) => a.position - b.position);
+          renderFavoriteGames(); return true;
+        }, usedIds);
+      });
+    });
+    favoritesList.querySelectorAll('[data-favorite-remove]').forEach((button) => {
+      button.addEventListener('click', async () => {
+        button.disabled = true;
+        const position = Number(button.dataset.favoriteRemove);
+        const item = favoriteGames.find((favorite) => favorite.position === position);
+        if (!item) return;
+        const { error } = await supabase.from('profile_favorite_games').delete().eq('user_id', currentUser.id).eq('game_id', item.game.id);
+        if (error) { console.error('[Ludus] Falha ao remover jogo favorito:', error); button.disabled = false; return; }
+        favoriteGames = favoriteGames.filter((favorite) => favorite.position !== position); renderFavoriteGames();
+      });
+    });
+  };
+  renderFavoriteGames();
   const editButton = app.querySelector('[data-profile-edit]');
   editButton?.addEventListener('click', () => openProfileEditor(currentUser, profile));
 
