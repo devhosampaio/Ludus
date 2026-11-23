@@ -1928,7 +1928,9 @@ async function renderProfilePage(currentUser, username) {
     '<section class="profile-page__hero"><div class="profile-page__banner">' + banner + '</div>' +
     '<div class="profile-page__avatar">' + avatar + '</div>' +
     '<div class="profile-page__identity"><div class="profile-page__heading"><h1>' + escapeHTML(displayName) + '</h1></div>' +
-    (profile.id !== currentUser.id ? '<button class="profile-follow' + (isFollowing ? ' is-following' : '') + '" type="button" data-profile-follow>' + (isFollowing ? 'Seguindo' : 'Seguir') + '</button>' : '') +
+    (profile.id === currentUser.id
+      ? '<button class="profile-edit-button btn btn-default" type="button" data-profile-edit>Editar Perfil</button>'
+      : '<button class="profile-follow' + (isFollowing ? ' is-following' : '') + '" type="button" data-profile-follow>' + (isFollowing ? 'Seguindo' : 'Seguir') + '</button>') +
     '</div>' +
     '<div class="profile-page__stats" aria-label="Estatísticas do perfil">' +
     '<span><strong data-profile-stat="following">' + (followingCountResult.count ?? 0) + '</strong><span>Seguindo</span></span>' +
@@ -1936,6 +1938,9 @@ async function renderProfilePage(currentUser, username) {
     '<span><strong data-profile-stat="reviews">' + (reviewsCountResult.count ?? 0) + '</strong><span>Avaliações</span></span>' +
     '<span><strong data-profile-stat="lists">' + (savedListsCountResult.count ?? 0) + '</strong><span>Listas</span></span>' +
     '</div></section>';
+
+  const editButton = app.querySelector('[data-profile-edit]');
+  editButton?.addEventListener('click', () => openProfileEditor(currentUser, profile));
 
   const followButton = app.querySelector('[data-profile-follow]');
   if (followButton) {
