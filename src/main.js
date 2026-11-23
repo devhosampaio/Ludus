@@ -339,7 +339,7 @@ function sharedFeedHeaderMarkup() {
       </header>
       <nav class="mobile-drawer__navigation" aria-label="Navegação principal">
         <button class="mobile-drawer__item" type="button" data-drawer-home><i class="fa-solid fa-house" aria-hidden="true"></i><span>Página Inicial</span></button>
-        <button class="mobile-drawer__item" type="button" data-drawer-search><i class="fa-regular fa-map" aria-hidden="true"></i><span>Pesquisar</span></button>
+        <button class="mobile-drawer__item" type="button" data-drawer-search><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i><span>Pesquisar</span></button>
         <div class="mobile-drawer__notifications">${notificationControlMarkup()}</div>
         <button class="mobile-drawer__item" type="button" data-drawer-profile><i class="fa-regular fa-user" aria-hidden="true"></i><span>Meu Perfil</span></button>
         <button class="mobile-drawer__item" type="button" data-drawer-saved><i class="fa-regular fa-bookmark" aria-hidden="true"></i><span>Listas Salvas</span></button>
