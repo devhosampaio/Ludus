@@ -350,6 +350,7 @@ function setupMobileDrawer(user, profile = null) {
   const backdrop = app.querySelector('.mobile-drawer-backdrop');
   if (!trigger || !drawer || trigger.dataset.drawerBound) return;
   trigger.dataset.drawerBound = 'true';
+  if (profile?.avatar_url) trigger.innerHTML = '<img src="' + escapeHTML(profile.avatar_url) + '" alt="Foto do perfil">';
 
   const close = () => {
     drawer.hidden = true;
@@ -397,6 +398,7 @@ async function setupSharedSideMenu(user, profile = null) {
     profile = data;
   }
   if (!root.isConnected) return;
+  setupMobileDrawer(user, profile);
   const username = root.querySelector('[data-side-username]');
   const avatar = root.querySelector('[data-side-avatar]');
   if (username) username.textContent = profile?.display_name || profile?.username || user.user_metadata?.display_name || user.email?.split('@')[0] || 'jogador';
@@ -408,7 +410,7 @@ async function setupSharedSideMenu(user, profile = null) {
     if (profile) openProfileEditor(user, profile);
   });
   root.querySelectorAll('[data-feed-mode]').forEach((button) => {
-    button.addEventListener('click', () => navigateToFeed(user));
+    button.addEventListener('click', () => navigateToFeed(user, button.dataset.feedMode || 'home'));
   });
   app.querySelectorAll('.feed-center-column [data-feed-mode]').forEach((button) => {
     button.addEventListener('click', () => navigateToFeed(user));
@@ -417,7 +419,7 @@ async function setupSharedSideMenu(user, profile = null) {
   setupNotifications(user);
 }
 
-async function renderSignedIn(user) {
+async function renderSignedIn(user, initialFeedMode = 'home') {
   // Evita reconstruir o feed quando o Supabase restaura/renova a sessão ao voltar à aba.
   // A tela já está montada e os dados permanecem visíveis, sem piscar para o estado de carregamento.
   if (activeUser?.id === user.id && app.querySelector('[data-feed-list]') &&
@@ -758,7 +760,7 @@ async function renderSignedIn(user) {
     const button = event.target.closest('.side-menu__item[data-feed-mode], .feed-tabs [data-feed-mode]');
     if (button) renderFeed(button.dataset.feedMode);
   });
-  renderFeed('home');
+  renderFeed(initialFeedMode);
 
   // As publicações aparecem imediatamente; os dados sociais complementares chegam em segundo plano.
   void (async () => {
@@ -1462,11 +1464,11 @@ async function renderSearchPage(currentUser, initialQuery = '') {
   else input.focus();
 }
 
-function navigateToFeed(currentUser) {
+function navigateToFeed(currentUser, mode = 'home') {
   if (window.location.hash !== '#inicio') {
     window.history.pushState({ page: 'feed' }, '', '#inicio');
   }
-  renderSignedIn(currentUser);
+  renderSignedIn(currentUser, mode);
 }
 
 async function renderProfilePage(currentUser, username) {
