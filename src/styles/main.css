@@ -870,3 +870,11 @@ img { max-width: 100%; }
   font-size: 14px;
   font-weight: 400;
 }
+
+
+/* Alinha o início do feed ao fim da navegação fixa no mobile. */
+@media (max-width: 767px) {
+  .feed-main > .feed-main__container {
+    padding-top: 95px;
+  }
+}
