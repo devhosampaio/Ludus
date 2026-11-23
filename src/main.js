@@ -795,8 +795,6 @@ async function renderSignedIn(user, initialFeedMode = 'home') {
         '<button type="button" class="review-card__comments-toggle" data-open-review-comments><i class="fa-regular fa-comment" aria-hidden="true"></i><span>Comentar</span><span class="review-card__comment-count" data-comment-count>' + String(commentTotal) + '</span></button>' +
         '<button type="button" class="review-card__bookmark' + (isSaved ? ' is-saved' : '') + '" data-save-review aria-pressed="' + isSaved + '"><i class="fa-regular fa-bookmark" aria-hidden="true"></i><span>Salvar</span><span class="review-card__save-count" data-save-count>' + String(saveTotal) + '</span></button>' +
         '<button type="button" class="review-card__share" data-share-review><i class="fa-solid fa-share" aria-hidden="true"></i><span>Compartilhar</span></button></div>';
-      const body = review.body || '';
-      const reviewText = body ? '<div class="review-card__text-wrap"><p class="review-card__text" data-review-text>' + escapeHTML(body) + '</p></div>' : '';
       return '<article class="review-card" data-review-id="' + review.id + '">' +
         reviewAuthor +
         '<div class="review-card__game-layout"><div class="review-card__cover-column">' + cover + '</div>' +
