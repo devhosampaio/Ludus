@@ -789,3 +789,16 @@ img { max-width: 100%; }
   color: #fff !important;
 }
 .app-topbar__menu-button img { display: none !important; }
+
+
+/* Cores e peso dos textos da navbar superior */
+.feed-navigation--header .feed-tabs__button {
+  color: #737b87;
+  background-color: transparent;
+  font-weight: 700;
+}
+.feed-navigation--header .feed-tabs__button.is-active,
+.feed-navigation--header .feed-tabs__button[aria-selected="true"] {
+  color: #fff;
+  background-color: transparent;
+}
