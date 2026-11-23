@@ -1090,7 +1090,7 @@ async function renderSignedIn(user, initialFeedMode = 'home') {
     const shareButton = event.target.closest('[data-share-review]');
     if (shareButton) {
       const shareCard = shareButton.closest('[data-review-id]');
-      const shareUrl = new URL('#/avaliacao/' + shareCard.dataset.reviewId, window.location.href).toString();
+      const shareUrl = new URL('#/review/' + shareCard.dataset.reviewId, window.location.href).toString();
       try {
         if (navigator.share) await navigator.share({ title: 'Avaliação no Ludus', url: shareUrl });
         else if (navigator.clipboard?.writeText) {
