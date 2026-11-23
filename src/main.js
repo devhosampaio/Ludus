@@ -562,6 +562,13 @@ async function renderSignedIn(user, initialFeedMode = 'home') {
     .select('username, display_name, avatar_url, banner_url, bio')
     .eq('id', user.id).maybeSingle();
 
+  const bottomProfileAvatar = app.querySelector('[data-bottom-profile-avatar]');
+  if (bottomProfileAvatar) {
+    bottomProfileAvatar.innerHTML = profileResult.data?.avatar_url
+      ? '<img src="' + escapeHTML(profileResult.data.avatar_url) + '" alt="">'
+      : profilePlaceholderMarkup();
+  }
+
   const drawerAvatar = app.querySelector('[data-drawer-avatar]');
   if (drawerAvatar && profileResult.data?.avatar_url) {
     drawerAvatar.innerHTML = '<img src="' + escapeHTML(profileResult.data.avatar_url) + '" alt="Foto do perfil">';
