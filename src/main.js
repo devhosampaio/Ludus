@@ -569,6 +569,11 @@ async function renderSignedIn(user, initialFeedMode = 'home') {
       : profilePlaceholderMarkup();
   }
 
+  app.querySelector('[data-bottom-profile]')?.addEventListener('click', () => {
+    const username = profileResult.data?.username;
+    if (username) navigateToProfile(user, username);
+  });
+
   const drawerAvatar = app.querySelector('[data-drawer-avatar]');
   if (drawerAvatar && profileResult.data?.avatar_url) {
     drawerAvatar.innerHTML = '<img src="' + escapeHTML(profileResult.data.avatar_url) + '" alt="Foto do perfil">';
