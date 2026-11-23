@@ -1853,7 +1853,7 @@ async function renderProfilePage(currentUser, username) {
   const requestId = (renderProfilePage.requestId || 0) + 1;
   renderProfilePage.requestId = requestId;
   app.innerHTML = `
-    <div class="feed-shell">
+    <div class="feed-shell feed-shell--profile">
       ${sharedSideMenuMarkup(currentUser)}
       <main class="feed-center-column feed-main profile-main">
         ${sharedFeedHeaderMarkup()}
