@@ -2008,8 +2008,7 @@ async function renderProfilePage(currentUser, username) {
       ? '<button class="profile-page__favorite-slot" type="button" data-favorite-add aria-label="Adicionar jogo favorito"><i class="fa-solid fa-plus" aria-hidden="true"></i></button>'
       : '<article class="profile-page__favorite" data-favorite-position="' + item.position + '">' +
         (item.game.cover_url ? '<img src="' + escapeHTML(item.game.cover_url) + '" alt="Capa de ' + escapeHTML(item.game.title) + '" loading="lazy">' : '<span class="profile-page__favorite-empty">Sem capa</span>') +
-        '<span>' + escapeHTML(item.game.title) + '</span>' +
-        (isOwnProfile ? '<button type="button" data-favorite-remove="' + item.position + '" aria-label="Remover ' + escapeHTML(item.game.title) + ' dos favoritos">×</button>' : '') + '</article>').join('')
+        '<span>' + escapeHTML(item.game.title) + '</span></article>').join('')
       : '<p class="profile-page__favorites-empty">Nenhum jogo favorito destacado.</p>';
     favoritesList.querySelectorAll('[data-favorite-add]').forEach((button) => {
       button.addEventListener('click', () => {
@@ -2022,17 +2021,6 @@ async function renderProfilePage(currentUser, username) {
           favoriteGames.push({ position, game });
           renderFavoriteGames(); return true;
         }, usedIds);
-      });
-    });
-    favoritesList.querySelectorAll('[data-favorite-remove]').forEach((button) => {
-      button.addEventListener('click', async () => {
-        button.disabled = true;
-        const position = Number(button.dataset.favoriteRemove);
-        const item = favoriteGames.find((favorite) => favorite.position === position);
-        if (!item) return;
-        const { error } = await supabase.from('profile_favorite_games').delete().eq('user_id', currentUser.id).eq('game_id', item.game.id);
-        if (error) { console.error('[Ludus] Falha ao remover jogo favorito:', error); button.disabled = false; return; }
-        favoriteGames = favoriteGames.filter((favorite) => favorite.position !== position); renderFavoriteGames();
       });
     });
   };
