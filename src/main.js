@@ -1886,11 +1886,30 @@ async function renderProfilePage(currentUser, username) {
   setupSharedSideMenu(currentUser);
 
   const { data: profile, error: profileError } = await supabase.from('profiles')
-    .select('id, username, display_name, bio, avatar_url, banner_url')
+    .select('id, username, display_name, avatar_url, banner_url')
     .eq('username', username).maybeSingle();
   if (requestId !== renderProfilePage.requestId) return;
   if (profileError || !profile) {
-    app.querySelector('.profile-page__content').innerHTML =
+    app.querySelector('.profile-page__content').innerHTML = '<div class="profile-page__empty"><h1>Não encontramos este jogador.</h1><button type="button" class="profile-page__back" data-profile-back>← Voltar ao feed</button></div>';
+    app.querySelector('[data-profile-back]')?.addEventListener('click', () => navigateToFeed(currentUser));
+    return;
+  }
+
+  const followState = currentUser.id === profile.id
+    ? { data: null }
+    : await supabase.from('follows').select('follower_id')
+      .eq('follower_id', currentUser.id).eq('following_id', profile.id).maybeSingle();
+  if (requestId !== renderProfilePage.requestId) return;
+  let isFollowing = Boolean(followState.data);
+  const displayName = profile.username;
+  const avatar = profile.avatar_url
+    ? '<img src="' + escapeHTML(profile.avatar_url) + '" alt="">'
+    : '<span>' + escapeHTML(displayName.trim().charAt(0).toUpperCase() || 'L') + '</span>';
+  const banner = profile.banner_url
+    ? '<img class="profile-page__banner-image" src="' + escapeHTML(profile.banner_url) + '" alt="">'
+    : '<div class="profile-page__banner-empty"></div>';
+
+  app.querySelector('.profile-page__content').innerHTML =
     '<section class="profile-page__hero"><div class="profile-page__banner">' + banner + '</div>' +
     '<div class="profile-page__identity"><div class="profile-page__avatar">' + avatar + '</div>' +
     '<div class="profile-page__heading"><h1>' + escapeHTML(displayName) + '</h1></div>' +
@@ -1915,15 +1934,12 @@ async function renderProfilePage(currentUser, username) {
       followButton.textContent = isFollowing ? 'Seguindo' : 'Seguir';
       followButton.classList.toggle('is-following', isFollowing);
       followButton.disabled = false;
-      const count = app.querySelector('[data-followers-count]');
-      count.textContent = String(Math.max(0, Number(count.textContent) + (isFollowing ? 1 : -1)));
     });
   }
 
   const editProfileButton = app.querySelector('[data-edit-profile]');
   editProfileButton?.addEventListener('click', () => openProfileEditor(currentUser, profile));
 }
-
 async function openProfileEditor(user, profile) {
   const returnToProfile = window.location.hash.startsWith('#/perfil/');
   await renderSignedIn(user);
