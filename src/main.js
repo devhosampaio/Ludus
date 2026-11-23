@@ -52,7 +52,7 @@ function statusIconMarkup(status) {
 }
 
 function statusLabel(status) {
-  return ({ playing: 'Jogando', completed: 'Zerado', abandoned: 'Abandonado' })[status] || '';
+  return status === 'completed' ? 'Zerado' : '';
 }
 
 
@@ -707,7 +707,7 @@ async function renderSignedIn(user, initialFeedMode = 'home') {
     activeFeedMode = mode;
     const isHome = mode === 'home';
     newcomersSection.hidden = true;
-    feedContent.hidden = true;
+    feedContent.hidden = false;
     feedList.classList.toggle('is-popular-feed', mode === 'popular');
 
     let visibleReviews = [...(reviews || [])];
@@ -787,17 +787,23 @@ async function renderSignedIn(user, initialFeedMode = 'home') {
       const body = review.body || '';
       const reviewText = body ? '<div class="review-card__text-wrap"><p class="review-card__text" data-review-text>' + escapeHTML(body) + '</p></div>' : '';
       const reviewAuthor = '<div class="review-card__header"><div class="review-card__meta"><div class="review-card__author-line"><button class="review-card__author" type="button" data-profile-username="' + escapeHTML(username) + '"><span class="review-card__author-avatar">' + avatarMarkup + '</span><span class="review-card__author-name">' + escapeHTML(author) + '</span></button><span class="review-card__posted-at">' + relativeTime(review.created_at) + '</span></div>' + menuMarkup + '</div></div>';
-      const reviewDetails = '<div class="review-card__details"><span class="review-card__stars" aria-label="Nota ' + review.rating + ' de 5">' + stars + '</span>' +
-        (review.liked_game ? '<span class="review-card__liked" aria-label="Gostou do jogo" title="Gostou do jogo"><svg class="ui-icon ui-icon--heart" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" stroke="none" d="M12 21s-8.8-5.9-8.8-12.2A4.8 4.8 0 0 1 12 6.4a4.8 4.8 0 0 1 8.8 2.4C20.8 15.1 12 21 12 21Z"></path></svg></span>' : '') +
-        (review.status ? '<span class="review-card__status" aria-label="' + statusLabel(review.status) + '" title="' + statusLabel(review.status) + '">' + statusIconMarkup(review.status) + '<span class="review-card__status-label">' + statusLabel(review.status) + '</span></span>' : '') + '</div>';
+      const ratingValue = Number(review.rating).toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+      const reviewDetails = '<div class="review-card__details"><span class="review-card__rating"><i class="fa-solid fa-star" aria-hidden="true"></i><span>' + ratingValue + '</span></span>' +
+        (review.liked_game ? '<i class="fa-solid fa-heart review-card__liked" aria-label="Favorito" title="Favorito"></i>' : '') +
+        (review.status === 'completed' ? '<i class="fa-solid fa-trophy review-card__completed" aria-label="Zerado" title="Zerado"></i>' : '') + '</div>';
+      const reviewAuthor = '<div class="review-card__header"><button class="review-card__author" type="button" data-profile-username="' + escapeHTML(username) + '"><span class="review-card__author-avatar">' + avatarMarkup + '</span><span class="review-card__author-name">' + escapeHTML(author) + '</span></button></div>';
+      const socialActions = '<div class="review-card__social-actions">' +
+        '<button class="review-card__like' + (isLiked ? ' is-liked' : '') + '" type="button" data-like-review aria-pressed="' + isLiked + '"><i class="fa-regular fa-heart" aria-hidden="true"></i><span>Curtir</span><span class="review-card__like-count" data-like-count>' + String(likeTotal) + '</span></button>' +
+        '<button type="button" class="review-card__comments-toggle" data-open-review-comments><i class="fa-regular fa-comment" aria-hidden="true"></i><span>Comentar</span><span class="review-card__comment-count" data-comment-count>' + String(commentTotal) + '</span></button>' +
+        '<button type="button" class="review-card__bookmark' + (isSaved ? ' is-saved' : '') + '" data-save-review aria-pressed="' + isSaved + '"><i class="fa-regular fa-bookmark" aria-hidden="true"></i><span>Salvar</span><span class="review-card__save-count" data-save-count>' + String(saveTotal) + '</span></button>' +
+        '<button type="button" class="review-card__share" data-share-review><i class="fa-solid fa-share" aria-hidden="true"></i><span>Compartilhar</span></button></div>';
+      const body = review.body || '';
+      const reviewText = body ? '<div class="review-card__text-wrap"><p class="review-card__text" data-review-text>' + escapeHTML(body) + '</p></div>' : '';
       return '<article class="review-card" data-review-id="' + review.id + '">' +
-        '<div class="review-card__game-layout">' +
-          (gameData.hero_url ? '<div class="review-card__backdrop" aria-hidden="true"><img src="' + escapeHTML(gameData.hero_url) + '" alt="" loading="lazy"></div>' : '') +
-          '<div class="review-card__cover-column">' + cover + '</div>' +
-          '<div class="review-card__body">' + reviewAuthor + '<h3 class="review-card__game-heading">' + gameTitleMarkup + '</h3>' + reviewDetails + '</div>' +
-        '</div>' +
-        reviewText +
-        '<div class="review-card__actions">' + socialActions + '</div></article>';
+        reviewAuthor +
+        '<div class="review-card__game-layout"><div class="review-card__cover-column">' + cover + '</div>' +
+        '<div class="review-card__body"><h3 class="review-card__game-heading">' + gameTitleMarkup + '</h3>' + reviewDetails + '</div></div>' +
+        reviewText + '<div class="review-card__actions">' + socialActions + '</div></article>';
     }).join('');
     } catch (renderError) {
       console.error('[Ludus] Falha ao montar as publicações do feed:', renderError);
@@ -1079,6 +1085,21 @@ async function renderSignedIn(user, initialFeedMode = 'home') {
       }
       const card = deleteComment.closest('[data-review-id]');
       await loadReviewComments(user, card);
+      return;
+    }
+    const shareButton = event.target.closest('[data-share-review]');
+    if (shareButton) {
+      const shareCard = shareButton.closest('[data-review-id]');
+      const shareUrl = new URL('#/avaliacao/' + shareCard.dataset.reviewId, window.location.href).toString();
+      try {
+        if (navigator.share) await navigator.share({ title: 'Avaliação no Ludus', url: shareUrl });
+        else if (navigator.clipboard?.writeText) {
+          await navigator.clipboard.writeText(shareUrl);
+          shareButton.querySelector('span').textContent = 'Link copiado';
+        } else window.prompt('Copie o link da avaliação:', shareUrl);
+      } catch (error) {
+        if (error.name !== 'AbortError') console.error('[Ludus] Falha ao compartilhar avaliação:', error);
+      }
       return;
     }
     const saveButton = event.target.closest('[data-save-review]');
@@ -1731,10 +1752,7 @@ async function openReviewComposer(user, existingReview = null, preselectedGame =
             <button type="button" class="composer__star is-active" data-rating-value="1" aria-label="1 estrela" aria-pressed="false">★</button><button type="button" class="composer__star is-active" data-rating-value="2" aria-label="2 estrelas" aria-pressed="false">★</button><button type="button" class="composer__star is-active" data-rating-value="3" aria-label="3 estrelas" aria-pressed="false">★</button><button type="button" class="composer__star is-active" data-rating-value="4" aria-label="4 estrelas" aria-pressed="false">★</button><button type="button" class="composer__star is-active" data-rating-value="5" aria-label="5 estrelas" aria-pressed="true">★</button>
           </div>
         </div>
-        <div class="composer__field">
-          <label for="review-status">Status</label>
-          <select id="review-status" name="status"><option value="playing">Jogando</option><option value="completed">Zerado</option><option value="abandoned">Abandonado</option></select>
-        </div>
+        <label class="composer__field"><input type="checkbox" name="completed"> Zerado</label>
         <label class="composer__liked"><input type="checkbox" name="liked_game"> <span><svg class="ui-icon ui-icon--heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 8.8c0 5.1-8.8 11-8.8 11s-8.8-5.9-8.8-11A4.8 4.8 0 0 1 12 6.4a4.8 4.8 0 0 1 8.8 2.4Z"></path></svg> Gostei deste jogo</span></label>
         <label class="composer__field" for="review-body">O que achou? <small>Opcional · até 5.000 caracteres</small></label>
         <textarea id="review-body" name="body" maxlength="5000" rows="4" placeholder="Conte um pouco sobre sua experiência…"></textarea>
@@ -1868,7 +1886,7 @@ async function openReviewComposer(user, existingReview = null, preselectedGame =
     message.textContent = '';
     const reviewData = {
       rating: Number(values.rating),
-      status: values.status,
+      status: form.elements.completed.checked ? 'completed' : null,
       liked_game: form.elements.liked_game.checked,
       body: String(values.body || '').trim(),
     };
