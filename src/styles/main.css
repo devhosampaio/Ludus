@@ -892,3 +892,10 @@ img { max-width: 100%; }
   .app-topbar,
   .feed-navigation--header { transition-duration: 1ms; }
 }
+
+
+/* Aumenta o espaçamento vertical do botão Avaliar no menu lateral. */
+.mobile-drawer__review {
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
