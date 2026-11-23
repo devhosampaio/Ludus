@@ -1890,48 +1890,12 @@ async function renderProfilePage(currentUser, username) {
     .eq('username', username).maybeSingle();
   if (requestId !== renderProfilePage.requestId) return;
   if (profileError || !profile) {
-    app.querySelector('.profile-page__content').innerHTML = '<div class="profile-page__empty"><p class="eyebrow">PERFIL INDISPONÍVEL</p><h1>Não encontramos este jogador.</h1><button type="button" class="profile-page__back" data-profile-back>← Voltar ao feed</button></div>';
-    app.querySelector('[data-profile-back]')?.addEventListener('click', () => navigateToFeed(currentUser));
-    return;
-  }
-
-  const [followers, following, followState, reviewsResult] = await Promise.all([
-    supabase.from('follows').select('follower_id', { count: 'exact', head: true }).eq('following_id', profile.id),
-    supabase.from('follows').select('following_id', { count: 'exact', head: true }).eq('follower_id', profile.id),
-    currentUser.id === profile.id
-      ? Promise.resolve({ data: null })
-      : supabase.from('follows').select('follower_id').eq('follower_id', currentUser.id).eq('following_id', profile.id).maybeSingle(),
-    supabase.from('reviews')
-      .select('id, rating, body, status, liked_game, created_at, games!reviews_game_id_fkey(title, cover_url, release_year)')
-      .eq('user_id', profile.id).order('created_at', { ascending: false }).limit(20)
-  ]);
-  if (requestId !== renderProfilePage.requestId) return;
-  let isFollowing = Boolean(followState.data);
-  const displayName = profile.username;
-  const avatar = profile.avatar_url
-    ? '<img src="' + escapeHTML(profile.avatar_url) + '" alt="">'
-    : '<span>' + escapeHTML(displayName.trim().charAt(0).toUpperCase() || 'L') + '</span>';
-  const banner = profile.banner_url
-    ? '<img class="profile-page__banner-image" src="' + escapeHTML(profile.banner_url) + '" alt="">'
-    : '<div class="profile-page__banner-empty"></div>';
-  const reviewCards = (reviewsResult.data || []).map((review) => {
-    const game = review.games?.title || 'Jogo';
-    const year = review.games?.release_year ? ' (' + escapeHTML(review.games.release_year) + ')' : '';
-    const cover = review.games?.cover_url
-      ? '<img class="profile-review__cover" src="' + escapeHTML(review.games.cover_url) + '" alt="">'
-      : '<div class="profile-review__cover profile-review__cover--empty">Sem capa</div>';
-    return '<article class="profile-review">' + cover + '<div><strong>' + escapeHTML(game) + year + '</strong><div class="profile-review__meta"><span class="profile-review__stars">' + '★'.repeat(review.rating) + '☆'.repeat(5 - review.rating) + '</span><span>' + statusLabel(review.status) + '</span><time>' + formatDate(review.created_at) + '</time></div>' + (review.body ? '<p>' + escapeHTML(review.body) + '</p>' : '') + (review.liked_game ? '<small class="profile-review__liked"><svg class="ui-icon ui-icon--heart" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.8 8.8c0 5.1-8.8 11-8.8 11s-8.8-5.9-8.8-11A4.8 4.8 0 0 1 12 6.4a4.8 4.8 0 0 1 8.8 2.4Z"></path></svg> Gostei deste jogo</small>' : '') + '</div></article>';
-  }).join('');
-
-  app.querySelector('.profile-page__content').innerHTML =
+    app.querySelector('.profile-page__content').innerHTML =
     '<section class="profile-page__hero"><div class="profile-page__banner">' + banner + '</div>' +
     '<div class="profile-page__identity"><div class="profile-page__avatar">' + avatar + '</div>' +
     '<div class="profile-page__heading"><h1>' + escapeHTML(displayName) + '</h1></div>' +
     (profile.id !== currentUser.id ? '<button class="profile-follow' + (isFollowing ? ' is-following' : '') + '" type="button" data-profile-follow>' + (isFollowing ? 'Seguindo' : 'Seguir') + '</button>' : '<button class="profile-panel__you profile-edit-trigger" type="button" data-edit-profile>Editar perfil ↗</button>') +
-    '</div>' + (profile.bio ? '<p class="profile-page__bio">' + escapeHTML(profile.bio) + '</p>' : '') +
-    '<div class="profile-page__stats"><div><strong data-followers-count>' + (followers.count || 0) + '</strong><span>Seguidores</span></div><div><strong>' + (following.count || 0) + '</strong><span>Seguindo</span></div><div><strong>' + ((reviewsResult.data || []).length) + '</strong><span>Avaliações recentes</span></div></div></section>' +
-    '<section class="profile-page__reviews"><div class="profile-page__section-heading"><div><p class="eyebrow">HISTÓRICO DO JOGADOR</p><h2>Avaliações</h2></div><span>' + ((reviewsResult.data || []).length).toString().padStart(2, '0') + ' / 20</span></div>' +
-    (reviewsResult.error ? '<p class="profile-page__empty">Não foi possível carregar as avaliações.</p>' : reviewCards || '<p class="profile-page__empty">Este jogador ainda não publicou avaliações.</p>') + '</section>';
+    '</div></section>';
 
   const followButton = app.querySelector('[data-profile-follow]');
   if (followButton) {
