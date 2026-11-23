@@ -1974,14 +1974,125 @@ async function openProfileEditor(user, profile) {
   editor.querySelector('[data-close]').addEventListener('click', close);
   editor.querySelector('[data-cancel]').addEventListener('click', close);
 
+  let activeCropper = null;
+  let activeCropUrl = null;
+  let activeCropField = null;
+  let pendingCroppedFile = null;
+
+  const cropOverlay = document.createElement('div');
+  cropOverlay.className = 'profile-crop-overlay';
+  cropOverlay.hidden = true;
+  cropOverlay.innerHTML = `
+    <section class="profile-crop-dialog" role="dialog" aria-modal="true" aria-labelledby="profile-crop-title">
+      <div class="profile-crop-dialog__header">
+        <h3 id="profile-crop-title">Ajustar imagem</h3>
+        <button type="button" data-crop-cancel aria-label="Fechar">×</button>
+      </div>
+      <p data-crop-hint></p>
+      <div class="profile-crop-dialog__viewport"><img data-crop-image alt="Imagem para recorte"></div>
+      <div class="profile-crop-dialog__zoom">
+        <label for="profile-crop-zoom">Zoom</label>
+        <input id="profile-crop-zoom" data-crop-zoom type="range" min="0" max="100" value="0">
+      </div>
+      <div class="profile-crop-dialog__actions">
+        <button type="button" class="btn btn-default" data-crop-cancel>Cancelar</button>
+        <button type="button" class="btn btn-primary" data-crop-apply>Usar imagem</button>
+      </div>
+    </section>`;
+  document.body.appendChild(cropOverlay);
+  const cropImage = cropOverlay.querySelector('[data-crop-image]');
+  const closeCropper = (restoreInput = true) => {
+    activeCropper?.destroy();
+    activeCropper = null;
+    if (activeCropUrl) URL.revokeObjectURL(activeCropUrl);
+    activeCropUrl = null;
+    if (restoreInput && activeCropField) activeCropField.input.value = '';
+    activeCropField = null;
+    cropOverlay.hidden = true;
+  };
+  cropOverlay.querySelectorAll('[data-crop-cancel]').forEach((button) => {
+    button.addEventListener('click', () => closeCropper(true));
+  });
+  cropOverlay.addEventListener('click', (event) => {
+    if (event.target === cropOverlay) closeCropper(true);
+  });
+  cropOverlay.querySelector('[data-crop-zoom]').addEventListener('input', (event) => {
+    if (!activeCropper) return;
+    const value = Number(event.target.value);
+    activeCropper.zoomTo(1 + value / 100);
+  });
+  cropOverlay.querySelector('[data-crop-apply]').addEventListener('click', () => {
+    if (!activeCropper || !activeCropField) return;
+    const isAvatar = activeCropField.field === 'avatar';
+    const canvas = activeCropper.getCroppedCanvas({
+      width: isAvatar ? 512 : 1600,
+      height: isAvatar ? 512 : 500,
+      imageSmoothingEnabled: true,
+      imageSmoothingQuality: 'high'
+    });
+    canvas.toBlob((blob) => {
+      if (!blob) {
+        message.textContent = 'Não foi possível processar esta imagem.';
+        return;
+      }
+      const original = activeCropField.file;
+      const cropped = new File([blob], original.name.replace(/\\.[^.]+$/, '') + '-recortada.jpg', {
+        type: 'image/jpeg', lastModified: Date.now()
+      });
+      const transfer = new DataTransfer();
+      transfer.items.add(cropped);
+      activeCropField.input.files = transfer.files;
+      pendingCroppedFile = cropped;
+      const preview = form.querySelector(activeCropField.previewSelector);
+      const previewUrl = URL.createObjectURL(cropped);
+      preview.innerHTML = '<img src="' + previewUrl + '" alt="Prévia da imagem recortada">';
+      closeCropper(false);
+    }, 'image/jpeg', 0.92);
+  });
+
   for (const [field, previewSelector] of [['avatar', '[data-avatar-preview]'], ['banner', '[data-banner-preview]']]) {
     const input = form.elements[field];
     input.addEventListener('change', () => {
       const file = input.files?.[0];
       if (!file) return;
-      const preview = form.querySelector(previewSelector);
-      const objectUrl = URL.createObjectURL(file);
-      preview.innerHTML = '<img src="' + objectUrl + '" alt="Prévia">';
+      if (!['image/jpeg', 'image/png', 'image/webp', 'image/gif'].includes(file.type) || file.size > 5 * 1024 * 1024) {
+        message.textContent = 'Escolha imagens JPG, PNG, WEBP ou GIF de até 5 MB.';
+        input.value = '';
+        return;
+      }
+      if (typeof window.Cropper === 'undefined') {
+        message.textContent = 'O editor de imagem não carregou. Atualize a página e tente novamente.';
+        input.value = '';
+        return;
+      }
+      message.textContent = '';
+      closeCropper(false);
+      activeCropField = { field, input, file, previewSelector };
+      activeCropUrl = URL.createObjectURL(file);
+      cropImage.src = activeCropUrl;
+      cropOverlay.querySelector('#profile-crop-title').textContent = field === 'avatar' ? 'Recortar foto de perfil' : 'Recortar imagem de capa';
+      cropOverlay.querySelector('[data-crop-hint]').textContent = field === 'avatar'
+        ? 'Arraste a imagem e ajuste o zoom. A área circular mostra como sua foto será exibida.'
+        : 'Arraste a imagem e ajuste o zoom para definir o enquadramento da capa.';
+      cropOverlay.querySelector('[data-crop-zoom]').value = '0';
+      cropOverlay.hidden = false;
+      cropImage.onload = () => {
+        activeCropper?.destroy();
+        activeCropper = new window.Cropper(cropImage, {
+          aspectRatio: field === 'avatar' ? 1 : 16 / 5,
+          viewMode: 1,
+          dragMode: 'move',
+          autoCropArea: 1,
+          responsive: true,
+          background: false,
+          guides: true,
+          center: true,
+          highlight: false,
+          cropBoxMovable: false,
+          cropBoxResizable: false,
+          toggleDragModeOnDblclick: false
+        });
+      };
     });
   }
 
