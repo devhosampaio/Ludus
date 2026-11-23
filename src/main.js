@@ -1231,7 +1231,7 @@ async function renderSignedIn(user, initialFeedMode = 'home') {
       context.fillText('CADA JOGO TEM UMA HISTÓRIA.', 84, 1840);
       context.fillStyle = 'rgba(255,255,255,0.58)';
       context.font = '400 20px Arial, sans-serif';
-      context.fillText('ludus.app', 84, 1880);
+      context.fillText(window.location.host + window.location.pathname, 84, 1880);
       const closeStoryModal = () => storyModal.remove();
       storyModal.addEventListener('click', (modalEvent) => {
         if (modalEvent.target === storyModal || modalEvent.target.closest('[data-story-close]')) closeStoryModal();
