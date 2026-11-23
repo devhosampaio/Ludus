@@ -840,3 +840,13 @@ img { max-width: 100%; }
   box-shadow: none !important;
   outline: 0;
 }
+
+
+/* Espaçamento vertical uniforme entre avaliações */
+.review-card {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+.review-card__actions {
+  padding-bottom: 14px;
+}
