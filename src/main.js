@@ -61,7 +61,7 @@ let notificationChannel = null;
 function notificationControlMarkup() {
   return '<div class="notifications" data-notifications>' +
     '<button class="notifications__trigger" type="button" data-notifications-toggle aria-label="Notificações" aria-expanded="false" title="Notificações">' +
-    '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"></path><path d="M10 21h4"></path></svg><span class="notifications__label">Notificações</span>' +
+    '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"></path><path d="M10 21h4"></path></svg><span class="notifications__label">Notificações</span>' +
     '<span class="notifications__count" data-notification-count hidden>0</span></button>' +
     '<section class="notifications__panel" data-notifications-panel hidden>' +
     '<header class="notifications__header"><strong>Notificações</strong><button type="button" data-notifications-read-all>Marcar todas como lidas</button></header>' +
@@ -343,7 +343,7 @@ function sharedFeedHeaderMarkup() {
         <div class="mobile-drawer__notifications">${notificationControlMarkup()}</div>
         <button class="mobile-drawer__item" type="button" data-drawer-profile><i class="fa-regular fa-user" aria-hidden="true"></i><span>Meu Perfil</span></button>
         <button class="mobile-drawer__item" type="button" data-drawer-saved><i class="fa-regular fa-bookmark" aria-hidden="true"></i><span>Listas Salvas</span></button>
-        <button class="mobile-drawer__item" type="button" data-drawer-settings><i class="fa-regular fa-address-card" aria-hidden="true"></i><span>Configurações</span></button>
+        <button class="mobile-drawer__item" type="button" data-drawer-settings><i class="fa-solid fa-gear" aria-hidden="true"></i><span>Configurações</span></button>
       </nav>
       <div class="mobile-drawer__review-container"><button class="btn btn-primary btn-block mobile-drawer__review" type="button" data-drawer-review>Avaliar</button></div>
     </aside>`;
