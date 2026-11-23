@@ -225,7 +225,7 @@ img { max-width: 100%; }
   border-bottom: 1px solid #ddd;
 }
 .feed-navigation--header + .feed-main__container {
-  padding-top: 46px;
+  padding-top: 107px;
 }
 .feed-navigation--header .feed-tabs {
   display: grid;
