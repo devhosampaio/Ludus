@@ -1901,6 +1901,21 @@ async function renderProfilePage(currentUser, username) {
       .eq('follower_id', currentUser.id).eq('following_id', profile.id).maybeSingle();
   if (requestId !== renderProfilePage.requestId) return;
   let isFollowing = Boolean(followState.data);
+  const [followingCountResult, followersCountResult, reviewsCountResult, savedListsCountResult] = await Promise.all([
+    supabase.from('follows').select('*', { count: 'exact', head: true }).eq('follower_id', profile.id),
+    supabase.from('follows').select('*', { count: 'exact', head: true }).eq('following_id', profile.id),
+    supabase.from('reviews').select('*', { count: 'exact', head: true }).eq('user_id', profile.id),
+    supabase.from('review_saves').select('*', { count: 'exact', head: true }).eq('user_id', profile.id)
+  ]);
+  if (requestId !== renderProfilePage.requestId) return;
+  [
+    ['seguindo', followingCountResult],
+    ['seguidores', followersCountResult],
+    ['avaliacoes', reviewsCountResult],
+    ['listas', savedListsCountResult]
+  ].forEach(([label, result]) => {
+    if (result.error) console.error('[Ludus] Falha ao carregar contagem de ' + label + ':', result.error);
+  });
   const displayName = profile.username;
   const avatar = profile.avatar_url
     ? '<img src="' + escapeHTML(profile.avatar_url) + '" alt="">'
@@ -1914,6 +1929,12 @@ async function renderProfilePage(currentUser, username) {
     '<div class="profile-page__avatar">' + avatar + '</div>' +
     '<div class="profile-page__identity"><div class="profile-page__heading"><h1>' + escapeHTML(displayName) + '</h1></div>' +
     (profile.id !== currentUser.id ? '<button class="profile-follow' + (isFollowing ? ' is-following' : '') + '" type="button" data-profile-follow>' + (isFollowing ? 'Seguindo' : 'Seguir') + '</button>' : '') +
+    '</div>' +
+    '<div class="profile-page__stats" aria-label="Estatísticas do perfil">' +
+    '<span><strong data-profile-stat="following">' + (followingCountResult.count ?? 0) + '</strong><span>Seguindo</span></span>' +
+    '<span><strong data-profile-stat="followers">' + (followersCountResult.count ?? 0) + '</strong><span>Seguidores</span></span>' +
+    '<span><strong data-profile-stat="reviews">' + (reviewsCountResult.count ?? 0) + '</strong><span>Avaliações</span></span>' +
+    '<span><strong data-profile-stat="lists">' + (savedListsCountResult.count ?? 0) + '</strong><span>Listas</span></span>' +
     '</div></section>';
 
   const followButton = app.querySelector('[data-profile-follow]');
@@ -1931,6 +1952,8 @@ async function renderProfilePage(currentUser, username) {
         return;
       }
       isFollowing = !isFollowing;
+      const followersStat = app.querySelector('[data-profile-stat="followers"]');
+      if (followersStat) followersStat.textContent = String(Math.max(0, Number(followersStat.textContent) + (isFollowing ? 1 : -1)));
       followButton.textContent = isFollowing ? 'Seguindo' : 'Seguir';
       followButton.classList.toggle('is-following', isFollowing);
       followButton.disabled = false;
