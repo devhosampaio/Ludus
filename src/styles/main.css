@@ -194,7 +194,7 @@ img { max-width: 100%; }
   width: 36px;
   height: 36px;
   overflow: hidden;
-  border: 1px solid #ccc;
+  border: 0;
   border-radius: 50%;
 }
 .app-topbar__avatar img {
@@ -261,8 +261,14 @@ img { max-width: 100%; }
   display: grid;
   place-items: center;
   padding: 0;
-  background: #fff;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  box-shadow: none;
   cursor: pointer;
+}
+.app-topbar__avatar:focus-visible {
+  outline: none;
 }
 .app-topbar__avatar:focus-visible,
 .mobile-drawer__item:focus-visible,
