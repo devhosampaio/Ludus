@@ -1097,17 +1097,30 @@ async function renderSignedIn(user, initialFeedMode = 'home') {
       document.body.appendChild(storyModal);
       const canvas = storyModal.querySelector('canvas');
       const context = canvas.getContext('2d');
-      const loadStoryImage = (url) => new Promise((resolve) => {
-        if (!url) return resolve(null);
-        const image = new Image();
-        image.crossOrigin = 'anonymous';
-        image.onload = () => resolve(image);
-        image.onerror = () => resolve(null);
-        image.src = url;
-      });
+      const loadStoryImage = async (url, allowProxy = true) => {
+        if (!url) return null;
+        const load = (source) => new Promise((resolve) => {
+          const image = new Image();
+          image.crossOrigin = 'anonymous';
+          image.onload = () => resolve(image);
+          image.onerror = () => resolve(null);
+          image.src = source;
+        });
+        const directImage = await load(url);
+        if (directImage || !allowProxy) return directImage;
+        try {
+          const parsedUrl = new URL(url, window.location.href);
+          const proxyUrl = 'https://images.weserv.nl/?url=' + encodeURIComponent(parsedUrl.host + parsedUrl.pathname + parsedUrl.search) + '&output=png';
+          return await load(proxyUrl);
+        } catch {
+          return null;
+        }
+      };
+      const coverElement = shareCard?.querySelector('.review-card__cover');
+      const coverUrl = game.cover_url || coverElement?.currentSrc || coverElement?.src || '';
       const [coverImage, avatarImage] = await Promise.all([
-        loadStoryImage(game.cover_url),
-        loadStoryImage(review.profiles?.avatar_url)
+        loadStoryImage(coverUrl),
+        loadStoryImage(review.profiles?.avatar_url, false)
       ]);
       const roundRectPath = (ctx, x, y, width, height, radius) => {
         const r = Math.min(radius, width / 2, height / 2);
@@ -1119,119 +1132,192 @@ async function renderSignedIn(user, initialFeedMode = 'home') {
         ctx.arcTo(x, y, x + width, y, r);
         ctx.closePath();
       };
-      const drawWrappedText = (ctx, text, x, y, maxWidth, lineHeight, maxLines) => {
-        const words = String(text || '').trim().split(/\s+/).filter(Boolean);
+      const drawWrappedText = (ctx, text, centerX, y, maxWidth, lineHeight, maxLines, fontSize) => {
+        const words = String(text || '').trim().split(/\\s+/).filter(Boolean);
+        const lines = [];
         let line = '';
-        let lineCount = 0;
         for (const word of words) {
           const candidate = line ? line + ' ' + word : word;
           if (ctx.measureText(candidate).width > maxWidth && line) {
-            ctx.fillText(line, x, y + lineCount * lineHeight);
-            lineCount += 1;
+            lines.push(line);
             line = word;
-            if (lineCount >= maxLines) break;
+            if (lines.length === maxLines) break;
           } else line = candidate;
         }
-        if (line && lineCount < maxLines) {
-          if (lineCount === maxLines - 1 && words.length) {
-            while (ctx.measureText(line + '…').width > maxWidth && line.length > 1) line = line.slice(0, -1);
-            ctx.fillText(line + (line.length < String(text).trim().length ? '…' : ''), x, y + lineCount * lineHeight);
-          } else ctx.fillText(line, x, y + lineCount * lineHeight);
+        if (line && lines.length < maxLines) lines.push(line);
+        const textWasTruncated = lines.join(' ').length < String(text || '').trim().length;
+        if (textWasTruncated && lines.length) {
+          let last = lines[lines.length - 1];
+          while (ctx.measureText(last + '…').width > maxWidth && last.length > 1) last = last.slice(0, -1);
+          lines[lines.length - 1] = last + '…';
         }
+        ctx.textAlign = 'center';
+        lines.forEach((item, index) => ctx.fillText(item, centerX, y + index * lineHeight));
+        return lines.length * lineHeight;
       };
-      context.fillStyle = '#222831';
+      const drawPill = (ctx, label, centerX, y, fill, textColor) => {
+        ctx.font = '700 19px Arial, sans-serif';
+        const width = ctx.measureText(label).width + 34;
+        const x = centerX - width / 2;
+        ctx.fillStyle = fill;
+        roundRectPath(ctx, x, y - 25, width, 38, 19);
+        ctx.fill();
+        ctx.fillStyle = textColor;
+        ctx.textAlign = 'center';
+        ctx.fillText(label, centerX, y);
+      };
+
+      context.fillStyle = '#11151c';
       context.fillRect(0, 0, 1080, 1920);
-      const backdrop = context.createLinearGradient(0, 0, 1080, 1920);
-      backdrop.addColorStop(0, 'rgba(112,96,171,0.28)');
-      backdrop.addColorStop(0.48, 'rgba(34,40,49,0)');
-      backdrop.addColorStop(1, 'rgba(112,96,171,0.16)');
-      context.fillStyle = backdrop;
-      context.fillRect(0, 0, 1080, 1920);
-      context.fillStyle = '#ffffff';
-      context.font = '700 42px Arial, sans-serif';
-      context.fillText('LUDUS', 84, 112);
-      context.fillStyle = '#9a8bd0';
-      context.beginPath();
-      context.arc(235, 98, 7, 0, Math.PI * 2);
-      context.fill();
-      context.fillStyle = 'rgba(255,255,255,0.65)';
-      context.font = '500 22px Arial, sans-serif';
-      context.fillText('MINHA AVALIAÇÃO', 84, 164);
-      const coverX = 270, coverY = 220, coverW = 540, coverH = 700;
-      context.save();
-      roundRectPath(context, coverX, coverY, coverW, coverH, 20);
-      context.clip();
       if (coverImage) {
-        const scale = Math.max(coverW / coverImage.width, coverH / coverImage.height);
-        const sw = coverW / scale, sh = coverH / scale;
-        context.drawImage(coverImage, (coverImage.width - sw) / 2, (coverImage.height - sh) / 2, sw, sh, coverX, coverY, coverW, coverH);
+        context.save();
+        context.filter = 'blur(48px)';
+        context.globalAlpha = 0.55;
+        context.drawImage(coverImage, -100, -100, 1280, 2120);
+        context.restore();
       } else {
-        const coverGradient = context.createLinearGradient(coverX, coverY, coverX + coverW, coverY + coverH);
-        coverGradient.addColorStop(0, '#7060ab');
-        coverGradient.addColorStop(1, '#3a4554');
-        context.fillStyle = coverGradient;
-        context.fillRect(coverX, coverY, coverW, coverH);
-        context.fillStyle = '#ffffff';
-        context.font = '700 34px Arial, sans-serif';
-        context.textAlign = 'center';
-        context.fillText('CAPA DO JOGO', 540, 570);
-        context.textAlign = 'left';
+        const fallbackBackground = context.createLinearGradient(0, 0, 1080, 1920);
+        fallbackBackground.addColorStop(0, '#514579');
+        fallbackBackground.addColorStop(0.55, '#222831');
+        fallbackBackground.addColorStop(1, '#11151c');
+        context.fillStyle = fallbackBackground;
+        context.fillRect(0, 0, 1080, 1920);
       }
-      context.restore();
-      const gameTitle = game.title || 'Jogo';
-      context.fillStyle = '#ffffff';
-      context.font = '700 52px Arial, sans-serif';
-      drawWrappedText(context, gameTitle, 84, 1030, 912, 62, 2);
-      const rating = Number(review.rating || 0);
-      context.fillStyle = '#d5a64a';
-      context.font = '700 42px Arial, sans-serif';
-      context.fillText('★'.repeat(Math.max(0, Math.min(5, Math.round(rating)))), 84, 1152);
-      context.fillStyle = '#ffffff';
-      context.font = '700 34px Arial, sans-serif';
-      context.fillText(rating.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + ' / 5', 330, 1152);
-      let tagX = 84;
-      context.font = '700 20px Arial, sans-serif';
-      for (const tag of [review.liked_game ? 'FAVORITO' : '', review.status === 'completed' ? 'ZERADO' : ''].filter(Boolean)) {
-        const tagWidth = context.measureText(tag).width + 34;
-        context.fillStyle = 'rgba(112,96,171,0.32)';
-        roundRectPath(context, tagX, 1190, tagWidth, 42, 21);
+      context.fillStyle = 'rgba(13,17,24,0.76)';
+      context.fillRect(0, 0, 1080, 1920);
+      context.fillStyle = 'rgba(255,255,255,0.72)';
+      context.font = '700 22px Arial, sans-serif';
+      context.textAlign = 'left';
+      context.fillText('LUDUS  /  GAME REVIEW', 72, 82);
+      context.strokeStyle = 'rgba(255,255,255,0.35)';
+      context.lineWidth = 2;
+      context.beginPath();
+      context.moveTo(72, 108);
+      context.lineTo(1008, 108);
+      context.stroke();
+      context.fillStyle = 'rgba(255,255,255,0.62)';
+      context.font = '600 18px Arial, sans-serif';
+      context.fillText('EDIÇÃO DA COMUNIDADE', 72, 145);
+      context.textAlign = 'right';
+      context.fillText('Nº ' + String(review.id).slice(0, 6).toUpperCase(), 1008, 145);
+
+      const heroArea = { x: 72, y: 185, width: 936, height: 1040 };
+      let imageRect;
+      if (coverImage) {
+        const scale = Math.min(heroArea.width / coverImage.width, heroArea.height / coverImage.height);
+        const imageWidth = coverImage.width * scale;
+        const imageHeight = coverImage.height * scale;
+        imageRect = {
+          x: (1080 - imageWidth) / 2,
+          y: heroArea.y + (heroArea.height - imageHeight) / 2,
+          width: imageWidth,
+          height: imageHeight
+        };
+        context.save();
+        roundRectPath(context, imageRect.x, imageRect.y, imageRect.width, imageRect.height, 8);
+        context.clip();
+        context.drawImage(coverImage, imageRect.x, imageRect.y, imageRect.width, imageRect.height);
+        const imageShade = context.createLinearGradient(0, imageRect.y + imageRect.height * 0.48, 0, imageRect.y + imageRect.height);
+        imageShade.addColorStop(0, 'rgba(0,0,0,0)');
+        imageShade.addColorStop(0.45, 'rgba(0,0,0,0.24)');
+        imageShade.addColorStop(1, 'rgba(0,0,0,0.88)');
+        context.fillStyle = imageShade;
+        context.fillRect(imageRect.x, imageRect.y, imageRect.width, imageRect.height);
+        context.restore();
+      } else {
+        imageRect = { x: 110, y: 285, width: 860, height: 820 };
+        const placeholder = context.createLinearGradient(imageRect.x, imageRect.y, imageRect.x + imageRect.width, imageRect.y + imageRect.height);
+        placeholder.addColorStop(0, '#514579');
+        placeholder.addColorStop(1, '#29313d');
+        context.fillStyle = placeholder;
+        roundRectPath(context, imageRect.x, imageRect.y, imageRect.width, imageRect.height, 8);
         context.fill();
-        context.fillStyle = '#d8d0f5';
-        context.fillText(tag, tagX + 17, 1218);
-        tagX += tagWidth + 12;
+        context.fillStyle = '#ffffff';
+        context.font = '700 30px Arial, sans-serif';
+        context.textAlign = 'center';
+        context.fillText('CAPA INDISPONÍVEL', 540, 690);
       }
-      if (review.body) {
-        context.fillStyle = 'rgba(255,255,255,0.88)';
-        context.font = '400 30px Arial, sans-serif';
-        drawWrappedText(context, '“' + review.body + '”', 84, 1320, 912, 48, 5);
+
+      const gameTitle = game.title || 'Jogo';
+      const titleY = imageRect.y + imageRect.height - 190;
+      context.fillStyle = '#ffffff';
+      context.font = '800 54px Arial, sans-serif';
+      const titleHeight = drawWrappedText(context, gameTitle, 540, titleY, 820, 62, 2, 54);
+      const rating = Math.max(0, Math.min(5, Number(review.rating) || 0));
+      const ratingY = titleY + titleHeight + 48;
+      context.fillStyle = '#ffffff';
+      context.font = '800 54px Arial, sans-serif';
+      context.textAlign = 'center';
+      context.fillText(rating.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }), 540, ratingY);
+      context.fillStyle = '#e2b85d';
+      context.font = '400 31px Arial, sans-serif';
+      context.fillText('★'.repeat(Math.max(0, Math.min(5, Math.round(rating)))), 540, ratingY + 43);
+      const statusTags = [
+        review.liked_game ? '♥  FAVORITO' : '',
+        review.status === 'completed' ? '🏆  ZERADO' : ''
+      ].filter(Boolean);
+      if (statusTags.length) {
+        const tagY = ratingY + 91;
+        const totalWidth = statusTags.length * 170 + (statusTags.length - 1) * 14;
+        let tagCenter = 540 - totalWidth / 2 + 85;
+        statusTags.forEach((tag) => {
+          drawPill(context, tag, tagCenter, tagY, 'rgba(112,96,171,0.88)', '#ffffff');
+          tagCenter += 184;
+        });
       }
-      context.fillStyle = 'rgba(255,255,255,0.14)';
-      context.fillRect(84, 1630, 912, 1);
+
+      const reviewText = String(review.body || '').trim();
+      const reviewStartY = 1300;
+      context.fillStyle = '#b7a9e8';
+      context.font = '700 18px Arial, sans-serif';
+      context.textAlign = 'left';
+      context.fillText('A CRÍTICA', 72, reviewStartY);
+      context.strokeStyle = 'rgba(255,255,255,0.3)';
+      context.beginPath();
+      context.moveTo(72, reviewStartY + 18);
+      context.lineTo(1008, reviewStartY + 18);
+      context.stroke();
+      context.fillStyle = 'rgba(255,255,255,0.94)';
+      context.font = '400 29px Arial, sans-serif';
+      const reviewHeight = reviewText
+        ? drawWrappedText(context, '“' + reviewText + '”', 540, reviewStartY + 78, 900, 43, 5, 29)
+        : 0;
+      const signatureY = Math.min(1665, Math.max(1535, reviewStartY + 92 + reviewHeight));
+      context.strokeStyle = 'rgba(255,255,255,0.28)';
+      context.beginPath();
+      context.moveTo(72, signatureY - 48);
+      context.lineTo(1008, signatureY - 48);
+      context.stroke();
       if (avatarImage) {
         context.save();
         context.beginPath();
-        context.arc(130, 1710, 38, 0, Math.PI * 2);
+        context.arc(540, signatureY + 4, 37, 0, Math.PI * 2);
         context.clip();
-        context.drawImage(avatarImage, 92, 1672, 76, 76);
+        context.drawImage(avatarImage, 503, signatureY - 33, 74, 74);
         context.restore();
       } else {
         context.fillStyle = '#7060ab';
         context.beginPath();
-        context.arc(130, 1710, 38, 0, Math.PI * 2);
+        context.arc(540, signatureY + 4, 37, 0, Math.PI * 2);
         context.fill();
       }
       context.fillStyle = '#ffffff';
-      context.font = '700 30px Arial, sans-serif';
-      context.fillText(review.profiles?.display_name || review.profiles?.username || 'jogador', 194, 1702);
-      context.fillStyle = 'rgba(255,255,255,0.62)';
-      context.font = '400 24px Arial, sans-serif';
-      context.fillText('@' + (review.profiles?.username || 'jogador'), 194, 1740);
-      context.fillStyle = '#9a8bd0';
-      context.font = '700 24px Arial, sans-serif';
-      context.fillText('CADA JOGO TEM UMA HISTÓRIA.', 84, 1840);
-      context.fillStyle = 'rgba(255,255,255,0.58)';
-      context.font = '400 20px Arial, sans-serif';
-      context.fillText(window.location.host + window.location.pathname, 84, 1880);
+      context.font = '700 25px Arial, sans-serif';
+      context.textAlign = 'center';
+      context.fillText('@' + (review.profiles?.username || 'jogador'), 540, signatureY + 72);
+
+      context.strokeStyle = 'rgba(255,255,255,0.28)';
+      context.beginPath();
+      context.moveTo(72, 1800);
+      context.lineTo(1008, 1800);
+      context.stroke();
+      context.fillStyle = '#ffffff';
+      context.font = '800 32px Arial, sans-serif';
+      context.textAlign = 'center';
+      context.fillText('LUDUS', 540, 1850);
+      context.fillStyle = 'rgba(255,255,255,0.66)';
+      context.font = '400 19px Arial, sans-serif';
+      context.fillText(window.location.host + window.location.pathname, 540, 1884);
       const closeStoryModal = () => storyModal.remove();
       storyModal.addEventListener('click', (modalEvent) => {
         if (modalEvent.target === storyModal || modalEvent.target.closest('[data-story-close]')) closeStoryModal();
