@@ -107,8 +107,8 @@ img { max-width: 100%; }
 }
 .profile-page__banner-image, .profile-page__banner-empty { width: 100%; height: 100%; object-fit: cover; }
 .profile-page__banner-image { margin-top: 0; }
-.profile-page__identity { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin-top: 12px; }
-.profile-page__identity h1 { font-size: 32px; }
+.profile-page__identity { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 16px; margin-top: 16px; }
+.profile-page__identity h1 { margin: 0; font-size: 32px; line-height: 1.1; }
 .profile-page__avatar { display: grid; place-items: center; width: 80px; height: 80px; overflow: hidden; border: 1px solid #3a4554; border-radius: 50%; }
 .profile-page__avatar img { width: 100%; height: 100%; object-fit: cover; }
 .profile-page__bio { margin-top: 16px; white-space: pre-wrap; }
@@ -988,9 +988,4 @@ img { max-width: 100%; }
   display: none;
 }
 
-/* Centraliza a foto de perfil na borda inferior da capa. */
-.feed-shell--profile .profile-page__identity {
-  position: relative;
-  z-index: 1;
-  margin-top: -36px;
-}
+
