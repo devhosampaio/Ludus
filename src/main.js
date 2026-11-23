@@ -319,7 +319,7 @@ function sharedFeedHeaderMarkup() {
       <div class="container-fluid">
         <div class="row app-topbar__row">
           <div class="col-xs-4 app-topbar__left">
-            <span class="app-topbar__avatar" data-header-avatar role="button" tabindex="0" aria-label="Abrir menu" aria-haspopup="dialog" aria-expanded="false">${profilePlaceholderMarkup()}</span>
+            <button class="app-topbar__avatar app-topbar__menu-button" type="button" data-header-avatar aria-label="Abrir menu" aria-haspopup="dialog" aria-expanded="false"><i class="fa-solid fa-bars" aria-hidden="true"></i></button>
           </div>
           <div class="col-xs-4 app-topbar__center">
             <a class="app-topbar__brand" href="#inicio" aria-label="Ludus — início">Ludus</a>
@@ -365,9 +365,8 @@ function setupMobileDrawer(user, profile = null) {
   const followingCount = drawer.querySelector('[data-following-count]');
   const followersCount = drawer.querySelector('[data-followers-count]');
   const fallbackUsername = user.user_metadata?.username || user.email?.split('@')[0] || 'jogador';
-  if (profile?.avatar_url) {
-    trigger.innerHTML = '<img src="' + escapeHTML(profile.avatar_url) + '" alt="Foto do perfil">';
-    if (drawerAvatar) drawerAvatar.innerHTML = '<img src="' + escapeHTML(profile.avatar_url) + '" alt="Foto do perfil">';
+  if (profile?.avatar_url && drawerAvatar) {
+    drawerAvatar.innerHTML = '<img src="' + escapeHTML(profile.avatar_url) + '" alt="Foto do perfil">';
   }
   if (drawerUsername) drawerUsername.textContent = profile?.username || fallbackUsername;
 
