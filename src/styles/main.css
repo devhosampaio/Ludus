@@ -166,9 +166,11 @@ img { max-width: 100%; }
 
 /* Cabeçalho principal mobile first. */
 .app-topbar {
-  position: sticky;
+  position: fixed;
   top: 0;
-  z-index: 100;
+  left: 0;
+  right: 0;
+  z-index: 102;
   padding: 8px 0;
   background: #fff;
   border-bottom: 1px solid #ddd;
