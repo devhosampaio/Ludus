@@ -1886,7 +1886,7 @@ async function renderProfilePage(currentUser, username) {
   setupSharedSideMenu(currentUser);
 
   const { data: profile, error: profileError } = await supabase.from('profiles')
-    .select('id, username, display_name, avatar_url, banner_url')
+    .select('id, username, display_name, bio, avatar_url, banner_url')
     .eq('username', username).maybeSingle();
   if (requestId !== renderProfilePage.requestId) return;
   if (profileError || !profile) {
@@ -1937,7 +1937,9 @@ async function renderProfilePage(currentUser, username) {
     '<span><strong data-profile-stat="followers">' + (followersCountResult.count ?? 0) + '</strong><span>Seguidores</span></span>' +
     '<span><strong data-profile-stat="reviews">' + (reviewsCountResult.count ?? 0) + '</strong><span>Avaliações</span></span>' +
     '<span><strong data-profile-stat="lists">' + (savedListsCountResult.count ?? 0) + '</strong><span>Listas</span></span>' +
-    '</div></section>';
+    '</div>' +
+    (profile.bio?.trim() ? '<div class="profile-page__bio">' + escapeHTML(profile.bio.trim()) + '</div>' : '') +
+    '</section>';
 
   const editButton = app.querySelector('[data-profile-edit]');
   editButton?.addEventListener('click', () => openProfileEditor(currentUser, profile));
