@@ -598,7 +598,7 @@ async function renderSignedIn(user) {
     activeFeedMode = mode;
     const isHome = mode === 'home';
     newcomersSection.hidden = !isHome;
-    feedContent.hidden = false;
+    feedContent.hidden = true;
     feedList.classList.toggle('is-popular-feed', mode === 'popular');
 
     let visibleReviews = [...(reviews || [])];
