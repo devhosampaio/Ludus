@@ -378,11 +378,7 @@ async function renderSignedIn(user) {
       ${sharedFeedHeaderMarkup()}
         <div class="feed-main__container">
         <aside class="feed-ad feed-ad--left" aria-label="Espaço reservado para publicidade"></aside>
-        <section class="feed-welcome" aria-label="Boas-vindas">
-          <h1>Bem-vindo de volta, <strong data-welcome-name></strong>. Aqui está o que andam jogando...</h1>
-          <p>A página inicial vai se adaptando conforme você segue novos jogadores no Ludus.</p>
-        </section>
-        
+
 
         <section class="newcomers-section" aria-hidden="true" hidden>
           <div class="newcomers-section__heading"><button type="button" data-newcomers-more hidden></button></div>
@@ -408,14 +404,12 @@ async function renderSignedIn(user) {
     .select('username, display_name, avatar_url, banner_url, bio')
     .eq('id', user.id).maybeSingle();
 
-  const welcomeName = app.querySelector('[data-welcome-name]');
   const headerAvatar = app.querySelector('[data-header-avatar]');
   if (headerAvatar && profileResult.data?.avatar_url) {
     headerAvatar.innerHTML = '<img src="' + escapeHTML(profileResult.data.avatar_url) + '" alt="Foto do perfil">';
   }
   if (profileResult.data) {
     if (username) username.textContent = profileResult.data.username || fallbackName;
-    if (welcomeName) welcomeName.textContent = profileResult.data.display_name || profileResult.data.username || fallbackName;
     const sideUsername = app.querySelector('[data-side-username]');
     const sideAvatar = app.querySelector('[data-side-avatar]');
     if (sideUsername) sideUsername.textContent = profileResult.data.display_name || profileResult.data.username || fallbackName;
@@ -425,7 +419,6 @@ async function renderSignedIn(user) {
     }
   } else {
     if (username) username.textContent = '';
-    if (welcomeName) welcomeName.textContent = fallbackName;
   }
 
   const accountDetails = app.querySelector('[data-account-details]');
@@ -596,7 +589,6 @@ async function renderSignedIn(user) {
     if (profileButton?.dataset.profileUsername) navigateToProfile(user, profileButton.dataset.profileUsername);
   });
 
-  const feedWelcome = app.querySelector('.feed-welcome');
   const feedContent = app.querySelector('.feed-content');
   let activeFeedMode = 'home';
   const renderFeed = (mode = 'home') => {
@@ -605,7 +597,6 @@ async function renderSignedIn(user) {
     feedList.setAttribute('aria-busy', 'false');
     activeFeedMode = mode;
     const isHome = mode === 'home';
-    feedWelcome.hidden = !isHome;
     newcomersSection.hidden = !isHome;
     feedContent.hidden = false;
     feedList.classList.toggle('is-popular-feed', mode === 'popular');
