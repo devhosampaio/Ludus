@@ -2001,10 +2001,11 @@ async function renderProfilePage(currentUser, username) {
   const isOwnProfile = profile.id === currentUser.id;
   const renderFavoriteGames = () => {
     if (!favoritesList) return;
-    const byPosition = new Map(favoriteGames.map((item) => [item.position, item]));
-    const slots = isOwnProfile ? [1, 2, 3, 4, 5].map((position) => byPosition.get(position) || { position, empty: true }) : favoriteGames;
+    const slots = isOwnProfile && favoriteGames.length < 5
+      ? [...favoriteGames, { empty: true }]
+      : favoriteGames;
     favoritesList.innerHTML = slots.length ? slots.map((item) => item.empty
-      ? '<button class="profile-page__favorite-slot" type="button" data-favorite-add>+ Adicionar jogo</button>'
+      ? '<button class="profile-page__favorite-slot" type="button" data-favorite-add aria-label="Adicionar jogo favorito"><i class="fa-solid fa-plus" aria-hidden="true"></i></button>'
       : '<article class="profile-page__favorite" data-favorite-position="' + item.position + '">' +
         (item.game.cover_url ? '<img src="' + escapeHTML(item.game.cover_url) + '" alt="Capa de ' + escapeHTML(item.game.title) + '" loading="lazy">' : '<span class="profile-page__favorite-empty">Sem capa</span>') +
         '<span>' + escapeHTML(item.game.title) + '</span>' +
@@ -2018,7 +2019,7 @@ async function renderProfilePage(currentUser, username) {
           if (!position) return false;
           const { error } = await supabase.from('profile_favorite_games').insert({ user_id: currentUser.id, game_id: game.id, position });
           if (error) { console.error('[Ludus] Falha ao salvar jogo favorito:', error); return false; }
-          favoriteGames.push({ position, game }); favoriteGames.sort((a, b) => a.position - b.position);
+          favoriteGames.push({ position, game });
           renderFavoriteGames(); return true;
         }, usedIds);
       });
