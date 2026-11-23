@@ -523,9 +523,9 @@ async function renderSignedIn(user, initialFeedMode = 'home') {
     .select('username, display_name, avatar_url, banner_url, bio')
     .eq('id', user.id).maybeSingle();
 
-  const headerAvatar = app.querySelector('[data-header-avatar]');
-  if (headerAvatar && profileResult.data?.avatar_url) {
-    headerAvatar.innerHTML = '<img src="' + escapeHTML(profileResult.data.avatar_url) + '" alt="Foto do perfil">';
+  const drawerAvatar = app.querySelector('[data-drawer-avatar]');
+  if (drawerAvatar && profileResult.data?.avatar_url) {
+    drawerAvatar.innerHTML = '<img src="' + escapeHTML(profileResult.data.avatar_url) + '" alt="Foto do perfil">';
   }
   setupMobileDrawer(user, profileResult.data);
   if (profileResult.data) {
