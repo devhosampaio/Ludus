@@ -986,3 +986,10 @@ img { max-width: 100%; }
 .feed-shell--profile .feed-navigation--header {
   display: none;
 }
+
+/* Centraliza a foto de perfil na borda inferior da capa. */
+.feed-shell--profile .profile-page__identity {
+  position: relative;
+  z-index: 1;
+  margin-top: -36px;
+}
