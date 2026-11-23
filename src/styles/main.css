@@ -878,3 +878,17 @@ img { max-width: 100%; }
     padding-top: 95px;
   }
 }
+
+
+/* Oculta o cabeçalho e as abas ao rolar para baixo; revela ao rolar para cima. */
+.app-topbar,
+.feed-navigation--header {
+  transition: transform 220ms ease;
+  will-change: transform;
+}
+.app-topbar.is-scroll-hidden { transform: translateY(-100%); }
+.feed-navigation--header.is-scroll-hidden { transform: translateY(calc(-100% - 60px)); }
+@media (prefers-reduced-motion: reduce) {
+  .app-topbar,
+  .feed-navigation--header { transition-duration: 1ms; }
+}
