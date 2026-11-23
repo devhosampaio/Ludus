@@ -70,7 +70,7 @@ img { max-width: 100%; }
 .feed-tabs__button { padding: 8px 12px; }
 .feed-tabs__create { min-width: 36px; min-height: 34px; }
 .feed-tabs__create svg { width: 14px; height: 14px; }
-.feed-main__container { min-width: 0; }
+.feed-main__container { width: 100vw; max-width: none; min-width: 0; margin-left: calc(326px - 50vw); margin-right: 0; }
 .feed-welcome { margin: 18px 0 28px; padding: 20px; border: 1px solid #3a4554; }
 .feed-welcome h1 { margin-top: 0; font-size: 24px; }
 .feed-content { width: 100%; }
@@ -93,9 +93,9 @@ img { max-width: 100%; }
 .notifications__item-content time, .notifications__empty { color: #fff; font-size: 12px; }
 
 .profile-page, .search-page { width: 100%; }
-.profile-page__content--full { width: 100vw; max-width: none; margin-left: calc(326px - 50vw); margin-right: 0; padding: 0; }
+.profile-page__content--full { width: 100%; max-width: none; margin: 0; padding: 0; }
 .profile-page__topbar { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; padding: 16px; border-bottom: 1px solid #3a4554; }
-.profile-page__content { width: min(100% - 30px, 900px); margin: 0 auto; padding: 24px 0; }
+.profile-page__content { width: 100%; max-width: none; margin: 0; padding: 24px 0; }
 .profile-page__hero { margin-left: 0; margin-right: 0; padding: 0; border: 0; box-sizing: border-box; }
 .profile-editor { padding: 20px; border: 1px solid #3a4554; }
 .profile-page__banner {
@@ -125,7 +125,7 @@ img { max-width: 100%; }
 .search-page__form { display: flex; align-items: center; gap: 8px; }
 .search-page__form svg { width: 18px; height: 18px; flex: 0 0 18px; }
 .search-page__input { flex: 1; min-width: 0; }
-.search-page__results { max-width: 760px; margin: 0 auto; padding: 20px 0; }
+.search-page__results { width: 100%; max-width: none; margin: 0; padding: 20px 0; }
 .search-results-group { margin-bottom: 16px; }
 .search-result { display: flex; align-items: center; gap: 12px; width: 100%; padding: 10px; text-align: left; border-bottom: 1px solid #3a4554; }
 .search-result__avatar { display: grid; place-items: center; flex: 0 0 42px; width: 42px; height: 42px; overflow: hidden; border-radius: 50%; }
@@ -141,7 +141,8 @@ img { max-width: 100%; }
 
 @media (max-width: 767px) {
   .feed-shell { display: block; padding: 12px; }
-  .profile-page__content--full { width: calc(100% + 24px); margin-left: -12px; }
+  .feed-main__container { width: calc(100% + 24px); margin-left: -12px; }
+  .profile-page__content--full { width: 100%; margin-left: 0; }
   .profile-page__banner { width: 100%; margin-left: 0; }
   .feed-main > .feed-main__container { padding-top: 65px; }
   .side-menu--left { display: none; }
@@ -154,7 +155,7 @@ img { max-width: 100%; }
   .profile-editor__uploads { grid-template-columns: 1fr; }
 }
 
-.review-page, .game-page { width: min(100% - 30px, 900px); margin: 0 auto; padding: 24px 0; }
+.review-page, .game-page { width: 100%; max-width: none; margin: 0; padding: 24px 0; }
 .review-page__content, .game-page__content { min-width: 0; }
 .review-page__header, .game-page__header { margin-bottom: 20px; }
 .review-page__body, .game-page__details { padding: 16px 0; }
