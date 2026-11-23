@@ -523,6 +523,7 @@ img { max-width: 100%; }
 .review-card__author-name {
   display: inline-flex;
   align-items: center;
+  font-weight: 700;
   line-height: 1;
 }
 .review-card__author-avatar {
