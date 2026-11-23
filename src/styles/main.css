@@ -829,3 +829,14 @@ img { max-width: 100%; }
 .review-card__actions {
   border-bottom: 0;
 }
+
+/* Mantém as ações das avaliações sem fundo ao interagir */
+.review-card__social-actions button,
+.review-card__social-actions button:hover,
+.review-card__social-actions button:focus,
+.review-card__social-actions button:active,
+.review-card__social-actions button:focus-visible {
+  background: transparent !important;
+  box-shadow: none !important;
+  outline: 0;
+}
