@@ -348,15 +348,30 @@ function setupMobileDrawer(user, profile = null) {
   trigger.dataset.drawerBound = 'true';
   if (profile?.avatar_url) trigger.innerHTML = '<img src="' + escapeHTML(profile.avatar_url) + '" alt="Foto do perfil">';
 
+  let closeTimer = null;
   const close = () => {
-    drawer.hidden = true;
-    backdrop.hidden = true;
+    if (drawer.hidden || drawer.classList.contains('is-closing')) return;
+    drawer.classList.remove('is-open');
+    backdrop.classList.remove('is-open');
+    drawer.classList.add('is-closing');
     trigger.setAttribute('aria-expanded', 'false');
+    window.clearTimeout(closeTimer);
+    closeTimer = window.setTimeout(() => {
+      drawer.hidden = true;
+      backdrop.hidden = true;
+      drawer.classList.remove('is-closing');
+    }, 240);
   };
   const open = () => {
+    window.clearTimeout(closeTimer);
+    drawer.classList.remove('is-closing');
     drawer.hidden = false;
     backdrop.hidden = false;
     trigger.setAttribute('aria-expanded', 'true');
+    window.requestAnimationFrame(() => {
+      drawer.classList.add('is-open');
+      backdrop.classList.add('is-open');
+    });
   };
 
   trigger.addEventListener('click', () => drawer.hidden ? open() : close());
