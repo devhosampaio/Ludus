@@ -810,3 +810,22 @@ img { max-width: 100%; }
   max-width: none;
   box-sizing: border-box;
 }
+
+
+/* Borda inferior das avaliações em largura total da tela */
+.review-card {
+  position: relative;
+}
+.review-card::after {
+  position: absolute;
+  right: auto;
+  bottom: 0;
+  left: 50%;
+  width: 100vw;
+  border-bottom: 1px solid #3a4554;
+  content: "";
+  transform: translateX(-50%);
+}
+.review-card__actions {
+  border-bottom: 0;
+}
