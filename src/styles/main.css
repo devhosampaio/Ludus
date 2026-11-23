@@ -333,7 +333,7 @@ img { max-width: 100%; }
   color: #222;
   text-align: left;
   justify-content: flex-start;
-  font-size: 15px;
+  font-size: 18px;
 }
 .mobile-drawer__item i,
 .mobile-drawer__notifications .notifications__trigger > svg {
