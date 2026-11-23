@@ -1239,12 +1239,12 @@ async function renderSignedIn(user, initialFeedMode = 'home') {
       }
 
       const gameTitle = game.title || 'Jogo';
-      const titleY = imageRect.y + imageRect.height - 190;
+      const titleY = imageRect.y + imageRect.height - 300;
       context.fillStyle = '#ffffff';
       context.font = '800 54px Arial, sans-serif';
       const titleHeight = drawWrappedText(context, gameTitle, 540, titleY, 820, 62, 2, 54);
       const rating = Math.max(0, Math.min(5, Number(review.rating) || 0));
-      const ratingY = titleY + titleHeight + 48;
+      const ratingY = titleY + titleHeight + 30;
       context.fillStyle = '#ffffff';
       context.font = '800 54px Arial, sans-serif';
       context.textAlign = 'center';
@@ -1257,7 +1257,7 @@ async function renderSignedIn(user, initialFeedMode = 'home') {
         review.status === 'completed' ? '🏆  ZERADO' : ''
       ].filter(Boolean);
       if (statusTags.length) {
-        const tagY = ratingY + 91;
+        const tagY = ratingY + 75;
         const totalWidth = statusTags.length * 170 + (statusTags.length - 1) * 14;
         let tagCenter = 540 - totalWidth / 2 + 85;
         statusTags.forEach((tag) => {
