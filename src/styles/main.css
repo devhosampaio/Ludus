@@ -480,9 +480,26 @@ img { max-width: 100%; }
   gap: 8px;
   padding: 0;
   border: 0;
+  outline: 0;
   background: transparent;
+  box-shadow: none;
   color: inherit;
+  line-height: 1;
   text-align: left;
+}
+.review-card__author:hover,
+.review-card__author:focus,
+.review-card__author:active,
+.review-card__author:focus-visible {
+  border: 0;
+  outline: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.review-card__author-name {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
 }
 .review-card__author-avatar {
   display: inline-flex;
@@ -502,8 +519,33 @@ img { max-width: 100%; }
   align-items: start;
 }
 .review-card__cover-column { min-width: 0; }
-.review-card__cover-wrap { display: block; padding: 0; border: 0; background: transparent; }
-.review-card__cover { display: block; width: 96px; max-height: 140px; border: 0; object-fit: cover; }
+.review-card__cover-wrap {
+  display: block;
+  padding: 0;
+  border: 0 !important;
+  outline: 0 !important;
+  background: transparent;
+  box-shadow: none !important;
+}
+.review-card__cover-wrap:hover,
+.review-card__cover-wrap:focus,
+.review-card__cover-wrap:active,
+.review-card__cover-wrap:focus-visible {
+  border: 0 !important;
+  outline: 0 !important;
+  background: transparent;
+  box-shadow: none !important;
+}
+.review-card__cover,
+.review-card__cover-wrap img {
+  display: block;
+  width: 96px;
+  max-height: 140px;
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  object-fit: cover;
+}
 .review-card__body { min-width: 0; }
 .review-card__game-heading { margin: 0 0 8px; font-size: 18px; }
 .review-card__details {
