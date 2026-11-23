@@ -109,7 +109,9 @@ img { max-width: 100%; }
 .profile-page__banner-image { margin-top: 0; }
 .profile-page__hero { position: relative; }
 .profile-page__identity { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 16px; min-height: 48px; margin-top: 0; padding-left: 112px; }
-.profile-page__identity h1 { margin: 0; font-size: 32px; line-height: 1.1; }
+.profile-page__heading { flex: 1 1 auto; min-width: 0; }
+.profile-page__identity h1 { margin: 0; font-size: 24px; line-height: 1.1; }
+.profile-page__identity .profile-edit-button { margin-left: auto; }
 .profile-page__stats { display: flex; flex-wrap: wrap; align-items: center; gap: 18px; margin-top: 14px; }
 .profile-page__stats > span { display: inline-flex; align-items: baseline; gap: 4px; }
 .profile-page__stats strong { color: #fff; font-weight: 700; }
