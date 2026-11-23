@@ -329,6 +329,14 @@ function sharedFeedHeaderMarkup() {
     </nav>
     <div class="mobile-drawer-backdrop" data-drawer-close hidden></div>
     <aside class="mobile-drawer" data-mobile-drawer role="dialog" aria-modal="true" aria-label="Menu principal" hidden>
+      <header class="mobile-drawer__profile">
+        <span class="mobile-drawer__avatar" data-drawer-avatar>${profilePlaceholderMarkup()}</span>
+        <strong class="mobile-drawer__username" data-drawer-username></strong>
+        <div class="mobile-drawer__stats" aria-label="Estatísticas do perfil">
+          <span><strong data-following-count>0</strong><span>Seguindo</span></span>
+          <span><strong data-followers-count>0</strong><span>Seguidores</span></span>
+        </div>
+      </header>
       <nav class="mobile-drawer__navigation" aria-label="Navegação principal">
         <button class="mobile-drawer__item" type="button" data-drawer-home><i class="fa-regular fa-compass" aria-hidden="true"></i><span>Página Inicial</span></button>
         <button class="mobile-drawer__item" type="button" data-drawer-search><i class="fa-regular fa-map" aria-hidden="true"></i><span>Pesquisar</span></button>
@@ -344,9 +352,20 @@ function setupMobileDrawer(user, profile = null) {
   const trigger = app.querySelector('[data-header-avatar]');
   const drawer = app.querySelector('[data-mobile-drawer]');
   const backdrop = app.querySelector('.mobile-drawer-backdrop');
-  if (!trigger || !drawer || trigger.dataset.drawerBound) return;
+  if (!trigger || !drawer) return;
+  const drawerAvatar = drawer.querySelector('[data-drawer-avatar]');
+  const drawerUsername = drawer.querySelector('[data-drawer-username]');
+  const followingCount = drawer.querySelector('[data-following-count]');
+  const followersCount = drawer.querySelector('[data-followers-count]');
+  const fallbackUsername = user.user_metadata?.username || user.email?.split('@')[0] || 'jogador';
+  if (profile?.avatar_url) {
+    trigger.innerHTML = '<img src="' + escapeHTML(profile.avatar_url) + '" alt="Foto do perfil">';
+    if (drawerAvatar) drawerAvatar.innerHTML = '<img src="' + escapeHTML(profile.avatar_url) + '" alt="Foto do perfil">';
+  }
+  if (drawerUsername) drawerUsername.textContent = profile?.username || fallbackUsername;
+
+  if (trigger.dataset.drawerBound) return;
   trigger.dataset.drawerBound = 'true';
-  if (profile?.avatar_url) trigger.innerHTML = '<img src="' + escapeHTML(profile.avatar_url) + '" alt="Foto do perfil">';
 
   let closeTimer = null;
   const close = () => {
@@ -400,6 +419,16 @@ function setupMobileDrawer(user, profile = null) {
   drawer.querySelector('[data-drawer-settings]')?.addEventListener('click', () => {
     close();
     if (profile) openProfileEditor(user, profile);
+  });
+
+  Promise.all([
+    supabase.from('follows').select('*', { count: 'exact', head: true }).eq('follower_id', user.id),
+    supabase.from('follows').select('*', { count: 'exact', head: true }).eq('following_id', user.id)
+  ]).then(([followingResult, followersResult]) => {
+    if (followingCount) followingCount.textContent = String(followingResult.count ?? 0);
+    if (followersCount) followersCount.textContent = String(followersResult.count ?? 0);
+    if (followingResult.error) console.error('[Ludus] Falha ao carregar total de seguindo:', followingResult.error);
+    if (followersResult.error) console.error('[Ludus] Falha ao carregar total de seguidores:', followersResult.error);
   });
 }
 
