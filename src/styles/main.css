@@ -478,14 +478,14 @@ img { max-width: 100%; }
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 0;
   border: 0;
   outline: 0;
-  background: transparent;
+  background: none;
   box-shadow: none;
   color: inherit;
   line-height: 1;
   text-align: left;
+  text-decoration: none;
 }
 .review-card__author:hover,
 .review-card__author:focus,
@@ -493,8 +493,10 @@ img { max-width: 100%; }
 .review-card__author:focus-visible {
   border: 0;
   outline: 0;
-  background: transparent;
+  background: none;
   box-shadow: none;
+  color: inherit;
+  text-decoration: none;
 }
 .review-card__author-name {
   display: inline-flex;
@@ -522,28 +524,30 @@ img { max-width: 100%; }
 .review-card__cover-wrap {
   display: block;
   padding: 0;
-  border: 0 !important;
-  outline: 0 !important;
-  background: transparent;
-  box-shadow: none !important;
+  border: 0;
+  outline: 0;
+  background: none;
+  box-shadow: none;
+  text-decoration: none;
 }
 .review-card__cover-wrap:hover,
 .review-card__cover-wrap:focus,
 .review-card__cover-wrap:active,
 .review-card__cover-wrap:focus-visible {
-  border: 0 !important;
-  outline: 0 !important;
-  background: transparent;
-  box-shadow: none !important;
+  border: 0;
+  outline: 0;
+  background: none;
+  box-shadow: none;
+  text-decoration: none;
 }
 .review-card__cover,
 .review-card__cover-wrap img {
   display: block;
   width: 96px;
   max-height: 140px;
-  border: 0 !important;
-  outline: 0 !important;
-  box-shadow: none !important;
+  border: 0;
+  outline: 0;
+  box-shadow: none;
   object-fit: cover;
 }
 .review-card__body { min-width: 0; }
