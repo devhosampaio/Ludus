@@ -850,3 +850,14 @@ img { max-width: 100%; }
 .review-card__actions {
   padding-bottom: 14px;
 }
+
+
+/* Estados visuais das ações sociais das avaliações */
+.review-card__like.is-liked,
+.review-card__like.is-liked i {
+  color: #e53945 !important;
+}
+.review-card__bookmark.is-saved,
+.review-card__bookmark.is-saved i {
+  color: #2eaf65 !important;
+}
