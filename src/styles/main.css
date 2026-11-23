@@ -392,6 +392,13 @@ img { max-width: 100%; }
   border-color: #3a4554;
   font-weight: 700;
 }
+.mobile-drawer__review:disabled,
+.mobile-drawer__review.disabled {
+  background-color: #3a4554;
+  border-color: #3a4554;
+  color: #fff;
+  opacity: 1;
+}
 .mobile-drawer__navigation {
   display: flex;
   flex-direction: column;
