@@ -101,7 +101,7 @@ img { max-width: 100%; }
 .profile-page__banner {
   position: relative;
   width: calc(100% + 24px);
-  height: 140px;
+  height: 180px;
   margin-left: -12px;
   overflow: hidden;
 }
