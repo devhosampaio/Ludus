@@ -2125,8 +2125,8 @@ async function renderProfilePage(currentUser, username) {
     '<span><strong data-profile-stat="reviews">' + (reviewsCountResult.count ?? 0) + '</strong><span>Avaliações</span></span>' +
     '<span><strong data-profile-stat="lists">' + (savedListsCountResult.count ?? 0) + '</strong><span>Listas</span></span>' +
     '</div>' +
-    '<section class="profile-page__favorites" aria-label="Jogos favoritos"><div class="profile-page__favorites-heading"><h2>Jogos favoritos</h2></div><div class="profile-page__favorites-list" data-profile-favorites></div></section>' +
-    '<section class="profile-page__lists" aria-label="Listas criadas"><div class="profile-page__lists-heading"><h2>Listas criadas</h2></div><div class="profile-page__lists-grid" data-profile-created-lists></div></section>' +
+    '<section class="profile-page__favorites" aria-label="Jogos favoritos"><div class="profile-page__favorites-heading"><h2>Jogos favoritos</h2><div class="profile-page__favorites-actions" data-favorites-actions></div></div><div class="profile-page__favorites-list" data-profile-favorites></div></section>' +
+    '<section class="profile-page__lists" aria-label="Listas criadas"><div class="profile-page__lists-heading"><h2>Listas criadas</h2><div class="profile-page__lists-heading-actions" data-lists-heading-actions></div></div><div class="profile-page__lists-grid" data-profile-created-lists></div></section>' +
     '</section>';
 
   const openProfileImage = (image) => {
@@ -2219,7 +2219,6 @@ async function renderProfilePage(currentUser, username) {
       });
     });
   };
-  const favoritesActions = favoritesList?.parentElement.querySelector('.profile-page__favorites-heading')?.insertAdjacentHTML('afterend', '<div class="profile-page__favorites-actions" data-favorites-actions></div>');
   renderFavoriteGames();
 
   const createdListsContainer = app.querySelector('[data-profile-created-lists]');
@@ -2245,19 +2244,23 @@ async function renderProfilePage(currentUser, username) {
       }).join('');
       const action = publicLists.length > 5 && !showAllLists
         ? '<div class="profile-page__lists-actions"><button type="button" data-lists-view-more>Ver mais</button></div>'
-        : isOwnProfile && publicLists.length < 5
-          ? '<div class="profile-page__lists-actions"><button type="button" data-list-create>Criar lista</button></div>'
-          : '';
+        : '';
       createdListsContainer.innerHTML = (cards || '<p class="profile-page__lists-empty">Nenhuma lista pública criada.</p>') + action;
+      const headingActions = app.querySelector('[data-lists-heading-actions]');
+      if (headingActions) {
+        headingActions.innerHTML = isOwnProfile && publicLists.length < 5
+          ? '<button type="button" data-list-create>Criar lista</button>'
+          : '';
+        headingActions.querySelector('[data-list-create]')?.addEventListener('click', () => {
+          openGameListCreator(currentUser, async (createdList) => {
+            publicLists.push(createdList);
+            renderCreatedLists();
+          });
+        });
+      }
       createdListsContainer.querySelector('[data-lists-view-more]')?.addEventListener('click', () => {
         showAllLists = true;
         renderCreatedLists();
-      });
-      createdListsContainer.querySelector('[data-list-create]')?.addEventListener('click', () => {
-        openGameListCreator(currentUser, async (createdList) => {
-          publicLists.push(createdList);
-          renderCreatedLists();
-        });
       });
     };
     renderCreatedLists();
