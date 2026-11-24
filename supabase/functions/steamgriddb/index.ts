@@ -14,6 +14,31 @@ function json(data: unknown, status = 200) {
   });
 }
 
+function releaseYearFromDate(value: unknown): number | null {
+  if (value === null || value === undefined || value === "") return null;
+  let timestamp = typeof value === "number" ? value : Number(value);
+  if (!Number.isFinite(timestamp)) {
+    const parsed = Date.parse(String(value));
+    if (!Number.isFinite(parsed)) return null;
+    timestamp = parsed / 1000;
+  } else if (timestamp > 100000000000) {
+    timestamp /= 1000;
+  }
+  const year = new Date(timestamp * 1000).getUTCFullYear();
+  return Number.isInteger(year) && year >= 1970 && year <= 2100 ? year : null;
+}
+
+async function fetchGameReleaseYear(gameId: number, apiKey: string): Promise<number | null> {
+  const response = await fetch(
+    `https://www.steamgriddb.com/api/v2/games/id/${gameId}`,
+    { headers: { Authorization: "Bearer " + apiKey } },
+  );
+  if (!response.ok) return null;
+  const result = await response.json();
+  const details = Array.isArray(result.data) ? result.data[0] : result.data;
+  return releaseYearFromDate(details?.release_date);
+}
+
 Deno.serve(async (req: Request) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   if (req.method !== "POST") return json({ error: "Método não permitido." }, 405);
@@ -39,6 +64,42 @@ Deno.serve(async (req: Request) => {
 
     const body = await req.json();
     const action = body?.action;
+
+    if (action === "sync_years") {
+      const gameIds = [...new Set((Array.isArray(body.game_ids) ? body.game_ids : [])
+        .map((id: unknown) => Number(id))
+        .filter((id: number) => Number.isSafeInteger(id) && id > 0))].slice(0, 50);
+      if (!gameIds.length) return json({ games: [] });
+
+      const secretKeys = JSON.parse(Deno.env.get("SUPABASE_SECRET_KEYS") ?? "{}");
+      const secretKey = secretKeys.default;
+      if (!secretKey) return json({ error: "Configuração segura do banco indisponível." }, 500);
+      const admin = createClient(Deno.env.get("SUPABASE_URL") ?? "", secretKey, {
+        auth: { persistSession: false, autoRefreshToken: false },
+      });
+      const { data: rows, error: rowsError } = await admin.from("games")
+        .select("id, steamgriddb_id")
+        .in("steamgriddb_id", gameIds)
+        .is("release_year", null);
+      if (rowsError) return json({ error: "Não foi possível consultar os jogos sem ano." }, 500);
+
+      const updatedGames = await Promise.all((rows || []).map(async (game: { id: string; steamgriddb_id: number }) => {
+        try {
+          const year = await fetchGameReleaseYear(Number(game.steamgriddb_id), apiKey);
+          if (!year) return null;
+          const { error: updateError } = await admin.from("games")
+            .update({ release_year: year })
+            .eq("id", game.id)
+            .is("release_year", null);
+          if (updateError) return null;
+          return { steamgriddb_id: game.steamgriddb_id, release_year: year };
+        } catch (metadataError) {
+          console.warn("[steamgriddb] Não foi possível sincronizar o ano:", game.steamgriddb_id);
+          return null;
+        }
+      }));
+      return json({ games: updatedGames.filter(Boolean) });
+    }
 
     if (action === "search") {
       const query = String(body.query ?? "").trim().slice(0, 80);
@@ -66,7 +127,11 @@ Deno.serve(async (req: Request) => {
         } catch (artworkError) {
           console.warn("[steamgriddb] Não foi possível carregar a capa:", game.id);
         }
-        const releaseYear = game.release_date ? new Date(game.release_date * 1000).getUTCFullYear() : null;
+        let releaseYear = releaseYearFromDate(game.release_date);
+        if (!releaseYear) {
+          try { releaseYear = await fetchGameReleaseYear(Number(game.id), apiKey); }
+          catch (metadataError) { console.warn("[steamgriddb] Não foi possível obter o ano:", game.id); }
+        }
         return { ...game, cover_url: coverUrl, release_year: releaseYear };
       }));
       return json({ data: withArtwork });
@@ -75,10 +140,11 @@ Deno.serve(async (req: Request) => {
     if (action === "save") {
       const gameId = Number(body.game?.id);
       const title = String(body.game?.name ?? "").trim().slice(0, 180);
-      const releaseYearValue = Number(body.game?.release_year);
-      const releaseYear = Number.isInteger(releaseYearValue) && releaseYearValue >= 1970 && releaseYearValue <= 2100
-        ? releaseYearValue
-        : null;
+      let releaseYear = releaseYearFromDate(body.game?.release_year);
+      if (!releaseYear) {
+        try { releaseYear = await fetchGameReleaseYear(gameId, apiKey); }
+        catch (metadataError) { console.warn("[steamgriddb] Não foi possível obter o ano ao salvar:", gameId); }
+      }
       if (!Number.isSafeInteger(gameId) || gameId <= 0 || !title) {
         return json({ error: "Jogo inválido." }, 400);
       }
