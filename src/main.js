@@ -2118,7 +2118,7 @@ async function renderProfilePage(currentUser, username) {
       : '<button class="profile-follow' + (isFollowing ? ' is-following' : '') + '" type="button" data-profile-follow>' + (isFollowing ? 'Seguindo' : 'Seguir') + '</button>') +
     '</div>' +
     (profile.bio?.trim() ? '<div class="profile-page__bio">' + escapeHTML(profile.bio.trim()) + '</div>' : '') +
-    (profile.created_at ? '<div class="profile-page__joined">Membro desde ' + escapeHTML(new Intl.DateTimeFormat('pt-BR', { month: 'long', year: 'numeric' }).format(new Date(profile.created_at))) + '</div>' : '') +
+    (profile.created_at ? '<div class="profile-page__joined"><i class="fa-regular fa-calendar" aria-hidden="true"></i><span>Membro desde ' + escapeHTML(new Intl.DateTimeFormat('pt-BR', { month: 'long', year: 'numeric' }).format(new Date(profile.created_at))) + '</span></div>' : '') +
     '<div class="profile-page__stats" aria-label="Estatísticas do perfil">' +
     '<span><strong data-profile-stat="following">' + (followingCountResult.count ?? 0) + '</strong><span>Seguindo</span></span>' +
     '<span><strong data-profile-stat="followers">' + (followersCountResult.count ?? 0) + '</strong><span>Seguidores</span></span>' +
