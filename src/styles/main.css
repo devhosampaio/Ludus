@@ -1115,3 +1115,9 @@ select {
   .profile-image-viewer { padding: 12px; }
   .profile-image-viewer__close { top: 8px; right: 8px; }
 }
+
+/* Borda inferior das seções do perfil. */
+.profile-page__favorites,
+.profile-page__lists {
+  border-bottom: 1px solid #3a4554;
+}
