@@ -394,44 +394,39 @@ function setupBottomNavAutoHide() {
   app.__bottomNavScrollController?.abort();
   const controller = new AbortController();
   app.__bottomNavScrollController = controller;
-  let previousY = Math.max(window.scrollY || 0, document.scrollingElement?.scrollTop || 0);
+  let previousY = window.scrollY || document.documentElement.scrollTop || 0;
   let previousTouchY = null;
 
-  const updateVisibility = (direction, currentY) => {
-    const drawerOpen = !!app.querySelector('.mobile-drawer:not([hidden])');
-    if (drawerOpen) return;
-    if (direction > 0 && currentY > 80) navigation.classList.add('is-scroll-hidden');
-    else if (direction < 0 || currentY <= 20) navigation.classList.remove('is-scroll-hidden');
+  const setHidden = (hidden) => {
+    if (app.querySelector('.mobile-drawer.is-open')) return;
+    navigation.classList.toggle('is-scroll-hidden', hidden);
   };
 
   const handleScroll = () => {
-    const currentY = Math.max(
-      window.scrollY || 0,
-      document.scrollingElement?.scrollTop || 0,
-      document.documentElement.scrollTop || 0,
-      document.body.scrollTop || 0
-    );
+    const currentY = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
     const delta = currentY - previousY;
-    if (Math.abs(delta) >= 4) updateVisibility(delta, currentY);
+    if (delta > 3 && currentY > 20) setHidden(true);
+    else if (delta < -3 || currentY <= 20) setHidden(false);
     previousY = currentY;
   };
 
-  window.addEventListener('scroll', handleScroll, { passive: true, signal: controller.signal });
   document.addEventListener('scroll', handleScroll, { passive: true, capture: true, signal: controller.signal });
-  app.addEventListener('touchstart', (event) => {
+  window.addEventListener('scroll', handleScroll, { passive: true, signal: controller.signal });
+
+  document.addEventListener('touchstart', (event) => {
     previousTouchY = event.touches[0]?.clientY ?? null;
-  }, { passive: true, signal: controller.signal });
-  app.addEventListener('touchmove', (event) => {
+  }, { passive: true, capture: true, signal: controller.signal });
+
+  document.addEventListener('touchmove', (event) => {
     const touchY = event.touches[0]?.clientY;
     if (touchY == null || previousTouchY == null) return;
     const delta = previousTouchY - touchY;
-    if (Math.abs(delta) >= 6) {
-      const currentY = Math.max(window.scrollY || 0, document.scrollingElement?.scrollTop || 0);
-      updateVisibility(delta, currentY);
-      previousTouchY = touchY;
-    }
-  }, { passive: true, signal: controller.signal });
-  app.addEventListener('touchend', () => { previousTouchY = null; }, { passive: true, signal: controller.signal });
+    if (delta > 5) setHidden(true);
+    else if (delta < -5) setHidden(false);
+    previousTouchY = touchY;
+  }, { passive: true, capture: true, signal: controller.signal });
+
+  document.addEventListener('touchend', () => { previousTouchY = null; }, { passive: true, capture: true, signal: controller.signal });
 }
 
 function triggerPageTransition() {
