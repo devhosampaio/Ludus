@@ -509,9 +509,9 @@ function setupMobileDrawer(user, profile = null) {
 }
 
 async function setupSharedSideMenu(user, profile = null) {
+  setupBottomNavAutoHide();
   const root = app.querySelector('.side-menu--left');
   if (!root) return;
-  setupBottomNavAutoHide();
   // A navegação não deve depender da resposta da consulta de perfil.
   root.querySelector('[data-open-search]')?.addEventListener('click', () => navigateToSearch(user));
   app.querySelector('[data-bottom-home]')?.addEventListener('click', () => navigateToFeed(user));
