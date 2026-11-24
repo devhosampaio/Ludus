@@ -2129,6 +2129,31 @@ async function renderProfilePage(currentUser, username) {
     '<section class="profile-page__lists" aria-label="Listas criadas"><div class="profile-page__lists-heading"><h2>Listas criadas</h2></div><div class="profile-page__lists-grid" data-profile-created-lists></div></section>' +
     '</section>';
 
+  const openProfileImage = (image) => {
+    const overlay = document.createElement('div');
+    overlay.className = 'profile-image-viewer';
+    overlay.setAttribute('role', 'dialog');
+    overlay.setAttribute('aria-modal', 'true');
+    overlay.setAttribute('aria-label', 'Visualização da imagem');
+    overlay.innerHTML = '<button class="profile-image-viewer__close" type="button" aria-label="Fechar">×</button><img class="profile-image-viewer__image" src="' + escapeHTML(image.src) + '" alt="' + escapeHTML(image.alt || '') + '">';
+    const close = () => {
+      overlay.remove();
+      document.removeEventListener('keydown', handleKeydown);
+      document.body.style.overflow = previousOverflow;
+    };
+    const handleKeydown = (event) => { if (event.key === 'Escape') close(); };
+    const previousOverflow = document.body.style.overflow;
+    overlay.addEventListener('click', (event) => {
+      if (event.target === overlay || event.target.closest('.profile-image-viewer__close')) close();
+    });
+    document.addEventListener('keydown', handleKeydown);
+    document.body.style.overflow = 'hidden';
+    document.body.appendChild(overlay);
+    overlay.querySelector('.profile-image-viewer__close').focus();
+  };
+  app.querySelector('.profile-page__avatar img')?.addEventListener('click', (event) => openProfileImage(event.currentTarget));
+  app.querySelector('.profile-page__banner-image')?.addEventListener('click', (event) => openProfileImage(event.currentTarget));
+
   let favoriteGames = (favoriteRows || []).filter((row) => row.games).map((row) => ({ position: Number(row.position), game: row.games }));
   const favoritesList = app.querySelector('[data-profile-favorites]');
   const isOwnProfile = profile.id === currentUser.id;
