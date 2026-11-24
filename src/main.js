@@ -2132,6 +2132,7 @@ async function renderProfilePage(currentUser, username) {
   let favoriteGames = (favoriteRows || []).filter((row) => row.games).map((row) => ({ position: Number(row.position), game: row.games }));
   const favoritesList = app.querySelector('[data-profile-favorites]');
   const isOwnProfile = profile.id === currentUser.id;
+  let editingFavoriteGames = false;
   const renderFavoriteGames = () => {
     if (!favoritesList) return;
     const slots = isOwnProfile && favoriteGames.length < 5
@@ -2141,8 +2142,17 @@ async function renderProfilePage(currentUser, username) {
       ? '<button class="profile-page__favorite-slot" type="button" data-favorite-add aria-label="Adicionar jogo favorito"><i class="fa-solid fa-plus" aria-hidden="true"></i></button>'
       : '<article class="profile-page__favorite" data-favorite-position="' + item.position + '">' +
         (item.game.cover_url ? '<img src="' + escapeHTML(item.game.cover_url) + '" alt="Capa de ' + escapeHTML(item.game.title) + '" loading="lazy">' : '<span class="profile-page__favorite-empty">Sem capa</span>') +
+        (editingFavoriteGames ? '<div class="profile-page__favorite-actions"><button type="button" data-favorite-replace="' + item.position + '">Substituir</button><button type="button" data-favorite-remove="' + item.position + '">Remover</button></div>' : '') +
         '</article>').join('')
       : '<p class="profile-page__favorites-empty">Nenhum jogo favorito destacado.</p>';
+    const actions = favoritesList.parentElement.querySelector('[data-favorites-actions]');
+    if (actions) actions.innerHTML = isOwnProfile && favoriteGames.length
+      ? '<button type="button" data-favorites-edit>' + (editingFavoriteGames ? 'Concluir edição' : 'Editar favoritos') + '</button>'
+      : '';
+    actions?.querySelector('[data-favorites-edit]')?.addEventListener('click', () => {
+      editingFavoriteGames = !editingFavoriteGames;
+      renderFavoriteGames();
+    });
     favoritesList.querySelectorAll('[data-favorite-add]').forEach((button) => {
       button.addEventListener('click', () => {
         const usedIds = favoriteGames.map((item) => String(item.game.id));
@@ -2156,7 +2166,35 @@ async function renderProfilePage(currentUser, username) {
         }, usedIds);
       });
     });
+    favoritesList.querySelectorAll('[data-favorite-replace]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const position = Number(button.dataset.favoriteReplace);
+        const usedIds = favoriteGames.filter((item) => item.position !== position).map((item) => String(item.game.id));
+        openFavoriteGamePicker(async (game) => {
+          const { error } = await supabase.from('profile_favorite_games').update({ game_id: game.id }).eq('user_id', currentUser.id).eq('position', position);
+          if (error) { console.error('[Ludus] Falha ao substituir jogo favorito:', error); return false; }
+          const favorite = favoriteGames.find((item) => item.position === position);
+          if (favorite) favorite.game = game;
+          renderFavoriteGames(); return true;
+        }, usedIds);
+      });
+    });
+    favoritesList.querySelectorAll('[data-favorite-remove]').forEach((button) => {
+      button.addEventListener('click', async () => {
+        const position = Number(button.dataset.favoriteRemove);
+        button.disabled = true;
+        const { error } = await supabase.from('profile_favorite_games').delete().eq('user_id', currentUser.id).eq('position', position);
+        if (error) {
+          console.error('[Ludus] Falha ao remover jogo favorito:', error);
+          button.disabled = false;
+          return;
+        }
+        favoriteGames = favoriteGames.filter((item) => item.position !== position);
+        renderFavoriteGames();
+      });
+    });
   };
+  const favoritesActions = favoritesList?.parentElement.querySelector('.profile-page__favorites-heading')?.insertAdjacentHTML('afterend', '<div class="profile-page__favorites-actions" data-favorites-actions></div>');
   renderFavoriteGames();
 
   const createdListsContainer = app.querySelector('[data-profile-created-lists]');
