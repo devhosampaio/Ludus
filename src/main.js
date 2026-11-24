@@ -1950,7 +1950,7 @@ async function renderProfilePage(currentUser, username) {
   if (favoriteError) console.error('[Ludus] Falha ao carregar jogos favoritos:', favoriteError);
 
   const { data: createdLists, error: createdListsError } = await supabase.from('game_lists')
-    .select('id, name, description, created_at, game_list_items(id, position, games(id, title, cover_url))')
+    .select('id, name, description, is_default, created_at, game_list_items(id, position, games(id, title, cover_url))')
     .eq('user_id', profile.id).eq('is_public', true).order('created_at', { ascending: false });
   if (createdListsError) console.error('[Ludus] Falha ao carregar listas públicas:', createdListsError);
 
@@ -1998,7 +1998,7 @@ async function renderProfilePage(currentUser, username) {
     '<span><strong data-profile-stat="reviews">' + (reviewsCountResult.count ?? 0) + '</strong><span>Avaliações</span></span>' +
     '<span><strong data-profile-stat="lists">' + (savedListsCountResult.count ?? 0) + '</strong><span>Listas</span></span>' +
     '</div>' +
-    '<section class="profile-page__favorites" aria-label="Jogos favoritos"><div class="profile-page__favorites-list" data-profile-favorites></div></section>' +
+    '<section class="profile-page__favorites" aria-label="Jogos favoritos"><div class="profile-page__favorites-heading"><h2>Jogos favoritos</h2></div><div class="profile-page__favorites-list" data-profile-favorites></div></section>' +
     '<section class="profile-page__lists" aria-label="Listas criadas"><div class="profile-page__lists-heading"><h2>Listas criadas</h2></div><div class="profile-page__lists-grid" data-profile-created-lists></div></section>' +
     '</section>';
 
@@ -2036,7 +2036,7 @@ async function renderProfilePage(currentUser, username) {
   const publicLists = (createdLists || []).map((list) => ({
     ...list,
     items: [...(list.game_list_items || [])].sort((a, b) => (a.position || 0) - (b.position || 0))
-  }));
+  })).sort((a, b) => Number(Boolean(b.is_default)) - Number(Boolean(a.is_default)));
   if (createdListsContainer) {
     createdListsContainer.innerHTML = publicLists.length
       ? publicLists.map((list) => {
