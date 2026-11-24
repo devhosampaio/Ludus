@@ -1949,6 +1949,11 @@ async function renderProfilePage(currentUser, username) {
     .eq('user_id', profile.id).order('position', { ascending: true });
   if (favoriteError) console.error('[Ludus] Falha ao carregar jogos favoritos:', favoriteError);
 
+  const { data: createdLists, error: createdListsError } = await supabase.from('game_lists')
+    .select('id, name, description, created_at, game_list_items(id, games(id, title, cover_url))')
+    .eq('user_id', profile.id).eq('is_public', true).order('created_at', { ascending: false });
+  if (createdListsError) console.error('[Ludus] Falha ao carregar listas públicas:', createdListsError);
+
   const followState = currentUser.id === profile.id
     ? { data: null }
     : await supabase.from('follows').select('follower_id')
@@ -1994,6 +1999,7 @@ async function renderProfilePage(currentUser, username) {
     '<span><strong data-profile-stat="lists">' + (savedListsCountResult.count ?? 0) + '</strong><span>Listas</span></span>' +
     '</div>' +
     '<section class="profile-page__favorites" aria-label="Jogos favoritos"><div class="profile-page__favorites-heading"><h2>Jogos favoritos</h2></div><div class="profile-page__favorites-list" data-profile-favorites></div></section>' +
+    '<section class="profile-page__lists" aria-label="Listas criadas"><div class="profile-page__lists-heading"><h2>Listas criadas</h2></div><div class="profile-page__lists-grid" data-profile-created-lists></div></section>' +
     '</section>';
 
   let favoriteGames = (favoriteRows || []).filter((row) => row.games).map((row) => ({ position: Number(row.position), game: row.games }));
@@ -2025,6 +2031,29 @@ async function renderProfilePage(currentUser, username) {
     });
   };
   renderFavoriteGames();
+
+  const createdListsContainer = app.querySelector('[data-profile-created-lists]');
+  const publicLists = (createdLists || []).map((list) => ({
+    ...list,
+    items: [...(list.game_list_items || [])].sort((a, b) => (a.position || 0) - (b.position || 0))
+  }));
+  if (createdListsContainer) {
+    createdListsContainer.innerHTML = publicLists.length
+      ? publicLists.map((list) => {
+          const covers = list.items.filter((item) => item.games?.cover_url).slice(0, 4);
+          const coverMarkup = covers.length
+            ? covers.map((item) => '<img src="' + escapeHTML(item.games.cover_url) + '" alt="" loading="lazy">').join('')
+            : '<span class="profile-page__list-cover-empty">Sem capas</span>';
+          return '<article class="profile-page__list-card">' +
+            '<div class="profile-page__list-covers">' + coverMarkup + '</div>' +
+            '<div class="profile-page__list-info"><h3>' + escapeHTML(list.name) + '</h3>' +
+            '<span>' + list.items.length + (list.items.length === 1 ? ' jogo' : ' jogos') + '</span>' +
+            (list.description?.trim() ? '<p>' + escapeHTML(list.description.trim()) + '</p>' : '') +
+            '</div></article>';
+        }).join('')
+      : '<p class="profile-page__lists-empty">Nenhuma lista pública criada.</p>';
+  }
+
   const editButton = app.querySelector('[data-profile-edit]');
   editButton?.addEventListener('click', () => openProfileEditor(currentUser, profile));
 
