@@ -1307,3 +1307,39 @@ select {
   color: #aeb7c2 !important;
   border-color: #aeb7c2 !important;
 }
+
+
+/* Oculta a navegação inferior ao rolar para baixo e a revela ao subir. */
+.bottom-nav {
+  transition: transform 220ms ease;
+  will-change: transform;
+}
+.bottom-nav.is-scroll-hidden {
+  transform: translateY(100%);
+}
+
+/* Transição discreta entre páginas, com sobreposição breve. */
+.feed-shell.is-page-entering {
+  animation: ludus-page-enter 240ms ease-out both;
+}
+.page-transition-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1050;
+  pointer-events: none;
+  background: rgba(255, 255, 255, .045);
+  animation: ludus-page-overlay 240ms ease-out both;
+}
+@keyframes ludus-page-enter {
+  from { opacity: .82; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes ludus-page-overlay {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bottom-nav { transition-duration: 1ms; }
+  .feed-shell.is-page-entering,
+  .page-transition-overlay { animation-duration: 1ms; }
+}
