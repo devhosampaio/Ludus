@@ -1276,3 +1276,17 @@ select {
 .app-topbar .app-topbar__menu-button:active {
   border-color: currentColor !important;
 }
+
+
+/* Contorno discreto e cantos levemente arredondados nas capas de jogos. */
+.review-card__cover,
+.review-card__cover-wrap img,
+.profile-page__favorite img,
+.profile-page__list-covers img,
+.game-page__cover,
+.profile-page__review-cover,
+.composer__game-result img {
+  box-sizing: border-box;
+  border: 1px solid #3a4554;
+  border-radius: 3px;
+}
