@@ -1159,3 +1159,33 @@ select {
 .feed-shell--profile {
   padding-top: 0;
 }
+
+
+/* Contorno circular nos controles de menu e voltar. */
+.app-topbar__menu-button,
+.app-topbar__menu-button:hover,
+.app-topbar__menu-button:focus,
+.app-topbar__menu-button:active,
+.profile-page__back-button {
+  box-sizing: border-box;
+  width: 36px;
+  height: 36px;
+  border: 1px solid #737b87 !important;
+  border-radius: 50%;
+}
+
+/* Ícone de calendário junto à data de entrada no Ludus. */
+.profile-page__joined {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.profile-page__joined i {
+  color: inherit;
+}
+
+/* Separadores verticais entre as estatísticas do perfil. */
+.profile-page__stats > span + span {
+  padding-left: 18px;
+  border-left: 1px solid #3a4554;
+}
