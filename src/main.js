@@ -628,6 +628,7 @@ async function renderSignedIn(user, initialFeedMode = 'home') {
 
   setupNotifications(user);
   setupFeedHeaderAutoHide();
+  setupBottomNavAutoHide();
 
   const username = app.querySelector('[data-username]');
   const avatar = app.querySelector('[data-avatar]');
