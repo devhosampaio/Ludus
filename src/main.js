@@ -89,10 +89,9 @@ async function setupNotifications(user) {
   }
 
   const refresh = async () => {
-    const { data, error } = await supabase.from('notifications')
+    const { data, error } = await fetchAllPages(() => supabase.from('notifications')
       .select('id, type, actor_id, review_id, created_at, read_at, profiles!notifications_actor_id_fkey(username, display_name, avatar_url)')
-      .order('created_at', { ascending: false })
-      .limit(1000);
+      .order('created_at', { ascending: false }));
 
     if (error) {
       console.error('[Ludus] Falha ao carregar notificações:', error);
