@@ -2115,7 +2115,7 @@ async function renderProfilePage(currentUser, username) {
     '<div class="profile-page__avatar">' + avatar + '</div>' +
     '<div class="profile-page__identity"><div class="profile-page__heading"><h1>' + escapeHTML(displayName) + '</h1></div>' +
     (profile.id === currentUser.id
-      ? '<button class="profile-edit-button btn btn-default" type="button" data-profile-edit>Editar Perfil</button>'
+      ? '<button class="profile-edit-button" type="button" data-profile-edit>Editar Perfil</button>'
       : '<button class="profile-follow' + (isFollowing ? ' is-following' : '') + '" type="button" data-profile-follow>' + (isFollowing ? 'Seguindo' : 'Seguir') + '</button>') +
     '</div>' +
     (profile.bio?.trim() ? '<div class="profile-page__bio">' + escapeHTML(profile.bio.trim()) + '</div>' : '') +
