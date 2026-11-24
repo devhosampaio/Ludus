@@ -1189,3 +1189,50 @@ select {
   padding-left: 18px;
   border-left: 1px solid #3a4554;
 }
+
+/* Divisórias discretas entre as seções do perfil, sem bordas nos containers. */
+.profile-page__stats,
+.profile-page__favorites,
+.profile-page__lists {
+  border: 0 !important;
+}
+.profile-page__stats::after,
+.profile-page__favorites::after,
+.profile-page__lists::after {
+  position: absolute;
+  right: auto;
+  bottom: 0;
+  left: 50%;
+  width: 100vw;
+  border: 0;
+  border-bottom: 1px solid #3a4554;
+  content: "";
+  transform: translateX(-50%);
+}
+
+/* Força os controles de navegação a manterem o formato circular. */
+.app-topbar .app-topbar__menu-button,
+.app-topbar .app-topbar__menu-button:hover,
+.app-topbar .app-topbar__menu-button:focus,
+.app-topbar .app-topbar__menu-button:active,
+.profile-page__back-button,
+.profile-page__back-button:hover,
+.profile-page__back-button:focus,
+.profile-page__back-button:active {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-sizing: border-box !important;
+  flex: 0 0 36px !important;
+  width: 36px !important;
+  min-width: 36px !important;
+  max-width: 36px !important;
+  height: 36px !important;
+  min-height: 36px !important;
+  max-height: 36px !important;
+  padding: 0 !important;
+  border: 1px solid #737b87 !important;
+  border-radius: 50% !important;
+  line-height: 1 !important;
+}
+
