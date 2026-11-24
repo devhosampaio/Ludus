@@ -387,6 +387,45 @@ function setupFeedHeaderAutoHide() {
   }, { passive: true, signal: controller.signal });
 }
 
+function setupBottomNavAutoHide() {
+  const navigation = app.querySelector('.bottom-nav');
+  if (!navigation) return;
+
+  app.__bottomNavScrollController?.abort();
+  const controller = new AbortController();
+  app.__bottomNavScrollController = controller;
+  let previousY = window.scrollY || 0;
+
+  window.addEventListener('scroll', () => {
+    const currentY = Math.max(0, window.scrollY || 0);
+    const delta = currentY - previousY;
+    const drawerOpen = !!app.querySelector('.mobile-drawer:not([hidden])');
+
+    if (!drawerOpen && Math.abs(delta) >= 6) {
+      if (delta > 0 && currentY > 80) navigation.classList.add('is-scroll-hidden');
+      else if (delta < 0) navigation.classList.remove('is-scroll-hidden');
+    }
+    if (currentY <= 20) navigation.classList.remove('is-scroll-hidden');
+    previousY = currentY;
+  }, { passive: true, signal: controller.signal });
+}
+
+function triggerPageTransition() {
+  const shell = app.querySelector('.feed-shell');
+  if (!shell) return;
+  const overlay = document.createElement('div');
+  overlay.className = 'page-transition-overlay';
+  overlay.setAttribute('aria-hidden', 'true');
+  app.append(overlay);
+  shell.classList.remove('is-page-entering');
+  void shell.offsetWidth;
+  shell.classList.add('is-page-entering');
+  overlay.addEventListener('animationend', () => overlay.remove(), { once: true });
+  shell.addEventListener('animationend', (event) => {
+    if (event.target === shell) shell.classList.remove('is-page-entering');
+  }, { once: true });
+}
+
 function setupMobileDrawer(user, profile = null) {
   const trigger = app.querySelector('[data-header-avatar]');
   const drawer = app.querySelector('[data-mobile-drawer]');
@@ -477,6 +516,7 @@ function setupMobileDrawer(user, profile = null) {
 async function setupSharedSideMenu(user, profile = null) {
   const root = app.querySelector('.side-menu--left');
   if (!root) return;
+  setupBottomNavAutoHide();
   // A navegação não deve depender da resposta da consulta de perfil.
   root.querySelector('[data-open-search]')?.addEventListener('click', () => navigateToSearch(user));
   app.querySelector('[data-bottom-home]')?.addEventListener('click', () => navigateToFeed(user));
@@ -1701,6 +1741,7 @@ function navigateToGame(currentUser, gameId) {
     window.history.pushState({ page: 'game', gameId }, '', nextHash);
   }
   renderGamePage(currentUser, gameId);
+  triggerPageTransition();
 }
 
 async function renderGamePage(currentUser, gameId) {
@@ -1789,12 +1830,14 @@ function navigateToProfile(currentUser, username) {
     window.history.pushState({ page: 'profile' }, '', nextHash);
   }
   renderProfilePage(currentUser, username);
+  triggerPageTransition();
 }
 
 function navigateToSearch(currentUser, query = '') {
   const nextHash = '#/buscar';
   if (window.location.hash !== nextHash) window.history.pushState({ page: 'search' }, '', nextHash);
   renderSearchPage(currentUser, query);
+  triggerPageTransition();
 }
 
 async function renderSearchPage(currentUser, initialQuery = '') {
@@ -1884,6 +1927,7 @@ function navigateToFeed(currentUser, mode = 'home') {
     window.history.pushState({ page: 'feed' }, '', '#inicio');
   }
   renderSignedIn(currentUser, mode);
+  triggerPageTransition();
 }
 
 function openFavoriteGamePicker(onSelect, excludedGameIds = []) {
