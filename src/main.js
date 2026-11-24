@@ -2050,7 +2050,6 @@ async function renderProfilePage(currentUser, username) {
     <div class="feed-shell feed-shell--profile">
       ${sharedSideMenuMarkup(currentUser)}
       <main class="feed-center-column feed-main profile-main">
-        ${sharedFeedHeaderMarkup()}
         <div class="feed-main__container">
           <div class="profile-page__content profile-page__content--full">
             <div class="profile-page__loading">Carregando perfil…</div>
@@ -2111,7 +2110,7 @@ async function renderProfilePage(currentUser, username) {
     : '<div class="profile-page__banner-empty"></div>';
 
   app.querySelector('.profile-page__content').innerHTML =
-    '<section class="profile-page__hero"><div class="profile-page__banner">' + banner + '</div>' +
+    '<section class="profile-page__hero"><button class="app-topbar__menu-button profile-page__back-button" type="button" data-profile-backtop aria-label="Voltar ao feed" title="Voltar ao feed"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i></button><div class="profile-page__banner">' + banner + '</div>' +
     '<div class="profile-page__avatar">' + avatar + '</div>' +
     '<div class="profile-page__identity"><div class="profile-page__heading"><h1>' + escapeHTML(displayName) + '</h1></div>' +
     (profile.id === currentUser.id
@@ -2129,6 +2128,8 @@ async function renderProfilePage(currentUser, username) {
     '<section class="profile-page__favorites" aria-label="Jogos favoritos"><div class="profile-page__favorites-heading"><h2>Jogos favoritos</h2><div class="profile-page__favorites-actions" data-favorites-actions></div></div><div class="profile-page__favorites-list" data-profile-favorites></div></section>' +
     '<section class="profile-page__lists" aria-label="Listas criadas"><div class="profile-page__lists-heading"><h2>Listas criadas</h2><div class="profile-page__lists-heading-actions" data-lists-heading-actions></div></div><div class="profile-page__lists-grid" data-profile-created-lists></div></section>' +
     '</section>';
+
+  app.querySelector('[data-profile-backtop]')?.addEventListener('click', () => navigateToFeed(currentUser));
 
   const openProfileImage = (image) => {
     const overlay = document.createElement('div');
