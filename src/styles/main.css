@@ -142,7 +142,8 @@ img { max-width: 100%; }
 .profile-page__list-info > span { color: #737b87; font-size: 14px; }
 .profile-page__list-info p { margin: 5px 0 0; overflow-wrap: anywhere; }
 .profile-page__lists-empty { margin: 0; }
-.profile-page__stats { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 24px; margin-top: 18px; padding-top: 16px; border-top: 0; border-bottom: 1px solid #3a4554; }
+.profile-page__stats { position: relative; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 24px; margin-top: 18px; padding-top: 16px; padding-bottom: 20px; border-top: 0; border-bottom: 0; }
+.profile-page__stats::after { position: absolute; right: auto; bottom: 0; left: 50%; width: 100vw; border-bottom: 1px solid #3a4554; content: ""; transform: translateX(-50%); }
 .profile-page__stats div { display: flex; flex-direction: column; gap: 4px; }
 .profile-page__reviews { margin-top: 28px; }
 .profile-editor__form { display: grid; gap: 14px; }
