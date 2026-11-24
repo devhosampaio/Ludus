@@ -1998,7 +1998,7 @@ async function renderProfilePage(currentUser, username) {
     '<span><strong data-profile-stat="reviews">' + (reviewsCountResult.count ?? 0) + '</strong><span>Avaliações</span></span>' +
     '<span><strong data-profile-stat="lists">' + (savedListsCountResult.count ?? 0) + '</strong><span>Listas</span></span>' +
     '</div>' +
-    '<section class="profile-page__favorites" aria-label="Jogos favoritos"><div class="profile-page__favorites-heading"><h2>Jogos favoritos</h2></div><div class="profile-page__favorites-list" data-profile-favorites></div></section>' +
+    '<section class="profile-page__favorites" aria-label="Jogos favoritos"><div class="profile-page__favorites-list" data-profile-favorites></div></section>' +
     '<section class="profile-page__lists" aria-label="Listas criadas"><div class="profile-page__lists-heading"><h2>Listas criadas</h2></div><div class="profile-page__lists-grid" data-profile-created-lists></div></section>' +
     '</section>';
 
@@ -2014,7 +2014,7 @@ async function renderProfilePage(currentUser, username) {
       ? '<button class="profile-page__favorite-slot" type="button" data-favorite-add aria-label="Adicionar jogo favorito"><i class="fa-solid fa-plus" aria-hidden="true"></i></button>'
       : '<article class="profile-page__favorite" data-favorite-position="' + item.position + '">' +
         (item.game.cover_url ? '<img src="' + escapeHTML(item.game.cover_url) + '" alt="Capa de ' + escapeHTML(item.game.title) + '" loading="lazy">' : '<span class="profile-page__favorite-empty">Sem capa</span>') +
-        '<span>' + escapeHTML(item.game.title) + '</span></article>').join('')
+        '</article>').join('')
       : '<p class="profile-page__favorites-empty">Nenhum jogo favorito destacado.</p>';
     favoritesList.querySelectorAll('[data-favorite-add]').forEach((button) => {
       button.addEventListener('click', () => {
