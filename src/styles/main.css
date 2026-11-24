@@ -130,7 +130,7 @@ img { max-width: 100%; }
 .profile-page__favorites-empty { margin: 0; }
 .profile-page__lists { margin-top: 24px; }
 .profile-page__lists-heading h2 { margin: 0 0 12px; font-size: 20px; }
-.profile-page__lists-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 12px; }
+.profile-page__lists-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
 .profile-page__list-card { display: flex; min-width: 0; gap: 10px; }
 .profile-page__list-covers { display: grid; flex: 0 0 76px; width: 76px; aspect-ratio: 1; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); overflow: hidden; }
 .profile-page__list-covers img { display: block; width: 100%; height: 100%; object-fit: cover; }
@@ -1064,3 +1064,13 @@ select {
 @media (max-width: 767px) {
   .feed-tabs__button { font-size: 16px; }
 }
+
+.profile-page__list-card { width: 100%; }
+.profile-page__lists-actions { display: flex; justify-content: flex-end; margin-top: 12px; }
+.game-list-creator__field { display: block; margin-bottom: 12px; }
+.game-list-creator__field > span { display: block; margin-bottom: 5px; font-weight: 600; }
+.game-list-creator__field input, .game-list-creator__field textarea { display: block; width: 100%; }
+.game-list-creator__selected { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.game-list-creator__selected-item { display: inline-flex; align-items: center; gap: 6px; padding: 5px 8px; border: 1px solid currentColor; }
+.game-list-creator__selected-item button { border: 0; background: transparent; font-size: 18px; line-height: 1; }
+.game-list-creator__actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; }
