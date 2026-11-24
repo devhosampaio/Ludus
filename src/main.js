@@ -1916,6 +1916,133 @@ function openFavoriteGamePicker(onSelect, excludedGameIds = []) {
   });
   search.focus();
 }
+function openGameListCreator(user, onCreated) {
+  const existing = app.querySelector('.game-list-creator-overlay');
+  existing?.remove();
+  const overlay = document.createElement('div');
+  overlay.className = 'composer-overlay game-list-creator-overlay';
+  overlay.innerHTML = '<section class="composer game-list-creator" role="dialog" aria-modal="true" aria-labelledby="game-list-creator-title">' +
+    '<button class="composer__close" type="button" aria-label="Fechar" data-close>×</button>' +
+    '<h2 id="game-list-creator-title">Criar lista</h2>' +
+    '<form data-game-list-form>' +
+    '<label class="game-list-creator__field"><span>Nome da lista</span><input name="name" type="text" maxlength="60" required placeholder="Ex.: Jogos para zerar"></label>' +
+    '<label class="game-list-creator__field"><span>Descrição (opcional)</span><textarea name="description" rows="2" maxlength="240" placeholder="Sobre esta lista…"></textarea></label>' +
+    '<label class="game-list-creator__field"><span>Adicionar jogos</span><input class="composer__search" type="search" placeholder="Buscar pelo nome do jogo…" autocomplete="off" data-list-game-search></label>' +
+    '<div class="composer__results" data-list-game-results aria-live="polite"></div>' +
+    '<div class="game-list-creator__selected" data-list-game-selected></div>' +
+    '<p class="composer__message" data-list-message role="status"></p>' +
+    '<div class="game-list-creator__actions"><button class="btn btn-default" type="button" data-close>Cancelar</button><button class="btn btn-primary" type="submit" data-list-save>Salvar lista</button></div>' +
+    '</form></section>';
+  app.append(overlay);
+  const form = overlay.querySelector('[data-game-list-form]');
+  const search = overlay.querySelector('[data-list-game-search]');
+  const results = overlay.querySelector('[data-list-game-results]');
+  const selectedContainer = overlay.querySelector('[data-list-game-selected]');
+  const message = overlay.querySelector('[data-list-message]');
+  const saveButton = overlay.querySelector('[data-list-save]');
+  const selectedGames = [];
+  let timer = null;
+  let busy = false;
+  const close = () => { window.clearTimeout(timer); overlay.remove(); };
+  overlay.querySelectorAll('[data-close]').forEach((button) => button.addEventListener('click', close));
+  overlay.addEventListener('click', (event) => { if (event.target === overlay) close(); });
+  const renderSelected = () => {
+    selectedContainer.innerHTML = selectedGames.map((game) =>
+      '<span class="game-list-creator__selected-item">' + escapeHTML(game.name) +
+      '<button type="button" data-remove-list-game="' + game.id + '" aria-label="Remover ' + escapeHTML(game.name) + '">×</button></span>'
+    ).join('');
+  };
+  search.addEventListener('input', () => {
+    window.clearTimeout(timer);
+    const query = search.value.trim();
+    if (query.length < 2) { results.innerHTML = ''; return; }
+    results.innerHTML = '<p class="composer__hint">Buscando jogos…</p>';
+    timer = window.setTimeout(async () => {
+      const { data, error } = await supabase.functions.invoke('steamgriddb', { body: { action: 'search', query } });
+      if (search.value.trim() !== query) return;
+      if (error || data?.error) { results.innerHTML = '<p class="composer__hint">Não foi possível buscar jogos.</p>'; return; }
+      const games = (data?.data || []).filter((game) => !selectedGames.some((selected) => String(selected.id) === String(game.id)));
+      results.innerHTML = games.length ? games.map((game) => {
+        const timestamp = Number(game.release_date);
+        const year = Number.isFinite(timestamp) && timestamp > 0 ? new Date(timestamp * 1000).getUTCFullYear() : null;
+        return '<button class="composer__result" type="button" data-select-list-game="' + Number(game.id) + '" data-game-name="' + escapeHTML(game.name) + '" data-game-year="' + (year || '') + '">' +
+          '<span class="composer__result-info"><strong>' + escapeHTML(game.name) + '</strong><small>(' + (year || 'Ano não informado') + ')</small></span><span>Adicionar +</span></button>';
+      }).join('') : '<p class="composer__hint">Nenhum jogo encontrado.</p>';
+    }, 350);
+  });
+  results.addEventListener('click', (event) => {
+    const button = event.target.closest('[data-select-list-game]');
+    if (!button) return;
+    const id = button.dataset.selectListGame;
+    if (selectedGames.some((game) => String(game.id) === id)) return;
+    selectedGames.push({ id: Number(id), name: button.dataset.gameName, release_year: Number(button.dataset.gameYear) || null });
+    renderSelected();
+    search.dispatchEvent(new Event('input'));
+  });
+  selectedContainer.addEventListener('click', (event) => {
+    const button = event.target.closest('[data-remove-list-game]');
+    if (!button) return;
+    const index = selectedGames.findIndex((game) => String(game.id) === button.dataset.removeListGame);
+    if (index >= 0) selectedGames.splice(index, 1);
+    renderSelected();
+    search.dispatchEvent(new Event('input'));
+  });
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    if (busy) return;
+    const name = form.elements.name.value.trim();
+    const description = form.elements.description.value.trim();
+    if (!name) return;
+    busy = true;
+    saveButton.disabled = true;
+    message.textContent = 'Salvando lista…';
+    const { data: list, error: listError } = await supabase.from('game_lists')
+      .insert({ user_id: user.id, name, description: description || null, is_public: true, is_default: false })
+      .select('id, name, description, is_default, created_at').single();
+    if (listError || !list) {
+      console.error('[Ludus] Falha ao criar lista:', listError);
+      message.textContent = 'Não foi possível criar a lista. Tente novamente.';
+      saveButton.disabled = false;
+      busy = false;
+      return;
+    }
+    const savedGames = [];
+    for (const game of selectedGames) {
+      const { data, error } = await supabase.functions.invoke('steamgriddb', {
+        body: { action: 'save', game: { id: game.id, name: game.name, release_year: game.release_year } }
+      });
+      if (error || data?.error || !data?.game) {
+        console.error('[Ludus] Falha ao salvar jogo da lista:', error || data?.error);
+        await supabase.from('game_lists').delete().eq('id', list.id).eq('user_id', user.id);
+        message.textContent = 'Não foi possível salvar os jogos. A lista não foi criada.';
+        saveButton.disabled = false;
+        busy = false;
+        return;
+      }
+      savedGames.push(data.game);
+    }
+    if (savedGames.length) {
+      const { error: itemsError } = await supabase.from('game_list_items').insert(savedGames.map((game, index) => ({
+        list_id: list.id, game_id: game.id, position: index + 1
+      })));
+      if (itemsError) {
+        console.error('[Ludus] Falha ao adicionar jogos à lista:', itemsError);
+        await supabase.from('game_lists').delete().eq('id', list.id).eq('user_id', user.id);
+        message.textContent = 'Não foi possível adicionar os jogos. A lista não foi criada.';
+        saveButton.disabled = false;
+        busy = false;
+        return;
+      }
+    }
+    onCreated({
+      ...list,
+      items: savedGames.map((game, index) => ({ id: 'new-' + index, position: index + 1, games: game }))
+    });
+    close();
+  });
+  search.focus();
+}
+
 async function renderProfilePage(currentUser, username) {
   const requestId = (renderProfilePage.requestId || 0) + 1;
   renderProfilePage.requestId = requestId;
@@ -2038,20 +2165,39 @@ async function renderProfilePage(currentUser, username) {
     items: [...(list.game_list_items || [])].sort((a, b) => (a.position || 0) - (b.position || 0))
   })).sort((a, b) => Number(Boolean(b.is_default)) - Number(Boolean(a.is_default)));
   if (createdListsContainer) {
-    createdListsContainer.innerHTML = publicLists.length
-      ? publicLists.map((list) => {
-          const covers = list.items.filter((item) => item.games?.cover_url).slice(0, 4);
-          const coverMarkup = covers.length
-            ? covers.map((item) => '<img src="' + escapeHTML(item.games.cover_url) + '" alt="" loading="lazy">').join('')
-            : '<span class="profile-page__list-cover-empty">Sem capas</span>';
-          return '<article class="profile-page__list-card">' +
-            '<div class="profile-page__list-covers">' + coverMarkup + '</div>' +
-            '<div class="profile-page__list-info"><h3>' + escapeHTML(list.name) + '</h3>' +
-            '<span>' + list.items.length + (list.items.length === 1 ? ' jogo' : ' jogos') + '</span>' +
-            (list.description?.trim() ? '<p>' + escapeHTML(list.description.trim()) + '</p>' : '') +
-            '</div></article>';
-        }).join('')
-      : '<p class="profile-page__lists-empty">Nenhuma lista pública criada.</p>';
+    let showAllLists = false;
+    const renderCreatedLists = () => {
+      const visibleLists = showAllLists ? publicLists : publicLists.slice(0, 5);
+      const cards = visibleLists.map((list) => {
+        const covers = list.items.filter((item) => item.games?.cover_url).slice(0, 4);
+        const coverMarkup = covers.length
+          ? covers.map((item) => '<img src="' + escapeHTML(item.games.cover_url) + '" alt="" loading="lazy">').join('')
+          : '<span class="profile-page__list-cover-empty">Sem capas</span>';
+        return '<article class="profile-page__list-card">' +
+          '<div class="profile-page__list-covers">' + coverMarkup + '</div>' +
+          '<div class="profile-page__list-info"><h3>' + escapeHTML(list.name) + '</h3>' +
+          '<span>' + list.items.length + (list.items.length === 1 ? ' jogo' : ' jogos') + '</span>' +
+          (list.description?.trim() ? '<p>' + escapeHTML(list.description.trim()) + '</p>' : '') +
+          '</div></article>';
+      }).join('');
+      const action = publicLists.length > 5 && !showAllLists
+        ? '<div class="profile-page__lists-actions"><button type="button" data-lists-view-more>Ver mais</button></div>'
+        : isOwnProfile && publicLists.length < 5
+          ? '<div class="profile-page__lists-actions"><button type="button" data-list-create>Criar lista</button></div>'
+          : '';
+      createdListsContainer.innerHTML = (cards || '<p class="profile-page__lists-empty">Nenhuma lista pública criada.</p>') + action;
+      createdListsContainer.querySelector('[data-lists-view-more]')?.addEventListener('click', () => {
+        showAllLists = true;
+        renderCreatedLists();
+      });
+      createdListsContainer.querySelector('[data-list-create]')?.addEventListener('click', () => {
+        openGameListCreator(currentUser, async (createdList) => {
+          publicLists.push(createdList);
+          renderCreatedLists();
+        });
+      });
+    };
+    renderCreatedLists();
   }
 
   const editButton = app.querySelector('[data-profile-edit]');
