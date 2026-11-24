@@ -675,6 +675,25 @@ async function renderSignedIn(user, initialFeedMode = 'home') {
     return;
   }
 
+  const gamesMissingYear = [...new Set((reviews || [])
+    .filter((review) => review.games?.steamgriddb_id && !review.games?.release_year)
+    .map((review) => Number(review.games.steamgriddb_id))
+    .filter((id) => Number.isSafeInteger(id) && id > 0))].slice(0, 50);
+  if (gamesMissingYear.length) {
+    try {
+      const { data: yearSync } = await supabase.functions.invoke('steamgriddb', {
+        body: { action: 'sync_years', game_ids: gamesMissingYear }
+      });
+      const yearsBySteamGridId = new Map((yearSync?.games || []).map((game) => [Number(game.steamgriddb_id), game.release_year]));
+      (reviews || []).forEach((review) => {
+        const year = yearsBySteamGridId.get(Number(review.games?.steamgriddb_id));
+        if (year) review.games.release_year = year;
+      });
+    } catch (yearSyncError) {
+      console.warn('[Ludus] Não foi possível atualizar os anos de lançamento:', yearSyncError);
+    }
+  }
+
   const reviewIds = reviews.map((review) => review.id);
   const emptyResult = { data: [], error: null };
   let likeCounts = {};
