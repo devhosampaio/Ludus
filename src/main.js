@@ -2062,7 +2062,7 @@ async function renderProfilePage(currentUser, username) {
   setupSharedSideMenu(currentUser);
 
   const { data: profile, error: profileError } = await supabase.from('profiles')
-    .select('id, username, display_name, bio, avatar_url, banner_url')
+    .select('id, username, display_name, bio, avatar_url, banner_url, created_at')
     .eq('username', username).maybeSingle();
   if (requestId !== renderProfilePage.requestId) return;
   if (profileError || !profile) {
@@ -2119,6 +2119,7 @@ async function renderProfilePage(currentUser, username) {
       : '<button class="profile-follow' + (isFollowing ? ' is-following' : '') + '" type="button" data-profile-follow>' + (isFollowing ? 'Seguindo' : 'Seguir') + '</button>') +
     '</div>' +
     (profile.bio?.trim() ? '<div class="profile-page__bio">' + escapeHTML(profile.bio.trim()) + '</div>' : '') +
+    (profile.created_at ? '<div class="profile-page__joined">Membro desde ' + escapeHTML(new Intl.DateTimeFormat('pt-BR', { month: 'long', year: 'numeric' }).format(new Date(profile.created_at))) + '</div>' : '') +
     '<div class="profile-page__stats" aria-label="Estatísticas do perfil">' +
     '<span><strong data-profile-stat="following">' + (followingCountResult.count ?? 0) + '</strong><span>Seguindo</span></span>' +
     '<span><strong data-profile-stat="followers">' + (followersCountResult.count ?? 0) + '</strong><span>Seguidores</span></span>' +
