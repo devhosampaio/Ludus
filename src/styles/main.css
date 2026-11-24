@@ -791,8 +791,8 @@ img { max-width: 100%; }
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  padding-right: 4px;
-  padding-left: 4px;
+  padding-right: 16px;
+  padding-left: 16px;
 }
 .bottom-nav > .bottom-nav__item,
 .bottom-nav > .bottom-nav__notifications {
@@ -1336,3 +1336,38 @@ select {
   .bottom-nav { transition-duration: 1ms; }
   .feed-shell.is-page-entering { animation-duration: 1ms; }
 }
+
+
+/* Página dedicada de notificações. */
+.notifications-page__main { min-height: 100vh; }
+.notifications-page__topbar .app-topbar__row,
+.notifications-page__topbar .app-topbar__left {
+  display: flex;
+  align-items: center;
+}
+.notifications-page__topbar .app-topbar__left { padding-top: 0; padding-bottom: 0; }
+.notifications-page__content {
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 24px 16px 40px;
+}
+.notifications-page__heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.notifications-page__heading h1 { margin: 0; }
+.notifications-page__list .notifications__item-row {
+  border-bottom: 1px solid #3a4554;
+}
+.notifications-page__list .notifications__item {
+  flex: 1;
+  background: transparent;
+  border: 0;
+  color: inherit;
+}
+.notifications-page__list .notifications__item.is-unread { background: rgba(255,255,255,.04); }
+.notifications-page__list .notifications__list { width: 100%; }
