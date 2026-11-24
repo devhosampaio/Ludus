@@ -1155,3 +1155,7 @@ select {
   left: 12px;
   z-index: 5;
 }
+
+.feed-shell--profile {
+  padding-top: 0;
+}
