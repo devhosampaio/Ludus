@@ -1140,3 +1140,18 @@ select {
   content: "";
   transform: translateX(-50%);
 }
+
+
+/* Perfil: a capa começa no topo da página; o botão de voltar fica sobre ela. */
+.feed-shell--profile .feed-main__container {
+  padding-top: 0;
+}
+.feed-shell--profile .profile-page__content {
+  padding-top: 0;
+}
+.profile-page__back-button {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 5;
+}
