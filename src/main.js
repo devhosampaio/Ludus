@@ -312,20 +312,23 @@ function sharedSideMenuMarkup(user) {
   </nav>`;
 }
 
-function sharedFeedHeaderMarkup() {
-  return `  <header class="app-topbar">
-      <div class="container-fluid">
-        <div class="row app-topbar__row">
-          <div class="col-xs-4 app-topbar__left">
-            <button class="app-topbar__avatar app-topbar__menu-button" type="button" data-header-avatar aria-label="Abrir menu" aria-haspopup="dialog" aria-expanded="false"><i class="fa-solid fa-bars" aria-hidden="true"></i></button>
-          </div>
-          <div class="col-xs-4 app-topbar__center">
-            <a class="app-topbar__brand" href="#inicio" aria-label="Ludus — início">Ludus</a>
-          </div>
-          <div class="col-xs-4 app-topbar__right"></div>
-        </div>
+function sharedHeaderMarkup({ action = 'menu', showBrand = true } = {}) {
+  const isBackAction = action === 'back';
+  const leftAction = isBackAction
+    ? '<button class="app-topbar__avatar app-topbar__menu-button" type="button" data-header-back aria-label="Voltar"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i></button>'
+    : '<button class="app-topbar__avatar app-topbar__menu-button" type="button" data-header-avatar aria-label="Abrir menu" aria-haspopup="dialog" aria-expanded="false"><i class="fa-solid fa-bars" aria-hidden="true"></i></button>';
+  return `<header class="app-topbar">
+    <div class="container-fluid">
+      <div class="row app-topbar__row">
+        <div class="${showBrand ? 'col-xs-4' : 'col-xs-12'} app-topbar__left">${leftAction}</div>
+        ${showBrand ? '<div class="col-xs-4 app-topbar__center"><a class="app-topbar__brand" href="#inicio" aria-label="Ludus — início">Ludus</a></div><div class="col-xs-4 app-topbar__right"></div>' : ''}
       </div>
-    </header>
+    </div>
+  </header>`;
+}
+
+function sharedFeedHeaderMarkup() {
+  return `${sharedHeaderMarkup()}
     <nav class="feed-navigation feed-navigation--header" aria-label="Navegação do feed">
       <div class="feed-tabs" role="tablist" aria-label="Navegação do feed">
         <button class="feed-tabs__button is-active" type="button" role="tab" aria-selected="true" data-feed-mode="home">Para Você</button>
@@ -352,7 +355,6 @@ function sharedFeedHeaderMarkup() {
       <div class="mobile-drawer__review-container"><button class="btn btn-primary btn-block mobile-drawer__review" type="button" data-drawer-review>Avaliar</button></div>
     </aside>`;
 }
-
 function setupFeedHeaderAutoHide() {
   const topbar = app.querySelector('.app-topbar');
   const navigation = app.querySelector('.feed-navigation--header');
@@ -1929,15 +1931,7 @@ function renderNotificationsPage(currentUser) {
   app.innerHTML = `
     <div class="feed-shell notifications-page">
       <main class="feed-center-column feed-main notifications-page__main">
-        <header class="app-topbar notifications-page__topbar">
-          <div class="container-fluid">
-            <div class="row app-topbar__row">
-              <div class="col-xs-12 app-topbar__left">
-                <button class="app-topbar__menu-button notifications-page__back" type="button" data-notifications-back aria-label="Voltar"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i></button>
-              </div>
-            </div>
-          </div>
-        </header>
+        ${sharedHeaderMarkup({ action: 'back', showBrand: false })}
         <section class="notifications-page__content">
           <div class="notifications-page__heading">
             <h1>Notificações</h1>
@@ -1950,7 +1944,7 @@ function renderNotificationsPage(currentUser) {
       </main>
     </div>`;
 
-  app.querySelector('[data-notifications-back]')?.addEventListener('click', () => navigateToFeed(currentUser));
+  app.querySelector('[data-header-back]')?.addEventListener('click', () => navigateToFeed(currentUser));
   setupNotifications(currentUser);
 }
 
