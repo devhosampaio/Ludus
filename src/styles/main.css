@@ -119,7 +119,7 @@ img { max-width: 100%; }
 .profile-page__avatar { position: absolute; top: 132px; left: 12px; display: grid; place-items: center; width: 96px; height: 96px; overflow: hidden; border: 5px solid #222831; border-radius: 50%; }
 .profile-page__avatar img { width: 100%; height: 100%; object-fit: cover; }
 .profile-page__bio { margin-top: 16px; white-space: pre-wrap; }
-.profile-page__favorites { margin-top: 24px; }
+.profile-page__favorites { margin-top: 0; }
 .profile-page__favorites-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
 .profile-page__favorites-heading h2 { margin: 0; font-size: 18px; }
 .profile-page__favorites-list { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
@@ -129,7 +129,7 @@ img { max-width: 100%; }
 .profile-page__favorite > button { position: absolute; top: 6px; right: 6px; }
 .profile-page__favorite-slot { display: grid; width: 100%; aspect-ratio: 2 / 3; min-height: 0; place-items: center; }
 .profile-page__favorites-empty { margin: 0; }
-.profile-page__lists { margin-top: 24px; }
+.profile-page__lists { margin-top: 0; }
 .profile-page__lists-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
 .profile-page__lists-heading h2 { margin: 0; font-size: 20px; }
 .profile-page__lists-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
