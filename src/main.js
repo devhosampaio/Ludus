@@ -80,10 +80,7 @@ async function setupNotifications(user) {
   toggleButton?.addEventListener('click', async (event) => {
     event.preventDefault();
     event.stopPropagation();
-    const opening = panel.hidden;
-    panel.hidden = !opening;
-    toggleButton.setAttribute('aria-expanded', String(opening));
-    if (opening) await root._refreshNotifications?.();
+    navigateToNotifications(user);
   });
 
   if (notificationChannel) {
@@ -95,7 +92,7 @@ async function setupNotifications(user) {
     const { data, error } = await supabase.from('notifications')
       .select('id, type, actor_id, review_id, created_at, read_at, profiles!notifications_actor_id_fkey(username, display_name, avatar_url)')
       .order('created_at', { ascending: false })
-      .limit(30);
+      .limit(1000);
 
     if (error) {
       console.error('[Ludus] Falha ao carregar notificações:', error);
@@ -105,8 +102,10 @@ async function setupNotifications(user) {
 
     const rows = data || [];
     const unreadCount = rows.filter((item) => !item.read_at).length;
-    badge.textContent = unreadCount > 99 ? '99+' : String(unreadCount);
-    badge.hidden = unreadCount === 0;
+    if (badge) {
+      badge.textContent = unreadCount > 99 ? '99+' : String(unreadCount);
+      badge.hidden = unreadCount === 0;
+    }
 
     if (!rows.length) {
       list.innerHTML = '<p class="notifications__empty">Tudo tranquilo por aqui. Suas novidades aparecerão aqui.</p>';
@@ -394,62 +393,23 @@ function setupBottomNavAutoHide() {
   app.__bottomNavScrollController?.abort();
   const controller = new AbortController();
   app.__bottomNavScrollController = controller;
-  let previousY = window.scrollY || document.documentElement.scrollTop || 0;
-  let previousPointerY = null;
-  let previousTouchY = null;
+  let previousY = window.scrollY || 0;
 
-  const setHidden = (hidden) => {
-    if (app.querySelector('.mobile-drawer.is-open')) return;
-    navigation.classList.toggle('is-scroll-hidden', hidden);
-  };
-
-  const handleScroll = (event) => {
-    const target = event?.target;
-    const currentY = target && target !== document && typeof target.scrollTop === 'number'
-      ? target.scrollTop
-      : (window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0);
+  window.addEventListener('scroll', () => {
+    const currentY = Math.max(0, window.scrollY || 0);
     const delta = currentY - previousY;
-    if (delta > 2 && currentY > 10) setHidden(true);
-    else if (delta < -2 || currentY <= 10) setHidden(false);
+    const drawerOpen = !!app.querySelector('.mobile-drawer:not([hidden])');
+
+    if (!drawerOpen && Math.abs(delta) >= 6) {
+      if (delta > 0 && currentY > 80) {
+        navigation.classList.add('is-scroll-hidden');
+      } else if (delta < 0) {
+        navigation.classList.remove('is-scroll-hidden');
+      }
+    }
+    if (currentY <= 20) navigation.classList.remove('is-scroll-hidden');
     previousY = currentY;
-  };
-
-  const handleGestureMove = (currentY, previousY) => {
-    if (currentY == null || previousY == null) return;
-    const delta = previousY - currentY;
-    if (delta > 4) setHidden(true);
-    else if (delta < -4) setHidden(false);
-  };
-
-  document.addEventListener('scroll', handleScroll, { passive: true, capture: true, signal: controller.signal });
-  window.addEventListener('scroll', handleScroll, { passive: true, signal: controller.signal });
-
-  document.addEventListener('pointerdown', (event) => {
-    if (event.pointerType === 'touch' || event.pointerType === 'pen') previousPointerY = event.clientY;
-  }, { passive: true, capture: true, signal: controller.signal });
-  document.addEventListener('pointermove', (event) => {
-    if (previousPointerY == null || (event.pointerType !== 'touch' && event.pointerType !== 'pen')) return;
-    handleGestureMove(event.clientY, previousPointerY);
-    previousPointerY = event.clientY;
-  }, { passive: true, capture: true, signal: controller.signal });
-  document.addEventListener('pointerup', () => { previousPointerY = null; }, { passive: true, capture: true, signal: controller.signal });
-  document.addEventListener('pointercancel', () => { previousPointerY = null; }, { passive: true, capture: true, signal: controller.signal });
-
-  document.addEventListener('touchstart', (event) => {
-    previousTouchY = event.touches[0]?.clientY ?? null;
-  }, { passive: true, capture: true, signal: controller.signal });
-  document.addEventListener('touchmove', (event) => {
-    const touchY = event.touches[0]?.clientY;
-    handleGestureMove(touchY, previousTouchY);
-    previousTouchY = touchY ?? null;
-  }, { passive: true, capture: true, signal: controller.signal });
-  document.addEventListener('touchend', () => { previousTouchY = null; }, { passive: true, capture: true, signal: controller.signal });
-  document.addEventListener('touchcancel', () => { previousTouchY = null; }, { passive: true, capture: true, signal: controller.signal });
-
-  document.addEventListener('wheel', (event) => {
-    if (event.deltaY > 2) setHidden(true);
-    else if (event.deltaY < -2) setHidden(false);
-  }, { passive: true, capture: true, signal: controller.signal });
+  }, { passive: true, signal: controller.signal });
 }
 function triggerPageTransition() {
   const shell = app.querySelector('.feed-shell');
@@ -1959,6 +1919,42 @@ async function renderSearchPage(currentUser, initialQuery = '') {
   else input.focus();
 }
 
+function navigateToNotifications(currentUser) {
+  const nextHash = '#/notificacoes';
+  if (window.location.hash !== nextHash) window.history.pushState({ page: 'notifications' }, '', nextHash);
+  renderNotificationsPage(currentUser);
+  triggerPageTransition();
+}
+
+function renderNotificationsPage(currentUser) {
+  app.innerHTML = `
+    <div class="feed-shell notifications-page">
+      <main class="feed-center-column feed-main notifications-page__main">
+        <header class="app-topbar notifications-page__topbar">
+          <div class="container-fluid">
+            <div class="row app-topbar__row">
+              <div class="col-xs-12 app-topbar__left">
+                <button class="app-topbar__menu-button notifications-page__back" type="button" data-notifications-back aria-label="Voltar"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i></button>
+              </div>
+            </div>
+          </div>
+        </header>
+        <section class="notifications-page__content">
+          <div class="notifications-page__heading">
+            <h1>Notificações</h1>
+            <button type="button" data-notifications-read-all>Marcar todas como lidas</button>
+          </div>
+          <div class="notifications notifications-page__list" data-notifications>
+            <div class="notifications__list" data-notifications-list><p class="notifications__empty">Carregando…</p></div>
+          </div>
+        </section>
+      </main>
+    </div>`;
+
+  app.querySelector('[data-notifications-back]')?.addEventListener('click', () => navigateToFeed(currentUser));
+  setupNotifications(currentUser);
+}
+
 function navigateToFeed(currentUser, mode = 'home') {
   if (window.location.hash !== '#inicio') {
     window.history.pushState({ page: 'feed' }, '', '#inicio');
@@ -3012,5 +3008,6 @@ window.addEventListener('hashchange', () => {
   else if (gameId) renderGamePage(activeUser, gameId);
   else if (reviewId) renderReviewPage(activeUser, reviewId);
   else if (window.location.hash === '#/buscar') renderSearchPage(activeUser);
+  else if (window.location.hash === '#/notificacoes') renderNotificationsPage(activeUser);
   else renderSignedIn(activeUser);
 });
