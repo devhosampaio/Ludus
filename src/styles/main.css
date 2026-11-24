@@ -1291,3 +1291,19 @@ select {
   border-radius: 3px;
 }
 
+
+
+/* Tom cinza-claro nos contornos e ícones dos botões de menu e voltar. */
+.app-topbar .app-topbar__menu-button,
+.app-topbar .app-topbar__menu-button:hover,
+.app-topbar .app-topbar__menu-button:focus,
+.app-topbar .app-topbar__menu-button:active,
+.app-topbar .app-topbar__menu-button i,
+.profile-page__back-button,
+.profile-page__back-button:hover,
+.profile-page__back-button:focus,
+.profile-page__back-button:active,
+.profile-page__back-button i {
+  color: #aeb7c2 !important;
+  border-color: #aeb7c2 !important;
+}
