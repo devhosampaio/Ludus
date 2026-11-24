@@ -1074,3 +1074,7 @@ select {
 .game-list-creator__selected-item { display: inline-flex; align-items: center; gap: 6px; padding: 5px 8px; border: 1px solid currentColor; }
 .game-list-creator__selected-item button { border: 0; background: transparent; font-size: 18px; line-height: 1; }
 .game-list-creator__actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; }
+
+.profile-page__favorites-actions { display: flex; justify-content: flex-end; margin: 0 0 10px; }
+.profile-page__favorite-actions { position: absolute; inset: 6px 6px auto; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+.profile-page__favorite-actions button { max-width: 100%; }
