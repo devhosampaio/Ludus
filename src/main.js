@@ -818,7 +818,7 @@ async function renderSignedIn(user, initialFeedMode = 'home') {
       const game = gameData.title || 'Jogo';
       const gameYear = gameData.release_year ? String(gameData.release_year) : '';
       const gameTitleMarkup = '<span class="review-card__game-title">' + escapeHTML(game) + '</span>' +
-        (gameYear ? '<span class="review-card__game-year">' + escapeHTML(gameYear) + '</span>' : '');
+        (gameYear ? '<span class="review-card__game-year">(' + escapeHTML(gameYear) + ')</span>' : '');
       const platformList = Array.isArray(gameData.platforms) ? gameData.platforms : [];
       const platformText = platformList.map((item) => typeof item === 'string' ? item : item?.name).filter(Boolean).join(', ');
       const gameMeta = [platformText, gameYear, gameData.developer].filter(Boolean).map(escapeHTML).join(' <span aria-hidden="true">·</span> ');
