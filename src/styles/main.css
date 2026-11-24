@@ -1291,19 +1291,3 @@ select {
   border-radius: 3px;
 }
 
-
-/* Sombras discretas nas capas e nos títulos dos jogos. */
-.review-card__cover,
-.review-card__cover-wrap img,
-.profile-page__favorite img,
-.profile-page__list-covers img,
-.game-page__cover,
-.profile-page__review-cover,
-.composer__game-result img {
-  box-shadow: 0 2px 5px rgba(0, 0, 0, .22);
-}
-
-.review-card__game-heading,
-.profile-page__favorite > span:not(.profile-page__favorite-empty) {
-  text-shadow: 0 1px 3px rgba(0, 0, 0, .28);
-}
