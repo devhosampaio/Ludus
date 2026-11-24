@@ -724,8 +724,8 @@ img { max-width: 100%; }
 }
 .bottom-nav__profile-avatar svg {
   display: block;
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
   fill: none;
   stroke: currentColor;
   stroke-width: 1.8;
@@ -838,12 +838,13 @@ img { max-width: 100%; }
 .bottom-nav .notifications__trigger i {
   display: block;
   margin: 0;
+  font-size: 24px;
   color: #fff !important;
 }
 .bottom-nav .bottom-nav__review i {
   display: grid;
-  width: 36px;
-  height: 36px;
+  width: 40px;
+  height: 40px;
   place-items: center;
   border-radius: 50%;
   background: #7060ab;
