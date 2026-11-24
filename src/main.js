@@ -2308,7 +2308,7 @@ async function openProfileEditor(user, profile) {
         <label class="profile-editor__field"><span>Nome de usuário</span><div class="profile-editor__username"><input name="username" type="text" minlength="3" maxlength="16" pattern="[A-Za-z0-9._-]+" required value="${escapeHTML(profile.username || '')}" autocomplete="username"></div><small>Utilize letras, números e caracteres especiais</small></label>
         <label class="profile-editor__field"><span>Biografia</span><textarea name="bio" maxlength="240" rows="3" placeholder="Conte um pouco sobre você…">${escapeHTML(profile.bio || '')}</textarea><small>Até 240 caracteres</small></label>
         <div class="profile-editor__uploads">
-          <label class="profile-editor__upload"><span>Foto de perfil</span><div class="profile-editor__preview profile-editor__preview--avatar" data-avatar-preview>${profile.avatar_url ? '<img src="' + escapeHTML(profile.avatar_url) + '" alt="">' : '<span>' + escapeHTML((profile.display_name || profile.username || 'L').charAt(0).toUpperCase()) + '</span>'}</div><input type="file" name="avatar" accept="image/png,image/jpeg,image/webp,image/gif"><small>PNG, JPG, WEBP ou GIF · até 5 MB</small></label>
+          <label class="profile-editor__upload"><span>Foto de perfil</span><div class="profile-editor__preview profile-editor__preview--avatar" data-avatar-preview>${profile.avatar_url ? '<img src="' + escapeHTML(profile.avatar_url) + '" alt="">' : '<span>' + escapeHTML((profile.display_name || profile.username || 'L').charAt(0).toUpperCase()) + '</span>'}</div><input type="file" name="avatar" accept="image/png,image/jpeg,image/webp,image/gif"><small>PNG, JPG, WEBP ou GIF · até 5 MB. GIFs mantêm a animação.</small></label>
           <label class="profile-editor__upload"><span>Imagem de capa</span><div class="profile-editor__preview profile-editor__preview--banner" data-banner-preview>${profile.banner_url ? '<img src="' + escapeHTML(profile.banner_url) + '" alt="">' : '<span>Prévia da capa</span>'}</div><input type="file" name="banner" accept="image/png,image/jpeg,image/webp,image/gif"><small>PNG, JPG, WEBP ou GIF · até 5 MB</small></label>
         </div>
         <p class="profile-editor__message" data-editor-message role="status"></p>
@@ -2328,7 +2328,6 @@ async function openProfileEditor(user, profile) {
   let activeCropper = null;
   let activeCropUrl = null;
   let activeCropField = null;
-  let pendingCroppedFile = null;
 
   const cropOverlay = document.createElement('div');
   cropOverlay.className = 'profile-crop-overlay';
@@ -2393,7 +2392,6 @@ async function openProfileEditor(user, profile) {
       const transfer = new DataTransfer();
       transfer.items.add(cropped);
       activeCropField.input.files = transfer.files;
-      pendingCroppedFile = cropped;
       const preview = form.querySelector(activeCropField.previewSelector);
       const previewUrl = URL.createObjectURL(cropped);
       preview.innerHTML = '<img src="' + previewUrl + '" alt="Prévia da imagem recortada">';
@@ -2411,13 +2409,20 @@ async function openProfileEditor(user, profile) {
         input.value = '';
         return;
       }
+      closeCropper(false);
+      if (file.type === 'image/gif') {
+        const preview = form.querySelector(previewSelector);
+        const previewUrl = URL.createObjectURL(file);
+        preview.innerHTML = '<img src="' + previewUrl + '" alt="Prévia do GIF animado">';
+        message.textContent = 'GIF selecionado. A animação será preservada; o recorte manual não estará disponível.';
+        return;
+      }
       if (typeof window.Cropper === 'undefined') {
         message.textContent = 'O editor de imagem não carregou. Atualize a página e tente novamente.';
         input.value = '';
         return;
       }
       message.textContent = '';
-      closeCropper(false);
       activeCropField = { field, input, file, previewSelector };
       activeCropUrl = URL.createObjectURL(file);
       cropImage.src = activeCropUrl;
