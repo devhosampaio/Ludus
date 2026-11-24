@@ -75,6 +75,10 @@ Deno.serve(async (req: Request) => {
     if (action === "save") {
       const gameId = Number(body.game?.id);
       const title = String(body.game?.name ?? "").trim().slice(0, 180);
+      const releaseYearValue = Number(body.game?.release_year);
+      const releaseYear = Number.isInteger(releaseYearValue) && releaseYearValue >= 1970 && releaseYearValue <= 2100
+        ? releaseYearValue
+        : null;
       if (!Number.isSafeInteger(gameId) || gameId <= 0 || !title) {
         return json({ error: "Jogo inválido." }, 400);
       }
@@ -103,7 +107,8 @@ Deno.serve(async (req: Request) => {
         slug: `${slugBase}-${gameId}`,
         title,
         cover_url: coverUrl,
-      }, { onConflict: "steamgriddb_id" }).select("id, steamgriddb_id, slug, title, cover_url").single();
+        release_year: releaseYear,
+      }, { onConflict: "steamgriddb_id" }).select("id, steamgriddb_id, slug, title, cover_url, release_year").single();
 
       if (saveError) {
         console.error("[steamgriddb] Não foi possível salvar o jogo:", saveError.message);
