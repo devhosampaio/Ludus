@@ -413,14 +413,9 @@ function setupBottomNavAutoHide() {
 function triggerPageTransition() {
   const shell = app.querySelector('.feed-shell');
   if (!shell) return;
-  const overlay = document.createElement('div');
-  overlay.className = 'page-transition-overlay';
-  overlay.setAttribute('aria-hidden', 'true');
-  app.append(overlay);
   shell.classList.remove('is-page-entering');
   void shell.offsetWidth;
   shell.classList.add('is-page-entering');
-  overlay.addEventListener('animationend', () => overlay.remove(), { once: true });
   shell.addEventListener('animationend', (event) => {
     if (event.target === shell) shell.classList.remove('is-page-entering');
   }, { once: true });
