@@ -1256,3 +1256,23 @@ select {
   border: 0 !important;
 }
 
+
+
+/* Mantém o botão de voltar do perfil na mesma posição do botão de menu do feed. */
+.profile-page__back-button,
+.profile-page__back-button:hover,
+.profile-page__back-button:focus,
+.profile-page__back-button:active {
+  position: fixed !important;
+  top: 8px !important;
+  left: 15px !important;
+  z-index: 103 !important;
+  color: #fff !important;
+  border-color: currentColor !important;
+}
+.app-topbar .app-topbar__menu-button,
+.app-topbar .app-topbar__menu-button:hover,
+.app-topbar .app-topbar__menu-button:focus,
+.app-topbar .app-topbar__menu-button:active {
+  border-color: currentColor !important;
+}
