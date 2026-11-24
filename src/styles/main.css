@@ -1119,8 +1119,21 @@ select {
   .profile-image-viewer__close { top: 8px; right: 8px; }
 }
 
-/* Borda inferior das seções do perfil. */
+/* Espaçamento inferior e divisórias em largura total nas seções do perfil. */
 .profile-page__favorites,
 .profile-page__lists {
+  position: relative;
+  padding-bottom: 20px;
+  border-bottom: 0;
+}
+.profile-page__favorites::after,
+.profile-page__lists::after {
+  position: absolute;
+  right: auto;
+  bottom: 0;
+  left: 50%;
+  width: 100vw;
   border-bottom: 1px solid #3a4554;
+  content: "";
+  transform: translateX(-50%);
 }
