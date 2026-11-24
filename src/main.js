@@ -1950,7 +1950,7 @@ async function renderProfilePage(currentUser, username) {
   if (favoriteError) console.error('[Ludus] Falha ao carregar jogos favoritos:', favoriteError);
 
   const { data: createdLists, error: createdListsError } = await supabase.from('game_lists')
-    .select('id, name, description, created_at, game_list_items(id, games(id, title, cover_url))')
+    .select('id, name, description, created_at, game_list_items(id, position, games(id, title, cover_url))')
     .eq('user_id', profile.id).eq('is_public', true).order('created_at', { ascending: false });
   if (createdListsError) console.error('[Ludus] Falha ao carregar listas públicas:', createdListsError);
 
