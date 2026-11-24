@@ -120,7 +120,8 @@ img { max-width: 100%; }
 .profile-page__avatar img { width: 100%; height: 100%; object-fit: cover; }
 .profile-page__bio { margin-top: 16px; white-space: pre-wrap; }
 .profile-page__favorites { margin-top: 24px; }
-.profile-page__favorites-heading h2 { margin: 0 0 12px; font-size: 18px; }
+.profile-page__favorites-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+.profile-page__favorites-heading h2 { margin: 0; font-size: 18px; }
 .profile-page__favorites-list { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
 .profile-page__favorite, .profile-page__favorite-slot { position: relative; min-width: 0; }
 .profile-page__favorite img, .profile-page__favorite-empty { display: block; width: 100%; aspect-ratio: 2 / 3; object-fit: cover; }
@@ -129,7 +130,8 @@ img { max-width: 100%; }
 .profile-page__favorite-slot { display: grid; width: 100%; aspect-ratio: 2 / 3; min-height: 0; place-items: center; }
 .profile-page__favorites-empty { margin: 0; }
 .profile-page__lists { margin-top: 24px; }
-.profile-page__lists-heading h2 { margin: 0 0 12px; font-size: 20px; }
+.profile-page__lists-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+.profile-page__lists-heading h2 { margin: 0; font-size: 20px; }
 .profile-page__lists-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 12px; }
 .profile-page__list-card { display: flex; min-width: 0; gap: 10px; }
 .profile-page__list-covers { display: grid; flex: 0 0 76px; width: 76px; aspect-ratio: 1; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); overflow: hidden; }
@@ -1075,7 +1077,8 @@ select {
 .game-list-creator__selected-item button { border: 0; background: transparent; font-size: 18px; line-height: 1; }
 .game-list-creator__actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; }
 
-.profile-page__favorites-actions { display: flex; justify-content: flex-end; margin: 0 0 10px; }
+.profile-page__favorites-actions,
+.profile-page__lists-heading-actions { display: flex; align-items: center; justify-content: flex-end; flex: 0 0 auto; }
 .profile-page__favorite-actions { position: absolute; inset: 6px 6px auto; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
 .profile-page__favorite-actions button { max-width: 100%; }
 
