@@ -395,6 +395,7 @@ function setupBottomNavAutoHide() {
   const controller = new AbortController();
   app.__bottomNavScrollController = controller;
   let previousY = window.scrollY || document.documentElement.scrollTop || 0;
+  let previousPointerY = null;
   let previousTouchY = null;
 
   const setHidden = (hidden) => {
@@ -402,33 +403,54 @@ function setupBottomNavAutoHide() {
     navigation.classList.toggle('is-scroll-hidden', hidden);
   };
 
-  const handleScroll = () => {
-    const currentY = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0;
+  const handleScroll = (event) => {
+    const target = event?.target;
+    const currentY = target && target !== document && typeof target.scrollTop === 'number'
+      ? target.scrollTop
+      : (window.scrollY || document.documentElement.scrollTop || document.body.scrollTop || 0);
     const delta = currentY - previousY;
-    if (delta > 3 && currentY > 20) setHidden(true);
-    else if (delta < -3 || currentY <= 20) setHidden(false);
+    if (delta > 2 && currentY > 10) setHidden(true);
+    else if (delta < -2 || currentY <= 10) setHidden(false);
     previousY = currentY;
+  };
+
+  const handleGestureMove = (currentY, previousY) => {
+    if (currentY == null || previousY == null) return;
+    const delta = previousY - currentY;
+    if (delta > 4) setHidden(true);
+    else if (delta < -4) setHidden(false);
   };
 
   document.addEventListener('scroll', handleScroll, { passive: true, capture: true, signal: controller.signal });
   window.addEventListener('scroll', handleScroll, { passive: true, signal: controller.signal });
 
+  document.addEventListener('pointerdown', (event) => {
+    if (event.pointerType === 'touch' || event.pointerType === 'pen') previousPointerY = event.clientY;
+  }, { passive: true, capture: true, signal: controller.signal });
+  document.addEventListener('pointermove', (event) => {
+    if (previousPointerY == null || (event.pointerType !== 'touch' && event.pointerType !== 'pen')) return;
+    handleGestureMove(event.clientY, previousPointerY);
+    previousPointerY = event.clientY;
+  }, { passive: true, capture: true, signal: controller.signal });
+  document.addEventListener('pointerup', () => { previousPointerY = null; }, { passive: true, capture: true, signal: controller.signal });
+  document.addEventListener('pointercancel', () => { previousPointerY = null; }, { passive: true, capture: true, signal: controller.signal });
+
   document.addEventListener('touchstart', (event) => {
     previousTouchY = event.touches[0]?.clientY ?? null;
   }, { passive: true, capture: true, signal: controller.signal });
-
   document.addEventListener('touchmove', (event) => {
     const touchY = event.touches[0]?.clientY;
-    if (touchY == null || previousTouchY == null) return;
-    const delta = previousTouchY - touchY;
-    if (delta > 5) setHidden(true);
-    else if (delta < -5) setHidden(false);
-    previousTouchY = touchY;
+    handleGestureMove(touchY, previousTouchY);
+    previousTouchY = touchY ?? null;
   }, { passive: true, capture: true, signal: controller.signal });
-
   document.addEventListener('touchend', () => { previousTouchY = null; }, { passive: true, capture: true, signal: controller.signal });
-}
+  document.addEventListener('touchcancel', () => { previousTouchY = null; }, { passive: true, capture: true, signal: controller.signal });
 
+  document.addEventListener('wheel', (event) => {
+    if (event.deltaY > 2) setHidden(true);
+    else if (event.deltaY < -2) setHidden(false);
+  }, { passive: true, capture: true, signal: controller.signal });
+}
 function triggerPageTransition() {
   const shell = app.querySelector('.feed-shell');
   if (!shell) return;
