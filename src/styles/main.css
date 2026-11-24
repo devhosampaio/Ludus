@@ -789,16 +789,18 @@ img { max-width: 100%; }
 .bottom-nav {
   display: flex;
   flex-direction: row;
-  justify-content: space-around;
+  justify-content: space-between;
   align-items: center;
+  padding-right: 4px;
+  padding-left: 4px;
 }
 .bottom-nav > .bottom-nav__item,
 .bottom-nav > .bottom-nav__notifications {
   display: flex;
-  flex: 1 1 20%;
+  flex: 0 0 48px;
   align-items: center;
   justify-content: center;
-  min-width: 0;
+  min-width: 48px;
   height: 68px;
   margin: 0;
 }
