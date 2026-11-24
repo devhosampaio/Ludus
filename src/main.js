@@ -660,7 +660,7 @@ async function renderSignedIn(user, initialFeedMode = 'home') {
   const feedList = app.querySelector('[data-feed-list]');
   const { data: reviews, error } = await withRequestTimeout(
     fetchAllPages(() => supabase.from('reviews')
-      .select('id, user_id, game_id, rating, body, status, liked_game, created_at, profiles!reviews_user_id_fkey(username, display_name, avatar_url), games!reviews_game_id_fkey(title, cover_url, hero_url, release_year, developer, platforms)')
+      .select('id, user_id, game_id, rating, body, status, liked_game, created_at, profiles!reviews_user_id_fkey(username, display_name, avatar_url), games!reviews_game_id_fkey(title, cover_url, hero_url, steamgriddb_id, release_year, developer, platforms)')
       .order('created_at', { ascending: false })),
     15000,
     { data: [], error: new Error('A consulta principal do feed excedeu o tempo limite.') }
