@@ -1615,7 +1615,7 @@ async function renderReviewReportPage(currentUser, reviewId) {
     '<button type="button" class="review-report-page__back" data-report-back><i class="fa-solid fa-arrow-left" aria-hidden="true"></i><span>Voltar à avaliação</span></button>' +
     '<header class="review-report-page__heading"><span class="review-report-page__eyebrow">SEGURANÇA DA COMUNIDADE</span><h1 id="review-report-title">Denunciar avaliação</h1><p>Conte o que há de errado com esta publicação. Sua denúncia será analisada pela equipe do Ludus.</p></header>' +
     '<article class="review-report-page__context">' + cover + '<div class="review-report-page__context-copy"><strong>' + escapeHTML(game.title || 'Jogo') + (game.release_year ? ' (' + escapeHTML(game.release_year) + ')' : '') + '</strong><span>Avaliação de ' + escapeHTML(author) + '</span>' + (review.body ? '<p>' + escapeHTML(review.body.length > 180 ? review.body.slice(0, 180) + '…' : review.body) + '</p>' : '') + '</div></article>' +
-    '<form class="review-report-page__form" data-review-report-form>' +
+    '<form id="review-report-form" class="review-report-page__form" data-review-report-form>' +
     '<fieldset><legend>Por que você está denunciando esta avaliação?</legend><p class="review-report-page__hint">Selecione o motivo que melhor descreve o problema.</p>' +
     '<label class="review-report-page__option"><input type="radio" name="report-reason" value="spam" required><span><strong>Spam</strong><small>Publicidade, conteúdo repetitivo ou enganoso.</small></span></label>' +
     '<label class="review-report-page__option"><input type="radio" name="report-reason" value="harassment"><span><strong>Assédio ou discurso de ódio</strong><small>Ataques, ameaças ou discriminação.</small></span></label>' +
@@ -1624,15 +1624,16 @@ async function renderReviewReportPage(currentUser, reviewId) {
     '<label class="review-report-page__option"><input type="radio" name="report-reason" value="other"><span><strong>Outro motivo</strong><small>O problema não se encaixa nas opções acima.</small></span></label></fieldset>' +
     '<label class="review-report-page__details-label" for="review-report-details">Detalhes adicionais <span>(opcional)</span></label><textarea id="review-report-details" name="details" rows="4" maxlength="1000" placeholder="Explique melhor o que aconteceu…"></textarea>' +
     '<p class="review-report-page__feedback" data-report-feedback role="status" aria-live="polite" hidden></p>' +
-    '<div class="review-report-page__actions"><button type="button" class="review-report-page__cancel" data-report-back>Cancelar</button><button type="submit" class="review-report-page__submit"><i class="fa-solid fa-flag" aria-hidden="true"></i><span>Enviar denúncia</span></button></div>' +
-    '</form></section>';
+    '</form>' +
+    '<div class="review-report-page__actions" data-report-actions><button type="button" class="review-report-page__cancel" data-report-back>Cancelar</button><button type="submit" form="review-report-form" class="review-report-page__submit"><i class="fa-solid fa-flag" aria-hidden="true"></i><span>Enviar denúncia</span></button></div>' +
+    '</section>';
   content.querySelectorAll('[data-report-back]').forEach((button) => button.addEventListener('click', () => navigateToReview(currentUser, review.id)));
   const form = content.querySelector('[data-review-report-form]');
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
     const reason = form.querySelector('input[name="report-reason"]:checked')?.value;
     const feedback = form.querySelector('[data-report-feedback]');
-    const submit = form.querySelector('[type="submit"]');
+    const submit = content.querySelector('.review-report-page__submit');
     if (!reason) {
       feedback.textContent = 'Selecione um motivo para continuar.';
       feedback.hidden = false;
@@ -1656,6 +1657,7 @@ async function renderReviewReportPage(currentUser, reviewId) {
       submit.querySelector('span').textContent = 'Enviar denúncia';
       return;
     }
+    content.querySelector('[data-report-actions]')?.setAttribute('hidden', '');
     form.innerHTML = '<div class="review-report-page__success"><span class="review-report-page__success-icon"><i class="fa-solid fa-check" aria-hidden="true"></i></span><h2>Denúncia enviada</h2><p>Obrigado por ajudar a manter a comunidade segura. Nossa equipe irá analisar esta avaliação.</p><button type="button" data-report-done>Voltar à avaliação</button></div>';
     form.querySelector('[data-report-done]')?.addEventListener('click', () => navigateToReview(currentUser, review.id));
   });
