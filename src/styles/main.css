@@ -39,6 +39,7 @@
   --font-size-xs: var(--font-size-12);
   --font-size-sm: var(--font-size-14);
   --font-size-md: var(--font-size-16);
+  --font-size-base: var(--font-size-md);
   --font-size-lg: var(--font-size-20);
   --font-size-xl: var(--font-size-24);
   --font-size-2xl: var(--font-size-28);
@@ -1424,8 +1425,8 @@ select {
   animation: ludus-page-enter 320ms ease-in-out both;
 }
 @keyframes ludus-page-enter {
-  from { opacity: .94; transform: translateY(2px); }
-  to { opacity: 1; transform: translateY(0); }
+  from { opacity: .94; }
+  to { opacity: 1; }
 }
 .review-card__game-year {
   font-size: var(--font-size-lg);
@@ -1550,4 +1551,9 @@ select {
   row-gap: 0 !important;
   column-gap: 0 !important;
   grid-gap: 0 !important;
+}
+
+/* Todos os textos e glifos usam o tamanho-base normal da escala semântica. */
+*, *::before, *::after {
+  font-size: var(--font-size-base) !important;
 }
