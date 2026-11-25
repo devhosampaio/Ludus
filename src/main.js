@@ -513,7 +513,7 @@ function setupDeveloperInspector() {
     '</header>' +
     '<div class="dev-inspector-panel__status"><span class="dev-inspector-panel__status-dot"></span> Ambiente de desenvolvimento</div>' +
     '<section class="dev-inspector-panel__section">' +
-    '<div class="dev-inspector-panel__section-heading"><span>INSPEÇÃO VISUAL</span><span class="dev-inspector-panel__section-count">05 opções</span></div>' +
+    '<div class="dev-inspector-panel__section-heading"><span>INSPEÇÃO VISUAL</span><span class="dev-inspector-panel__section-count">06 opções</span></div>' +
     '<p class="dev-inspector-panel__description">Escolha quais informações aparecem ao contornar os elementos da página.</p>' +
     '<div class="dev-inspector-panel__options">' +
     '<label class="dev-inspector-option"><span class="dev-inspector-option__copy"><strong>Elemento</strong><small>Tag HTML</small></span><input type="checkbox" data-dev-field="tag"><span class="dev-inspector-option__switch"></span></label>' +
@@ -521,6 +521,7 @@ function setupDeveloperInspector() {
     '<label class="dev-inspector-option"><span class="dev-inspector-option__copy"><strong>Dimensões</strong><small>Largura e altura</small></span><input type="checkbox" data-dev-field="dimensions"><span class="dev-inspector-option__switch"></span></label>' +
     '<label class="dev-inspector-option"><span class="dev-inspector-option__copy"><strong>Tipografia</strong><small>Tamanho e peso</small></span><input type="checkbox" data-dev-field="font"><span class="dev-inspector-option__switch"></span></label>' +
     '<label class="dev-inspector-option"><span class="dev-inspector-option__copy"><strong>Identificador</strong><small>ID do elemento</small></span><input type="checkbox" data-dev-field="id"><span class="dev-inspector-option__switch"></span></label>' +
+    '<label class="dev-inspector-option"><span class="dev-inspector-option__copy"><strong>Contornos</strong><small>Linhas ao redor dos elementos</small></span><input type="checkbox" data-dev-field="outlines"><span class="dev-inspector-option__switch"></span></label>' +
     '</div></section>' +
     '<section class="dev-inspector-panel__section dev-inspector-editor">' +
     '<div class="dev-inspector-panel__section-heading"><span>EDITOR VISUAL</span><span class="dev-inspector-panel__section-count">BETA</span></div>' +
@@ -569,6 +570,18 @@ function setupDeveloperInspector() {
         originalTransformPriority: element.style.getPropertyPriority('transform'),
         originalBoxSizing: element.style.getPropertyValue('box-sizing'),
         originalBoxSizingPriority: element.style.getPropertyPriority('box-sizing'),
+        originalDisplay: element.style.getPropertyValue('display'),
+        originalDisplayPriority: element.style.getPropertyPriority('display'),
+        originalMaxWidth: element.style.getPropertyValue('max-width'),
+        originalMaxWidthPriority: element.style.getPropertyPriority('max-width'),
+        originalMaxHeight: element.style.getPropertyValue('max-height'),
+        originalMaxHeightPriority: element.style.getPropertyPriority('max-height'),
+        originalMinWidth: element.style.getPropertyValue('min-width'),
+        originalMinWidthPriority: element.style.getPropertyPriority('min-width'),
+        originalMinHeight: element.style.getPropertyValue('min-height'),
+        originalMinHeightPriority: element.style.getPropertyPriority('min-height'),
+        originalFlex: element.style.getPropertyValue('flex'),
+        originalFlexPriority: element.style.getPropertyPriority('flex'),
         width: element.getBoundingClientRect().width,
         height: element.getBoundingClientRect().height,
         initialWidth: element.getBoundingClientRect().width,
@@ -587,6 +600,12 @@ function setupDeveloperInspector() {
     element.style.setProperty('transform', transform, 'important');
     element.style.setProperty('width', Math.max(1, change.width) + 'px', 'important');
     element.style.setProperty('height', Math.max(1, change.height) + 'px', 'important');
+    element.style.setProperty('min-width', '0', 'important');
+    element.style.setProperty('min-height', '0', 'important');
+    element.style.setProperty('max-width', 'none', 'important');
+    element.style.setProperty('max-height', 'none', 'important');
+    if (getComputedStyle(element).display === 'inline') element.style.setProperty('display', 'inline-block', 'important');
+    if (['flex', 'inline-flex'].includes(getComputedStyle(element.parentElement || document.body).display)) element.style.setProperty('flex', '0 0 auto', 'important');
     element.style.setProperty('box-sizing', 'border-box', 'important');
   };
   const updateEditorFields = () => {
@@ -618,7 +637,9 @@ function setupDeveloperInspector() {
       if (!active) return;
       layer.replaceChildren();
       const selected = fields();
+      if (!selected.outlines && !selecting && !selectedElement) { updateEditorFields(); return; }
       document.body.querySelectorAll('body *').forEach((element) => {
+        if (!selected.outlines && !selecting && element !== selectedElement) return;
         if (ignored(element)) return;
         const rect = element.getBoundingClientRect();
         if (!rect.width || !rect.height || rect.bottom < 0 || rect.right < 0 ||
@@ -667,6 +688,12 @@ function setupDeveloperInspector() {
     restore('height', change.originalHeight, change.originalHeightPriority);
     restore('transform', change.originalTransform, change.originalTransformPriority);
     restore('box-sizing', change.originalBoxSizing, change.originalBoxSizingPriority);
+    restore('display', change.originalDisplay, change.originalDisplayPriority);
+    restore('max-width', change.originalMaxWidth, change.originalMaxWidthPriority);
+    restore('max-height', change.originalMaxHeight, change.originalMaxHeightPriority);
+    restore('min-width', change.originalMinWidth, change.originalMinWidthPriority);
+    restore('min-height', change.originalMinHeight, change.originalMinHeightPriority);
+    restore('flex', change.originalFlex, change.originalFlexPriority);
     changes.delete(element);
   };
   const toggle = (enabled) => {
@@ -746,6 +773,7 @@ function setupDeveloperInspector() {
     if (input.dataset.devSize === 'width') change.width = value;
     else change.height = value;
     applyChange(selectedElement);
+    updateEditorFields();
     draw();
   }));
   panel.querySelector('[data-dev-reset]').addEventListener('click', () => {
