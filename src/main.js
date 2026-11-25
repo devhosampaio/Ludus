@@ -516,13 +516,26 @@ function setupDeveloperInspector() {
     '<div class="dev-inspector-panel__section-heading"><span>INSPEÇÃO VISUAL</span><span class="dev-inspector-panel__section-count">05 opções</span></div>' +
     '<p class="dev-inspector-panel__description">Escolha quais informações aparecem ao contornar os elementos da página.</p>' +
     '<div class="dev-inspector-panel__options">' +
-    '<label class="dev-inspector-option"><span class="dev-inspector-option__copy"><strong>Elemento</strong><small>Tag HTML</small></span><input type="checkbox" data-dev-field="tag" checked><span class="dev-inspector-option__switch"></span></label>' +
-    '<label class="dev-inspector-option"><span class="dev-inspector-option__copy"><strong>Classe CSS</strong><small>Seletores aplicados</small></span><input type="checkbox" data-dev-field="class" checked><span class="dev-inspector-option__switch"></span></label>' +
-    '<label class="dev-inspector-option"><span class="dev-inspector-option__copy"><strong>Dimensões</strong><small>Largura e altura</small></span><input type="checkbox" data-dev-field="dimensions" checked><span class="dev-inspector-option__switch"></span></label>' +
-    '<label class="dev-inspector-option"><span class="dev-inspector-option__copy"><strong>Tipografia</strong><small>Tamanho e peso</small></span><input type="checkbox" data-dev-field="font" checked><span class="dev-inspector-option__switch"></span></label>' +
+    '<label class="dev-inspector-option"><span class="dev-inspector-option__copy"><strong>Elemento</strong><small>Tag HTML</small></span><input type="checkbox" data-dev-field="tag"><span class="dev-inspector-option__switch"></span></label>' +
+    '<label class="dev-inspector-option"><span class="dev-inspector-option__copy"><strong>Classe CSS</strong><small>Seletores aplicados</small></span><input type="checkbox" data-dev-field="class"><span class="dev-inspector-option__switch"></span></label>' +
+    '<label class="dev-inspector-option"><span class="dev-inspector-option__copy"><strong>Dimensões</strong><small>Largura e altura</small></span><input type="checkbox" data-dev-field="dimensions"><span class="dev-inspector-option__switch"></span></label>' +
+    '<label class="dev-inspector-option"><span class="dev-inspector-option__copy"><strong>Tipografia</strong><small>Tamanho e peso</small></span><input type="checkbox" data-dev-field="font"><span class="dev-inspector-option__switch"></span></label>' +
     '<label class="dev-inspector-option"><span class="dev-inspector-option__copy"><strong>Identificador</strong><small>ID do elemento</small></span><input type="checkbox" data-dev-field="id"><span class="dev-inspector-option__switch"></span></label>' +
     '</div></section>' +
-    '<footer class="dev-inspector-panel__footer"><span>EDITOR VISUAL</span><span class="dev-inspector-panel__coming-soon">EM PREPARAÇÃO</span></footer>';
+    '<section class="dev-inspector-panel__section dev-inspector-editor">' +
+    '<div class="dev-inspector-panel__section-heading"><span>EDITOR VISUAL</span><span class="dev-inspector-panel__section-count">BETA</span></div>' +
+    '<p class="dev-inspector-panel__description">Selecione um elemento na página para ajustar sua posição e suas dimensões.</p>' +
+    '<button type="button" class="dev-inspector-editor__select" data-dev-select-mode><i class="fa-solid fa-arrow-pointer" aria-hidden="true"></i><span>Selecionar elemento</span></button>' +
+    '<div class="dev-inspector-editor__selection" data-dev-selection hidden>' +
+    '<div class="dev-inspector-editor__selected-name" data-dev-selected-name>Nenhum elemento selecionado</div>' +
+    '<div class="dev-inspector-editor__fields">' +
+    '<label><span>Largura</span><span><input type="number" min="1" step="1" data-dev-size="width"> px</span></label>' +
+    '<label><span>Altura</span><span><input type="number" min="1" step="1" data-dev-size="height"> px</span></label>' +
+    '</div>' +
+    '<div class="dev-inspector-editor__hint">Arraste o elemento para mover. Use a alça no canto para redimensionar.</div>' +
+    '<div class="dev-inspector-editor__actions"><button type="button" data-dev-copy><i class="fa-regular fa-copy" aria-hidden="true"></i> Copiar CSS</button><button type="button" data-dev-reset><i class="fa-solid fa-rotate-left" aria-hidden="true"></i> Desfazer ajustes</button></div>' +
+    '</div></section>' +
+    '<footer class="dev-inspector-panel__footer"><span>ALTERAÇÕES TEMPORÁRIAS</span><span class="dev-inspector-panel__coming-soon">NÃO PUBLICADAS</span></footer>';
 
   const layer = document.createElement('div');
   layer.className = 'dev-inspector-layer';
@@ -532,30 +545,95 @@ function setupDeveloperInspector() {
 
   let active = false;
   let frame = 0;
+  let selectedElement = null;
+  let selecting = false;
+  let dragState = null;
+  const changes = new Map();
+  const selectionBox = panel.querySelector('[data-dev-selection]');
+  const selectButton = panel.querySelector('[data-dev-select-mode]');
+  const selectedName = panel.querySelector('[data-dev-selected-name]');
+  const sizeInputs = [...panel.querySelectorAll('[data-dev-size]')];
   const fields = () => Object.fromEntries([...panel.querySelectorAll('[data-dev-field]')].map((input) => [input.dataset.devField, input.checked]));
   const ignored = (element) => element === button || panel.contains(element) || layer.contains(element) ||
     element.closest('[data-dev-inspector-panel], [data-dev-inspector-layer], [data-dev-inspector-toggle]') ||
     element.hidden || getComputedStyle(element).display === 'none' || getComputedStyle(element).visibility === 'hidden';
-
+  const getChange = (element) => {
+    if (!changes.has(element)) {
+      const style = getComputedStyle(element);
+      changes.set(element, {
+        originalWidth: element.style.getPropertyValue('width'),
+        originalWidthPriority: element.style.getPropertyPriority('width'),
+        originalHeight: element.style.getPropertyValue('height'),
+        originalHeightPriority: element.style.getPropertyPriority('height'),
+        originalTranslate: element.style.getPropertyValue('translate'),
+        originalTranslatePriority: element.style.getPropertyPriority('translate'),
+        width: element.getBoundingClientRect().width,
+        height: element.getBoundingClientRect().height,
+        x: 0,
+        y: 0,
+        baseTranslate: style.translate === 'none' ? '' : style.translate
+      });
+    }
+    return changes.get(element);
+  };
+  const applyChange = (element) => {
+    const change = changes.get(element);
+    if (!change) return;
+    const translate = [change.baseTranslate, change.x + 'px ' + change.y + 'px'].filter(Boolean).join(' ');
+    element.style.setProperty('translate', translate, 'important');
+    element.style.setProperty('width', Math.max(1, change.width) + 'px', 'important');
+    element.style.setProperty('height', Math.max(1, change.height) + 'px', 'important');
+    element.style.setProperty('box-sizing', 'border-box', 'important');
+  };
+  const updateEditorFields = () => {
+    if (!selectedElement) {
+      selectionBox.hidden = true;
+      return;
+    }
+    selectionBox.hidden = false;
+    const change = changes.get(selectedElement);
+    const rect = selectedElement.getBoundingClientRect();
+    selectedName.textContent = (selectedElement.tagName.toLowerCase() + (selectedElement.id ? '#' + selectedElement.id : '') +
+      (typeof selectedElement.className === 'string' && selectedElement.className.trim() ? '.' + selectedElement.className.trim().split(/\s+/).slice(0, 2).join('.') : ''));
+    sizeInputs.find((input) => input.dataset.devSize === 'width').value = String(Math.round(change?.width ?? rect.width));
+    sizeInputs.find((input) => input.dataset.devSize === 'height').value = String(Math.round(change?.height ?? rect.height));
+  };
+  const selectElement = (element) => {
+    if (!element || ignored(element)) return;
+    selectedElement = element;
+    getChange(element);
+    selecting = false;
+    selectButton.classList.remove('is-active');
+    selectButton.innerHTML = '<i class="fa-solid fa-arrow-pointer" aria-hidden="true"></i><span>Selecionar outro elemento</span>';
+    updateEditorFields();
+    draw();
+  };
   const draw = () => {
     cancelAnimationFrame(frame);
     frame = requestAnimationFrame(() => {
       if (!active) return;
       layer.replaceChildren();
       const selected = fields();
-      const elements = document.body.querySelectorAll('body *');
-      elements.forEach((element) => {
+      document.body.querySelectorAll('body *').forEach((element) => {
         if (ignored(element)) return;
         const rect = element.getBoundingClientRect();
         if (!rect.width || !rect.height || rect.bottom < 0 || rect.right < 0 ||
             rect.top > innerHeight || rect.left > innerWidth) return;
         const style = getComputedStyle(element);
         const outline = document.createElement('div');
-        outline.className = 'dev-inspector-outline';
+        outline.className = 'dev-inspector-outline' + (element === selectedElement ? ' is-selected' : '');
+        outline.dataset.devOutline = '';
+        outline._devTarget = element;
         outline.style.left = rect.left + 'px';
         outline.style.top = rect.top + 'px';
         outline.style.width = rect.width + 'px';
         outline.style.height = rect.height + 'px';
+        if (element === selectedElement) {
+          const handle = document.createElement('span');
+          handle.className = 'dev-inspector-outline__resize';
+          handle.dataset.devResize = '';
+          outline.append(handle);
+        }
         const details = [];
         if (selected.tag) details.push(element.tagName.toLowerCase());
         if (selected.class && typeof element.className === 'string' && element.className.trim()) details.push('.' + element.className.trim().replace(/\s+/g, '.'));
@@ -570,7 +648,21 @@ function setupDeveloperInspector() {
         }
         layer.append(outline);
       });
+      updateEditorFields();
     });
+  };
+  const restoreElement = (element) => {
+    const change = changes.get(element);
+    if (!change) return;
+    const restore = (property, value, priority) => {
+      if (value) element.style.setProperty(property, value, priority);
+      else element.style.removeProperty(property);
+    };
+    restore('width', change.originalWidth, change.originalWidthPriority);
+    restore('height', change.originalHeight, change.originalHeightPriority);
+    restore('translate', change.originalTranslate, change.originalTranslatePriority);
+    element.style.removeProperty('box-sizing');
+    changes.delete(element);
   };
   const toggle = (enabled) => {
     active = enabled;
@@ -578,12 +670,110 @@ function setupDeveloperInspector() {
     layer.hidden = !enabled;
     button.classList.toggle('is-active', enabled);
     button.setAttribute('aria-pressed', String(enabled));
-    if (enabled) draw();
-    else layer.replaceChildren();
+    if (enabled) {
+      panel.querySelectorAll('[data-dev-field]').forEach((input) => { input.checked = false; });
+      draw();
+    } else {
+      selecting = false;
+      dragState = null;
+      layer.replaceChildren();
+    }
   };
+
   button.addEventListener('click', () => toggle(!active));
   panel.querySelector('[data-dev-inspector-close]').addEventListener('click', () => toggle(false));
   panel.querySelectorAll('[data-dev-field]').forEach((input) => input.addEventListener('change', draw));
+  selectButton.addEventListener('click', () => {
+    selecting = !selecting;
+    selectButton.classList.toggle('is-active', selecting);
+    selectButton.innerHTML = selecting
+      ? '<i class="fa-solid fa-crosshairs" aria-hidden="true"></i><span>Clique em um elemento</span>'
+      : '<i class="fa-solid fa-arrow-pointer" aria-hidden="true"></i><span>Selecionar elemento</span>';
+    draw();
+  });
+  layer.addEventListener('click', (event) => {
+    if (dragState) return;
+    const outline = event.target.closest('[data-dev-outline]');
+    if (outline?._devTarget) selectElement(outline._devTarget);
+  });
+  layer.addEventListener('pointerdown', (event) => {
+    const outline = event.target.closest('[data-dev-outline]');
+    const element = outline?._devTarget;
+    if (!element || element !== selectedElement || selecting || event.button !== 0) return;
+    const mode = event.target.closest('[data-dev-resize]') ? 'resize' : 'move';
+    const change = getChange(element);
+    dragState = {
+      element, mode, pointerId: event.pointerId,
+      startX: event.clientX, startY: event.clientY,
+      x: change.x, y: change.y, width: change.width, height: change.height
+    };
+    event.preventDefault();
+    event.stopPropagation();
+  });
+  window.addEventListener('pointermove', (event) => {
+    if (!dragState || event.pointerId !== dragState.pointerId) return;
+    const dx = event.clientX - dragState.startX;
+    const dy = event.clientY - dragState.startY;
+    const change = getChange(dragState.element);
+    if (dragState.mode === 'move') {
+      change.x = dragState.x + dx;
+      change.y = dragState.y + dy;
+    } else {
+      change.width = Math.max(24, dragState.width + dx);
+      change.height = Math.max(24, dragState.height + dy);
+    }
+    applyChange(dragState.element);
+    draw();
+  });
+  window.addEventListener('pointerup', (event) => {
+    if (dragState && event.pointerId === dragState.pointerId) {
+      dragState = null;
+      updateEditorFields();
+      draw();
+    }
+  });
+  sizeInputs.forEach((input) => input.addEventListener('change', () => {
+    if (!selectedElement) return;
+    const change = getChange(selectedElement);
+    const value = Math.max(1, Number(input.value) || 1);
+    if (input.dataset.devSize === 'width') change.width = value;
+    else change.height = value;
+    applyChange(selectedElement);
+    draw();
+  }));
+  panel.querySelector('[data-dev-reset]').addEventListener('click', () => {
+    if (!selectedElement) return;
+    restoreElement(selectedElement);
+    updateEditorFields();
+    draw();
+  });
+  panel.querySelector('[data-dev-copy]').addEventListener('click', async () => {
+    const rules = [];
+    changes.forEach((change, element) => {
+      const selector = element.id ? '#' + CSS.escape(element.id) :
+        (typeof element.className === 'string' && element.className.trim()
+          ? element.tagName.toLowerCase() + '.' + element.className.trim().split(/\s+/).map((name) => CSS.escape(name)).join('.')
+          : element.tagName.toLowerCase());
+      const declarations = [];
+      if (change.x || change.y) declarations.push('translate: ' + (change.baseTranslate ? change.baseTranslate + ' ' : '') + change.x + 'px ' + change.y + 'px !important;');
+      if (change.width !== element.getBoundingClientRect().width || change.originalWidth) declarations.push('width: ' + Math.round(change.width) + 'px !important;');
+      if (change.height !== element.getBoundingClientRect().height || change.originalHeight) declarations.push('height: ' + Math.round(change.height) + 'px !important;');
+      if (declarations.length) rules.push(selector + ' {\n  ' + declarations.join('\n  ') + '\n}');
+    });
+    const output = rules.join('\n\n') || '/* Nenhum ajuste para copiar. */';
+    try {
+      await navigator.clipboard.writeText(output);
+      panel.querySelector('[data-dev-copy]').innerHTML = '<i class="fa-solid fa-check" aria-hidden="true"></i> CSS copiado';
+    } catch {
+      const textarea = document.createElement('textarea');
+      textarea.value = output;
+      document.body.append(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      textarea.remove();
+      panel.querySelector('[data-dev-copy]').innerHTML = '<i class="fa-solid fa-check" aria-hidden="true"></i> CSS copiado';
+    }
+  });
   window.addEventListener('scroll', draw, { passive: true });
   window.addEventListener('resize', draw);
   const observer = new MutationObserver((records) => {
