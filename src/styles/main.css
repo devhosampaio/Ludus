@@ -1536,3 +1536,9 @@ select {
   background: #ffffff !important;
   box-shadow: none !important;
 }
+
+/* Reset global solicitado: remove margens e espaçamentos internos de todos os elementos. */
+*, *::before, *::after {
+  margin: 0 !important;
+  padding: 0 !important;
+}
