@@ -5189,8 +5189,8 @@ select {
     display: flex;
     flex-direction: column;
     width: 100%;
-    max-height: min(82dvh, 760px);
     max-height: min(82svh, 760px);
+    max-height: min(82dvh, 760px);
     padding-bottom: env(safe-area-inset-bottom);
     overflow-x: hidden;
     overflow-y: auto;
