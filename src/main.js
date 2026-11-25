@@ -507,13 +507,22 @@ function setupDeveloperInspector() {
   panel.className = 'dev-inspector-panel';
   panel.dataset.devInspectorPanel = '';
   panel.hidden = true;
-  panel.innerHTML = '<header class="dev-inspector-panel__header"><strong>Modo de desenvolvedor</strong><button type="button" data-dev-inspector-close aria-label="Fechar">×</button></header>' +
-    '<p>Contornar elementos e exibir informações:</p>' +
-    '<label><input type="checkbox" data-dev-field="tag" checked> Nome do elemento</label>' +
-    '<label><input type="checkbox" data-dev-field="class" checked> Nome da classe</label>' +
-    '<label><input type="checkbox" data-dev-field="dimensions" checked> Dimensões</label>' +
-    '<label><input type="checkbox" data-dev-field="font" checked> Fonte e peso</label>' +
-    '<label><input type="checkbox" data-dev-field="id"> ID</label>';
+  panel.innerHTML = '<header class="dev-inspector-panel__header">' +
+    '<div class="dev-inspector-panel__identity"><span class="dev-inspector-panel__eyebrow">LUDUS / FERRAMENTAS</span><strong>Modo desenvolvedor</strong></div>' +
+    '<button type="button" class="dev-inspector-panel__close" data-dev-inspector-close aria-label="Fechar"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button>' +
+    '</header>' +
+    '<div class="dev-inspector-panel__status"><span class="dev-inspector-panel__status-dot"></span> Ambiente de desenvolvimento</div>' +
+    '<section class="dev-inspector-panel__section">' +
+    '<div class="dev-inspector-panel__section-heading"><span>INSPEÇÃO VISUAL</span><span class="dev-inspector-panel__section-count">05 opções</span></div>' +
+    '<p class="dev-inspector-panel__description">Escolha quais informações aparecem ao contornar os elementos da página.</p>' +
+    '<div class="dev-inspector-panel__options">' +
+    '<label class="dev-inspector-option"><span class="dev-inspector-option__copy"><strong>Elemento</strong><small>Tag HTML</small></span><input type="checkbox" data-dev-field="tag" checked><span class="dev-inspector-option__switch"></span></label>' +
+    '<label class="dev-inspector-option"><span class="dev-inspector-option__copy"><strong>Classe CSS</strong><small>Seletores aplicados</small></span><input type="checkbox" data-dev-field="class" checked><span class="dev-inspector-option__switch"></span></label>' +
+    '<label class="dev-inspector-option"><span class="dev-inspector-option__copy"><strong>Dimensões</strong><small>Largura e altura</small></span><input type="checkbox" data-dev-field="dimensions" checked><span class="dev-inspector-option__switch"></span></label>' +
+    '<label class="dev-inspector-option"><span class="dev-inspector-option__copy"><strong>Tipografia</strong><small>Tamanho e peso</small></span><input type="checkbox" data-dev-field="font" checked><span class="dev-inspector-option__switch"></span></label>' +
+    '<label class="dev-inspector-option"><span class="dev-inspector-option__copy"><strong>Identificador</strong><small>ID do elemento</small></span><input type="checkbox" data-dev-field="id"><span class="dev-inspector-option__switch"></span></label>' +
+    '</div></section>' +
+    '<footer class="dev-inspector-panel__footer"><span>EDITOR VISUAL</span><span class="dev-inspector-panel__coming-soon">EM PREPARAÇÃO</span></footer>';
 
   const layer = document.createElement('div');
   layer.className = 'dev-inspector-layer';
