@@ -322,7 +322,7 @@ img { max-width: 100%; }
   left: 0;
   right: 0;
   z-index: 102;
-  padding: var(--space-12) 0;
+  padding: var(--space-lg) 0;
   background: var(--color-surface);
   border-bottom: 0;
 }
@@ -377,7 +377,7 @@ img { max-width: 100%; }
 /* Navegação fixa do feed, logo abaixo do cabeçalho. */
 .feed-navigation--header {
   position: fixed;
-  top: 60px;
+  top: 76px;
   left: 0;
   right: 0;
   z-index: 101;
@@ -385,7 +385,7 @@ img { max-width: 100%; }
   border-bottom: var(--border-width) solid var(--color-border);
 }
 .feed-main > .feed-main__container {
-  padding-top: 107px;
+  padding-top: 123px;
 }
 .feed-navigation--header .feed-tabs {
   position: relative;
@@ -1066,7 +1066,7 @@ img { max-width: 100%; }
   will-change: transform;
 }
 .app-topbar.is-scroll-hidden { transform: translateY(-100%); }
-.feed-navigation--header.is-scroll-hidden { transform: translateY(calc(-100% - 60px)); }
+.feed-navigation--header.is-scroll-hidden { transform: translateY(calc(-100% - 76px)); }
 @media (prefers-reduced-motion: reduce) {
   .app-topbar,
   .feed-navigation--header { transition-duration: 1ms; }
