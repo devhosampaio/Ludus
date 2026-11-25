@@ -628,6 +628,7 @@ function setupDeveloperInspector() {
         outline.className = 'dev-inspector-outline' + (element === selectedElement ? ' is-selected' : '');
         outline.dataset.devOutline = '';
         outline._devTarget = element;
+        outline.style.pointerEvents = selecting || element === selectedElement ? 'auto' : 'none';
         outline.style.left = rect.left + 'px';
         outline.style.top = rect.top + 'px';
         outline.style.width = rect.width + 'px';
@@ -680,6 +681,8 @@ function setupDeveloperInspector() {
     } else {
       selecting = false;
       dragState = null;
+      selectButton.classList.remove('is-active');
+      selectButton.innerHTML = '<i class="fa-solid fa-arrow-pointer" aria-hidden="true"></i><span>Selecionar elemento</span>';
       layer.replaceChildren();
     }
   };
