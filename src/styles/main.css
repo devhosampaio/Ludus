@@ -3361,3 +3361,100 @@ select {
   }
 }
 
+/* Tema escuro — alternância global por preferência salva no dispositivo. */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --color-background: #111216;
+  --color-surface: #1b1d23;
+  --color-surface-hover: #272a32;
+  --color-border: #383c46;
+  --color-text: #eceef3;
+  --color-text-muted: #a0a6b3;
+  --color-text-subtle: #c0c4ce;
+  --color-accent: #9b8bd8;
+  --color-accent-active: #b7a8f0;
+  --color-rating: #e0b95e;
+  --color-danger: #ff7772;
+  --color-danger-soft: #ef8297;
+  --color-like: #ff5968;
+  --color-success: #58c88a;
+  --color-neutral-light: #292c34;
+  --color-black: #050608;
+}
+:root[data-theme="dark"] body,
+:root[data-theme="dark"] #app {
+  background-color: var(--color-background) !important;
+  color: var(--color-text) !important;
+}
+:root[data-theme="dark"] .app-topbar,
+:root[data-theme="dark"] .side-menu--left,
+:root[data-theme="dark"] .bottom-nav,
+:root[data-theme="dark"] .mobile-drawer,
+:root[data-theme="dark"] .profile-editor,
+:root[data-theme="dark"] .composer,
+:root[data-theme="dark"] .profile-crop-dialog,
+:root[data-theme="dark"] .dropdown-menu,
+:root[data-theme="dark"] .modal-content,
+:root[data-theme="dark"] .panel,
+:root[data-theme="dark"] .well {
+  background-color: var(--color-surface) !important;
+  border-color: var(--color-border) !important;
+  color: var(--color-text) !important;
+}
+:root[data-theme="dark"] input,
+:root[data-theme="dark"] textarea,
+:root[data-theme="dark"] select,
+:root[data-theme="dark"] .form-control {
+  background-color: var(--color-background) !important;
+  border-color: var(--color-border) !important;
+  color: var(--color-text) !important;
+}
+:root[data-theme="dark"] input::placeholder,
+:root[data-theme="dark"] textarea::placeholder {
+  color: var(--color-text-muted) !important;
+}
+:root[data-theme="dark"] .btn-default,
+:root[data-theme="dark"] .btn:not(.btn-primary),
+:root[data-theme="dark"] .side-menu__item,
+:root[data-theme="dark"] .mobile-drawer__item {
+  background-color: var(--color-surface) !important;
+  border-color: var(--color-border) !important;
+  color: var(--color-text) !important;
+}
+:root[data-theme="dark"] .side-menu__item:hover,
+:root[data-theme="dark"] .side-menu__item.is-active,
+:root[data-theme="dark"] .mobile-drawer__item:hover,
+:root[data-theme="dark"] .mobile-drawer__item:focus-visible {
+  background-color: var(--color-surface-hover) !important;
+}
+:root[data-theme="dark"] .profile-editor--page .profile-editor__actions button[type="submit"],
+:root[data-theme="dark"] .btn-primary {
+  background-color: var(--color-accent) !important;
+  border-color: var(--color-accent) !important;
+  color: #111216 !important;
+}
+:root[data-theme="dark"] .profile-editor--page .profile-editor__preview,
+:root[data-theme="dark"] .profile-editor--page .profile-editor__upload,
+:root[data-theme="dark"] .landing-feature,
+:root[data-theme="dark"] .search-result,
+:root[data-theme="dark"] .review-card,
+:root[data-theme="dark"] .game-card,
+:root[data-theme="dark"] .notification-item {
+  background-color: var(--color-surface) !important;
+  border-color: var(--color-border) !important;
+  color: var(--color-text) !important;
+}
+:root[data-theme="dark"] .landing-artwork,
+:root[data-theme="dark"] .profile-editor--page .profile-editor__field input,
+:root[data-theme="dark"] .profile-editor--page .profile-editor__field textarea {
+  background-color: var(--color-background) !important;
+}
+:root[data-theme="dark"] .text-muted,
+:root[data-theme="dark"] small,
+:root[data-theme="dark"] .help-block {
+  color: var(--color-text-muted) !important;
+}
+:root[data-theme="dark"] .side-menu__item svg {
+  stroke: currentColor;
+}
+
