@@ -149,12 +149,12 @@ img { max-width: 100%; }
 .side-menu__brand { display: inline-block; margin: 0 0 20px; font-size: var(--font-size-22); font-weight: 700; }
 .side-menu__navigation { display: flex; flex-direction: column; gap: 6px; }
 .side-menu__item { display: block; width: 100%; padding: 10px 12px; text-align: left; }
-.side-menu__item svg { width: 18px; height: 18px; margin-right: 8px; vertical-align: middle; }
+.side-menu__item svg { width: var(--icon-size-sm); height: var(--icon-size-sm); margin-right: 8px; vertical-align: middle; }
 .app-topbar { position: sticky; top: 0; z-index: 100; padding: 10px 0; background: var(--color-surface); }
 .feed-tabs { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
 .feed-tabs__button { padding: 8px 12px; }
 .feed-tabs__create { min-width: 36px; min-height: 34px; }
-.feed-tabs__create svg { width: 14px; height: 14px; }
+.feed-tabs__create svg { width: var(--icon-size-xs); height: var(--icon-size-xs); }
 .feed-main__container { width: 100vw; max-width: none; min-width: 0; margin-left: calc(326px - 50vw); margin-right: 0; padding-left: 12px; padding-right: 12px; box-sizing: border-box; }
 .feed-welcome { margin: 18px 0 28px; padding: 20px; border: var(--border-width) solid var(--color-border); }
 .feed-welcome h1 { margin-top: 0; font-size: var(--font-size-24); }
@@ -242,7 +242,7 @@ img { max-width: 100%; }
 
 .search-topbar { padding: 12px 0; }
 .search-page__form { display: flex; align-items: center; gap: 8px; }
-.search-page__form svg { width: 18px; height: 18px; flex: 0 0 18px; }
+.search-page__form svg { width: var(--icon-size-sm); height: var(--icon-size-sm); flex: 0 0 var(--icon-size-sm); }
 .search-page__input { flex: 1; min-width: 0; }
 .search-page__results { width: 100%; max-width: none; margin: 0; padding: 20px 0; }
 .search-results-group { margin-bottom: 16px; }
@@ -564,8 +564,8 @@ img { max-width: 100%; }
 .mobile-drawer__notifications .notifications__trigger > svg {
   display: inline-flex;
   justify-content: center;
-  width: 20px;
-  flex: 0 0 20px;
+  width: var(--icon-size-md);
+  flex: 0 0 var(--icon-size-md);
   color: var(--color-text);
   font-size: var(--font-size-18);
 }
@@ -809,8 +809,8 @@ img { max-width: 100%; }
 }
 .bottom-nav__profile-avatar svg {
   display: block;
-  width: 24px;
-  height: 24px;
+  width: var(--icon-size-lg);
+  height: var(--icon-size-lg);
   fill: none;
   stroke: currentColor;
   stroke-width: 1.8;
