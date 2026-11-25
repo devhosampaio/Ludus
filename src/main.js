@@ -2303,7 +2303,7 @@ async function renderProfilePage(currentUser, username) {
       : '<p class="profile-page__favorites-empty">Nenhum jogo favorito destacado.</p>';
     const actions = favoritesList.parentElement.querySelector('[data-favorites-actions]');
     if (actions) actions.innerHTML = isOwnProfile && favoriteGames.length
-      ? '<button type="button" data-favorites-edit>' + (editingFavoriteGames ? 'Concluir edição' : 'Editar favoritos') + '</button>'
+      ? '<button class="profile-page__icon-action" type="button" data-favorites-edit" aria-label="' + (editingFavoriteGames ? 'Concluir edição dos favoritos' : 'Editar favoritos') + '" title="' + (editingFavoriteGames ? 'Concluir edição dos favoritos' : 'Editar favoritos') + '"><i class="fa-solid ' + (editingFavoriteGames ? 'fa-check' : 'fa-pen-to-square') + '" aria-hidden="true"></i></button>'
       : '';
     actions?.querySelector('[data-favorites-edit]')?.addEventListener('click', () => {
       editingFavoriteGames = !editingFavoriteGames;
@@ -2380,7 +2380,7 @@ async function renderProfilePage(currentUser, username) {
       const headingActions = app.querySelector('[data-lists-heading-actions]');
       if (headingActions) {
         headingActions.innerHTML = isOwnProfile && publicLists.length < 5
-          ? '<button type="button" data-list-create>Criar lista</button>'
+          ? '<button class="profile-page__icon-action" type="button" data-list-create aria-label="Criar lista" title="Criar lista"><i class="fa-solid fa-square-plus" aria-hidden="true"></i></button>'
           : '';
         headingActions.querySelector('[data-list-create]')?.addEventListener('click', () => {
           openGameListCreator(currentUser, async (createdList) => {

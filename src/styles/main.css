@@ -2379,3 +2379,36 @@ select {
     width: var(--space-3xl);
   }
 }
+
+
+/* Ajustes de espaçamento e ações por ícone na página de perfil. */
+.feed-shell--profile .profile-page__hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  align-content: start;
+  row-gap: var(--space-lg) !important;
+}
+
+.feed-shell--profile .profile-page__icon-action {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 var(--space-3xl);
+  width: var(--space-3xl) !important;
+  min-width: var(--space-3xl);
+  height: var(--space-3xl);
+  min-height: var(--space-3xl) !important;
+  padding: 0 !important;
+  border-radius: var(--radius-round) !important;
+}
+
+.feed-shell--profile .profile-page__icon-action i {
+  font-size: var(--font-size-md) !important;
+  line-height: 1;
+}
+
+@media (max-width: 767px) {
+  .feed-shell--profile .profile-page__hero {
+    row-gap: var(--space-md) !important;
+  }
+}
