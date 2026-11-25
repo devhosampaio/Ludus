@@ -565,13 +565,17 @@ function setupDeveloperInspector() {
         originalWidthPriority: element.style.getPropertyPriority('width'),
         originalHeight: element.style.getPropertyValue('height'),
         originalHeightPriority: element.style.getPropertyPriority('height'),
-        originalTranslate: element.style.getPropertyValue('translate'),
-        originalTranslatePriority: element.style.getPropertyPriority('translate'),
+        originalTransform: element.style.getPropertyValue('transform'),
+        originalTransformPriority: element.style.getPropertyPriority('transform'),
+        originalBoxSizing: element.style.getPropertyValue('box-sizing'),
+        originalBoxSizingPriority: element.style.getPropertyPriority('box-sizing'),
         width: element.getBoundingClientRect().width,
         height: element.getBoundingClientRect().height,
+        initialWidth: element.getBoundingClientRect().width,
+        initialHeight: element.getBoundingClientRect().height,
         x: 0,
         y: 0,
-        baseTranslate: style.translate === 'none' ? '' : style.translate
+        baseTransform: style.transform === 'none' ? '' : style.transform
       });
     }
     return changes.get(element);
@@ -579,8 +583,8 @@ function setupDeveloperInspector() {
   const applyChange = (element) => {
     const change = changes.get(element);
     if (!change) return;
-    const translate = [change.baseTranslate, change.x + 'px ' + change.y + 'px'].filter(Boolean).join(' ');
-    element.style.setProperty('translate', translate, 'important');
+    const transform = ['translate(' + change.x + 'px, ' + change.y + 'px)', change.baseTransform].filter(Boolean).join(' ');
+    element.style.setProperty('transform', transform, 'important');
     element.style.setProperty('width', Math.max(1, change.width) + 'px', 'important');
     element.style.setProperty('height', Math.max(1, change.height) + 'px', 'important');
     element.style.setProperty('box-sizing', 'border-box', 'important');
@@ -660,8 +664,8 @@ function setupDeveloperInspector() {
     };
     restore('width', change.originalWidth, change.originalWidthPriority);
     restore('height', change.originalHeight, change.originalHeightPriority);
-    restore('translate', change.originalTranslate, change.originalTranslatePriority);
-    element.style.removeProperty('box-sizing');
+    restore('transform', change.originalTransform, change.originalTransformPriority);
+    restore('box-sizing', change.originalBoxSizing, change.originalBoxSizingPriority);
     changes.delete(element);
   };
   const toggle = (enabled) => {
@@ -755,9 +759,9 @@ function setupDeveloperInspector() {
           ? element.tagName.toLowerCase() + '.' + element.className.trim().split(/\s+/).map((name) => CSS.escape(name)).join('.')
           : element.tagName.toLowerCase());
       const declarations = [];
-      if (change.x || change.y) declarations.push('translate: ' + (change.baseTranslate ? change.baseTranslate + ' ' : '') + change.x + 'px ' + change.y + 'px !important;');
-      if (change.width !== element.getBoundingClientRect().width || change.originalWidth) declarations.push('width: ' + Math.round(change.width) + 'px !important;');
-      if (change.height !== element.getBoundingClientRect().height || change.originalHeight) declarations.push('height: ' + Math.round(change.height) + 'px !important;');
+      if (change.x || change.y) declarations.push('transform: translate(' + change.x + 'px, ' + change.y + 'px)' + (change.baseTransform ? ' ' + change.baseTransform : '') + ' !important;');
+      if (change.width !== change.initialWidth || change.originalWidth) declarations.push('width: ' + Math.round(change.width) + 'px !important;');
+      if (change.height !== change.initialHeight || change.originalHeight) declarations.push('height: ' + Math.round(change.height) + 'px !important;');
       if (declarations.length) rules.push(selector + ' {\n  ' + declarations.join('\n  ') + '\n}');
     });
     const output = rules.join('\n\n') || '/* Nenhum ajuste para copiar. */';
