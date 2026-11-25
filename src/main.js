@@ -841,6 +841,19 @@ function setupDeveloperInspector() {
     }
   };
 
+  const developerInspectorMedia = window.matchMedia('(max-width: 767px)');
+  const enforceDesktopOnlyInspector = () => {
+    if (developerInspectorMedia.matches) {
+      for (const element of [...changes.keys()]) restoreElement(element);
+      toggle(false);
+    }
+    button.hidden = developerInspectorMedia.matches;
+    panel.hidden = developerInspectorMedia.matches || !active;
+    layer.hidden = developerInspectorMedia.matches || !active;
+  };
+  developerInspectorMedia.addEventListener('change', enforceDesktopOnlyInspector);
+  enforceDesktopOnlyInspector();
+
   const isEditorSurface = (target) => !!target.closest('[data-dev-inspector-panel], [data-dev-inspector-layer], [data-dev-inspector-toggle]');
   document.addEventListener('click', (event) => {
     if (!active || isEditorSurface(event.target)) return;
