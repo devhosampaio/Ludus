@@ -1837,3 +1837,8 @@ select {
     gap: var(--space-md) !important;
   }
 }
+
+/* Ponto separador entre o nome do usuário e a data da avaliação. */
+.review-card__timestamp-separator {
+  font-size: var(--font-size-4) !important;
+}
