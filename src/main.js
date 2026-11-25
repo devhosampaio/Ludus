@@ -276,9 +276,10 @@ async function fetchCommentLikeRows(commentIds) {
 function renderReviewCommentMarkup(comment, user, likes, childrenByParent, nested = false) {
   const profile = comment.profiles || {};
   const username = profile.username || 'jogador';
-  const avatar = nested ? '' : (profile.avatar_url
+  const displayName = profile.display_name || username;
+  const avatar = profile.avatar_url
     ? '<img src="' + escapeHTML(profile.avatar_url) + '" alt="" loading="lazy">'
-    : profilePlaceholderMarkup());
+    : profilePlaceholderMarkup();
   const commentLikes = likes.filter((like) => like.comment_id === comment.id);
   const isLiked = commentLikes.some((like) => like.user_id === user.id);
   const children = childrenByParent.get(comment.id) || [];
@@ -288,19 +289,17 @@ function renderReviewCommentMarkup(comment, user, likes, childrenByParent, neste
       : '<button type="button" data-comment-action="report">Denunciar comentário</button>') +
     '</div></details>';
   return '<article class="review-comment' + (nested ? ' review-comment--reply' : '') + '" data-comment-id="' + comment.id + '">' +
-    '<div class="review-comment__meta' + (nested ? ' review-comment__meta--reply' : '') + '">' +
-    (nested ? '' : '<span class="review-comment__avatar">' + avatar + '</span>') +
-    '<button class="review-comment__author" type="button" data-profile-username="' + escapeHTML(username) + '">' + escapeHTML(username) + '</button>' + menu + '</div>' +
+    '<div class="review-comment__meta"><span class="review-comment__avatar">' + avatar + '</span>' +
+    '<div class="review-comment__identity"><button class="review-comment__author" type="button" data-profile-username="' + escapeHTML(username) + '">' + escapeHTML(displayName) + '</button><span class="review-comment__username">@' + escapeHTML(username) + '</span><time class="review-comment__time" datetime="' + escapeHTML(comment.created_at) + '">' + escapeHTML(formatDate(comment.created_at)) + '</time></div>' + menu + '</div>' +
     '<p class="review-comment__body">' + escapeHTML(comment.body) + '</p>' +
-    '<form class="review-comment__edit-form" data-edit-comment-form hidden><textarea rows="2" maxlength="1000" required>' + escapeHTML(comment.body) + '</textarea><button type="submit">Salvar</button><button type="button" data-cancel-edit>Cancelar</button></form>' +
+    '<form class="review-comment__edit-form" data-edit-comment-form hidden><textarea rows="2" maxlength="1000" required>' + escapeHTML(comment.body) + '</textarea><div class="review-comment__form-actions"><button type="submit">Salvar</button><button type="button" data-cancel-edit>Cancelar</button></div></form>' +
     '<div class="review-comment__actions"><button type="button" class="review-comment__like' + (isLiked ? ' is-liked' : '') + '" data-like-comment aria-pressed="' + isLiked + '">' +
     '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 21s-8.8-5.9-8.8-12.2A4.8 4.8 0 0 1 12 6.4a4.8 4.8 0 0 1 8.8 2.4C20.8 15.1 12 21 12 21Z"></path></svg><span data-comment-like-count>' + (commentLikes.length || '') + '</span></button>' +
-    '<button type="button" class="review-comment__reply" data-reply-comment>Responder</button></div>' +
+    '<button type="button" class="review-comment__reply" data-reply-comment><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 10 4 15l5 5M4 15h9a7 7 0 0 0 7-7V5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"></path></svg><span>Responder</span></button></div>' +
     '<form class="review-comment__reply-form" data-reply-form data-parent-comment-id="' + comment.id + '" hidden><textarea rows="2" maxlength="1000" placeholder="Responder a ' + escapeHTML(username) + '..." required></textarea><button type="submit">Enviar resposta</button></form>' +
-    (children.length ? '<button type="button" class="review-comment__replies-toggle" data-toggle-replies data-reply-count="' + children.length + '" aria-expanded="false"><span>Exibir respostas (' + children.length + ')</span></button><div class="review-comment__replies" hidden>' + children.map((child) => renderReviewCommentMarkup(child, user, likes, childrenByParent, true)).join('') + '</div>' : '') +
+    (children.length ? '<button type="button" class="review-comment__replies-toggle" data-toggle-replies data-reply-count="' + children.length + '" aria-expanded="false"><span>Ver ' + children.length + (children.length === 1 ? ' resposta' : ' respostas') + '</span></button><div class="review-comment__replies" hidden>' + children.map((child) => renderReviewCommentMarkup(child, user, likes, childrenByParent, true)).join('') + '</div>' : '') +
     '</article>';
 }
-
 function renderCommentsSection(reviewId, comments, likes, user) {
   const childrenByParent = new Map();
   (comments || []).forEach((comment) => {
@@ -1763,7 +1762,7 @@ async function renderReviewPage(currentUser, reviewId) {
   const avatar = profile.avatar_url ? '<img src="' + escapeHTML(profile.avatar_url) + '" alt="">' : profilePlaceholderMarkup();
   const { data: comments, error: commentsError } = await fetchAllPages(() =>
     supabase.from('review_comments')
-      .select('id, user_id, body, created_at, parent_comment_id, profiles!review_comments_user_id_fkey(username, avatar_url)')
+      .select('id, user_id, body, created_at, parent_comment_id, profiles!review_comments_user_id_fkey(username, display_name, avatar_url)')
       .eq('review_id', review.id).order('created_at', { ascending: true })
   );
   if (requestId !== renderReviewPage.requestId) return;
@@ -1785,7 +1784,7 @@ async function renderReviewPage(currentUser, reviewId) {
     (game.cover_url ? '<button class="review-detail__cover" type="button" data-detail-game="' + escapeHTML(review.game_id) + '"><img src="' + escapeHTML(game.cover_url) + '" alt="Capa de ' + escapeHTML(game.title || 'jogo') + '"></button>' : '') +
     '<div class="review-detail__content"><div class="review-detail__author"><span class="review-detail__avatar">' + avatar + '</span><div><strong>' + escapeHTML(profile.display_name || profile.username || 'Jogador') + '</strong><small>' + escapeHTML(profile.username || '') + ' · ' + formatDate(review.created_at) + '</small></div></div>' +
     '<h1>' + escapeHTML(game.title || 'Jogo') + (game.release_year ? ' <small>' + escapeHTML(game.release_year) + '</small>' : '') + '</h1><div class="review-detail__rating">' + '★'.repeat(review.rating) + '☆'.repeat(5-review.rating) + '</div><div class="review-detail__status">' + escapeHTML(statusLabel(review.status)) + (review.liked_game ? ' · Gostei deste jogo' : '') + '</div>' +
-    (review.body ? '<p class="review-detail__body">' + escapeHTML(review.body) + '</p>' : '') + '</div></div><section class="review-detail__discussion"><h2>Discussão <span>' + commentRows.length + ' comentários</span></h2><div class="review-detail__comments">' + commentsMarkup + '</div><form class="review-detail__form" data-detail-comment-form><textarea rows="3" maxlength="1000" placeholder="Escreva um comentário…" required></textarea><button type="submit">Enviar comentário ↗</button></form></section></article>';
+    (review.body ? '<p class="review-detail__body">' + escapeHTML(review.body) + '</p>' : '') + '</div></div><section class="review-detail__discussion"><header class="review-detail__discussion-header"><div><h2>Discussão</h2><p>Converse sobre esta avaliação</p></div><span class="review-detail__discussion-count">' + commentRows.length + (commentRows.length === 1 ? ' comentário' : ' comentários') + '</span></header><div class="review-detail__comments">' + commentsMarkup + '</div><form class="review-detail__form" data-detail-comment-form><span class="review-detail__composer-avatar">' + avatar + '</span><div class="review-detail__composer-content"><textarea rows="3" maxlength="1000" placeholder="Compartilhe sua opinião…" required></textarea><div class="review-detail__composer-footer"><span>Até 1.000 caracteres</span><button type="submit"><span>Comentar</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg></button></div></div></form></section></article>';
   content.querySelector('[data-detail-game]')?.addEventListener('click', () => navigateToGame(currentUser, review.game_id));
   content.addEventListener('submit', async (event) => {
     const form = event.target.closest('[data-detail-comment-form], [data-reply-form], [data-edit-comment-form]');
