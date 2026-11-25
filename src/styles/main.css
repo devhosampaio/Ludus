@@ -1,4 +1,4 @@
-/* Design tokens — fonte única para a consistência visual do Ludus. */
+/* Design tokens — fonte única para a consistência visual do Ludusf */
 :root {
   /* Cores */
   --color-background: #141419;
@@ -163,7 +163,7 @@ img { max-width: 100%; }
 .terms-modal__dialog { position: relative; width: min(100%, 620px); max-height: 85vh; overflow: auto; margin: 0; }
 .terms-modal__close { float: right; }
 
-.feed-shell { display: grid; grid-template-columns: 210px minmax(0, 760px); gap: 24px; max-width: 1120px; margin: 0 auto; padding: 20px; }
+.feed-shell { display: grid; grid-template-columns: 210px minmax(0, 760px); gap: var(--space-xl); max-width: 1120px; margin: 0 auto; padding: var(--space-xl); }
 .feed-center-column { min-width: 0; }
 .side-menu { min-width: 0; }
 .side-menu__brand { display: inline-block; margin: 0 0 20px; font-size: var(--font-size-22); font-weight: 700; }
@@ -171,22 +171,22 @@ img { max-width: 100%; }
 .side-menu__item { display: block; width: 100%; padding: 10px 12px; text-align: left; }
 .side-menu__item svg { width: var(--icon-size-sm); height: var(--icon-size-sm); margin-right: 8px; vertical-align: middle; }
 .app-topbar { position: sticky; top: 0; z-index: 100; padding: 10px 0; background: var(--color-surface); }
-.feed-tabs { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.feed-tabs { display: flex; flex-wrap: wrap; gap: var(--space-sm); align-items: center; }
 .feed-tabs__button { padding: 8px 12px; }
 .feed-tabs__create { min-width: 36px; min-height: 34px; }
 .feed-tabs__create svg { width: var(--icon-size-xs); height: var(--icon-size-xs); }
-.feed-main__container { width: 100vw; max-width: none; min-width: 0; margin-left: calc(326px - 50vw); margin-right: 0; padding-left: 12px; padding-right: 12px; box-sizing: border-box; }
-.feed-welcome { margin: 18px 0 28px; padding: 20px; border: var(--border-width) solid var(--color-border); }
-.feed-welcome h1 { margin-top: 0; font-size: var(--font-size-24); }
+.feed-main__container { width: 100vw; max-width: none; min-width: 0; margin-left: calc(326px - 50vw); margin-right: 0; padding-left: var(--space-md); padding-right: var(--space-md); box-sizing: border-box; }
+.feed-welcome { margin: var(--space-lg) 0 var(--space-xl); padding: var(--space-xl); border: var(--border-width) solid var(--color-border); }
+.feed-welcome h1 { margin-top: 0; font-size: var(--font-size-2xl); }
 .feed-content { width: 100%; }
-.section-heading { margin: 20px 0 12px; }
-.section-heading h2 { font-size: var(--font-size-22); }
+.section-heading { margin: var(--space-xl) 0 var(--space-md); }
+.section-heading h2 { font-size: var(--font-size-xl); }
 .feed-list { min-width: 0; }
-.review-card { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 16px; padding: 10px 0; border-bottom: var(--border-width) solid var(--color-border); }
+.review-card { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: var(--space-lg); padding: var(--space-sm) 0; border-bottom: var(--border-width) solid var(--color-border); }
 .review-card__cover { width: 96px; max-height: 140px; object-fit: cover; }
 .review-card__body { min-width: 0; }
-.review-card__meta, .review-card__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-.review-card__actions { margin-top: 12px; }
+.review-card__meta, .review-card__actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-sm); }
+.review-card__actions { margin-top: var(--space-md); }
 .review-card__body p { overflow-wrap: anywhere; }
 .notifications { position: relative; }
 .notifications__panel { position: absolute; z-index: 300; top: 100%; left: 0; width: min(340px, 85vw); max-height: 420px; overflow: auto; padding: 12px; border: var(--border-width) solid var(--color-border); background: var(--color-surface); box-shadow: 0 3px 8px rgba(0,0,0,.12); }
@@ -724,12 +724,12 @@ img { max-width: 100%; }
   object-fit: cover;
 }
 .review-card__body { min-width: 0; }
-.review-card__game-heading { margin: 0 0 8px; font-size: var(--font-size-18); }
+.review-card__game-heading { margin: 0 0 var(--space-sm); font-size: var(--font-size-lg); }
 .review-card__details {
   display: flex;
   align-items: center;
-  gap: var(--space-8);
-  font-size: var(--font-size-12);
+  gap: var(--space-sm);
+  font-size: var(--font-size-xs);
 }
 .review-card__rating { display: inline-flex; align-items: center; gap: 4px; }
 .review-card__rating .fa-star { color: var(--color-rating); }
@@ -1024,8 +1024,8 @@ img { max-width: 100%; }
 
 /* Espaçamento vertical uniforme entre avaliações */
 .review-card {
-  padding-top: var(--space-10);
-  padding-bottom: var(--space-10);
+  padding-top: var(--space-sm);
+  padding-bottom: var(--space-sm);
 }
 .review-card__actions {
   padding-bottom: 0;
@@ -1044,7 +1044,7 @@ img { max-width: 100%; }
 
 
 .review-card__game-year {
-  margin-left: var(--space-6);
+  margin-left: var(--space-sm);
   color: var(--color-text-muted);
   font-size: var(--font-size-14);
   font-weight: 400;
@@ -1146,8 +1146,8 @@ select {
 }
 
 .side-menu__brand { font-size: var(--font-size-25); }
-.feed-welcome h1 { font-size: var(--font-size-28); }
-.section-heading h2 { font-size: var(--font-size-25); }
+.feed-welcome h1 { font-size: var(--font-size-2xl); }
+.section-heading h2 { font-size: var(--font-size-xl); }
 .notifications__item-content time,
 .notifications__empty { font-size: var(--font-size-13); }
 
@@ -1156,7 +1156,7 @@ select {
 
 .search-result__info small { font-size: var(--font-size-13); }
 
-.app-topbar__brand { font-size: var(--font-size-22); }
+.app-topbar__brand { font-size: var(--font-size-xl); }
 .mobile-drawer__header { font-size: var(--font-size-22); }
 .mobile-drawer__username { font-size: var(--font-size-25); }
 .mobile-drawer__stats { font-size: var(--font-size-16); }
@@ -1164,17 +1164,17 @@ select {
 .mobile-drawer__notifications .notifications__trigger,
 .mobile-drawer button:not(.btn) { font-size: var(--font-size-20); }
 
-.review-card__timestamp { font-size: var(--font-size-13); }
-.review-card__game-heading { font-size: var(--font-size-20); }
+.review-card__timestamp { font-size: var(--font-size-xs); }
+.review-card__game-heading { font-size: var(--font-size-lg); }
 .review-card__details,
 .review-card__liked,
-.review-card__completed { font-size: var(--font-size-13); }
+.review-card__completed { font-size: var(--font-size-xs); }
 .review-card__game-year { font-size: var(--font-size-16); }
 
 .profile-crop-dialog__header h3 { font-size: var(--font-size-20); }
 
 @media (max-width: 767px) {
-  .feed-tabs__button { font-size: var(--font-size-16); }
+  .feed-tabs__button { font-size: var(--font-size-md); }
 }
 
 .profile-page__list-card { width: 100%; }
@@ -1435,7 +1435,7 @@ select {
   to { opacity: 1; transform: translateY(0); }
 }
 .review-card__game-year {
-  font-size: var(--font-size-20);
+  font-size: var(--font-size-lg);
 }
 @media (prefers-reduced-motion: reduce) {
   .bottom-nav { transition-duration: 1ms; }
