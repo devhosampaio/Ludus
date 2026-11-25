@@ -2,6 +2,38 @@ import { supabase } from './lib/supabase.js';
 import { signIn, signOut, signUp, resendSignupConfirmation, requestPasswordReset } from './lib/auth.js';
 
 const app = document.querySelector('#app');
+const THEME_STORAGE_KEY = 'ludus-theme';
+function getCurrentTheme() {
+  try { return localStorage.getItem(THEME_STORAGE_KEY) === 'dark' ? 'dark' : 'light'; }
+  catch { return document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light'; }
+}
+function applyTheme(theme) {
+  const nextTheme = theme === 'dark' ? 'dark' : 'light';
+  document.documentElement.dataset.theme = nextTheme;
+  try { localStorage.setItem(THEME_STORAGE_KEY, nextTheme); } catch {}
+  document.querySelectorAll('[data-theme-toggle]').forEach((button) => {
+    const isDark = nextTheme === 'dark';
+    button.setAttribute('aria-pressed', String(isDark));
+    const label = button.querySelector('[data-theme-label]');
+    if (label) label.textContent = isDark ? 'Tema claro' : 'Tema escuro';
+    const icon = button.querySelector('svg, i');
+    if (icon) {
+      if (icon.tagName.toLowerCase() === 'svg') {
+        icon.innerHTML = isDark
+          ? '<circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/>'
+          : '<path d="M20.5 15.2A8.5 8.5 0 0 1 8.8 3.5 8.5 8.5 0 1 0 20.5 15.2Z"/>';
+      } else {
+        icon.className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+      }
+    }
+  });
+}
+applyTheme(getCurrentTheme());
+document.addEventListener('click', (event) => {
+  const toggle = event.target.closest('[data-theme-toggle]');
+  if (!toggle) return;
+  applyTheme(getCurrentTheme() === 'dark' ? 'light' : 'dark');
+});
 document.title = 'Ludus | Comunidade de jogos';
 let activeUser = null;
 
@@ -300,6 +332,7 @@ function sharedSideMenuMarkup(user) {
       <button class="side-menu__item" type="button" data-open-search><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m15.8 15.8 5 5"/></svg><span>Buscar</span></button>
       <button class="side-menu__item" type="button" data-side-profile><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.7-3.6 3.1-5.5 7-5.5s6.3 1.9 7 5.5"/></svg><span>Perfil</span></button>
       <button class="side-menu__item" type="button" data-side-settings><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8.2a3.8 3.8 0 1 0 0 7.6 3.8 3.8 0 0 0 0-7.6Z"/><path d="M19.4 13.5a7.7 7.7 0 0 0 0-3l1.5-1.1-1.8-3.1-1.8.7a7.8 7.8 0 0 0-2.6-1.5L14.4 3h-4.8L9.3 5.5a7.8 7.8 0 0 0-2.6 1.5l-1.8-.7-1.8 3.1 1.5 1.1a7.7 7.7 0 0 0 0 3l-1.5 1.1 1.8 3.1 1.8-.7a7.8 7.8 0 0 0 2.6 1.5l.3 2.5h4.8l.3-2.5a7.8 7.8 0 0 0 2.6-1.5l1.8.7 1.8-3.1Z"/></svg><span>Configurações</span></button>
+      <button class="side-menu__item side-menu__theme-toggle" type="button" data-theme-toggle aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 15.2A8.5 8.5 0 0 1 8.8 3.5 8.5 8.5 0 1 0 20.5 15.2Z"/></svg><span data-theme-label>Tema escuro</span></button>
       <button class="side-menu__item" type="button" data-feed-mode="saved"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4.5A1.5 1.5 0 0 1 7.5 3h9A1.5 1.5 0 0 1 18 4.5V21l-6-4-6 4Z"/></svg><span>Listas salvas</span></button>
     </nav>
   </header>
@@ -347,6 +380,7 @@ function sharedFeedHeaderMarkup() {
         <button class="mobile-drawer__item" type="button" data-drawer-profile><i class="fa-solid fa-user" aria-hidden="true"></i><span>Meu Perfil</span></button>
         <button class="mobile-drawer__item" type="button" data-drawer-saved><i class="fa-solid fa-bookmark" aria-hidden="true"></i><span>Listas Salvas</span></button>
         <button class="mobile-drawer__item" type="button" data-drawer-settings><i class="fa-solid fa-gear" aria-hidden="true"></i><span>Configurações</span></button>
+        <button class="mobile-drawer__item" type="button" data-theme-toggle aria-pressed="false"><i class="fa-solid fa-moon" aria-hidden="true"></i><span data-theme-label>Tema escuro</span></button>
       </nav>
       <div class="mobile-drawer__review-container"><button class="btn btn-primary btn-block mobile-drawer__review" type="button" data-drawer-review>Avaliar</button></div>
     </aside>`;
