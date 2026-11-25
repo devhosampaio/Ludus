@@ -636,8 +636,10 @@ async function renderSignedIn(user, initialFeedMode = 'home') {
   // Evita reconstruir o feed quando o Supabase restaura/renova a sessão ao voltar à aba.
   // A tela já está montada e os dados permanecem visíveis, sem piscar para o estado de carregamento.
   if (activeUser?.id === user.id && app.querySelector('[data-feed-list]') &&
-      !getProfileUsernameFromLocation() && !getGameIdFromLocation() && !getReviewIdFromLocation()) return;
+      !getProfileUsernameFromLocation() && !getGameIdFromLocation() && !getReviewIdFromLocation() && !getReviewReportIdFromLocation()) return;
   activeUser = user;
+  const reportRouteId = getReviewReportIdFromLocation();
+  if (reportRouteId) { renderReviewReportPage(user, reportRouteId); return; }
   const reviewRouteId = getReviewIdFromLocation();
   if (reviewRouteId) { renderReviewPage(user, reviewRouteId); return; }
   const fallbackName = user.user_metadata?.display_name || user.email?.split('@')[0] || 'jogador';
@@ -1111,20 +1113,7 @@ async function renderSignedIn(user, initialFeedMode = 'home') {
         if (index >= 0) reviews.splice(index, 1);
         card.remove();
       } else if (action === 'report' && review.user_id !== user.id) {
-        const reason = window.prompt('Por que deseja denunciar esta review?\\n1 — Spam\\n2 — Assédio ou discurso de ódio\\n3 — Spoiler sem aviso\\n4 — Conteúdo impróprio\\n5 — Outro');
-        if (reason === null) return;
-        const reasons = { '1': 'spam', '2': 'harassment', '3': 'spoiler', '4': 'inappropriate', '5': 'other' };
-        if (!reasons[reason.trim()]) { window.alert('Escolha uma opção de 1 a 5.'); return; }
-        const details = window.prompt('Deseja adicionar algum detalhe? (opcional)') || '';
-        const { error: reportError } = await supabase.from('review_reports').insert({
-          reporter_id: user.id, review_id: review.id, reason: reasons[reason.trim()], details: details.slice(0, 1000)
-        });
-        if (reportError) {
-          console.error('[Ludus] Falha ao denunciar review:', reportError);
-          window.alert(reportError.code === '23505' ? 'Você já denunciou esta review.' : 'Não foi possível enviar a denúncia. Tente novamente.');
-          return;
-        }
-        window.alert('Denúncia enviada. Obrigado por ajudar a manter a comunidade segura.');
+        navigateToReviewReport(user, review.id);
       }
       return;
     }
@@ -1675,6 +1664,88 @@ function getGameIdFromLocation() {
 function getReviewIdFromLocation() {
   const parts = window.location.hash.split('/');
   return parts[1] === 'review' && parts[2] ? decodeURIComponent(parts[2]) : null;
+}
+
+function getReviewReportIdFromLocation() {
+  const match = window.location.hash.match(/^#\\/denunciar-avaliacao\\/([^/?#]+)/);
+  return match ? decodeURIComponent(match[1]) : null;
+}
+
+function navigateToReviewReport(currentUser, reviewId) {
+  if (!reviewId) return;
+  const nextHash = '#/denunciar-avaliacao/' + encodeURIComponent(reviewId);
+  if (window.location.hash !== nextHash) window.history.pushState({ page: 'review-report', reviewId }, '', nextHash);
+  renderReviewReportPage(currentUser, reviewId);
+}
+
+async function renderReviewReportPage(currentUser, reviewId) {
+  const requestId = (renderReviewReportPage.requestId || 0) + 1;
+  renderReviewReportPage.requestId = requestId;
+  app.innerHTML = `<div class="feed-shell">${sharedSideMenuMarkup(currentUser)}<main class="feed-center-column feed-main profile-main">${sharedFeedHeaderMarkup()}<div class="feed-main__container"><div class="profile-page__content"><div class="profile-page__loading">Carregando avaliação…</div></div></div></main><footer class="side-menu side-menu--right" aria-label="Coluna lateral direita"></footer></div>`;
+  setupSharedSideMenu(currentUser);
+  const { data: review, error } = await supabase.from('reviews')
+    .select('id, user_id, body, created_at, profiles!reviews_user_id_fkey(username, display_name), games!reviews_game_id_fkey(title, cover_url, release_year)')
+    .eq('id', reviewId).maybeSingle();
+  if (requestId !== renderReviewReportPage.requestId) return;
+  const content = app.querySelector('.profile-page__content');
+  if (error || !review || review.user_id === currentUser.id) {
+    content.innerHTML = '<section class="review-report-page"><h1>Não é possível denunciar esta avaliação</h1><p>A avaliação não foi encontrada ou não está disponível para denúncia.</p><button type="button" class="review-report-page__back" data-report-back>Voltar</button></section>';
+    content.querySelector('[data-report-back]')?.addEventListener('click', () => navigateToFeed(currentUser));
+    return;
+  }
+  const game = review.games || {};
+  const author = review.profiles?.display_name || review.profiles?.username || 'Jogador';
+  const cover = game.cover_url
+    ? '<img class="review-report-page__cover" src="' + escapeHTML(game.cover_url) + '" alt="">'
+    : '<span class="review-report-page__cover review-report-page__cover--empty" aria-hidden="true"><i class="fa-solid fa-gamepad"></i></span>';
+  content.innerHTML = '<section class="review-report-page" aria-labelledby="review-report-title">' +
+    '<button type="button" class="review-report-page__back" data-report-back><i class="fa-solid fa-arrow-left" aria-hidden="true"></i><span>Voltar à avaliação</span></button>' +
+    '<header class="review-report-page__heading"><span class="review-report-page__eyebrow">SEGURANÇA DA COMUNIDADE</span><h1 id="review-report-title">Denunciar avaliação</h1><p>Conte o que há de errado com esta publicação. Sua denúncia será analisada pela equipe do Ludus.</p></header>' +
+    '<article class="review-report-page__context">' + cover + '<div class="review-report-page__context-copy"><strong>' + escapeHTML(game.title || 'Jogo') + (game.release_year ? ' (' + escapeHTML(game.release_year) + ')' : '') + '</strong><span>Avaliação de ' + escapeHTML(author) + '</span>' + (review.body ? '<p>' + escapeHTML(review.body.length > 180 ? review.body.slice(0, 180) + '…' : review.body) + '</p>' : '') + '</div></article>' +
+    '<form class="review-report-page__form" data-review-report-form>' +
+    '<fieldset><legend>Por que você está denunciando esta avaliação?</legend><p class="review-report-page__hint">Selecione o motivo que melhor descreve o problema.</p>' +
+    '<label class="review-report-page__option"><input type="radio" name="report-reason" value="spam" required><span><strong>Spam</strong><small>Publicidade, conteúdo repetitivo ou enganoso.</small></span></label>' +
+    '<label class="review-report-page__option"><input type="radio" name="report-reason" value="harassment"><span><strong>Assédio ou discurso de ódio</strong><small>Ataques, ameaças ou discriminação.</small></span></label>' +
+    '<label class="review-report-page__option"><input type="radio" name="report-reason" value="spoiler"><span><strong>Spoiler sem aviso</strong><small>Revelações importantes sem sinalização.</small></span></label>' +
+    '<label class="review-report-page__option"><input type="radio" name="report-reason" value="inappropriate"><span><strong>Conteúdo impróprio</strong><small>Conteúdo ofensivo ou inadequado.</small></span></label>' +
+    '<label class="review-report-page__option"><input type="radio" name="report-reason" value="other"><span><strong>Outro motivo</strong><small>O problema não se encaixa nas opções acima.</small></span></label></fieldset>' +
+    '<label class="review-report-page__details-label" for="review-report-details">Detalhes adicionais <span>(opcional)</span></label><textarea id="review-report-details" name="details" rows="4" maxlength="1000" placeholder="Explique melhor o que aconteceu…"></textarea>' +
+    '<p class="review-report-page__feedback" data-report-feedback role="status" aria-live="polite" hidden></p>' +
+    '<div class="review-report-page__actions"><button type="button" class="review-report-page__cancel" data-report-back>Cancelar</button><button type="submit" class="review-report-page__submit"><i class="fa-solid fa-flag" aria-hidden="true"></i><span>Enviar denúncia</span></button></div>' +
+    '</form></section>';
+  content.querySelectorAll('[data-report-back]').forEach((button) => button.addEventListener('click', () => navigateToReview(currentUser, review.id)));
+  const form = content.querySelector('[data-review-report-form]');
+  form.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const reason = form.querySelector('input[name="report-reason"]:checked')?.value;
+    const feedback = form.querySelector('[data-report-feedback]');
+    const submit = form.querySelector('[type="submit"]');
+    if (!reason) {
+      feedback.textContent = 'Selecione um motivo para continuar.';
+      feedback.hidden = false;
+      return;
+    }
+    submit.disabled = true;
+    submit.querySelector('span').textContent = 'Enviando…';
+    feedback.hidden = true;
+    const details = form.querySelector('[name="details"]').value.trim().slice(0, 1000);
+    const { error: reportError } = await supabase.from('review_reports').insert({
+      reporter_id: currentUser.id, review_id: review.id, reason, details
+    });
+    if (reportError) {
+      console.error('[Ludus] Falha ao denunciar avaliação:', reportError);
+      feedback.textContent = reportError.code === '23505'
+        ? 'Você já enviou uma denúncia para esta avaliação.'
+        : 'Não foi possível enviar a denúncia. Tente novamente.';
+      feedback.dataset.type = 'error';
+      feedback.hidden = false;
+      submit.disabled = false;
+      submit.querySelector('span').textContent = 'Enviar denúncia';
+      return;
+    }
+    form.innerHTML = '<div class="review-report-page__success"><span class="review-report-page__success-icon"><i class="fa-solid fa-check" aria-hidden="true"></i></span><h2>Denúncia enviada</h2><p>Obrigado por ajudar a manter a comunidade segura. Nossa equipe irá analisar esta avaliação.</p><button type="button" data-report-done>Voltar à avaliação</button></div>';
+    form.querySelector('[data-report-done]')?.addEventListener('click', () => navigateToReview(currentUser, review.id));
+  });
 }
 
 async function renderReviewPage(currentUser, reviewId) {
@@ -3141,8 +3212,10 @@ window.addEventListener('hashchange', () => {
   const username = getProfileUsernameFromLocation();
   const gameId = getGameIdFromLocation();
   const reviewId = getReviewIdFromLocation();
+  const reportId = getReviewReportIdFromLocation();
   if (username) renderProfilePage(activeUser, username);
   else if (gameId) renderGamePage(activeUser, gameId);
+  else if (reportId) renderReviewReportPage(activeUser, reportId);
   else if (reviewId) renderReviewPage(activeUser, reviewId);
   else if (window.location.hash === '#/buscar') renderSearchPage(activeUser);
   else if (window.location.hash === '#/notificacoes') renderNotificationsPage(activeUser);
