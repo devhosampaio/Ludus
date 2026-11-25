@@ -2209,6 +2209,14 @@ async function renderProfilePage(currentUser, username) {
     .eq('user_id', profile.id).eq('is_public', true).order('created_at', { ascending: false });
   if (createdListsError) console.error('[Ludus] Falha ao carregar listas públicas:', createdListsError);
 
+  const { data: profileReviews, error: profileReviewsError } = await fetchAllPages(() =>
+    supabase.from('reviews')
+      .select('id, game_id, rating, body, status, liked_game, created_at, games!reviews_game_id_fkey(title, cover_url, release_year)')
+      .eq('user_id', profile.id)
+      .order('created_at', { ascending: false })
+  );
+  if (profileReviewsError) console.error('[Ludus] Falha ao carregar avaliações do perfil:', profileReviewsError);
+
   const followState = currentUser.id === profile.id
     ? { data: null }
     : await supabase.from('follows').select('follower_id')
@@ -2255,6 +2263,7 @@ async function renderProfilePage(currentUser, username) {
     '<span><strong data-profile-stat="lists">' + (savedListsCountResult.count ?? 0) + '</strong><span>Listas</span></span>' +
     '</div>' +
     '<section class="profile-page__favorites" aria-label="Jogos favoritos"><div class="profile-page__favorites-heading"><h2>Jogos favoritos</h2><div class="profile-page__favorites-actions" data-favorites-actions></div></div><div class="profile-page__favorites-list" data-profile-favorites></div></section>' +
+    '<section class="profile-page__published-reviews" aria-label="Avaliações publicadas"><div class="profile-page__reviews-heading"><h2>Avaliações</h2><span>' + (profileReviews || []).length + '</span></div><div class="profile-page__published-reviews-list" data-profile-reviews></div></section>' +
     '<section class="profile-page__lists" aria-label="Listas criadas"><div class="profile-page__lists-heading"><h2>Listas criadas</h2><div class="profile-page__lists-heading-actions" data-lists-heading-actions></div></div><div class="profile-page__lists-grid" data-profile-created-lists></div></section>' +
     '</section>';
 
@@ -2351,6 +2360,38 @@ async function renderProfilePage(currentUser, username) {
     });
   };
   renderFavoriteGames();
+
+  const profileReviewsContainer = app.querySelector('[data-profile-reviews]');
+  if (profileReviewsContainer) {
+    const reviews = profileReviews || [];
+    profileReviewsContainer.innerHTML = profileReviewsError
+      ? '<p class="profile-page__reviews-empty">Não foi possível carregar as avaliações.</p>'
+      : reviews.length
+        ? reviews.map((review) => {
+          const game = review.games || {};
+          const gameTitle = game.title || 'Jogo';
+          const cover = game.cover_url
+            ? '<img src="' + escapeHTML(game.cover_url) + '" alt="Capa de ' + escapeHTML(gameTitle) + '" loading="lazy">'
+            : '<span class="profile-page__published-review-cover-empty">Sem capa</span>';
+          const rating = Number(review.rating || 0).toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+          const date = review.created_at ? relativeTime(review.created_at) : '';
+          const year = game.release_year ? ' <span class="profile-page__published-review-year">(' + escapeHTML(game.release_year) + ')</span>' : '';
+          const body = review.body?.trim()
+            ? '<p class="profile-page__published-review-text">' + escapeHTML(review.body.trim()) + '</p>'
+            : '';
+          const markers = (review.liked_game ? '<i class="fa-solid fa-heart" aria-label="Curtiu o jogo" title="Curtiu o jogo"></i>' : '') +
+            (review.status === 'completed' ? '<i class="fa-solid fa-trophy" aria-label="Jogo zerado" title="Jogo zerado"></i>' : '');
+          return '<a class="profile-page__published-review" href="#/avaliacao/' + encodeURIComponent(review.id) + '" aria-label="Abrir avaliação de ' + escapeHTML(gameTitle) + '">' +
+            '<span class="profile-page__published-review-cover">' + cover + '</span>' +
+            '<span class="profile-page__published-review-content">' +
+              '<span class="profile-page__published-review-title">' + escapeHTML(gameTitle) + year + '</span>' +
+              '<span class="profile-page__published-review-meta"><span class="profile-page__published-review-rating"><i class="fa-solid fa-star" aria-hidden="true"></i> ' + rating + '</span>' +
+              (date ? '<time datetime="' + escapeHTML(review.created_at) + '">' + escapeHTML(date) + '</time>' : '') + markers + '</span>' +
+              body +
+            '</span></a>';
+        }).join('')
+        : '<p class="profile-page__reviews-empty">Este usuário ainda não publicou avaliações.</p>';
+  }
 
   const createdListsContainer = app.querySelector('[data-profile-created-lists]');
   const publicLists = (createdLists || []).map((list) => ({

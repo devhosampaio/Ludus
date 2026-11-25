@@ -2412,3 +2412,157 @@ select {
     row-gap: var(--space-md) !important;
   }
 }
+
+
+/* Capa ampliada e botão de retorno reposicionado no canto superior direito. */
+.feed-shell--profile .profile-page__banner {
+  height: 220px;
+}
+
+.feed-shell--profile .profile-page__avatar {
+  top: 172px;
+}
+
+.feed-shell--profile .profile-page__back-button {
+  top: var(--space-md);
+  right: var(--space-md);
+  left: auto;
+}
+
+/* Avaliações publicadas no perfil, ordenadas da mais recente à mais antiga. */
+.feed-shell--profile .profile-page__published-reviews {
+  box-sizing: border-box;
+  min-width: 0;
+  margin: 0 !important;
+  padding: var(--space-lg) !important;
+  border: var(--border-width) solid var(--color-border) !important;
+  border-radius: var(--radius-xl) !important;
+  background: var(--color-surface) !important;
+}
+
+.feed-shell--profile .profile-page__reviews-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md) !important;
+  margin-bottom: var(--space-md) !important;
+}
+
+.feed-shell--profile .profile-page__reviews-heading h2 {
+  margin: 0 !important;
+  font-size: var(--font-size-lg) !important;
+}
+
+.feed-shell--profile .profile-page__reviews-heading > span {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm) !important;
+}
+
+.feed-shell--profile .profile-page__published-reviews-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm) !important;
+}
+
+.feed-shell--profile .profile-page__published-review {
+  display: flex;
+  align-items: flex-start;
+  min-width: 0;
+  gap: var(--space-md) !important;
+  padding: var(--space-sm) !important;
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+  text-decoration: none;
+}
+
+.feed-shell--profile .profile-page__published-review:hover,
+.feed-shell--profile .profile-page__published-review:focus-visible {
+  background: var(--color-surface-hover);
+  text-decoration: none;
+}
+
+.feed-shell--profile .profile-page__published-review-cover {
+  display: block;
+  flex: 0 0 56px;
+  width: 56px;
+  aspect-ratio: 2 / 3;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+}
+
+.feed-shell--profile .profile-page__published-review-cover img,
+.feed-shell--profile .profile-page__published-review-cover-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: var(--color-neutral-light);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs) !important;
+  text-align: center;
+}
+
+.feed-shell--profile .profile-page__published-review-content {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-width: 0;
+  gap: var(--space-xs) !important;
+}
+
+.feed-shell--profile .profile-page__published-review-title {
+  font-weight: var(--font-weight-bold);
+  overflow-wrap: anywhere;
+}
+
+.feed-shell--profile .profile-page__published-review-year {
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-regular);
+}
+
+.feed-shell--profile .profile-page__published-review-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm) !important;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs) !important;
+}
+
+.feed-shell--profile .profile-page__published-review-rating {
+  color: var(--color-rating);
+  font-weight: var(--font-weight-bold);
+}
+
+.feed-shell--profile .profile-page__published-review-text {
+  margin: 0 !important;
+  color: var(--color-text);
+  overflow-wrap: anywhere;
+}
+
+.feed-shell--profile .profile-page__reviews-empty {
+  margin: 0 !important;
+  color: var(--color-text-muted);
+}
+
+@media (max-width: 767px) {
+  .feed-shell--profile .profile-page__banner {
+    height: 200px;
+  }
+
+  .feed-shell--profile .profile-page__avatar {
+    top: 156px;
+  }
+
+  .feed-shell--profile .profile-page__published-reviews {
+    padding: var(--space-md) !important;
+  }
+
+  .feed-shell--profile .profile-page__published-review-cover {
+    flex-basis: 48px;
+    width: 48px;
+  }
+}
