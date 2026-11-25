@@ -356,25 +356,7 @@ function setupBottomNavAutoHide() {
   if (!navigation) return;
 
   app.__bottomNavScrollController?.abort();
-  const controller = new AbortController();
-  app.__bottomNavScrollController = controller;
-  let previousY = window.scrollY || 0;
-
-  window.addEventListener('scroll', () => {
-    const currentY = Math.max(0, window.scrollY || 0);
-    const delta = currentY - previousY;
-    const drawerOpen = !!app.querySelector('.mobile-drawer:not([hidden])');
-
-    if (!drawerOpen && Math.abs(delta) >= 6) {
-      if (delta > 0 && currentY > 80) {
-        navigation.classList.add('is-scroll-hidden');
-      } else if (delta < 0) {
-        navigation.classList.remove('is-scroll-hidden');
-      }
-    }
-    if (currentY <= 20) navigation.classList.remove('is-scroll-hidden');
-    previousY = currentY;
-  }, { passive: true, signal: controller.signal });
+  navigation.classList.remove('is-scroll-hidden');
 }
 function triggerPageTransition() {
   const shell = app.querySelector('.feed-shell');
