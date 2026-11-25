@@ -638,12 +638,12 @@ async function renderAdminPage(currentUser) {
   const parts = window.location.hash.split('/');
   const section = parts[2] || 'inicio';
   const sections = {
-    inicio: { title: 'Visão geral', description: 'Acompanhe e administre a comunidade LUDUS.' },
+    inicio: { title: 'Visão geral', description: 'Resumo da comunidade e das atividades administrativas.' },
     usuarios: { title: 'Usuários', description: 'Consulte contas, acompanhe a atividade e gerencie acessos.' },
-    denuncias: { title: 'Denúncias', description: 'Em breve: análise e resolução das denúncias da comunidade.' },
-    conteudos: { title: 'Conteúdos', description: 'Em breve: ferramentas de moderação de avaliações e comentários.' },
-    comunicados: { title: 'Comunicados', description: 'Em breve: avisos e comunicados para a comunidade.' },
-    historico: { title: 'Histórico', description: 'Em breve: registro das ações administrativas.' }
+    denuncias: { title: 'Denúncias', description: 'Acompanhe denúncias recebidas pela comunidade.' },
+    conteudos: { title: 'Conteúdos', description: 'Ferramentas de moderação de avaliações e comentários.' },
+    comunicados: { title: 'Comunicados', description: 'Avisos e comunicados para a comunidade.' },
+    historico: { title: 'Histórico', description: 'Registro das ações administrativas.' }
   };
   const active = sections[section] ? section : 'inicio';
   const { data: authData, error: authError } = await supabase.auth.getUser();
@@ -653,12 +653,8 @@ async function renderAdminPage(currentUser) {
     app.innerHTML = `
       <main class="admin-access-denied">
         <a class="admin-access-denied__brand" href="#inicio">Ludus</a>
-        <section>
-          <i class="fa-solid fa-lock" aria-hidden="true"></i>
-          <h1>Acesso restrito</h1>
-          <p>Esta área é exclusiva para administradores do Ludus.</p>
-          <a href="#inicio">Voltar ao Ludus</a>
-        </section>
+        <section><i class="fa-solid fa-lock" aria-hidden="true"></i><h1>Acesso restrito</h1>
+        <p>Esta área é exclusiva para administradores do Ludus.</p><a href="#inicio">Voltar ao Ludus</a></section>
       </main>`;
     return;
   }
@@ -674,38 +670,54 @@ async function renderAdminPage(currentUser) {
     ['comunicados', 'fa-bullhorn', 'Comunicados'],
     ['historico', 'fa-clock-rotate-left', 'Histórico']
   ];
-  const current = sections[active] || sections.inicio;
+  const navMarkup = nav.map(([key, icon, label]) => `
+    <a class="admin-nav__item ${active === key ? 'is-active' : ''}" href="#/admin/${key}" ${active === key ? 'aria-current="page"' : ''}>
+      <i class="fa-solid ${icon}" aria-hidden="true"></i><span>${label}</span>
+    </a>`).join('');
+  const avatarMarkup = profile?.avatar_url
+    ? '<img src="' + escapeHTML(profile.avatar_url) + '" alt="">'
+    : '<i class="fa-solid fa-user" aria-hidden="true"></i>';
+  const current = sections[active];
+
   app.innerHTML = `
     <div class="admin-layout">
       <aside class="admin-sidebar">
-        <a class="admin-brand" href="#/admin"><span>Ludus</span><small>ADMINISTRAÇÃO</small></a>
+        <a class="admin-brand" href="#/admin"><span>Ludus</span><small>ADMIN</small></a>
         <nav class="admin-nav" aria-label="Navegação administrativa">
-          <span class="admin-nav__label">PAINEL</span>
-          ${nav.map(([key, icon, label]) => `
-            <a class="admin-nav__item ${active === key ? 'is-active' : ''}" href="#/admin/${key}" ${active === key ? 'aria-current="page"' : ''}>
-              <i class="fa-solid ${icon}" aria-hidden="true"></i><span>${label}</span>
-            </a>`).join('')}
+          <span class="admin-nav__label">MENU</span>${navMarkup}
         </nav>
         <a class="admin-back-link" href="#inicio"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i><span>Voltar ao Ludus</span></a>
       </aside>
       <main class="admin-main">
+        <header class="admin-mobile-header">
+          <a class="admin-brand" href="#/admin"><span>Ludus</span><small>ADMIN</small></a>
+          <button class="admin-menu-toggle" type="button" data-admin-menu-toggle aria-expanded="false" aria-controls="admin-mobile-menu" aria-label="Abrir menu">
+            <i class="fa-solid fa-bars" aria-hidden="true"></i>
+          </button>
+        </header>
+        <div class="admin-mobile-backdrop" data-admin-menu-backdrop hidden></div>
+        <nav class="admin-mobile-menu" id="admin-mobile-menu" data-admin-mobile-menu aria-label="Menu administrativo" hidden>
+          <div class="admin-mobile-menu__head"><strong>Navegação</strong><button type="button" data-admin-menu-close aria-label="Fechar menu"><i class="fa-solid fa-xmark" aria-hidden="true"></i></button></div>
+          ${navMarkup}
+          <a class="admin-nav__item admin-mobile-menu__back" href="#inicio"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i><span>Voltar ao Ludus</span></a>
+        </nav>
         <header class="admin-topbar">
-          <div><span class="admin-topbar__eyebrow">ESPAÇO ADMINISTRATIVO</span><span class="admin-topbar__section">${current.title}</span></div>
-          <div class="admin-account"><span class="admin-account__avatar">${profile?.avatar_url ? '<img src="' + escapeHTML(profile.avatar_url) + '" alt="">' : '<i class="fa-solid fa-user" aria-hidden="true"></i>'}</span><span><strong>@${escapeHTML(username)}</strong><small>Administrador</small></span></div>
+          <span class="admin-topbar__context">Painel administrativo</span>
+          <div class="admin-account"><span class="admin-account__avatar">${avatarMarkup}</span><span><strong>@${escapeHTML(username)}</strong><small>Administrador</small></span></div>
         </header>
         <section class="admin-content">
-          <div class="admin-page-heading"><div><span class="admin-page-heading__eyebrow">LUDUS / ADMIN</span><h1>${current.title}</h1><p>${current.description}</p></div></div>
+          <div class="admin-page-heading"><div><h1>${current.title}</h1><p>${current.description}</p></div></div>
           ${active === 'inicio' ? `
-            <div class="admin-welcome">
-              <span class="admin-welcome__icon"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i></span>
-              <div><h2>Bem-vindo à administração</h2><p>Este é o espaço de controle da comunidade. As ferramentas serão habilitadas por etapas.</p></div>
-            </div>
-            <div class="admin-shortcuts">
-              <a href="#/admin/usuarios"><i class="fa-solid fa-users" aria-hidden="true"></i><span><strong>Usuários</strong><small>Gerenciamento de contas</small></span><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>
-              <a href="#/admin/denuncias"><i class="fa-solid fa-flag" aria-hidden="true"></i><span><strong>Denúncias</strong><small>Moderação da comunidade</small></span><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>
-              <a href="#/admin/historico"><i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i><span><strong>Histórico administrativo</strong><small>Registro de ações</small></span><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>
-            </div>` : `
-            ${active === 'usuarios' ? `
+            <div class="admin-dashboard" data-admin-dashboard>
+              <div class="admin-dashboard__metrics" data-admin-dashboard-metrics>
+                <div class="admin-metric admin-metric--loading"></div><div class="admin-metric admin-metric--loading"></div>
+                <div class="admin-metric admin-metric--loading"></div><div class="admin-metric admin-metric--loading"></div>
+              </div>
+              <section class="admin-dashboard__section">
+                <div class="admin-dashboard__section-heading"><h2>Atividade administrativa</h2><a href="#/admin/historico">Ver histórico</a></div>
+                <div class="admin-activity" data-admin-dashboard-activity><p class="admin-dashboard__loading">Carregando atividade…</p></div>
+              </section>
+            </div>` : active === 'usuarios' ? `
               <div class="admin-users">
                 <div class="admin-users__toolbar">
                   <label class="admin-users__search"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i><input type="search" placeholder="Buscar por nome de usuário..." autocomplete="off" data-admin-user-search></label>
@@ -720,11 +732,65 @@ async function renderAdminPage(currentUser) {
                 <div class="admin-users__list" data-admin-user-list><div class="admin-users__loading"><i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i> Carregando usuários…</div></div>
                 <div class="admin-users__pagination" data-admin-user-pagination></div>
               </div>` : `
-              <div class="admin-empty-state"><i class="fa-regular fa-folder-open" aria-hidden="true"></i><h2>${current.title}</h2><p>${current.description}</p><span>Esta seção será implementada em uma próxima etapa.</span></div>`}`}
+              <div class="admin-empty-state"><i class="fa-regular fa-folder-open" aria-hidden="true"></i><h2>${current.title}</h2><p>${current.description}</p><span>Esta seção ainda não está disponível.</span></div>`}
         </section>
       </main>
     </div>`;
+
+  const toggle = app.querySelector('[data-admin-menu-toggle]');
+  const menu = app.querySelector('[data-admin-mobile-menu]');
+  const backdrop = app.querySelector('[data-admin-menu-backdrop]');
+  const closeMenu = () => {
+    menu.hidden = true;
+    backdrop.hidden = true;
+    toggle.setAttribute('aria-expanded', 'false');
+    toggle.setAttribute('aria-label', 'Abrir menu');
+    document.body.classList.remove('admin-menu-open');
+  };
+  toggle?.addEventListener('click', () => {
+    const opening = menu.hidden;
+    menu.hidden = !opening;
+    backdrop.hidden = !opening;
+    toggle.setAttribute('aria-expanded', String(opening));
+    toggle.setAttribute('aria-label', opening ? 'Fechar menu' : 'Abrir menu');
+    document.body.classList.toggle('admin-menu-open', opening);
+  });
+  app.querySelector('[data-admin-menu-close]')?.addEventListener('click', closeMenu);
+  backdrop?.addEventListener('click', closeMenu);
+  menu?.querySelectorAll('a').forEach((link) => link.addEventListener('click', closeMenu));
+  document.addEventListener('keydown', (event) => { if (event.key === 'Escape') closeMenu(); }, { once: true });
+
+  if (active === 'inicio') setupAdminDashboard();
   if (active === 'usuarios') setupAdminUsersSection(verifiedUser);
+}
+
+async function setupAdminDashboard() {
+  const metrics = app.querySelector('[data-admin-dashboard-metrics]');
+  const activity = app.querySelector('[data-admin-dashboard-activity]');
+  if (!metrics || !activity) return;
+  const { data, error } = await supabase.functions.invoke('admin-users', { body: { action: 'dashboard' } });
+  if (error || data?.error) {
+    metrics.innerHTML = '<p class="admin-dashboard__error">Não foi possível carregar os indicadores.</p>';
+    activity.innerHTML = '<p class="admin-dashboard__error">Tente atualizar a página.</p>';
+    return;
+  }
+  const cards = [
+    ['Usuários', data.users, 'fa-users', 'Contas cadastradas'],
+    ['Avaliações', data.reviews, 'fa-star', 'Publicações na comunidade'],
+    ['Denúncias', data.reports, 'fa-flag', 'Recebidas pela comunidade'],
+    ['Suspensões', data.suspended, 'fa-user-slash', 'Contas atualmente suspensas']
+  ];
+  metrics.innerHTML = cards.map(([label, value, icon, note]) => `
+    <article class="admin-metric"><span class="admin-metric__icon"><i class="fa-solid ${icon}" aria-hidden="true"></i></span>
+      <span class="admin-metric__label">${label}</span><strong>${Number(value || 0).toLocaleString('pt-BR')}</strong><small>${note}</small></article>`).join('');
+  const logs = data.activity || [];
+  activity.innerHTML = logs.length ? logs.map((item) => {
+    const action = item.action === 'USER_SUSPENDED' ? 'Conta suspensa' : item.action === 'USER_REACTIVATED' ? 'Conta reativada' : 'Cargo administrativo alterado';
+    const actor = item.actor_username ? '@' + item.actor_username : 'Administrador';
+    const target = item.target_username ? ' · @' + item.target_username : '';
+    const icon = item.action === 'USER_SUSPENDED' ? 'fa-user-slash' : item.action === 'USER_REACTIVATED' ? 'fa-user-check' : 'fa-shield-halved';
+    return `<article class="admin-activity__item"><span class="admin-activity__icon"><i class="fa-solid ${icon}" aria-hidden="true"></i></span><span class="admin-activity__copy"><strong>${action}</strong><small>${escapeHTML(actor + target)}</small></span><time>${escapeHTML(relativeTime(item.created_at))}</time></article>`;
+  }).join('') : '<p class="admin-activity__empty">Nenhuma ação administrativa registrada ainda.</p>';
 }
 
 function setupAdminUsersSection(adminUser) {
