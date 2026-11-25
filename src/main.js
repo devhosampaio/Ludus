@@ -355,6 +355,10 @@ function setupBottomNavAutoHide() {
   const navigation = app.querySelector('.bottom-nav');
   if (!navigation) return;
 
+  // Mantém a navegação fora do feed-shell: transformações/animações do conteúdo
+  // não podem alterar o referencial de posicionamento fixed da barra.
+  if (navigation.parentElement !== app) app.appendChild(navigation);
+
   app.__bottomNavScrollController?.abort();
   navigation.classList.remove('is-scroll-hidden');
 }
