@@ -534,6 +534,12 @@ function setupDeveloperInspector() {
     '<label><span>Largura</span><span><input type="number" min="1" step="1" data-dev-size="width"> px</span></label>' +
     '<label><span>Altura</span><span><input type="number" min="1" step="1" data-dev-size="height"> px</span></label>' +
     '</div>' +
+    '<div class="dev-inspector-editor__style-fields">' +
+    '<label><span>Fonte</span><span><input type="number" min="1" max="200" step="1" data-dev-style="fontSize"> px</span></label>' +
+    '<label><span>Raio dos cantos</span><span><input type="number" min="0" max="200" step="1" data-dev-style="borderRadius"> px</span></label>' +
+    '<label><span>Cor do texto</span><input type="color" data-dev-style="color"></label>' +
+    '<label><span>Cor de fundo</span><input type="color" data-dev-style="backgroundColor"></label>' +
+    '</div>' +
     '<div class="dev-inspector-editor__move" aria-label="Mover elemento em um pixel">' +
     '<button type="button" data-dev-move="up" aria-label="Mover para cima 1 pixel"><i class="fa-solid fa-chevron-up"></i></button>' +
     '<div><button type="button" data-dev-move="left" aria-label="Mover para esquerda 1 pixel"><i class="fa-solid fa-chevron-left"></i></button><span>1 px</span><button type="button" data-dev-move="right" aria-label="Mover para direita 1 pixel"><i class="fa-solid fa-chevron-right"></i></button></div>' +
@@ -603,6 +609,18 @@ function setupDeveloperInspector() {
         originalMinHeightPriority: element.style.getPropertyPriority('min-height'),
         originalFlex: element.style.getPropertyValue('flex'),
         originalFlexPriority: element.style.getPropertyPriority('flex'),
+        originalFontSize: element.style.getPropertyValue('font-size'),
+        originalFontSizePriority: element.style.getPropertyPriority('font-size'),
+        originalColor: element.style.getPropertyValue('color'),
+        originalColorPriority: element.style.getPropertyPriority('color'),
+        originalBackgroundColor: element.style.getPropertyValue('background-color'),
+        originalBackgroundColorPriority: element.style.getPropertyPriority('background-color'),
+        originalBorderRadius: element.style.getPropertyValue('border-radius'),
+        originalBorderRadiusPriority: element.style.getPropertyPriority('border-radius'),
+        fontSize: parseFloat(style.fontSize) || 16,
+        color: style.color,
+        backgroundColor: style.backgroundColor,
+        borderRadius: parseFloat(style.borderTopLeftRadius) || 0,
         width: element.getBoundingClientRect().width,
         height: element.getBoundingClientRect().height,
         initialWidth: element.getBoundingClientRect().width,
@@ -628,6 +646,10 @@ function setupDeveloperInspector() {
     if (getComputedStyle(element).display === 'inline') element.style.setProperty('display', 'inline-block', 'important');
     if (['flex', 'inline-flex'].includes(getComputedStyle(element.parentElement || document.body).display)) element.style.setProperty('flex', '0 0 auto', 'important');
     element.style.setProperty('box-sizing', 'border-box', 'important');
+    element.style.setProperty('font-size', change.fontSize + 'px', 'important');
+    element.style.setProperty('color', change.color, 'important');
+    element.style.setProperty('background-color', change.backgroundColor, 'important');
+    element.style.setProperty('border-radius', change.borderRadius + 'px', 'important');
   };
   const updateEditorFields = () => {
     if (!selectedElement) {
@@ -641,6 +663,23 @@ function setupDeveloperInspector() {
       (typeof selectedElement.className === 'string' && selectedElement.className.trim() ? '.' + selectedElement.className.trim().split(/\s+/).slice(0, 2).join('.') : ''));
     sizeInputs.find((input) => input.dataset.devSize === 'width').value = String(Math.round(change?.width ?? rect.width));
     sizeInputs.find((input) => input.dataset.devSize === 'height').value = String(Math.round(change?.height ?? rect.height));
+    const computed = getComputedStyle(selectedElement);
+    const values = change || {
+      fontSize: parseFloat(computed.fontSize) || 16,
+      borderRadius: parseFloat(computed.borderTopLeftRadius) || 0,
+      color: computed.color,
+      backgroundColor: computed.backgroundColor
+    };
+    styleInputs.forEach((input) => {
+      if (document.activeElement === input) return;
+      const key = input.dataset.devStyle;
+      if (key === 'fontSize') input.value = String(Math.round(values.fontSize));
+      else if (key === 'borderRadius') input.value = String(Math.round(values.borderRadius));
+      else {
+        const parts = String(values[key]).match(/[\\d.]+/g) || [];
+        input.value = '#' + parts.slice(0, 3).map((part) => Math.max(0, Math.min(255, Math.round(Number(part)))).toString(16).padStart(2, '0')).join('');
+      }
+    });
   };
   const selectElement = (element) => {
     if (!element || ignored(element)) return;
@@ -678,10 +717,13 @@ function setupDeveloperInspector() {
         outline.style.width = rect.width + 'px';
         outline.style.height = rect.height + 'px';
         if (element === selectedElement) {
-          const handle = document.createElement('span');
-          handle.className = 'dev-inspector-outline__resize';
-          handle.dataset.devResize = '';
-          outline.append(handle);
+          ['width', 'height', 'proportional'].forEach((mode) => {
+            const handle = document.createElement('span');
+            handle.className = 'dev-inspector-outline__resize dev-inspector-outline__resize--' + mode;
+            handle.dataset.devResize = mode;
+            handle.setAttribute('aria-label', mode === 'width' ? 'Redimensionar largura' : mode === 'height' ? 'Redimensionar altura' : 'Redimensionar proporcionalmente');
+            outline.append(handle);
+          });
         }
         const details = [];
         if (selected.tag) details.push(element.tagName.toLowerCase());
@@ -717,6 +759,10 @@ function setupDeveloperInspector() {
     restore('min-width', change.originalMinWidth, change.originalMinWidthPriority);
     restore('min-height', change.originalMinHeight, change.originalMinHeightPriority);
     restore('flex', change.originalFlex, change.originalFlexPriority);
+    restore('font-size', change.originalFontSize, change.originalFontSizePriority);
+    restore('color', change.originalColor, change.originalColorPriority);
+    restore('background-color', change.originalBackgroundColor, change.originalBackgroundColorPriority);
+    restore('border-radius', change.originalBorderRadius, change.originalBorderRadiusPriority);
     changes.delete(element);
   };
   const toggle = (enabled) => {
@@ -737,6 +783,26 @@ function setupDeveloperInspector() {
     }
   };
 
+  const isEditorSurface = (target) => !!target.closest('[data-dev-inspector-panel], [data-dev-inspector-layer], [data-dev-inspector-toggle]');
+  document.addEventListener('click', (event) => {
+    if (!active || isEditorSurface(event.target)) return;
+    event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation();
+  }, true);
+  document.addEventListener('submit', (event) => {
+    if (!active || isEditorSurface(event.target)) return;
+    event.preventDefault();
+    event.stopPropagation();
+    event.stopImmediatePropagation();
+  }, true);
+  document.addEventListener('keydown', (event) => {
+    if (!active || isEditorSurface(event.target)) return;
+    if (event.key === 'Enter' || event.key === ' ') {
+      const target = event.target.closest('a, button, input[type="submit"], [role="button"]');
+      if (target) { event.preventDefault(); event.stopPropagation(); event.stopImmediatePropagation(); }
+    }
+  }, true);
   button.addEventListener('click', () => toggle(!active));
   panel.querySelector('[data-dev-inspector-close]').addEventListener('click', () => toggle(false));
   panel.querySelectorAll('[data-dev-field]').forEach((input) => input.addEventListener('change', draw));
@@ -757,12 +823,14 @@ function setupDeveloperInspector() {
     const outline = event.target.closest('[data-dev-outline]');
     const element = outline?._devTarget;
     if (!element || element !== selectedElement || selecting || (event.pointerType === 'mouse' && event.button !== 0)) return;
-    const mode = event.target.closest('[data-dev-resize]') ? 'resize' : 'move';
+    const resizeHandle = event.target.closest('[data-dev-resize]');
+    const mode = resizeHandle ? resizeHandle.dataset.devResize : 'move';
     const change = getChange(element);
     dragState = {
       element, mode, pointerId: event.pointerId,
       startX: event.clientX, startY: event.clientY,
-      x: change.x, y: change.y, width: change.width, height: change.height
+      x: change.x, y: change.y, width: change.width, height: change.height,
+      ratio: change.width / Math.max(1, change.height)
     };
     event.preventDefault();
     event.stopPropagation();
@@ -776,9 +844,16 @@ function setupDeveloperInspector() {
     if (dragState.mode === 'move') {
       change.x = dragState.x + dx;
       change.y = dragState.y + dy;
-    } else {
+    } else if (dragState.mode === 'width') {
       change.width = Math.max(24, dragState.width + dx);
+    } else if (dragState.mode === 'height') {
       change.height = Math.max(24, dragState.height + dy);
+    } else {
+      const scaleX = (dragState.width + dx) / Math.max(1, dragState.width);
+      const scaleY = (dragState.height + dy) / Math.max(1, dragState.height);
+      const scale = Math.abs(dx) >= Math.abs(dy) ? scaleX : scaleY;
+      change.width = Math.max(24, dragState.width * Math.max(.1, scale));
+      change.height = Math.max(24, change.width / Math.max(.01, dragState.ratio));
     }
     applyChange(dragState.element);
     syncSelectedOutline();
@@ -815,6 +890,23 @@ function setupDeveloperInspector() {
     updateEditorFields();
     draw();
   }));
+  const styleInputs = [...panel.querySelectorAll('[data-dev-style]')];
+  const toHex = (value) => {
+    const parts = String(value).match(/[\\d.]+/g);
+    if (!parts || parts.length < 3) return '#000000';
+    return '#' + parts.slice(0, 3).map((part) => Math.max(0, Math.min(255, Math.round(Number(part)))).toString(16).padStart(2, '0')).join('');
+  };
+  styleInputs.forEach((input) => input.addEventListener('change', () => {
+    if (!selectedElement) return;
+    const change = getChange(selectedElement);
+    const key = input.dataset.devStyle;
+    if (key === 'fontSize') change.fontSize = Math.max(1, Number(input.value) || 1);
+    if (key === 'borderRadius') change.borderRadius = Math.max(0, Number(input.value) || 0);
+    if (key === 'color' || key === 'backgroundColor') change[key] = input.value;
+    applyChange(selectedElement);
+    updateEditorFields();
+    syncSelectedOutline();
+  }));
   panel.querySelector('[data-dev-reset]').addEventListener('click', () => {
     if (!selectedElement) return;
     restoreElement(selectedElement);
@@ -832,6 +924,10 @@ function setupDeveloperInspector() {
       if (change.x || change.y) declarations.push('transform: translate(' + change.x + 'px, ' + change.y + 'px)' + (change.baseTransform ? ' ' + change.baseTransform : '') + ' !important;');
       if (change.width !== change.initialWidth || change.originalWidth) declarations.push('width: ' + Math.round(change.width) + 'px !important;');
       if (change.height !== change.initialHeight || change.originalHeight) declarations.push('height: ' + Math.round(change.height) + 'px !important;');
+      declarations.push('font-size: ' + Math.round(change.fontSize) + 'px !important;');
+      declarations.push('color: ' + change.color + ' !important;');
+      declarations.push('background-color: ' + change.backgroundColor + ' !important;');
+      declarations.push('border-radius: ' + Math.round(change.borderRadius) + 'px !important;');
       if (declarations.length) rules.push(selector + ' {\n  ' + declarations.join('\n  ') + '\n}');
     });
     const output = rules.join('\n\n') || '/* Nenhum ajuste para copiar. */';
