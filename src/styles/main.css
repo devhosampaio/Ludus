@@ -4773,3 +4773,118 @@ select {
 }
 
 .admin-menu-open { overflow:hidden; }
+
+/* Admin — escala de espaçamento alinhada às demais telas do Ludus */
+.admin-mobile-header {
+  padding-inline: var(--space-16);
+}
+.admin-topbar {
+  padding-inline: var(--space-24);
+}
+.admin-content {
+  padding: var(--space-32) var(--space-24) var(--space-48);
+}
+.admin-page-heading {
+  margin: 0 0 var(--space-24);
+}
+.admin-page-heading h1 {
+  margin: 0 0 var(--space-8);
+}
+.admin-page-heading p {
+  margin: 0;
+  line-height: var(--line-height-normal);
+}
+.admin-dashboard {
+  gap: var(--space-24);
+}
+.admin-dashboard__metrics {
+  gap: var(--space-12);
+}
+.admin-metric {
+  gap: var(--space-8);
+  padding: var(--space-16);
+}
+.admin-dashboard__section {
+  gap: var(--space-12);
+}
+.admin-activity__item {
+  gap: var(--space-12);
+  padding: var(--space-12) var(--space-16);
+}
+.admin-users {
+  gap: var(--space-16);
+}
+.admin-users__list {
+  gap: var(--space-8);
+}
+.admin-user-row {
+  gap: var(--space-12);
+  padding: var(--space-16);
+}
+
+@media (max-width: 800px) {
+  .admin-mobile-header {
+    min-height: 56px;
+    padding: 0 var(--space-16);
+  }
+  .admin-topbar {
+    min-height: 52px;
+    padding: var(--space-8) var(--space-16);
+  }
+  .admin-content {
+    width: 100%;
+    max-width: 760px;
+    margin-inline: auto;
+    padding: var(--space-24) var(--space-16) calc(var(--space-40) + env(safe-area-inset-bottom));
+  }
+  .admin-page-heading {
+    margin-bottom: var(--space-20);
+  }
+  .admin-page-heading h1 {
+    margin-bottom: var(--space-6);
+  }
+  .admin-dashboard {
+    gap: var(--space-24);
+  }
+  .admin-dashboard__metrics {
+    gap: var(--space-10);
+  }
+  .admin-metric {
+    gap: var(--space-6);
+    padding: var(--space-14);
+  }
+  .admin-dashboard__section {
+    gap: var(--space-12);
+  }
+  .admin-activity__item {
+    gap: var(--space-10);
+    padding: var(--space-12);
+  }
+  .admin-users {
+    gap: var(--space-12);
+  }
+  .admin-user-row {
+    gap: var(--space-10);
+    padding: var(--space-12);
+  }
+}
+
+@media (max-width: 420px) {
+  .admin-mobile-header,
+  .admin-topbar {
+    padding-inline: var(--space-16);
+  }
+  .admin-content {
+    padding-right: var(--space-16);
+    padding-left: var(--space-16);
+  }
+  .admin-dashboard__metrics {
+    gap: var(--space-8);
+  }
+  .admin-metric {
+    padding: var(--space-12);
+  }
+  .admin-activity__item {
+    padding: var(--space-12);
+  }
+}
