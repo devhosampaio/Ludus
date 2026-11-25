@@ -522,6 +522,7 @@ function setupDeveloperInspector() {
     '<label class="dev-inspector-option"><span class="dev-inspector-option__copy"><strong>Tipografia</strong><small>Tamanho e peso</small></span><input type="checkbox" data-dev-field="font"><span class="dev-inspector-option__switch"></span></label>' +
     '<label class="dev-inspector-option"><span class="dev-inspector-option__copy"><strong>Identificador</strong><small>ID do elemento</small></span><input type="checkbox" data-dev-field="id"><span class="dev-inspector-option__switch"></span></label>' +
     '<label class="dev-inspector-option"><span class="dev-inspector-option__copy"><strong>Contornos</strong><small>Linhas ao redor dos elementos</small></span><input type="checkbox" data-dev-field="outlines"><span class="dev-inspector-option__switch"></span></label>' +
+    '<label class="dev-inspector-option"><span class="dev-inspector-option__copy"><strong>Grade 1 × 1 px</strong><small>Exibir grade de alinhamento</small></span><input type="checkbox" data-dev-field="grid"><span class="dev-inspector-option__switch"></span></label>' +
     '</div></section>' +
     '<section class="dev-inspector-panel__section dev-inspector-editor">' +
     '<div class="dev-inspector-panel__section-heading"><span>EDITOR VISUAL</span><span class="dev-inspector-panel__section-count">BETA</span></div>' +
@@ -532,6 +533,11 @@ function setupDeveloperInspector() {
     '<div class="dev-inspector-editor__fields">' +
     '<label><span>Largura</span><span><input type="number" min="1" step="1" data-dev-size="width"> px</span></label>' +
     '<label><span>Altura</span><span><input type="number" min="1" step="1" data-dev-size="height"> px</span></label>' +
+    '</div>' +
+    '<div class="dev-inspector-editor__move" aria-label="Mover elemento em um pixel">' +
+    '<button type="button" data-dev-move="up" aria-label="Mover para cima 1 pixel"><i class="fa-solid fa-chevron-up"></i></button>' +
+    '<div><button type="button" data-dev-move="left" aria-label="Mover para esquerda 1 pixel"><i class="fa-solid fa-chevron-left"></i></button><span>1 px</span><button type="button" data-dev-move="right" aria-label="Mover para direita 1 pixel"><i class="fa-solid fa-chevron-right"></i></button></div>' +
+    '<button type="button" data-dev-move="down" aria-label="Mover para baixo 1 pixel"><i class="fa-solid fa-chevron-down"></i></button>' +
     '</div>' +
     '<div class="dev-inspector-editor__hint">Arraste o elemento para mover. Use a alça no canto para redimensionar.</div>' +
     '<div class="dev-inspector-editor__actions"><button type="button" data-dev-copy><i class="fa-regular fa-copy" aria-hidden="true"></i> Copiar CSS</button><button type="button" data-dev-reset><i class="fa-solid fa-rotate-left" aria-hidden="true"></i> Desfazer ajustes</button></div>' +
@@ -555,6 +561,21 @@ function setupDeveloperInspector() {
   const selectedName = panel.querySelector('[data-dev-selected-name]');
   const sizeInputs = [...panel.querySelectorAll('[data-dev-size]')];
   const fields = () => Object.fromEntries([...panel.querySelectorAll('[data-dev-field]')].map((input) => [input.dataset.devField, input.checked]));
+  const selectedOutline = () => layer.querySelector('.dev-inspector-outline.is-selected');
+  const syncSelectedOutline = () => {
+    if (!selectedElement) return;
+    const rect = selectedElement.getBoundingClientRect();
+    const outline = selectedOutline();
+    if (!outline) return;
+    outline.style.left = rect.left + 'px';
+    outline.style.top = rect.top + 'px';
+    outline.style.width = rect.width + 'px';
+    outline.style.height = rect.height + 'px';
+    const width = sizeInputs.find((input) => input.dataset.devSize === 'width');
+    const height = sizeInputs.find((input) => input.dataset.devSize === 'height');
+    if (document.activeElement !== width) width.value = String(Math.round(rect.width));
+    if (document.activeElement !== height) height.value = String(Math.round(rect.height));
+  };
   const ignored = (element) => element === button || panel.contains(element) || layer.contains(element) ||
     element.closest('[data-dev-inspector-panel], [data-dev-inspector-layer], [data-dev-inspector-toggle]') ||
     element.hidden || getComputedStyle(element).display === 'none' || getComputedStyle(element).visibility === 'hidden';
@@ -637,6 +658,7 @@ function setupDeveloperInspector() {
       if (!active) return;
       layer.replaceChildren();
       const selected = fields();
+      layer.classList.toggle('is-grid', selected.grid);
       if (!selected.outlines && !selecting && !selectedElement) { updateEditorFields(); return; }
       document.body.querySelectorAll('body *').forEach((element) => {
         if (!selected.outlines && !selecting && element !== selectedElement) return;
@@ -650,6 +672,7 @@ function setupDeveloperInspector() {
         outline.dataset.devOutline = '';
         outline._devTarget = element;
         outline.style.pointerEvents = selecting || element === selectedElement ? 'auto' : 'none';
+        if (element === selectedElement) outline.style.touchAction = 'none';
         outline.style.left = rect.left + 'px';
         outline.style.top = rect.top + 'px';
         outline.style.width = rect.width + 'px';
@@ -733,7 +756,7 @@ function setupDeveloperInspector() {
   layer.addEventListener('pointerdown', (event) => {
     const outline = event.target.closest('[data-dev-outline]');
     const element = outline?._devTarget;
-    if (!element || element !== selectedElement || selecting || event.button !== 0) return;
+    if (!element || element !== selectedElement || selecting || (event.pointerType === 'mouse' && event.button !== 0)) return;
     const mode = event.target.closest('[data-dev-resize]') ? 'resize' : 'move';
     const change = getChange(element);
     dragState = {
@@ -743,6 +766,7 @@ function setupDeveloperInspector() {
     };
     event.preventDefault();
     event.stopPropagation();
+    outline.setPointerCapture?.(event.pointerId);
   });
   window.addEventListener('pointermove', (event) => {
     if (!dragState || event.pointerId !== dragState.pointerId) return;
@@ -757,15 +781,30 @@ function setupDeveloperInspector() {
       change.height = Math.max(24, dragState.height + dy);
     }
     applyChange(dragState.element);
-    draw();
+    syncSelectedOutline();
+    updateEditorFields();
   });
-  window.addEventListener('pointerup', (event) => {
+  const finishDrag = (event) => {
     if (dragState && event.pointerId === dragState.pointerId) {
       dragState = null;
       updateEditorFields();
       draw();
     }
-  });
+  };
+  window.addEventListener('pointerup', finishDrag);
+  window.addEventListener('pointercancel', finishDrag);
+  panel.querySelectorAll('[data-dev-move]').forEach((control) => control.addEventListener('click', () => {
+    if (!selectedElement) return;
+    const change = getChange(selectedElement);
+    const direction = control.dataset.devMove;
+    if (direction === 'left') change.x -= 1;
+    if (direction === 'right') change.x += 1;
+    if (direction === 'up') change.y -= 1;
+    if (direction === 'down') change.y += 1;
+    applyChange(selectedElement);
+    syncSelectedOutline();
+    updateEditorFields();
+  }));
   sizeInputs.forEach((input) => input.addEventListener('change', () => {
     if (!selectedElement) return;
     const change = getChange(selectedElement);
@@ -812,7 +851,7 @@ function setupDeveloperInspector() {
   window.addEventListener('scroll', draw, { passive: true });
   window.addEventListener('resize', draw);
   const observer = new MutationObserver((records) => {
-    if (active && records.some((record) => !layer.contains(record.target) && !panel.contains(record.target) && record.target !== button)) draw();
+    if (active && !dragState && records.some((record) => !layer.contains(record.target) && !panel.contains(record.target) && record.target !== button)) draw();
   });
   observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class', 'style', 'hidden'] });
 }
