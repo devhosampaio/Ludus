@@ -3893,3 +3893,85 @@ select {
     justify-self: end !important;
   }
 }
+
+
+/* Organização do comentário: identidade à esquerda e conteúdo alinhado em coluna. */
+.review-detail .review-comment {
+  display: grid !important;
+  grid-template-columns: 32px minmax(0, 1fr) !important;
+  column-gap: var(--space-md) !important;
+  row-gap: var(--space-xs) !important;
+  align-items: start !important;
+}
+.review-detail .review-comment__meta {
+  display: contents !important;
+}
+.review-detail .review-comment__avatar {
+  grid-column: 1 !important;
+  grid-row: 1 / span 4 !important;
+  margin-top: var(--space-2) !important;
+}
+.review-detail .review-comment__author {
+  grid-column: 2 !important;
+  grid-row: 1 !important;
+  justify-self: start !important;
+  padding-right: 36px !important;
+  line-height: var(--line-height-normal) !important;
+}
+.review-detail .review-comment__menu {
+  position: absolute !important;
+  top: 0 !important;
+  right: 0 !important;
+  margin: 0 !important;
+}
+.review-detail .review-comment {
+  position: relative !important;
+}
+.review-detail .review-comment__body,
+.review-detail .review-comment__edit-form,
+.review-detail .review-comment__actions,
+.review-detail .review-comment__reply-form,
+.review-detail .review-comment__replies-toggle,
+.review-detail .review-comment__replies {
+  grid-column: 2 !important;
+  min-width: 0 !important;
+}
+.review-detail .review-comment__body {
+  margin: 0 !important;
+  padding: 0 !important;
+  line-height: 1.55 !important;
+}
+.review-detail .review-comment__actions {
+  margin-top: var(--space-2) !important;
+}
+.review-detail .review-comment__replies {
+  margin-left: 0 !important;
+  padding-left: var(--space-md) !important;
+}
+.review-detail .review-comment--reply {
+  grid-template-columns: minmax(0, 1fr) !important;
+  padding: var(--space-sm) 0 !important;
+}
+.review-detail .review-comment--reply .review-comment__author,
+.review-detail .review-comment--reply .review-comment__body,
+.review-detail .review-comment--reply .review-comment__edit-form,
+.review-detail .review-comment--reply .review-comment__actions,
+.review-detail .review-comment--reply .review-comment__reply-form,
+.review-detail .review-comment--reply .review-comment__replies-toggle,
+.review-detail .review-comment--reply .review-comment__replies {
+  grid-column: 1 !important;
+}
+.review-detail .review-comment--reply .review-comment__menu {
+  right: 0 !important;
+}
+@media (max-width: 420px) {
+  .review-detail .review-comment {
+    grid-template-columns: 28px minmax(0, 1fr) !important;
+    column-gap: var(--space-sm) !important;
+  }
+  .review-detail .review-comment__avatar {
+    width: 28px !important;
+    height: 28px !important;
+    flex-basis: 28px !important;
+  }
+}
