@@ -819,16 +819,30 @@ function setupAdminUsersSection(adminUser) {
     const userId = button.dataset.userId;
     const username = button.dataset.username || 'este usuário';
     const messages = {
-      suspend: 'Suspender @' + username + '? A pessoa não poderá entrar na conta enquanto a suspensão estiver ativa.',
+      suspend: 'Suspender @' + username + '?',
       reactivate: 'Reativar a conta de @' + username + '?',
       promote: 'Tornar @' + username + ' administrador? Essa pessoa terá acesso à área administrativa.',
       demote: 'Remover o cargo de administrador de @' + username + '?'
     };
-    if (!window.confirm(messages[action] || 'Confirmar esta ação?')) return;
+    let payload;
+    if (action === 'suspend') {
+      const reason = window.prompt('Informe o motivo da suspensão de @' + username + ':');
+      if (!reason?.trim()) return;
+      const durationInput = window.prompt('Duração em dias (7, 30, 90...) ou 0 para suspensão permanente:', '7');
+      if (durationInput === null) return;
+      const durationDays = Number(durationInput.trim());
+      if (!Number.isInteger(durationDays) || durationDays < 0 || durationDays > 3650) {
+        window.alert('Informe 0 ou um número inteiro entre 1 e 3650 dias.');
+        return;
+      }
+      if (!window.confirm(messages[action] + '\\nDuração: ' + (durationDays === 0 ? 'permanente' : durationDays + ' dias') + '\\nMotivo: ' + reason.trim())) return;
+      payload = { action: 'suspend', user_id: userId, reason: reason.trim(), duration_days: durationDays };
+    } else {
+      if (!window.confirm(messages[action] || 'Confirmar esta ação?')) return;
+      payload = action === 'reactivate' ? { action: 'reactivate', user_id: userId }
+        : { action: 'set_role', user_id: userId, role: action === 'promote' ? 'admin' : 'user' };
+    }
     button.disabled = true;
-    const payload = action === 'suspend' ? { action: 'suspend', user_id: userId }
-      : action === 'reactivate' ? { action: 'reactivate', user_id: userId }
-      : { action: 'set_role', user_id: userId, role: action === 'promote' ? 'admin' : 'user' };
     const { data, error } = await supabase.functions.invoke('admin-users', { body: payload });
     if (error || data?.error) {
       window.alert(data?.error || error?.message || 'Não foi possível concluir a ação.');
