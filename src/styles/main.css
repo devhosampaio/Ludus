@@ -3467,3 +3467,48 @@ select {
 .app-topbar__right {
   min-height: calc(var(--space-4xl) + var(--space-lg)) !important;
 }
+
+/* Menu de opções das avaliações: pop-up sobreposto e padronizado em todo o site. */
+.review-menu {
+  position: relative !important;
+  flex: 0 0 auto !important;
+}
+.review-menu[open] {
+  z-index: 1000 !important;
+}
+.review-menu__panel {
+  position: absolute !important;
+  top: calc(100% + var(--space-xs)) !important;
+  right: 0 !important;
+  z-index: 1001 !important;
+  display: grid !important;
+  min-width: 190px !important;
+  padding: var(--space-xs) !important;
+  gap: var(--space-2) !important;
+  border: var(--border-width) solid var(--color-border) !important;
+  border-radius: var(--radius-md) !important;
+  background: var(--color-surface) !important;
+  color: var(--color-text) !important;
+  box-shadow: var(--shadow-popover) !important;
+}
+.review-menu__panel button {
+  display: block !important;
+  width: 100% !important;
+  min-height: var(--space-3xl) !important;
+  padding: var(--space-sm) !important;
+  border: 0 !important;
+  border-radius: var(--radius-sm) !important;
+  background: transparent !important;
+  color: var(--color-text) !important;
+  font-size: var(--font-size-sm) !important;
+  line-height: var(--line-height-normal) !important;
+  text-align: left !important;
+}
+.review-menu__panel button:hover,
+.review-menu__panel button:focus-visible {
+  background: var(--color-surface-hover) !important;
+  outline: none;
+}
+.review-menu__panel button.is-danger {
+  color: var(--color-danger) !important;
+}
