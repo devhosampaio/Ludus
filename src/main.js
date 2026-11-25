@@ -758,7 +758,10 @@ async function renderAdminPage(currentUser) {
   app.querySelector('[data-admin-menu-close]')?.addEventListener('click', closeMenu);
   backdrop?.addEventListener('click', closeMenu);
   menu?.querySelectorAll('a').forEach((link) => link.addEventListener('click', closeMenu));
-  document.addEventListener('keydown', (event) => { if (event.key === 'Escape') closeMenu(); }, { once: true });
+  const handleAdminMenuEscape = (event) => {
+    if (event.key === 'Escape' && menu && !menu.hidden) closeMenu();
+  };
+  document.addEventListener('keydown', handleAdminMenuEscape);
 
   if (active === 'inicio') setupAdminDashboard();
   if (active === 'usuarios') setupAdminUsersSection(verifiedUser);
