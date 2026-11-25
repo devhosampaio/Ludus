@@ -355,38 +355,6 @@ function sharedFeedHeaderMarkup() {
       <div class="mobile-drawer__review-container"><button class="btn btn-primary btn-block mobile-drawer__review" type="button" data-drawer-review>Avaliar</button></div>
     </aside>`;
 }
-function setupFeedHeaderAutoHide() {
-  const topbar = app.querySelector('.app-topbar');
-  const navigation = app.querySelector('.feed-navigation--header');
-  if (!topbar || !navigation) return;
-
-  app.__feedHeaderScrollController?.abort();
-  const controller = new AbortController();
-  app.__feedHeaderScrollController = controller;
-  let previousY = window.scrollY || 0;
-
-  window.addEventListener('scroll', () => {
-    const currentY = Math.max(0, window.scrollY || 0);
-    const delta = currentY - previousY;
-    const drawerOpen = !!app.querySelector('.mobile-drawer:not([hidden])');
-
-    if (!drawerOpen && Math.abs(delta) >= 6) {
-      if (delta > 0 && currentY > 80) {
-        topbar.classList.add('is-scroll-hidden');
-        navigation.classList.add('is-scroll-hidden');
-      } else if (delta < 0) {
-        topbar.classList.remove('is-scroll-hidden');
-        navigation.classList.remove('is-scroll-hidden');
-      }
-    }
-    if (currentY <= 20) {
-      topbar.classList.remove('is-scroll-hidden');
-      navigation.classList.remove('is-scroll-hidden');
-    }
-    previousY = currentY;
-  }, { passive: true, signal: controller.signal });
-}
-
 function setupBottomNavAutoHide() {
   const navigation = app.querySelector('.bottom-nav');
   if (!navigation) return;
@@ -679,7 +647,6 @@ async function renderSignedIn(user, initialFeedMode = 'home') {
     </div>`;
 
   setupNotifications(user);
-  setupFeedHeaderAutoHide();
   setupBottomNavAutoHide();
 
   const username = app.querySelector('[data-username]');
