@@ -5158,3 +5158,9 @@ select {
 .dev-inspector-editor__style-fields label { display:flex; min-width:0; flex-direction:column; gap:5px; color:var(--color-text-muted); font-size:10px; }
 .dev-inspector-editor__style-fields input[type="number"] { width:100%; min-width:0; height:34px; padding:0 8px; border:1px solid var(--color-border); border-radius:7px; background:var(--color-background); color:var(--color-text); font:inherit; font-size:11px; }
 .dev-inspector-editor__style-fields input[type="color"] { width:100%; height:34px; padding:3px; border:1px solid var(--color-border); border-radius:7px; background:var(--color-background); }
+
+/* Histórico de alterações do editor visual */
+.dev-inspector-editor__history { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; margin-top:12px; }
+.dev-inspector-editor__history button { display:flex; align-items:center; justify-content:center; gap:7px; min-height:36px; padding:7px 10px; border:1px solid var(--color-border); border-radius:8px; background:var(--color-surface); color:var(--color-text); font:inherit; font-size:11px; cursor:pointer; }
+.dev-inspector-editor__history button:disabled { opacity:.38; cursor:not-allowed; }
+.dev-inspector-editor__history button:not(:disabled):active { transform:translateY(1px); }
