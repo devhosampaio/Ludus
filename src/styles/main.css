@@ -872,7 +872,6 @@ img { max-width: 100%; }
 }
 .feed-center-column { padding-bottom: calc(76px + env(safe-area-inset-bottom)); }
 @media (min-width: 768px) {
-  .bottom-nav { display: none; }
   .feed-center-column { padding-bottom: 0; }
 }
 
@@ -1405,13 +1404,19 @@ select {
 }
 
 
-/* Oculta a navegação inferior ao rolar para baixo e a revela ao subir. */
+/* A navegação inferior permanece fixa e visível durante a rolagem. */
 .bottom-nav {
-  transition: transform 220ms ease;
-  will-change: transform;
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex !important;
+  transform: none !important;
+  transition: none !important;
+  will-change: auto;
 }
 .bottom-nav.is-scroll-hidden {
-  transform: translateY(100%);
+  transform: none !important;
 }
 
 /* Transição suave e sutil entre páginas, sem camada de brilho. */
