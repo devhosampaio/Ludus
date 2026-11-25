@@ -1864,3 +1864,56 @@ select {
   background: var(--color-surface);
   overflow: hidden;
 }
+
+/* Navbar inferior com aparência de card, em harmonia com o feed e cabeçalho. */
+.bottom-nav {
+  box-sizing: border-box;
+  right: var(--space-md) !important;
+  bottom: var(--space-sm) !important;
+  left: var(--space-md) !important;
+  width: auto !important;
+  min-height: calc(var(--space-4xl) + var(--space-lg) + env(safe-area-inset-bottom));
+  padding: 0 var(--space-sm) env(safe-area-inset-bottom) !important;
+  border: var(--border-width) solid var(--color-border) !important;
+  border-radius: var(--radius-xl) !important;
+  background: var(--color-surface) !important;
+  box-shadow: none !important;
+  overflow: hidden;
+}
+.bottom-nav > .bottom-nav__item,
+.bottom-nav > .bottom-nav__notifications,
+.bottom-nav .bottom-nav__item,
+.bottom-nav .notifications__trigger {
+  min-height: calc(var(--space-4xl) + var(--space-lg)) !important;
+  height: calc(var(--space-4xl) + var(--space-lg)) !important;
+}
+.bottom-nav .bottom-nav__item i,
+.bottom-nav .notifications__trigger i {
+  font-size: var(--font-size-22) !important;
+}
+.bottom-nav .bottom-nav__review i {
+  width: var(--space-4xl);
+  height: var(--space-4xl);
+  font-size: var(--font-size-22) !important;
+  border-radius: var(--radius-round);
+}
+.bottom-nav__profile-avatar {
+  width: var(--space-3xl);
+  height: var(--space-3xl);
+}
+.bottom-nav__profile-avatar svg {
+  width: var(--icon-size-md);
+  height: var(--icon-size-md);
+}
+
+/* Ajuste de legibilidade e simetria dos elementos do cabeçalho. */
+.app-topbar__brand {
+  font-size: var(--font-size-lg) !important;
+}
+.app-topbar .app-topbar__menu-button i,
+.profile-page__back-button i {
+  font-size: var(--font-size-lg) !important;
+}
+.feed-navigation--header .feed-tabs__button {
+  font-size: var(--font-size-md) !important;
+}
