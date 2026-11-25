@@ -1477,22 +1477,23 @@ select {
 /* Modo de desenvolvedor — painel de ferramentas integrado à identidade do Ludus. */
 .dev-inspector-toggle {
   position: fixed;
-  right: 18px;
-  bottom: calc(88px + env(safe-area-inset-bottom));
+  right: 12px;
+  bottom: calc(76px + env(safe-area-inset-bottom));
   z-index: 5000;
   display: grid;
-  width: 44px !important;
-  height: 44px !important;
+  width: 36px !important;
+  height: 36px !important;
   place-items: center;
   border: 1px solid var(--color-border);
   border-radius: 50%;
   background: var(--color-surface);
   color: var(--color-text);
   box-shadow: 0 5px 18px rgba(0,0,0,.16);
-  font-size: 16px !important;
-  transition: transform .18s ease, background .18s ease, color .18s ease;
+  font-size: 13px !important;
+  opacity: .82;
+  transition: transform .18s ease, background .18s ease, color .18s ease, opacity .18s ease;
 }
-.dev-inspector-toggle:hover { transform: translateY(-2px); }
+.dev-inspector-toggle:hover { transform: translateY(-2px); opacity: 1; }
 .dev-inspector-toggle.is-active {
   background: var(--color-primary, var(--color-accent));
   color: #fff;
@@ -1682,6 +1683,16 @@ select {
 }
 
 .dev-inspector-editor { border-top: 1px solid var(--color-border); }
+
+@media (max-width: 520px) {
+  .dev-inspector-toggle { right: 10px; bottom: calc(70px + env(safe-area-inset-bottom)); width: 32px !important; height: 32px !important; font-size: 12px !important; }
+  .dev-inspector-panel { right: 8px; bottom: calc(110px + env(safe-area-inset-bottom)); width: min(310px, calc(100vw - 16px)); max-height: min(66dvh, 560px); border-radius: 14px; }
+  .dev-inspector-panel__header { padding: 13px 14px 10px !important; }
+  .dev-inspector-panel__status { padding: 8px 14px !important; }
+  .dev-inspector-panel__section { padding: 11px 14px 12px !important; }
+  .dev-inspector-option { min-height: 42px; }
+  .dev-inspector-panel__footer { padding: 10px 14px !important; }
+}
 .dev-inspector-editor__select {
   display: flex;
   width: 100% !important;
