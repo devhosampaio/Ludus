@@ -3458,3 +3458,12 @@ select {
   stroke: currentColor;
 }
 
+/* Mais respiro vertical no cabeçalho para afastar o botão de menu do topo. */
+.app-topbar__row {
+  min-height: calc(var(--space-4xl) + var(--space-lg)) !important;
+}
+.app-topbar__left,
+.app-topbar__center,
+.app-topbar__right {
+  min-height: calc(var(--space-4xl) + var(--space-lg)) !important;
+}
