@@ -3156,3 +3156,208 @@ select {
   .landing-feature { padding: var(--space-lg) !important; }
   .landing-footer { flex-direction: row; justify-content: space-between; }
 }
+
+/* Editor de perfil — mesma linguagem visual dos cards e controles do Ludus. */
+.profile-editor--page {
+  box-sizing: border-box;
+  position: relative;
+  width: min(100%, 720px) !important;
+  margin: var(--space-lg) auto var(--space-4xl) !important;
+  padding: var(--space-lg) !important;
+  border: var(--border-width) solid var(--color-border) !important;
+  border-radius: var(--radius-xl) !important;
+  background: var(--color-surface) !important;
+  color: var(--color-text) !important;
+}
+.profile-editor--page .profile-editor__close {
+  position: absolute;
+  top: var(--space-md);
+  right: var(--space-md);
+  display: grid !important;
+  width: var(--space-3xl) !important;
+  height: var(--space-3xl) !important;
+  place-items: center;
+  border: var(--border-width) solid var(--color-border) !important;
+  border-radius: var(--radius-round) !important;
+  background: var(--color-surface) !important;
+  color: var(--color-text) !important;
+  font-size: var(--font-size-xl) !important;
+  line-height: 1;
+}
+.profile-editor--page > .eyebrow {
+  margin: 0 0 var(--space-xs) !important;
+  color: var(--color-text-muted) !important;
+  font-size: var(--font-size-xs) !important;
+  font-weight: var(--font-weight-bold) !important;
+  letter-spacing: .08em;
+}
+.profile-editor--page #profile-editor-title {
+  margin: 0 0 var(--space-xl) !important;
+  padding-right: var(--space-3xl) !important;
+  color: var(--color-text) !important;
+  font-size: var(--font-size-2xl) !important;
+  font-weight: var(--font-weight-bold) !important;
+  line-height: var(--line-height-tight);
+}
+.profile-editor--page #profile-editor-title span { color: var(--color-accent) !important; }
+.profile-editor--page .profile-editor__form {
+  display: grid !important;
+  gap: var(--space-lg) !important;
+}
+.profile-editor--page .profile-editor__field,
+.profile-editor--page .profile-editor__upload {
+  display: block !important;
+  min-width: 0;
+  color: var(--color-text) !important;
+  font-size: var(--font-size-sm) !important;
+}
+.profile-editor--page .profile-editor__field > span,
+.profile-editor--page .profile-editor__upload > span {
+  display: block !important;
+  margin: 0 0 var(--space-xs) !important;
+  color: var(--color-text) !important;
+  font-size: var(--font-size-sm) !important;
+  font-weight: var(--font-weight-bold) !important;
+}
+.profile-editor--page .profile-editor__field input,
+.profile-editor--page .profile-editor__field textarea {
+  box-sizing: border-box;
+  display: block;
+  width: 100% !important;
+  min-height: var(--space-4xl) !important;
+  padding: var(--space-sm) var(--space-md) !important;
+  border: var(--border-width) solid var(--color-border) !important;
+  border-radius: var(--radius-md) !important;
+  background: var(--color-surface) !important;
+  color: var(--color-text) !important;
+  font-size: var(--font-size-md) !important;
+  line-height: var(--line-height-normal);
+  box-shadow: none !important;
+}
+.profile-editor--page .profile-editor__field textarea {
+  min-height: 112px !important;
+  resize: vertical;
+}
+.profile-editor--page .profile-editor__field input:focus,
+.profile-editor--page .profile-editor__field textarea:focus {
+  border-color: var(--color-accent) !important;
+  outline: 2px solid color-mix(in srgb, var(--color-accent) 18%, transparent);
+  outline-offset: 1px;
+}
+.profile-editor--page .profile-editor__field small,
+.profile-editor--page .profile-editor__upload small {
+  display: block;
+  margin-top: var(--space-xs) !important;
+  color: var(--color-text-muted) !important;
+  font-size: var(--font-size-xs) !important;
+  line-height: 1.4;
+}
+.profile-editor--page .profile-editor__uploads {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  gap: var(--space-md) !important;
+}
+.profile-editor--page .profile-editor__upload {
+  min-width: 0;
+  padding: var(--space-md) !important;
+  border: var(--border-width) solid var(--color-border) !important;
+  border-radius: var(--radius-lg) !important;
+  background: var(--color-surface) !important;
+}
+.profile-editor--page .profile-editor__preview {
+  box-sizing: border-box;
+  display: grid !important;
+  width: 100%;
+  min-height: 112px !important;
+  margin: var(--space-sm) 0 !important;
+  padding: var(--space-sm) !important;
+  place-items: center;
+  overflow: hidden;
+  border: var(--border-width) solid var(--color-border) !important;
+  border-radius: var(--radius-md) !important;
+  background: var(--color-surface-hover) !important;
+  color: var(--color-text-muted) !important;
+  font-size: var(--font-size-sm) !important;
+}
+.profile-editor--page .profile-editor__preview--avatar {
+  width: 112px;
+  height: 112px;
+  min-height: 112px !important;
+  border-radius: var(--radius-round) !important;
+}
+.profile-editor--page .profile-editor__preview--banner {
+  min-height: 150px !important;
+}
+.profile-editor--page .profile-editor__preview img {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  max-height: 180px;
+  object-fit: cover;
+}
+.profile-editor--page .profile-editor__preview--avatar img {
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-round);
+}
+.profile-editor--page .profile-editor__upload input[type="file"] {
+  box-sizing: border-box;
+  display: block;
+  width: 100% !important;
+  max-width: 100%;
+  margin-top: var(--space-sm) !important;
+  color: var(--color-text-muted) !important;
+  font-size: var(--font-size-xs) !important;
+}
+.profile-editor--page .profile-editor__message {
+  margin: 0 !important;
+  color: var(--color-danger) !important;
+  font-size: var(--font-size-sm) !important;
+  overflow-wrap: anywhere;
+}
+.profile-editor--page .profile-editor__actions {
+  display: flex !important;
+  flex-direction: column-reverse;
+  gap: var(--space-sm) !important;
+  padding-top: var(--space-md) !important;
+  border-top: var(--border-width) solid var(--color-border);
+}
+.profile-editor--page .profile-editor__actions button {
+  box-sizing: border-box;
+  width: 100% !important;
+  min-height: var(--space-4xl) !important;
+  padding: 0 var(--space-lg) !important;
+  border: var(--border-width) solid var(--color-border) !important;
+  border-radius: 999px !important;
+  background: var(--color-surface) !important;
+  color: var(--color-text) !important;
+  font-size: var(--font-size-sm) !important;
+  font-weight: var(--font-weight-bold) !important;
+}
+.profile-editor--page .profile-editor__actions button[type="submit"] {
+  border-color: var(--color-accent) !important;
+  background: var(--color-accent) !important;
+  color: #fff !important;
+}
+.profile-editor--page button:focus-visible {
+  outline: 2px solid var(--color-accent) !important;
+  outline-offset: 2px;
+}
+@media (min-width: 768px) {
+  .profile-editor--page {
+    margin-top: var(--space-2xl) !important;
+    padding: var(--space-2xl) !important;
+  }
+  .profile-editor--page .profile-editor__uploads {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+  .profile-editor--page .profile-editor__actions {
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+  .profile-editor--page .profile-editor__actions button {
+    width: auto !important;
+    min-width: 132px;
+  }
+}
+
