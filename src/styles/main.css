@@ -28,6 +28,7 @@
   --font-size-14: 14px;
   --font-size-28: 28px;
   --font-size-4: 4px;
+  --font-size-2: 2px;
   --font-size-10: 10px;
   --font-size-26: 26px;
   --font-size-25: 25px;
@@ -1710,7 +1711,7 @@ select {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: var(--space-xs) !important;
+  gap: var(--space-sm) !important;
   min-width: 0;
 }
 .review-card__author {
@@ -1841,8 +1842,16 @@ select {
 /* Reduz o glifo do Font Awesome usado como separador da data. */
 .review-card__timestamp-separator,
 .review-card__timestamp-separator::before {
-  font-size: var(--font-size-4) !important;
+  font-size: var(--font-size-2) !important;
   line-height: 1 !important;
+}
+
+/* Mantém um pequeno intervalo entre o título do jogo e seu ano. */
+.review-card__game-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: var(--space-xs) !important;
 }
 
 /* Cabeçalhos com a mesma linguagem de cards das avaliações. */
