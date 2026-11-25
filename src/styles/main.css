@@ -5148,3 +5148,13 @@ select {
 .dev-inspector-layer.is-grid::before { content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: .22; background-image: radial-gradient(var(--color-text) .42px, transparent .58px); background-size: 1px 1px; }
 .dev-inspector-outline { will-change: left, top, width, height; }
 .dev-inspector-outline.is-selected { touch-action: none; }
+
+/* Editor visual — alças e controles de estilo */
+.dev-inspector-outline__resize { position:absolute; z-index:3; display:block; background:var(--color-accent); border:2px solid var(--color-surface); box-shadow:0 1px 5px rgba(0,0,0,.25); }
+.dev-inspector-outline__resize--width { top:50%; right:-5px; width:9px; height:22px; border-radius:5px; transform:translateY(-50%); cursor:ew-resize; }
+.dev-inspector-outline__resize--height { bottom:-5px; left:50%; width:22px; height:9px; border-radius:5px; transform:translateX(-50%); cursor:ns-resize; }
+.dev-inspector-outline__resize--proportional { right:-6px; bottom:-6px; width:13px; height:13px; border-radius:4px; cursor:nwse-resize; }
+.dev-inspector-editor__style-fields { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px; margin-top:12px; }
+.dev-inspector-editor__style-fields label { display:flex; min-width:0; flex-direction:column; gap:5px; color:var(--color-text-muted); font-size:10px; }
+.dev-inspector-editor__style-fields input[type="number"] { width:100%; min-width:0; height:34px; padding:0 8px; border:1px solid var(--color-border); border-radius:7px; background:var(--color-background); color:var(--color-text); font:inherit; font-size:11px; }
+.dev-inspector-editor__style-fields input[type="color"] { width:100%; height:34px; padding:3px; border:1px solid var(--color-border); border-radius:7px; background:var(--color-background); }
