@@ -283,7 +283,8 @@ img { max-width: 100%; }
   .feed-main__container { width: calc(100% + 24px); margin-left: -12px; padding-left: 12px; padding-right: 12px; }
   .profile-page__content--full { width: 100%; margin-left: 0; }
   .profile-page__banner { width: calc(100% + 24px); margin-left: -12px; }
-  .feed-main > .feed-main__container { padding-top: 65px; }
+  .feed-main > .feed-main__container {
+  padding-top: 0; }
   .side-menu--left { display: none; }
   .side-menu__navigation { flex-direction: row; flex-wrap: wrap; }
   .side-menu__item { width: auto; }
@@ -317,10 +318,7 @@ img { max-width: 100%; }
 
 /* Cabeçalho principal mobile first. */
 .app-topbar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
+  position: static;
   z-index: 102;
   padding: var(--space-lg) 0;
   background: var(--color-surface);
@@ -385,7 +383,7 @@ img { max-width: 100%; }
   border-bottom: var(--border-width) solid var(--color-border);
 }
 .feed-main > .feed-main__container {
-  padding-top: 123px;
+  padding-top: 0;
 }
 .feed-navigation--header .feed-tabs {
   position: relative;
@@ -1054,23 +1052,12 @@ img { max-width: 100%; }
 /* Alinha o início do feed ao fim da navegação fixa no mobile. */
 @media (max-width: 767px) {
   .feed-main > .feed-main__container {
-    padding-top: 95px;
+  padding-top: 0;
   }
 }
 
 
-/* Oculta o cabeçalho e as abas ao rolar para baixo; revela ao rolar para cima. */
-.app-topbar,
-.feed-navigation--header {
-  transition: transform 220ms ease;
-  will-change: transform;
-}
-.app-topbar.is-scroll-hidden { transform: translateY(-100%); }
-.feed-navigation--header.is-scroll-hidden { transform: translateY(calc(-100% - 76px)); }
-@media (prefers-reduced-motion: reduce) {
-  .app-topbar,
-  .feed-navigation--header { transition-duration: 1ms; }
-}
+/* O cabeçalho do feed permanece no fluxo normal da página. */
 
 
 /* Aumenta o espaçamento vertical do botão Avaliar no menu lateral. */
