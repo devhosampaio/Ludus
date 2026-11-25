@@ -1525,3 +1525,14 @@ select {
   .dev-inspector-toggle { bottom: 18px; }
   .dev-inspector-panel { bottom: 76px; }
 }
+
+
+/* Botão de menu sem contorno, com relevo sutil em relação ao fundo da página. */
+.app-topbar .app-topbar__menu-button,
+.app-topbar .app-topbar__menu-button:hover,
+.app-topbar .app-topbar__menu-button:focus,
+.app-topbar .app-topbar__menu-button:active {
+  border: 0 !important;
+  background: #1d1d25 !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, .32), inset 0 1px 0 rgba(255, 255, 255, .06) !important;
+}
