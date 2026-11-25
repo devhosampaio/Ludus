@@ -620,7 +620,7 @@ function setupDeveloperInspector() {
         originalBackgroundColorPriority: element.style.getPropertyPriority('background-color'),
         originalBorderRadius: element.style.getPropertyValue('border-radius'),
         originalBorderRadiusPriority: element.style.getPropertyPriority('border-radius'),
-        fontSize: parseFloat(style.fontSize) || 16,
+        fontSize: parseFloat(style.fontSize) || 16,\n        initialFontSize: parseFloat(style.fontSize) || 16,
         color: style.color,
         backgroundColor: style.backgroundColor,
         borderRadius: parseFloat(style.borderTopLeftRadius) || 0,
@@ -634,6 +634,17 @@ function setupDeveloperInspector() {
       });
     }
     return changes.get(element);
+  };
+  const isFontIcon = (element) => element.matches('i, .fa, [class*="fa-"], [data-icon], .icon');
+  const scaleIconFont = (element, change, axis) => {
+    if (!isFontIcon(element)) return;
+    const baseSize = change.initialFontSize || change.fontSize || 16;
+    const scale = axis === 'width'
+      ? change.width / Math.max(1, change.initialWidth)
+      : axis === 'height'
+        ? change.height / Math.max(1, change.initialHeight)
+        : Math.min(change.width / Math.max(1, change.initialWidth), change.height / Math.max(1, change.initialHeight));
+    change.fontSize = Math.max(1, baseSize * scale);
   };
   const applyChange = (element) => {
     const change = changes.get(element);
@@ -893,14 +904,17 @@ function setupDeveloperInspector() {
       change.y = dragState.y + dy;
     } else if (dragState.mode === 'width') {
       change.width = Math.max(24, dragState.width + dx);
+      scaleIconFont(dragState.element, change, 'width');
     } else if (dragState.mode === 'height') {
       change.height = Math.max(24, dragState.height + dy);
+      scaleIconFont(dragState.element, change, 'height');
     } else {
       const scaleX = (dragState.width + dx) / Math.max(1, dragState.width);
       const scaleY = (dragState.height + dy) / Math.max(1, dragState.height);
       const scale = Math.abs(dx) >= Math.abs(dy) ? scaleX : scaleY;
       change.width = Math.max(24, dragState.width * Math.max(.1, scale));
       change.height = Math.max(24, change.width / Math.max(.01, dragState.ratio));
+      scaleIconFont(dragState.element, change, 'proportional');
     }
     applyChange(dragState.element);
     syncSelectedOutline();
@@ -936,8 +950,13 @@ function setupDeveloperInspector() {
     const change = getChange(selectedElement);
     const before = captureState(selectedElement);
     const value = Math.max(1, Number(input.value) || 1);
-    if (input.dataset.devSize === 'width') change.width = value;
-    else change.height = value;
+    if (input.dataset.devSize === 'width') {
+      change.width = value;
+      scaleIconFont(selectedElement, change, 'width');
+    } else {
+      change.height = value;
+      scaleIconFont(selectedElement, change, 'height');
+    }
     applyChange(selectedElement);
     recordHistory(selectedElement, before);
     updateEditorFields();
