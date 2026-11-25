@@ -5164,3 +5164,231 @@ select {
 .dev-inspector-editor__history button { display:flex; align-items:center; justify-content:center; gap:7px; min-height:36px; padding:7px 10px; border:1px solid var(--color-border); border-radius:8px; background:var(--color-surface); color:var(--color-text); font:inherit; font-size:11px; cursor:pointer; }
 .dev-inspector-editor__history button:disabled { opacity:.38; cursor:not-allowed; }
 .dev-inspector-editor__history button:not(:disabled):active { transform:translateY(1px); }
+
+
+/* Editor visual — experiência mobile-first */
+@media (max-width: 700px) {
+  .dev-inspector-toggle {
+    right: 16px;
+    bottom: calc(16px + env(safe-area-inset-bottom));
+    z-index: 5010;
+    width: 50px !important;
+    height: 50px !important;
+    border: 1px solid color-mix(in srgb, var(--color-border) 75%, transparent);
+    background: var(--color-surface);
+    box-shadow: 0 5px 22px rgba(0,0,0,.24);
+    font-size: 18px !important;
+    opacity: 1;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .dev-inspector-panel {
+    position: fixed;
+    inset: auto 0 0;
+    z-index: 5011;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-height: min(82dvh, 760px);
+    max-height: min(82svh, 760px);
+    padding-bottom: env(safe-area-inset-bottom);
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    border: 1px solid var(--color-border);
+    border-bottom: 0;
+    border-radius: 22px 22px 0 0;
+    background: var(--color-surface);
+    box-shadow: 0 -14px 48px rgba(0,0,0,.24);
+    scrollbar-width: thin;
+    animation: dev-sheet-enter .2s ease-out;
+  }
+
+  .dev-inspector-panel[hidden] { display: none; }
+
+  @keyframes dev-sheet-enter {
+    from { transform: translateY(18px); opacity: .7; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  .dev-inspector-panel__header {
+    position: sticky;
+    top: 0;
+    z-index: 4;
+    flex: 0 0 auto;
+    min-height: 76px;
+    padding: 27px 18px 12px !important;
+    background: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .dev-inspector-panel__header::before {
+    position: absolute;
+    top: 9px;
+    left: 50%;
+    width: 38px;
+    height: 4px;
+    border-radius: 99px;
+    background: var(--color-text-subtle);
+    opacity: .45;
+    content: "";
+    transform: translateX(-50%);
+  }
+
+  .dev-inspector-panel__identity { gap: 3px !important; }
+  .dev-inspector-panel__eyebrow { font-size: 9px !important; }
+  .dev-inspector-panel__identity strong { font-size: 16px !important; }
+  .dev-inspector-panel__close {
+    width: 44px !important;
+    height: 44px !important;
+    background: var(--color-background);
+    color: var(--color-text);
+    font-size: 18px !important;
+  }
+
+  .dev-inspector-panel__status { display: none; }
+
+  .dev-inspector-panel__section {
+    flex: 0 0 auto;
+    padding: 16px 18px 18px !important;
+  }
+
+  /* No celular, as ferramentas de edição ficam antes das opções de inspeção. */
+  .dev-inspector-panel > .dev-inspector-editor { order: 1; }
+  .dev-inspector-panel > .dev-inspector-panel__section:not(.dev-inspector-editor) { order: 2; }
+  .dev-inspector-panel__footer { order: 3; }
+
+  .dev-inspector-panel__section-heading { margin-bottom: 10px !important; }
+  .dev-inspector-panel__section-heading > span:first-child { font-size: 10px !important; }
+  .dev-inspector-panel__description {
+    margin: 0 0 13px !important;
+    font-size: 12px !important;
+    line-height: 1.45;
+  }
+
+  .dev-inspector-editor__select {
+    min-height: 48px;
+    border-radius: 11px;
+    font-size: 13px !important;
+    touch-action: manipulation;
+  }
+
+  .dev-inspector-editor__selection { margin-top: 15px !important; }
+  .dev-inspector-editor__selected-name {
+    margin-bottom: 12px !important;
+    padding: 9px 11px;
+    border-radius: 8px;
+    background: var(--color-background);
+    font-size: 11px !important;
+  }
+
+  .dev-inspector-editor__fields,
+  .dev-inspector-editor__style-fields { gap: 9px !important; }
+
+  .dev-inspector-editor__fields label {
+    min-height: 54px;
+    padding: 8px 10px !important;
+    flex-wrap: wrap;
+    font-size: 11px !important;
+  }
+
+  .dev-inspector-editor__fields input,
+  .dev-inspector-editor__style-fields input[type="number"] {
+    min-height: 40px;
+    font-size: 16px !important;
+  }
+
+  .dev-inspector-editor__fields input { width: 66px !important; }
+  .dev-inspector-editor__style-fields { margin-top: 12px; }
+  .dev-inspector-editor__style-fields label { gap: 6px; font-size: 11px !important; }
+  .dev-inspector-editor__style-fields input[type="number"],
+  .dev-inspector-editor__style-fields input[type="color"] {
+    height: 44px;
+    border-radius: 9px;
+  }
+
+  .dev-inspector-editor__move { margin: 14px auto 8px !important; gap: 5px !important; }
+  .dev-inspector-editor__move > div { gap: 9px !important; }
+  .dev-inspector-editor__move button {
+    width: 46px !important;
+    height: 44px !important;
+    border-radius: 10px;
+    font-size: 14px !important;
+  }
+  .dev-inspector-editor__move span { min-width: 34px; text-align: center; font-size: 10px !important; }
+
+  .dev-inspector-editor__hint {
+    margin: 12px 0 !important;
+    padding: 10px 11px;
+    border-radius: 8px;
+    background: var(--color-background);
+    font-size: 11px !important;
+  }
+
+  .dev-inspector-editor__history {
+    position: sticky;
+    bottom: 0;
+    z-index: 3;
+    gap: 9px;
+    margin: 0 -18px !important;
+    padding: 10px 18px;
+    border-top: 1px solid var(--color-border);
+    background: var(--color-surface);
+  }
+
+  .dev-inspector-editor__history button {
+    min-height: 46px;
+    border-radius: 10px;
+    font-size: 12px;
+    touch-action: manipulation;
+  }
+
+  .dev-inspector-editor__actions { gap: 9px !important; margin-top: 10px !important; }
+  .dev-inspector-editor__actions button {
+    min-height: 44px;
+    border-radius: 9px;
+    font-size: 11px !important;
+    touch-action: manipulation;
+  }
+
+  .dev-inspector-option { min-height: 52px; }
+  .dev-inspector-option__copy strong { font-size: 12px !important; }
+  .dev-inspector-option__copy small { font-size: 10px !important; }
+
+  /* Alças grandes para o dedo, sem alterar o tamanho real do elemento selecionado. */
+  .dev-inspector-outline__resize--width {
+    top: 50%;
+    right: -13px;
+    width: 28px;
+    height: 48px;
+    border-radius: 10px;
+    transform: translateY(-50%);
+  }
+  .dev-inspector-outline__resize--height {
+    bottom: -13px;
+    left: 50%;
+    width: 48px;
+    height: 28px;
+    border-radius: 10px;
+    transform: translateX(-50%);
+  }
+  .dev-inspector-outline__resize--proportional {
+    right: -13px;
+    bottom: -13px;
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+  }
+  .dev-inspector-outline.is-selected { outline: 1px solid rgba(112,96,171,.25); }
+}
+
+@media (max-width: 380px) {
+  .dev-inspector-panel__section { padding-right: 14px !important; padding-left: 14px !important; }
+  .dev-inspector-editor__history { margin-right: -14px !important; margin-left: -14px !important; padding-right: 14px; padding-left: 14px; }
+  .dev-inspector-editor__style-fields { gap: 7px !important; }
+  .dev-inspector-editor__style-fields label { font-size: 10px !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dev-inspector-panel { animation: none !important; }
+}
