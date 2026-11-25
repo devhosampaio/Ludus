@@ -546,7 +546,8 @@ function setupDeveloperInspector() {
     '<button type="button" data-dev-move="down" aria-label="Mover para baixo 1 pixel"><i class="fa-solid fa-chevron-down"></i></button>' +
     '</div>' +
     '<div class="dev-inspector-editor__hint">Arraste o elemento para mover. Use a alça no canto para redimensionar.</div>' +
-    '<div class="dev-inspector-editor__actions"><button type="button" data-dev-copy><i class="fa-regular fa-copy" aria-hidden="true"></i> Copiar CSS</button><button type="button" data-dev-reset><i class="fa-solid fa-rotate-left" aria-hidden="true"></i> Desfazer ajustes</button></div>' +
+    '<div class="dev-inspector-editor__history"><button type="button" data-dev-undo disabled title="Desfazer (Ctrl+Z)"><i class="fa-solid fa-rotate-left" aria-hidden="true"></i><span>Desfazer</span></button><button type="button" data-dev-redo disabled title="Refazer (Ctrl+Shift+Z)"><i class="fa-solid fa-rotate-right" aria-hidden="true"></i><span>Refazer</span></button></div>' +
+    '<div class="dev-inspector-editor__actions"><button type="button" data-dev-copy><i class="fa-regular fa-copy" aria-hidden="true"></i> Copiar CSS</button><button type="button" data-dev-reset><i class="fa-solid fa-rotate-left" aria-hidden="true"></i> Restaurar elemento</button></div>' +
     '</div></section>' +
     '<footer class="dev-inspector-panel__footer"><span>ALTERAÇÕES TEMPORÁRIAS</span><span class="dev-inspector-panel__coming-soon">NÃO PUBLICADAS</span></footer>';
 
@@ -562,6 +563,8 @@ function setupDeveloperInspector() {
   let selecting = false;
   let dragState = null;
   const changes = new Map();
+  const history = [];
+  let historyIndex = 0;
   const selectionBox = panel.querySelector('[data-dev-selection]');
   const selectButton = panel.querySelector('[data-dev-select-mode]');
   const selectedName = panel.querySelector('[data-dev-selected-name]');
@@ -765,6 +768,49 @@ function setupDeveloperInspector() {
     restore('border-radius', change.originalBorderRadius, change.originalBorderRadiusPriority);
     changes.delete(element);
   };
+  const captureState = (element) => changes.has(element) ? { ...changes.get(element) } : null;
+  const undoButton = panel.querySelector('[data-dev-undo]');
+  const redoButton = panel.querySelector('[data-dev-redo]');
+  const updateHistoryButtons = () => {
+    undoButton.disabled = historyIndex === 0;
+    redoButton.disabled = historyIndex >= history.length;
+  };
+  const recordHistory = (element, before) => {
+    const after = captureState(element);
+    if (JSON.stringify(before) === JSON.stringify(after)) return;
+    history.splice(historyIndex);
+    history.push({ element, before, after });
+    if (history.length > 100) history.shift();
+    historyIndex = history.length;
+    updateHistoryButtons();
+  };
+  const applyHistoryState = (element, state) => {
+    if (state === null) {
+      restoreElement(element);
+    } else {
+      changes.set(element, { ...state });
+      applyChange(element);
+    }
+    if (selectedElement === element) {
+      updateEditorFields();
+      syncSelectedOutline();
+      draw();
+    }
+  };
+  const undo = () => {
+    if (historyIndex <= 0) return;
+    const entry = history[--historyIndex];
+    applyHistoryState(entry.element, entry.before);
+    updateHistoryButtons();
+  };
+  const redo = () => {
+    if (historyIndex >= history.length) return;
+    const entry = history[historyIndex++];
+    applyHistoryState(entry.element, entry.after);
+    updateHistoryButtons();
+  };
+  undoButton.addEventListener('click', undo);
+  redoButton.addEventListener('click', redo);
   const toggle = (enabled) => {
     active = enabled;
     panel.hidden = !enabled;
@@ -830,7 +876,8 @@ function setupDeveloperInspector() {
       element, mode, pointerId: event.pointerId,
       startX: event.clientX, startY: event.clientY,
       x: change.x, y: change.y, width: change.width, height: change.height,
-      ratio: change.width / Math.max(1, change.height)
+      ratio: change.width / Math.max(1, change.height),
+      before: captureState(element)
     };
     event.preventDefault();
     event.stopPropagation();
@@ -861,7 +908,9 @@ function setupDeveloperInspector() {
   });
   const finishDrag = (event) => {
     if (dragState && event.pointerId === dragState.pointerId) {
+      const completed = dragState;
       dragState = null;
+      recordHistory(completed.element, completed.before);
       updateEditorFields();
       draw();
     }
@@ -871,22 +920,26 @@ function setupDeveloperInspector() {
   panel.querySelectorAll('[data-dev-move]').forEach((control) => control.addEventListener('click', () => {
     if (!selectedElement) return;
     const change = getChange(selectedElement);
+    const before = captureState(selectedElement);
     const direction = control.dataset.devMove;
     if (direction === 'left') change.x -= 1;
     if (direction === 'right') change.x += 1;
     if (direction === 'up') change.y -= 1;
     if (direction === 'down') change.y += 1;
     applyChange(selectedElement);
+    recordHistory(selectedElement, before);
     syncSelectedOutline();
     updateEditorFields();
   }));
   sizeInputs.forEach((input) => input.addEventListener('change', () => {
     if (!selectedElement) return;
     const change = getChange(selectedElement);
+    const before = captureState(selectedElement);
     const value = Math.max(1, Number(input.value) || 1);
     if (input.dataset.devSize === 'width') change.width = value;
     else change.height = value;
     applyChange(selectedElement);
+    recordHistory(selectedElement, before);
     updateEditorFields();
     draw();
   }));
@@ -899,19 +952,35 @@ function setupDeveloperInspector() {
   styleInputs.forEach((input) => input.addEventListener('change', () => {
     if (!selectedElement) return;
     const change = getChange(selectedElement);
+    const before = captureState(selectedElement);
     const key = input.dataset.devStyle;
     if (key === 'fontSize') change.fontSize = Math.max(1, Number(input.value) || 1);
     if (key === 'borderRadius') change.borderRadius = Math.max(0, Number(input.value) || 0);
     if (key === 'color' || key === 'backgroundColor') change[key] = input.value;
     applyChange(selectedElement);
+    recordHistory(selectedElement, before);
     updateEditorFields();
     syncSelectedOutline();
   }));
   panel.querySelector('[data-dev-reset]').addEventListener('click', () => {
     if (!selectedElement) return;
+    const before = captureState(selectedElement);
     restoreElement(selectedElement);
+    recordHistory(selectedElement, before);
     updateEditorFields();
     draw();
+  });
+  document.addEventListener('keydown', (event) => {
+    if (!active || isEditorSurface(event.target) && /INPUT|TEXTAREA|SELECT/.test(event.target.tagName)) return;
+    if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'z') {
+      event.preventDefault();
+      event.stopPropagation();
+      event.shiftKey ? redo() : undo();
+    } else if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'y') {
+      event.preventDefault();
+      event.stopPropagation();
+      redo();
+    }
   });
   panel.querySelector('[data-dev-copy]').addEventListener('click', async () => {
     const rules = [];
