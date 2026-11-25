@@ -630,13 +630,95 @@ async function setupSharedSideMenu(user, profile = null) {
   setupNotifications(user);
 }
 
+function isAdminRoute() {
+  return window.location.hash === '#/admin' || window.location.hash.startsWith('#/admin/');
+}
+
+async function renderAdminPage(currentUser) {
+  const parts = window.location.hash.split('/');
+  const section = parts[2] || 'inicio';
+  const sections = {
+    inicio: { title: 'Visão geral', description: 'Acompanhe e administre a comunidade LUDUS.' },
+    usuarios: { title: 'Usuários', description: 'Em breve: pesquisa, consulta e gerenciamento de contas.' },
+    denuncias: { title: 'Denúncias', description: 'Em breve: análise e resolução das denúncias da comunidade.' },
+    conteudos: { title: 'Conteúdos', description: 'Em breve: ferramentas de moderação de avaliações e comentários.' },
+    comunicados: { title: 'Comunicados', description: 'Em breve: avisos e comunicados para a comunidade.' },
+    historico: { title: 'Histórico', description: 'Em breve: registro das ações administrativas.' }
+  };
+  const active = sections[section] ? section : 'inicio';
+  const { data: authData, error: authError } = await supabase.auth.getUser();
+  const verifiedUser = authData?.user;
+  if (authError || !verifiedUser || verifiedUser.id !== currentUser.id ||
+      verifiedUser.app_metadata?.role !== 'admin') {
+    app.innerHTML = `
+      <main class="admin-access-denied">
+        <a class="admin-access-denied__brand" href="#inicio">Ludus</a>
+        <section>
+          <i class="fa-solid fa-lock" aria-hidden="true"></i>
+          <h1>Acesso restrito</h1>
+          <p>Esta área é exclusiva para administradores do Ludus.</p>
+          <a href="#inicio">Voltar ao Ludus</a>
+        </section>
+      </main>`;
+    return;
+  }
+
+  const { data: profile } = await supabase.from('profiles')
+    .select('username, avatar_url').eq('id', verifiedUser.id).maybeSingle();
+  const username = profile?.username || 'administrador';
+  const nav = [
+    ['inicio', 'fa-chart-pie', 'Visão geral'],
+    ['usuarios', 'fa-users', 'Usuários'],
+    ['denuncias', 'fa-flag', 'Denúncias'],
+    ['conteudos', 'fa-layer-group', 'Conteúdos'],
+    ['comunicados', 'fa-bullhorn', 'Comunicados'],
+    ['historico', 'fa-clock-rotate-left', 'Histórico']
+  ];
+  const current = sections[active] || sections.inicio;
+  app.innerHTML = `
+    <div class="admin-layout">
+      <aside class="admin-sidebar">
+        <a class="admin-brand" href="#/admin"><span>Ludus</span><small>ADMINISTRAÇÃO</small></a>
+        <nav class="admin-nav" aria-label="Navegação administrativa">
+          <span class="admin-nav__label">PAINEL</span>
+          ${nav.map(([key, icon, label]) => `
+            <a class="admin-nav__item ${active === key ? 'is-active' : ''}" href="#/admin/${key}" ${active === key ? 'aria-current="page"' : ''}>
+              <i class="fa-solid ${icon}" aria-hidden="true"></i><span>${label}</span>
+            </a>`).join('')}
+        </nav>
+        <a class="admin-back-link" href="#inicio"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i><span>Voltar ao Ludus</span></a>
+      </aside>
+      <main class="admin-main">
+        <header class="admin-topbar">
+          <div><span class="admin-topbar__eyebrow">ESPAÇO ADMINISTRATIVO</span><span class="admin-topbar__section">${current.title}</span></div>
+          <div class="admin-account"><span class="admin-account__avatar">${profile?.avatar_url ? '<img src="' + escapeHTML(profile.avatar_url) + '" alt="">' : '<i class="fa-solid fa-user" aria-hidden="true"></i>'}</span><span><strong>@${escapeHTML(username)}</strong><small>Administrador</small></span></div>
+        </header>
+        <section class="admin-content">
+          <div class="admin-page-heading"><div><span class="admin-page-heading__eyebrow">LUDUS / ADMIN</span><h1>${current.title}</h1><p>${current.description}</p></div></div>
+          ${active === 'inicio' ? `
+            <div class="admin-welcome">
+              <span class="admin-welcome__icon"><i class="fa-solid fa-shield-halved" aria-hidden="true"></i></span>
+              <div><h2>Bem-vindo à administração</h2><p>Este é o espaço de controle da comunidade. As ferramentas serão habilitadas por etapas.</p></div>
+            </div>
+            <div class="admin-shortcuts">
+              <a href="#/admin/usuarios"><i class="fa-solid fa-users" aria-hidden="true"></i><span><strong>Usuários</strong><small>Gerenciamento de contas</small></span><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>
+              <a href="#/admin/denuncias"><i class="fa-solid fa-flag" aria-hidden="true"></i><span><strong>Denúncias</strong><small>Moderação da comunidade</small></span><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>
+              <a href="#/admin/historico"><i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i><span><strong>Histórico administrativo</strong><small>Registro de ações</small></span><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>
+            </div>` : `
+            <div class="admin-empty-state"><i class="fa-regular fa-folder-open" aria-hidden="true"></i><h2>${current.title}</h2><p>${current.description}</p><span>Esta seção será implementada em uma próxima etapa.</span></div>`}
+        </section>
+      </main>
+    </div>`;
+}
+
 async function renderSignedIn(user, initialFeedMode = 'home') {
   setupDeveloperInspector();
   // Evita reconstruir o feed quando o Supabase restaura/renova a sessão ao voltar à aba.
   // A tela já está montada e os dados permanecem visíveis, sem piscar para o estado de carregamento.
   if (activeUser?.id === user.id && app.querySelector('[data-feed-list]') &&
-      !getProfileUsernameFromLocation() && !getGameIdFromLocation() && !getReviewIdFromLocation() && !getReviewReportIdFromLocation()) return;
+      !getProfileUsernameFromLocation() && !getGameIdFromLocation() && !getReviewIdFromLocation() && !getReviewReportIdFromLocation() && !isAdminRoute()) return;
   activeUser = user;
+  if (isAdminRoute()) { await renderAdminPage(user); return; }
   const reportRouteId = getReviewReportIdFromLocation();
   if (reportRouteId) { renderReviewReportPage(user, reportRouteId); return; }
   const reviewRouteId = getReviewIdFromLocation();
@@ -3128,7 +3210,8 @@ window.addEventListener('hashchange', () => {
   const gameId = getGameIdFromLocation();
   const reviewId = getReviewIdFromLocation();
   const reportId = getReviewReportIdFromLocation();
-  if (username) renderProfilePage(activeUser, username);
+  if (isAdminRoute()) renderAdminPage(activeUser);
+  else if (username) renderProfilePage(activeUser, username);
   else if (gameId) renderGamePage(activeUser, gameId);
   else if (reportId) renderReviewReportPage(activeUser, reportId);
   else if (reviewId) renderReviewPage(activeUser, reviewId);
