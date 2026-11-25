@@ -1974,8 +1974,11 @@ function renderNotificationsPage(currentUser) {
         ${sharedHeaderMarkup({ action: 'back', showBrand: false })}
         <section class="notifications-page__content">
           <div class="notifications-page__heading">
-            <h1>Notificações</h1>
-            <button type="button" data-notifications-read-all>Marcar todas como lidas</button>
+            <div class="notifications-page__title-group">
+              <h1>Notificações</h1>
+              <p>Acompanhe as novidades e interações da comunidade.</p>
+            </div>
+            <button type="button" class="notifications-page__read-all" data-notifications-read-all>Marcar todas como lidas</button>
           </div>
           <div class="notifications notifications-page__list" data-notifications>
             <div class="notifications__list" data-notifications-list><p class="notifications__empty">Carregando…</p></div>
