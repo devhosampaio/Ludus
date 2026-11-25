@@ -595,7 +595,7 @@ function setupDeveloperInspector() {
   panel.querySelectorAll('[data-dev-field]').forEach((input) => input.addEventListener('change', draw));
   window.addEventListener('scroll', draw, { passive: true });
   window.addEventListener('resize', draw);
-  const observer = new MutationObserver(() => { if (active) draw(); });
+  const observer = new MutationObserver((records) => {\n    if (active && records.some((record) => !layer.contains(record.target) && !panel.contains(record.target) && record.target !== button)) draw();\n  });
   observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class', 'style', 'hidden'] });
 }
 
