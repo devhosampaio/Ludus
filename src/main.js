@@ -639,7 +639,7 @@ async function renderAdminPage(currentUser) {
   const section = parts[2] || 'inicio';
   const sections = {
     inicio: { title: 'Visão geral', description: 'Acompanhe e administre a comunidade LUDUS.' },
-    usuarios: { title: 'Usuários', description: 'Em breve: pesquisa, consulta e gerenciamento de contas.' },
+    usuarios: { title: 'Usuários', description: 'Consulte contas, acompanhe a atividade e gerencie acessos.' },
     denuncias: { title: 'Denúncias', description: 'Em breve: análise e resolução das denúncias da comunidade.' },
     conteudos: { title: 'Conteúdos', description: 'Em breve: ferramentas de moderação de avaliações e comentários.' },
     comunicados: { title: 'Comunicados', description: 'Em breve: avisos e comunicados para a comunidade.' },
@@ -705,10 +705,145 @@ async function renderAdminPage(currentUser) {
               <a href="#/admin/denuncias"><i class="fa-solid fa-flag" aria-hidden="true"></i><span><strong>Denúncias</strong><small>Moderação da comunidade</small></span><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>
               <a href="#/admin/historico"><i class="fa-solid fa-clock-rotate-left" aria-hidden="true"></i><span><strong>Histórico administrativo</strong><small>Registro de ações</small></span><i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>
             </div>` : `
-            <div class="admin-empty-state"><i class="fa-regular fa-folder-open" aria-hidden="true"></i><h2>${current.title}</h2><p>${current.description}</p><span>Esta seção será implementada em uma próxima etapa.</span></div>`}
+            ${active === 'usuarios' ? `
+              <div class="admin-users">
+                <div class="admin-users__toolbar">
+                  <label class="admin-users__search"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i><input type="search" placeholder="Buscar por nome de usuário..." autocomplete="off" data-admin-user-search></label>
+                  <button class="admin-users__refresh" type="button" data-admin-user-refresh aria-label="Atualizar lista"><i class="fa-solid fa-rotate" aria-hidden="true"></i></button>
+                </div>
+                <div class="admin-users__filters" role="group" aria-label="Filtrar usuários">
+                  <button type="button" class="is-active" data-admin-user-filter="all">Todos</button>
+                  <button type="button" data-admin-user-filter="admins">Administradores</button>
+                  <button type="button" data-admin-user-filter="suspended">Suspensos</button>
+                </div>
+                <div class="admin-users__summary" data-admin-user-summary>Carregando usuários…</div>
+                <div class="admin-users__list" data-admin-user-list><div class="admin-users__loading"><i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i> Carregando usuários…</div></div>
+                <div class="admin-users__pagination" data-admin-user-pagination></div>
+              </div>` : `
+              <div class="admin-empty-state"><i class="fa-regular fa-folder-open" aria-hidden="true"></i><h2>${current.title}</h2><p>${current.description}</p><span>Esta seção será implementada em uma próxima etapa.</span></div>`}`}
         </section>
       </main>
     </div>`;
+  if (active === 'usuarios') setupAdminUsersSection(verifiedUser);
+}
+
+function setupAdminUsersSection(adminUser) {
+  const search = app.querySelector('[data-admin-user-search]');
+  const list = app.querySelector('[data-admin-user-list]');
+  const summary = app.querySelector('[data-admin-user-summary]');
+  const pagination = app.querySelector('[data-admin-user-pagination]');
+  const filterButtons = [...app.querySelectorAll('[data-admin-user-filter]')];
+  if (!search || !list || !summary || !pagination) return;
+
+  let page = 1;
+  let filter = 'all';
+  let requestId = 0;
+  let searchTimer = null;
+
+  const formatDate = (value) => {
+    if (!value) return 'Nunca';
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return '—';
+    return new Intl.DateTimeFormat('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' }).format(date);
+  };
+
+  const load = async () => {
+    const currentRequest = ++requestId;
+    list.innerHTML = '<div class="admin-users__loading"><i class="fa-solid fa-spinner fa-spin" aria-hidden="true"></i> Carregando usuários…</div>';
+    pagination.innerHTML = '';
+    const { data, error } = await supabase.functions.invoke('admin-users', {
+      body: { action: 'list', query: search.value.trim(), filter, page }
+    });
+    if (currentRequest !== requestId) return;
+    if (error || data?.error) {
+      list.innerHTML = '<div class="admin-users__message admin-users__message--error">' + escapeHTML(data?.error || error?.message || 'Não foi possível carregar os usuários.') + '</div>';
+      summary.textContent = 'Falha ao carregar a lista.';
+      return;
+    }
+    const users = data?.users || [];
+    const total = Number(data?.total || 0);
+    const perPage = Number(data?.per_page || 20);
+    const totalPages = Math.max(1, Math.ceil(total / perPage));
+    summary.textContent = total + (total === 1 ? ' usuário encontrado' : ' usuários encontrados');
+
+    if (!users.length) {
+      list.innerHTML = '<div class="admin-users__empty"><i class="fa-solid fa-user-slash" aria-hidden="true"></i><strong>Nenhum usuário encontrado</strong><span>Tente alterar a busca ou o filtro.</span></div>';
+    } else {
+      list.innerHTML = users.map((user) => {
+        const isSelf = user.id === adminUser.id;
+        const avatar = user.avatar_url
+          ? '<img src="' + escapeHTML(user.avatar_url) + '" alt="">'
+          : '<i class="fa-solid fa-user" aria-hidden="true"></i>';
+        const role = user.role === 'admin';
+        const suspended = user.is_suspended;
+        const actions = isSelf
+          ? '<span class="admin-user-row__self">Sua conta</span>'
+          : '<div class="admin-user-row__actions">' +
+            (role ? '<button type="button" data-admin-user-action="demote" data-user-id="' + escapeHTML(user.id) + '" data-username="' + escapeHTML(user.username) + '">Remover administrador</button>' :
+              '<button type="button" data-admin-user-action="promote" data-user-id="' + escapeHTML(user.id) + '" data-username="' + escapeHTML(user.username) + '">Tornar administrador</button>') +
+            (role ? '' : suspended
+              ? '<button type="button" data-admin-user-action="reactivate" data-user-id="' + escapeHTML(user.id) + '" data-username="' + escapeHTML(user.username) + '">Reativar conta</button>'
+              : '<button type="button" class="is-danger" data-admin-user-action="suspend" data-user-id="' + escapeHTML(user.id) + '" data-username="' + escapeHTML(user.username) + '">Suspender conta</button>') +
+            '</div>';
+        return '<article class="admin-user-row">' +
+          '<span class="admin-user-row__avatar">' + avatar + '</span>' +
+          '<div class="admin-user-row__identity"><div class="admin-user-row__name"><a href="#/perfil/' + encodeURIComponent(user.username) + '">@' + escapeHTML(user.username) + '</a>' +
+          (role ? '<span class="admin-user-row__role">ADMIN</span>' : '') +
+          (suspended ? '<span class="admin-user-row__status is-suspended">SUSPENSO</span>' : '<span class="admin-user-row__status">ATIVO</span>') +
+          '</div><span class="admin-user-row__meta">Cadastro: ' + formatDate(user.created_at) + ' · Último acesso: ' + formatDate(user.last_sign_in_at) + '</span></div>' +
+          '<div class="admin-user-row__activity"><strong>' + (user.review_count ?? '—') + '</strong><span>avaliações</span></div>' +
+          actions + '</article>';
+      }).join('');
+    }
+
+    if (totalPages > 1) {
+      pagination.innerHTML = '<button type="button" data-admin-user-page="prev" ' + (page <= 1 ? 'disabled' : '') + '>Anterior</button><span>Página ' + page + ' de ' + totalPages + '</span><button type="button" data-admin-user-page="next" ' + (page >= totalPages ? 'disabled' : '') + '>Próxima</button>';
+    }
+  };
+
+  search.addEventListener('input', () => {
+    window.clearTimeout(searchTimer);
+    searchTimer = window.setTimeout(() => { page = 1; load(); }, 250);
+  });
+  filterButtons.forEach((button) => button.addEventListener('click', () => {
+    filter = button.dataset.adminUserFilter || 'all';
+    page = 1;
+    filterButtons.forEach((item) => item.classList.toggle('is-active', item === button));
+    load();
+  }));
+  app.querySelector('[data-admin-user-refresh]')?.addEventListener('click', load);
+  list.addEventListener('click', async (event) => {
+    const button = event.target.closest('[data-admin-user-action]');
+    if (!button) return;
+    const action = button.dataset.adminUserAction;
+    const userId = button.dataset.userId;
+    const username = button.dataset.username || 'este usuário';
+    const messages = {
+      suspend: 'Suspender @' + username + '? A pessoa não poderá entrar na conta enquanto a suspensão estiver ativa.',
+      reactivate: 'Reativar a conta de @' + username + '?',
+      promote: 'Tornar @' + username + ' administrador? Essa pessoa terá acesso à área administrativa.',
+      demote: 'Remover o cargo de administrador de @' + username + '?'
+    };
+    if (!window.confirm(messages[action] || 'Confirmar esta ação?')) return;
+    button.disabled = true;
+    const payload = action === 'suspend' ? { action: 'suspend', user_id: userId }
+      : action === 'reactivate' ? { action: 'reactivate', user_id: userId }
+      : { action: 'set_role', user_id: userId, role: action === 'promote' ? 'admin' : 'user' };
+    const { data, error } = await supabase.functions.invoke('admin-users', { body: payload });
+    if (error || data?.error) {
+      window.alert(data?.error || error?.message || 'Não foi possível concluir a ação.');
+      button.disabled = false;
+      return;
+    }
+    await load();
+  });
+  pagination.addEventListener('click', (event) => {
+    const button = event.target.closest('[data-admin-user-page]');
+    if (!button || button.disabled) return;
+    page += button.dataset.adminUserPage === 'next' ? 1 : -1;
+    load();
+  });
+  load();
 }
 
 async function renderSignedIn(user, initialFeedMode = 'home') {
