@@ -2949,3 +2949,210 @@ select {
   background: var(--color-text) !important;
   color: var(--color-surface) !important;
 }
+
+
+/* Landing page — estrutura mobile-first alinhada ao design atual do Ludus. */
+.landing-page {
+  width: 100%;
+  max-width: 1120px;
+  min-height: 100vh;
+  margin: 0 auto !important;
+  padding: var(--space-md) var(--space-md) var(--space-2xl) !important;
+  color: var(--color-text);
+  background: var(--color-background);
+}
+.landing-header {
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 48px;
+  margin-bottom: var(--space-2xl) !important;
+}
+.landing-brand {
+  color: var(--color-text) !important;
+  font-size: var(--font-size-2xl) !important;
+  font-weight: var(--font-weight-bold);
+  line-height: 1;
+  text-decoration: none !important;
+  letter-spacing: -.04em;
+}
+.landing-login {
+  min-height: 40px;
+  padding: 0 var(--space-lg) !important;
+  border: var(--border-width) solid var(--color-border) !important;
+  border-radius: 999px !important;
+  background: var(--color-surface) !important;
+  color: var(--color-text) !important;
+  font-size: var(--font-size-sm) !important;
+  font-weight: var(--font-weight-medium);
+}
+.landing-hero {
+  display: flex !important;
+  flex-direction: column;
+  gap: var(--space-xl) !important;
+}
+.landing-hero__copy { min-width: 0; }
+.landing-eyebrow {
+  margin-bottom: var(--space-sm) !important;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs) !important;
+  font-weight: var(--font-weight-bold);
+  letter-spacing: .12em;
+}
+.landing-hero h1 {
+  max-width: 650px;
+  margin: 0 0 var(--space-md) !important;
+  color: var(--color-text);
+  font-size: clamp(36px, 10vw, 58px) !important;
+  font-weight: var(--font-weight-bold);
+  line-height: 1.02;
+  letter-spacing: -.055em;
+}
+.landing-hero h1 span { color: var(--color-accent); }
+.landing-hero__description {
+  max-width: 520px;
+  margin: 0 0 var(--space-lg) !important;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-md) !important;
+  line-height: 1.55;
+}
+.landing-actions {
+  display: flex !important;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-sm) !important;
+}
+.landing-button {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 0 var(--space-lg) !important;
+  border: var(--border-width) solid var(--color-border) !important;
+  border-radius: 999px !important;
+  font-size: var(--font-size-sm) !important;
+  font-weight: var(--font-weight-medium);
+  gap: var(--space-sm) !important;
+}
+.landing-button--primary {
+  border-color: var(--color-accent) !important;
+  background: var(--color-accent) !important;
+  color: #fff !important;
+}
+.landing-button--secondary {
+  background: var(--color-surface) !important;
+  color: var(--color-text) !important;
+}
+.landing-artwork {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  margin: 0 !important;
+  overflow: hidden;
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius-xl);
+  background: var(--color-surface-hover);
+}
+.landing-artwork::after {
+  position: absolute;
+  inset: 45% 0 0;
+  content: "";
+  background: linear-gradient(180deg, transparent, rgba(0,0,0,.34));
+  pointer-events: none;
+}
+.landing-artwork img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+.landing-artwork__credits {
+  position: absolute;
+  z-index: 1;
+  top: var(--space-md);
+  right: var(--space-sm);
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-xs) !important;
+  color: #fff;
+  font-size: 10px !important;
+  line-height: 1.2;
+  text-shadow: 0 1px 5px rgba(0,0,0,.8);
+  writing-mode: vertical-rl;
+}
+.landing-features {
+  display: grid !important;
+  grid-template-columns: 1fr;
+  gap: var(--space-sm) !important;
+  margin-top: var(--space-2xl) !important;
+}
+.landing-feature {
+  display: flex !important;
+  align-items: flex-start;
+  gap: var(--space-md) !important;
+  min-width: 0;
+  padding: var(--space-md) !important;
+  border: var(--border-width) solid var(--color-border) !important;
+  border-radius: var(--radius-lg) !important;
+  background: var(--color-surface) !important;
+}
+.landing-feature__icon {
+  display: grid;
+  flex: 0 0 40px;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  border-radius: var(--radius-md);
+  background: var(--color-surface-hover);
+  color: var(--color-accent);
+  font-size: var(--font-size-lg) !important;
+}
+.landing-feature h2 {
+  margin: 0 0 var(--space-xs) !important;
+  color: var(--color-text);
+  font-size: var(--font-size-md) !important;
+  font-weight: var(--font-weight-bold);
+}
+.landing-feature p {
+  margin: 0 !important;
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm) !important;
+  line-height: 1.45;
+}
+.landing-footer {
+  display: flex !important;
+  flex-direction: column;
+  gap: var(--space-xs) !important;
+  margin-top: var(--space-2xl) !important;
+  padding-top: var(--space-md) !important;
+  border-top: var(--border-width) solid var(--color-border);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs) !important;
+}
+.landing-footer span:first-child {
+  color: var(--color-text);
+  font-size: var(--font-size-sm) !important;
+  font-weight: var(--font-weight-bold);
+}
+@media (min-width: 768px) {
+  .landing-page { padding: var(--space-xl) var(--space-2xl) var(--space-3xl) !important; }
+  .landing-header { margin-bottom: var(--space-3xl) !important; }
+  .landing-hero {
+    display: grid !important;
+    grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr);
+    align-items: center;
+    gap: var(--space-2xl) !important;
+  }
+  .landing-hero h1 { font-size: clamp(48px, 5.5vw, 72px) !important; }
+  .landing-actions { flex-direction: row; flex-wrap: wrap; }
+  .landing-button { min-width: 180px; }
+  .landing-artwork { aspect-ratio: 5 / 4; }
+  .landing-features {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--space-md) !important;
+  }
+  .landing-feature { padding: var(--space-lg) !important; }
+  .landing-footer { flex-direction: row; justify-content: space-between; }
+}

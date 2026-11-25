@@ -2861,17 +2861,45 @@ function renderAuth(mode = 'login') {
 
   if (isWelcome) {
     app.innerHTML = `
-      <main class="container auth-shell auth-shell--welcome">
-        <div class="row">
-          <section class="col-sm-8 col-sm-offset-2 text-center">
-            <h1>Ludus</h1>
-            <p class="lead">Uma comunidade para compartilhar o que você joga.</p>
-            <p>
-              <button class="btn btn-default" type="button" data-mode="login">Entrar</button>
-              <button class="btn btn-primary" type="button" data-mode="signup">Criar conta</button>
-            </p>
-          </section>
-        </div>
+      <main class="landing-page">
+        <header class="landing-header">
+          <a class="landing-brand" href="#" aria-label="Ludus — página inicial">Ludus</a>
+          <button class="landing-login" type="button" data-mode="login">Entrar</button>
+        </header>
+
+        <section class="landing-hero" aria-labelledby="landing-title">
+          <div class="landing-hero__copy">
+            <p class="landing-eyebrow">SUA COMUNIDADE GAMER</p>
+            <h1 id="landing-title">Seu jeito de <span>viver os jogos.</span></h1>
+            <p class="landing-hero__description">Avalie o que você joga, descubra novos títulos e compartilhe suas experiências com outros jogadores.</p>
+            <div class="landing-actions">
+              <button class="landing-button landing-button--primary" type="button" data-mode="signup">Criar minha conta <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></button>
+              <button class="landing-button landing-button--secondary" type="button" data-mode="login">Já tenho uma conta</button>
+            </div>
+          </div>
+
+          <figure class="landing-artwork">
+            <img src="https://www.rockstargames.com/VI/_next/static/media/Jason_and_Lucia_Robbery_landscape.09c8a~do21h4p.jpg?akim=1&imdensity=1&imwidth=1920" alt="Arte promocional de Grand Theft Auto VI com Jason e Lucia em Vice City" fetchpriority="high">
+            <figcaption class="landing-artwork__credits"><span>Grand Theft Auto VI</span><span>Rockstar Games</span></figcaption>
+          </figure>
+        </section>
+
+        <section class="landing-features" aria-label="O que você pode fazer no Ludus">
+          <article class="landing-feature">
+            <span class="landing-feature__icon"><i class="fa-solid fa-star" aria-hidden="true"></i></span>
+            <div><h2>Avalie</h2><p>Registre suas notas e opiniões sobre os jogos que fazem parte da sua história.</p></div>
+          </article>
+          <article class="landing-feature">
+            <span class="landing-feature__icon"><i class="fa-solid fa-compass" aria-hidden="true"></i></span>
+            <div><h2>Descubra</h2><p>Encontre novos jogos e veja o que a comunidade está jogando.</p></div>
+          </article>
+          <article class="landing-feature">
+            <span class="landing-feature__icon"><i class="fa-solid fa-users" aria-hidden="true"></i></span>
+            <div><h2>Compartilhe</h2><p>Conecte-se com jogadores e acompanhe avaliações e listas.</p></div>
+          </article>
+        </section>
+
+        <footer class="landing-footer"><span>Ludus</span><span>Uma comunidade feita por quem joga.</span></footer>
       </main>`;
 
     app.querySelectorAll('[data-mode]').forEach((button) => {
