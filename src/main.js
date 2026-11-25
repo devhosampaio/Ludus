@@ -2381,7 +2381,7 @@ async function renderProfilePage(currentUser, username) {
             : '';
           const markers = (review.liked_game ? '<i class="fa-solid fa-heart" aria-label="Curtiu o jogo" title="Curtiu o jogo"></i>' : '') +
             (review.status === 'completed' ? '<i class="fa-solid fa-trophy" aria-label="Jogo zerado" title="Jogo zerado"></i>' : '');
-          return '<a class="profile-page__published-review" href="#/avaliacao/' + encodeURIComponent(review.id) + '" aria-label="Abrir avaliação de ' + escapeHTML(gameTitle) + '">' +
+          return '<a class="profile-page__published-review" href="#/review/' + encodeURIComponent(review.id) + '" aria-label="Abrir avaliação de ' + escapeHTML(gameTitle) + '">' +
             '<span class="profile-page__published-review-cover">' + cover + '</span>' +
             '<span class="profile-page__published-review-content">' +
               '<span class="profile-page__published-review-title">' + escapeHTML(gameTitle) + year + '</span>' +
