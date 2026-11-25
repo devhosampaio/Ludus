@@ -1844,3 +1844,14 @@ select {
   font-size: var(--font-size-4) !important;
   line-height: 1 !important;
 }
+
+/* Cabeçalhos com a mesma linguagem de cards das avaliações. */
+.app-topbar {
+  box-sizing: border-box;
+  width: calc(100% - var(--space-xl)) !important;
+  margin: var(--space-md) auto 0 !important;
+  border: var(--border-width) solid var(--color-border) !important;
+  border-radius: var(--radius-xl) !important;
+  background: var(--color-surface);
+  overflow: hidden;
+}
