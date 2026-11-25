@@ -5137,3 +5137,14 @@ select {
     padding: var(--space-12);
   }
 }
+
+
+/* Controles de posicionamento do editor visual */
+.dev-inspector-editor__move { display: flex; flex-direction: column; align-items: center; gap: 4px !important; margin: 12px auto 4px !important; }
+.dev-inspector-editor__move > div { display: flex; align-items: center; gap: 7px !important; }
+.dev-inspector-editor__move button { display: grid; width: 34px !important; height: 30px !important; place-items: center; border: 1px solid var(--color-border); border-radius: 7px; background: var(--color-background); color: var(--color-text); font-size: 11px !important; touch-action: manipulation; }
+.dev-inspector-editor__move button:active { background: var(--color-primary, var(--color-accent)); color: var(--color-surface); }
+.dev-inspector-editor__move span { color: var(--color-text-subtle); font: 9px/1 monospace !important; }
+.dev-inspector-layer.is-grid::before { content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: .22; background-image: radial-gradient(var(--color-text) .42px, transparent .58px); background-size: 1px 1px; }
+.dev-inspector-outline { will-change: left, top, width, height; }
+.dev-inspector-outline.is-selected { touch-action: none; }
