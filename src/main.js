@@ -2303,7 +2303,7 @@ async function renderProfilePage(currentUser, username) {
       : '<p class="profile-page__favorites-empty">Nenhum jogo favorito destacado.</p>';
     const actions = favoritesList.parentElement.querySelector('[data-favorites-actions]');
     if (actions) actions.innerHTML = isOwnProfile && favoriteGames.length
-      ? '<button class="profile-page__icon-action" type="button" data-favorites-edit" aria-label="' + (editingFavoriteGames ? 'Concluir edição dos favoritos' : 'Editar favoritos') + '" title="' + (editingFavoriteGames ? 'Concluir edição dos favoritos' : 'Editar favoritos') + '"><i class="fa-solid ' + (editingFavoriteGames ? 'fa-check' : 'fa-pen-to-square') + '" aria-hidden="true"></i></button>'
+      ? '<button class="profile-page__icon-action" type="button" data-favorites-edit aria-label="' + (editingFavoriteGames ? 'Concluir edição dos favoritos' : 'Editar favoritos') + '" title="' + (editingFavoriteGames ? 'Concluir edição dos favoritos' : 'Editar favoritos') + '"><i class="fa-solid ' + (editingFavoriteGames ? 'fa-check' : 'fa-pen-to-square') + '" aria-hidden="true"></i></button>'
       : '';
     actions?.querySelector('[data-favorites-edit]')?.addEventListener('click', () => {
       editingFavoriteGames = !editingFavoriteGames;
