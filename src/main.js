@@ -510,7 +510,96 @@ function setupMobileDrawer(user, profile = null) {
   });
 }
 
-async function setupSharedSideMenu(user, profile = null) {
+async 
+function setupDeveloperInspector() {
+  if (document.querySelector('[data-dev-inspector-toggle]')) return;
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'dev-inspector-toggle';
+  button.dataset.devInspectorToggle = '';
+  button.setAttribute('aria-label', 'Modo de desenvolvedor');
+  button.title = 'Modo de desenvolvedor';
+  button.innerHTML = '<i class="fa-solid fa-wrench" aria-hidden="true"></i>';
+
+  const panel = document.createElement('section');
+  panel.className = 'dev-inspector-panel';
+  panel.dataset.devInspectorPanel = '';
+  panel.hidden = true;
+  panel.innerHTML = '<header class="dev-inspector-panel__header"><strong>Modo de desenvolvedor</strong><button type="button" data-dev-inspector-close aria-label="Fechar">×</button></header>' +
+    '<p>Contornar elementos e exibir informações:</p>' +
+    '<label><input type="checkbox" data-dev-field="tag" checked> Nome do elemento</label>' +
+    '<label><input type="checkbox" data-dev-field="class" checked> Nome da classe</label>' +
+    '<label><input type="checkbox" data-dev-field="dimensions" checked> Dimensões</label>' +
+    '<label><input type="checkbox" data-dev-field="font" checked> Fonte e peso</label>' +
+    '<label><input type="checkbox" data-dev-field="id"> ID</label>';
+
+  const layer = document.createElement('div');
+  layer.className = 'dev-inspector-layer';
+  layer.dataset.devInspectorLayer = '';
+  layer.hidden = true;
+  document.body.append(button, panel, layer);
+
+  let active = false;
+  let frame = 0;
+  const fields = () => Object.fromEntries([...panel.querySelectorAll('[data-dev-field]')].map((input) => [input.dataset.devField, input.checked]));
+  const ignored = (element) => element === button || panel.contains(element) || layer.contains(element) ||
+    element.closest('[data-dev-inspector-panel], [data-dev-inspector-layer], [data-dev-inspector-toggle]') ||
+    element.hidden || getComputedStyle(element).display === 'none' || getComputedStyle(element).visibility === 'hidden';
+
+  const draw = () => {
+    cancelAnimationFrame(frame);
+    frame = requestAnimationFrame(() => {
+      if (!active) return;
+      layer.replaceChildren();
+      const selected = fields();
+      const elements = document.body.querySelectorAll('body *');
+      elements.forEach((element) => {
+        if (ignored(element)) return;
+        const rect = element.getBoundingClientRect();
+        if (!rect.width || !rect.height || rect.bottom < 0 || rect.right < 0 ||
+            rect.top > innerHeight || rect.left > innerWidth) return;
+        const style = getComputedStyle(element);
+        const outline = document.createElement('div');
+        outline.className = 'dev-inspector-outline';
+        outline.style.left = rect.left + 'px';
+        outline.style.top = rect.top + 'px';
+        outline.style.width = rect.width + 'px';
+        outline.style.height = rect.height + 'px';
+        const details = [];
+        if (selected.tag) details.push(element.tagName.toLowerCase());
+        if (selected.class && typeof element.className === 'string' && element.className.trim()) details.push('.' + element.className.trim().replace(/\s+/g, '.'));
+        if (selected.dimensions) details.push(Math.round(rect.width) + ' × ' + Math.round(rect.height) + 'px');
+        if (selected.font) details.push(style.fontSize + ' / ' + style.fontWeight);
+        if (selected.id && element.id) details.push('#' + element.id);
+        if (details.length) {
+          const label = document.createElement('span');
+          label.className = 'dev-inspector-outline__label';
+          label.textContent = details.join(' | ');
+          outline.append(label);
+        }
+        layer.append(outline);
+      });
+    });
+  };
+  const toggle = (enabled) => {
+    active = enabled;
+    panel.hidden = !enabled;
+    layer.hidden = !enabled;
+    button.classList.toggle('is-active', enabled);
+    button.setAttribute('aria-pressed', String(enabled));
+    if (enabled) draw();
+    else layer.replaceChildren();
+  };
+  button.addEventListener('click', () => toggle(!active));
+  panel.querySelector('[data-dev-inspector-close]').addEventListener('click', () => toggle(false));
+  panel.querySelectorAll('[data-dev-field]').forEach((input) => input.addEventListener('change', draw));
+  window.addEventListener('scroll', draw, { passive: true });
+  window.addEventListener('resize', draw);
+  const observer = new MutationObserver(() => { if (active) draw(); });
+  observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class', 'style', 'hidden'] });
+}
+
+function setupSharedSideMenu(user, profile = null) {
   setupBottomNavAutoHide();
   const root = app.querySelector('.side-menu--left');
   if (!root) return;
