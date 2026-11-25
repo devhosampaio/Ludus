@@ -1,13 +1,13 @@
 /* Design tokens — fonte única para a consistência visual do Ludusf */
 :root {
   /* Cores */
-  --color-background: #141419;
-  --color-surface: #222831;
-  --color-surface-hover: #e6e6e6;
-  --color-border: #3a4554;
-  --color-text: #fff;
+  --color-background: #ffffff;
+  --color-surface: #ffffff;
+  --color-surface-hover: #f1f1f1;
+  --color-border: #d9d9df;
+  --color-text: #3a3a40;
   --color-text-muted: #737b87;
-  --color-text-subtle: #aeb7c2;
+  --color-text-subtle: #5f636b;
   --color-accent: #7060ab;
   --color-accent-active: #a78bfa;
   --color-rating: #d6ad4b;
@@ -1516,8 +1516,8 @@ select {
   max-width: min(360px, 80vw);
   padding: 2px 4px;
   overflow-wrap: anywhere;
-  background: rgba(20, 20, 25, .92);
-  color: #fff;
+  background: rgba(241, 241, 241, .96);
+  color: #3a3a40;
   font: 10px/1.35 monospace;
   z-index: 1;
 }
@@ -1533,6 +1533,6 @@ select {
 .app-topbar .app-topbar__menu-button:focus,
 .app-topbar .app-topbar__menu-button:active {
   border: 0 !important;
-  background: #1d1d25 !important;
+  background: #ffffff !important;
   box-shadow: none !important;
 }
