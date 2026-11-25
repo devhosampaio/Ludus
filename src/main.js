@@ -1667,8 +1667,8 @@ function getReviewIdFromLocation() {
 }
 
 function getReviewReportIdFromLocation() {
-  const match = window.location.hash.match(/^#\\/denunciar-avaliacao\\/([^/?#]+)/);
-  return match ? decodeURIComponent(match[1]) : null;
+  const parts = window.location.hash.split('/');
+  return parts[1] === 'denunciar-avaliacao' && parts[2] ? decodeURIComponent(parts[2]) : null;
 }
 
 function navigateToReviewReport(currentUser, reviewId) {
