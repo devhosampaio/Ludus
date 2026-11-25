@@ -962,8 +962,8 @@ async function renderSignedIn(user, initialFeedMode = 'home') {
         ? '<img src="' + escapeHTML(review.profiles.avatar_url) + '" alt="" loading="lazy">'
         : profilePlaceholderMarkup();
       const isOwner = review.user_id === user.id;
-      const menuMarkup = '<details class="review-menu"><summary aria-label="Mais opções da review" title="Mais opções"><i class="fa-solid fa-ellipsis-vertical" aria-hidden="true"></i></summary><div class="review-menu__panel">' +
-        (isOwner ? '<button type="button" data-review-action="edit">Editar review</button><button type="button" class="is-danger" data-review-action="delete">Excluir review</button>' : '<button type="button" data-review-action="report">Denunciar review</button>') + '</div></details>';
+      const menuMarkup = '<details class="review-menu"><summary aria-label="Mais opções da avaliação" title="Mais opções"><i class="fa-solid fa-ellipsis-vertical" aria-hidden="true"></i></summary><div class="review-menu__panel">' +
+        (isOwner ? '<button type="button" class="is-danger" data-review-action="delete"><i class="fa-solid fa-trash" aria-hidden="true"></i><span>Excluir avaliação</span></button>' : '<button type="button" data-review-action="report"><i class="fa-solid fa-flag" aria-hidden="true"></i><span>Denunciar avaliação</span></button>') + '</div></details>';
       const likeTotal = likeCounts[review.id] || 0;
       const commentTotal = commentCounts[review.id] || 0;
       const saveTotal = saveCounts[review.id] || 0;
@@ -1097,9 +1097,7 @@ async function renderSignedIn(user, initialFeedMode = 'home') {
       const menu = reviewAction.closest('.review-menu');
       if (!review || !card) return;
       menu.open = false;
-      if (action === 'edit' && review.user_id === user.id) {
-        openReviewComposer(user, review);
-      } else if (action === 'delete' && review.user_id === user.id) {
+      if (action === 'delete' && review.user_id === user.id) {
         if (!window.confirm('Tem certeza de que deseja excluir esta review? Essa ação não pode ser desfeita.')) return;
         reviewAction.disabled = true;
         const { error: deleteError } = await supabase.from('reviews').delete().eq('id', review.id).eq('user_id', user.id);

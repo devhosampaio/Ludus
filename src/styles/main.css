@@ -3486,23 +3486,33 @@ select {
   padding: var(--space-xs) !important;
   gap: var(--space-2) !important;
   border: var(--border-width) solid var(--color-border) !important;
-  border-radius: var(--radius-md) !important;
+  border-radius: var(--radius-lg) !important;
   background: var(--color-surface) !important;
   color: var(--color-text) !important;
   box-shadow: var(--shadow-popover) !important;
 }
 .review-menu__panel button {
-  display: block !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: var(--space-sm) !important;
   width: 100% !important;
   min-height: var(--space-3xl) !important;
   padding: var(--space-sm) !important;
   border: 0 !important;
-  border-radius: var(--radius-sm) !important;
+  border-radius: var(--radius-md) !important;
   background: transparent !important;
   color: var(--color-text) !important;
   font-size: var(--font-size-sm) !important;
   line-height: var(--line-height-normal) !important;
   text-align: left !important;
+}
+.review-menu__panel button i {
+  display: inline-flex !important;
+  flex: 0 0 var(--icon-size-sm) !important;
+  width: var(--icon-size-sm) !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: var(--font-size-sm) !important;
 }
 .review-menu__panel button:hover,
 .review-menu__panel button:focus-visible {
