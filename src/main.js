@@ -746,6 +746,7 @@ async function renderAdminPage(currentUser) {
     toggle.setAttribute('aria-expanded', 'false');
     toggle.setAttribute('aria-label', 'Abrir menu');
     document.body.classList.remove('admin-menu-open');
+    document.removeEventListener('keydown', handleAdminMenuEscape);
   };
   toggle?.addEventListener('click', () => {
     const opening = menu.hidden;
