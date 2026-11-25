@@ -2226,18 +2226,18 @@ async function renderProfilePage(currentUser, username) {
       .eq('follower_id', currentUser.id).eq('following_id', profile.id).maybeSingle();
   if (requestId !== renderProfilePage.requestId) return;
   let isFollowing = Boolean(followState.data);
-  const [followingCountResult, followersCountResult, reviewsCountResult, savedListsCountResult] = await Promise.all([
+  const [followingCountResult, followersCountResult, reviewsCountResult, createdListsCountResult] = await Promise.all([
     supabase.from('follows').select('*', { count: 'exact', head: true }).eq('follower_id', profile.id),
     supabase.from('follows').select('*', { count: 'exact', head: true }).eq('following_id', profile.id),
     supabase.from('reviews').select('*', { count: 'exact', head: true }).eq('user_id', profile.id),
-    supabase.from('review_saves').select('*', { count: 'exact', head: true }).eq('user_id', profile.id)
+    supabase.from('game_lists').select('*', { count: 'exact', head: true }).eq('user_id', profile.id).eq('is_public', true)
   ]);
   if (requestId !== renderProfilePage.requestId) return;
   [
     ['seguindo', followingCountResult],
     ['seguidores', followersCountResult],
     ['avaliacoes', reviewsCountResult],
-    ['listas', savedListsCountResult]
+    ['listas', createdListsCountResult]
   ].forEach(([label, result]) => {
     if (result.error) console.error('[Ludus] Falha ao carregar contagem de ' + label + ':', result.error);
   });
@@ -2263,7 +2263,7 @@ async function renderProfilePage(currentUser, username) {
     '<span><strong data-profile-stat="following">' + (followingCountResult.count ?? 0) + '</strong><span>Seguindo</span></span>' +
     '<span><strong data-profile-stat="followers">' + (followersCountResult.count ?? 0) + '</strong><span>Seguidores</span></span>' +
     '<span><strong data-profile-stat="reviews">' + (reviewsCountResult.count ?? 0) + '</strong><span>Avaliações</span></span>' +
-    '<span><strong data-profile-stat="lists">' + (savedListsCountResult.count ?? 0) + '</strong><span>Listas</span></span>' +
+    '<span><strong data-profile-stat="lists">' + (createdListsCountResult.count ?? 0) + '</strong><span>Listas</span></span>' +
     '</div>' +
     '<section class="profile-page__favorites" aria-label="Jogos favoritos"><div class="profile-page__favorites-heading"><h2>Jogos favoritos</h2><div class="profile-page__favorites-actions" data-favorites-actions></div></div><div class="profile-page__favorites-list" data-profile-favorites></div></section>' +
     '<section class="profile-page__lists" aria-label="Listas criadas"><div class="profile-page__lists-heading"><h2>Listas criadas</h2><div class="profile-page__lists-heading-actions" data-lists-heading-actions></div></div><div class="profile-page__lists-grid" data-profile-created-lists></div></section>' +
