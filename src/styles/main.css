@@ -372,14 +372,14 @@ img { max-width: 100%; }
 .app-topbar__brand:focus { color: inherit; text-decoration: none; }
 
 
-/* Navegação fixa do feed, logo abaixo do cabeçalho. */
+/* As abas fazem parte do mesmo cabeçalho e acompanham seu fluxo. */
+.app-topbar--feed {
+  padding-bottom: 0;
+}
 .feed-navigation--header {
-  position: fixed;
-  top: 76px;
-  left: 0;
-  right: 0;
-  z-index: 101;
-  background: var(--color-surface);
+  position: static;
+  width: 100%;
+  background: inherit;
   border-bottom: var(--border-width) solid var(--color-border);
 }
 .feed-main > .feed-main__container {
