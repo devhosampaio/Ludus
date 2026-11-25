@@ -693,7 +693,7 @@ async function renderSignedIn(user, initialFeedMode = 'home') {
     if (profileResult.data?.username) navigateToProfile(user, profileResult.data.username);
   });
   app.querySelector('[data-signout]')?.addEventListener('click', async () => {
-    try { await signOut(); renderAuth('login'); }
+    try { await signOut(); renderAuth('welcome'); }
     catch (error) { console.error('[Ludus] Falha ao sair:', error); }
   });
 
@@ -3078,12 +3078,12 @@ function renderAuth(mode = 'login') {
 if (!supabase) {
   app.innerHTML = '<main class="container"><div class="alert alert-warning" role="alert"><h1>Configuração necessária</h1><p>As credenciais públicas do serviço ainda não foram carregadas nesta publicação.</p></div></main>';
 } else {
-  renderAuth('login');
+  renderAuth('welcome');
   let authReady = false;
   supabase.auth.onAuthStateChange((event, session) => {
     authReady = true;
     if (event === 'SIGNED_IN' && session?.user) renderSignedIn(session.user);
-    if (event === 'SIGNED_OUT') { activeUser = null; renderAuth('login'); }
+    if (event === 'SIGNED_OUT') { activeUser = null; renderAuth('welcome'); }
     if (event === 'INITIAL_SESSION' && session?.user) renderSignedIn(session.user);
   });
 
