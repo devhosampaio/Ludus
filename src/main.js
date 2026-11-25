@@ -312,29 +312,25 @@ function sharedSideMenuMarkup(user) {
   </nav>`;
 }
 
-function sharedHeaderMarkup({ action = 'menu', showBrand = true } = {}) {
+function sharedHeaderMarkup({ action = 'menu', showBrand = true, showFeedTabs = false } = {}) {
   const isBackAction = action === 'back';
   const leftAction = isBackAction
     ? '<button class="app-topbar__avatar app-topbar__menu-button" type="button" data-header-back aria-label="Voltar"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i></button>'
     : '<button class="app-topbar__avatar app-topbar__menu-button" type="button" data-header-avatar aria-label="Abrir menu" aria-haspopup="dialog" aria-expanded="false"><i class="fa-solid fa-bars" aria-hidden="true"></i></button>';
-  return `<header class="app-topbar">
+  const feedTabs = showFeedTabs ? '<nav class="feed-navigation feed-navigation--header" aria-label="Navegação do feed"><div class="feed-tabs" role="tablist" aria-label="Navegação do feed"><button class="feed-tabs__button is-active" type="button" role="tab" aria-selected="true" data-feed-mode="home">Para Você</button><button class="feed-tabs__button" type="button" role="tab" aria-selected="false" data-feed-mode="following">Seguindo</button></div></nav>' : '';
+  return `<header class="app-topbar${showFeedTabs ? ' app-topbar--feed' : ''}">
     <div class="container-fluid">
       <div class="row app-topbar__row">
         <div class="${showBrand ? 'col-xs-4' : 'col-xs-12'} app-topbar__left">${leftAction}</div>
         ${showBrand ? '<div class="col-xs-4 app-topbar__center"><a class="app-topbar__brand" href="#inicio" aria-label="Ludus — início">Ludus</a></div><div class="col-xs-4 app-topbar__right"></div>' : ''}
       </div>
     </div>
+    ${feedTabs}
   </header>`;
 }
 
 function sharedFeedHeaderMarkup() {
-  return `${sharedHeaderMarkup()}
-    <nav class="feed-navigation feed-navigation--header" aria-label="Navegação do feed">
-      <div class="feed-tabs" role="tablist" aria-label="Navegação do feed">
-        <button class="feed-tabs__button is-active" type="button" role="tab" aria-selected="true" data-feed-mode="home">Para Você</button>
-        <button class="feed-tabs__button" type="button" role="tab" aria-selected="false" data-feed-mode="following">Seguindo</button>
-      </div>
-    </nav>
+  return `${sharedHeaderMarkup({ showFeedTabs: true })}
     <div class="mobile-drawer-backdrop" data-drawer-close hidden></div>
     <aside class="mobile-drawer" data-mobile-drawer role="dialog" aria-modal="true" aria-label="Menu principal" hidden>
       <header class="mobile-drawer__profile">
