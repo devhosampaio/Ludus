@@ -1345,42 +1345,17 @@ async function renderSignedIn(user, initialFeedMode = 'home') {
         ctx.fillText(label, centerX, y);
       };
 
-      context.fillStyle = '#11151c';
+      // Card de compartilhamento minimalista: capa, avaliação e autoria.
+      context.fillStyle = '#f7f6f2';
       context.fillRect(0, 0, 1080, 1920);
-      if (coverImage) {
-        context.save();
-        context.filter = 'blur(48px)';
-        context.globalAlpha = 0.55;
-        context.drawImage(coverImage, -100, -100, 1280, 2120);
-        context.restore();
-      } else {
-        const fallbackBackground = context.createLinearGradient(0, 0, 1080, 1920);
-        fallbackBackground.addColorStop(0, '#514579');
-        fallbackBackground.addColorStop(0.55, '#222831');
-        fallbackBackground.addColorStop(1, '#11151c');
-        context.fillStyle = fallbackBackground;
-        context.fillRect(0, 0, 1080, 1920);
-      }
-      context.fillStyle = 'rgba(13,17,24,0.76)';
-      context.fillRect(0, 0, 1080, 1920);
-      context.fillStyle = 'rgba(255,255,255,0.72)';
-      context.font = '700 22px Arial, sans-serif';
-      context.textAlign = 'left';
-      context.fillText('LUDUS  /  GAME REVIEW', 72, 82);
-      context.strokeStyle = 'rgba(255,255,255,0.35)';
-      context.lineWidth = 2;
-      context.beginPath();
-      context.moveTo(72, 108);
-      context.lineTo(1008, 108);
-      context.stroke();
-      context.fillStyle = 'rgba(255,255,255,0.62)';
-      context.font = '600 18px Arial, sans-serif';
-      context.fillText('EDIÇÃO DA COMUNIDADE', 72, 145);
-      context.textAlign = 'right';
-      context.fillText('Nº ' + String(review.id).slice(0, 6).toUpperCase(), 1008, 145);
 
-      const heroArea = { x: 72, y: 185, width: 936, height: 1040 };
-      let imageRect;
+      context.fillStyle = '#7060ab';
+      context.font = '700 28px Arial, sans-serif';
+      context.textAlign = 'center';
+      context.fillText('LUDUS', 540, 92);
+
+      const heroArea = { x: 150, y: 155, width: 780, height: 970 };
+      let imageRect = heroArea;
       if (coverImage) {
         const scale = Math.min(heroArea.width / coverImage.width, heroArea.height / coverImage.height);
         const imageWidth = coverImage.width * scale;
@@ -1392,110 +1367,49 @@ async function renderSignedIn(user, initialFeedMode = 'home') {
           height: imageHeight
         };
         context.save();
-        roundRectPath(context, imageRect.x, imageRect.y, imageRect.width, imageRect.height, 8);
+        roundRectPath(context, imageRect.x, imageRect.y, imageRect.width, imageRect.height, 6);
         context.clip();
         context.drawImage(coverImage, imageRect.x, imageRect.y, imageRect.width, imageRect.height);
-        const imageShade = context.createLinearGradient(0, imageRect.y + imageRect.height * 0.48, 0, imageRect.y + imageRect.height);
-        imageShade.addColorStop(0, 'rgba(0,0,0,0)');
-        imageShade.addColorStop(0.45, 'rgba(0,0,0,0.24)');
-        imageShade.addColorStop(1, 'rgba(0,0,0,0.88)');
-        context.fillStyle = imageShade;
-        context.fillRect(imageRect.x, imageRect.y, imageRect.width, imageRect.height);
         context.restore();
       } else {
-        imageRect = { x: 110, y: 285, width: 860, height: 820 };
-        const placeholder = context.createLinearGradient(imageRect.x, imageRect.y, imageRect.x + imageRect.width, imageRect.y + imageRect.height);
-        placeholder.addColorStop(0, '#514579');
-        placeholder.addColorStop(1, '#29313d');
-        context.fillStyle = placeholder;
-        roundRectPath(context, imageRect.x, imageRect.y, imageRect.width, imageRect.height, 8);
+        context.fillStyle = '#e8e5df';
+        roundRectPath(context, heroArea.x, heroArea.y, heroArea.width, heroArea.height, 6);
         context.fill();
-        context.fillStyle = '#ffffff';
-        context.font = '700 30px Arial, sans-serif';
+        context.fillStyle = '#77737f';
+        context.font = '400 26px Arial, sans-serif';
         context.textAlign = 'center';
-        context.fillText('CAPA INDISPONÍVEL', 540, 690);
+        context.fillText('Capa indisponível', 540, 650);
       }
 
       const gameTitle = game.title || 'Jogo';
-      const titleY = imageRect.y + imageRect.height - 300;
-      context.fillStyle = '#ffffff';
-      context.font = '800 54px Arial, sans-serif';
-      const titleHeight = drawWrappedText(context, gameTitle, 540, titleY, 820, 62, 2, 54);
+      context.fillStyle = '#28262d';
+      context.font = '700 50px Arial, sans-serif';
+      const titleHeight = drawWrappedText(context, gameTitle, 540, 1215, 850, 60, 2, 50);
+
       const rating = Math.max(0, Math.min(5, Number(review.rating) || 0));
-      const ratingY = titleY + titleHeight + 30;
-      context.fillStyle = '#ffffff';
-      context.font = '800 54px Arial, sans-serif';
+      const ratingY = 1215 + titleHeight + 52;
+      context.fillStyle = '#b88a32';
+      context.font = '400 38px Arial, sans-serif';
       context.textAlign = 'center';
-      context.fillText(rating.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }), 540, ratingY);
-      context.fillStyle = '#e2b85d';
-      context.font = '400 31px Arial, sans-serif';
-      context.fillText('★'.repeat(Math.max(0, Math.min(5, Math.round(rating)))), 540, ratingY + 43);
-      const statusTags = [
-        review.liked_game ? '♥  FAVORITO' : '',
-        review.status === 'completed' ? '🏆  ZERADO' : ''
-      ].filter(Boolean);
-      if (statusTags.length) {
-        const tagY = ratingY + 75;
-        const totalWidth = statusTags.length * 170 + (statusTags.length - 1) * 14;
-        let tagCenter = 540 - totalWidth / 2 + 85;
-        statusTags.forEach((tag) => {
-          drawPill(context, tag, tagCenter, tagY, 'rgba(112,96,171,0.88)', '#ffffff');
-          tagCenter += 184;
-        });
-      }
+      context.fillText('★'.repeat(Math.max(0, Math.min(5, Math.round(rating)))), 540, ratingY);
+      context.fillStyle = '#28262d';
+      context.font = '600 25px Arial, sans-serif';
+      context.fillText(rating.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + ' / 5', 540, ratingY + 43);
 
       const reviewText = String(review.body || '').trim();
-      const reviewStartY = 1300;
-      context.fillStyle = '#b7a9e8';
-      context.font = '700 18px Arial, sans-serif';
-      context.textAlign = 'left';
-      context.fillText('A CRÍTICA', 72, reviewStartY);
-      context.strokeStyle = 'rgba(255,255,255,0.3)';
-      context.beginPath();
-      context.moveTo(72, reviewStartY + 18);
-      context.lineTo(1008, reviewStartY + 18);
-      context.stroke();
-      context.fillStyle = 'rgba(255,255,255,0.94)';
-      context.font = '400 29px Arial, sans-serif';
-      const reviewHeight = reviewText
-        ? drawWrappedText(context, '“' + reviewText + '”', 540, reviewStartY + 78, 900, 43, 5, 29)
-        : 0;
-      const signatureY = Math.min(1665, Math.max(1535, reviewStartY + 92 + reviewHeight));
-      context.strokeStyle = 'rgba(255,255,255,0.28)';
-      context.beginPath();
-      context.moveTo(72, signatureY - 48);
-      context.lineTo(1008, signatureY - 48);
-      context.stroke();
-      if (avatarImage) {
-        context.save();
-        context.beginPath();
-        context.arc(540, signatureY + 4, 37, 0, Math.PI * 2);
-        context.clip();
-        context.drawImage(avatarImage, 503, signatureY - 33, 74, 74);
-        context.restore();
-      } else {
-        context.fillStyle = '#7060ab';
-        context.beginPath();
-        context.arc(540, signatureY + 4, 37, 0, Math.PI * 2);
-        context.fill();
+      if (reviewText) {
+        context.fillStyle = '#55515b';
+        context.font = '400 27px Arial, sans-serif';
+        drawWrappedText(context, reviewText, 540, 1455, 820, 42, 5, 27);
       }
-      context.fillStyle = '#ffffff';
-      context.font = '700 25px Arial, sans-serif';
-      context.textAlign = 'center';
-      context.fillText('@' + (review.profiles?.username || 'jogador'), 540, signatureY + 72);
 
-      context.strokeStyle = 'rgba(255,255,255,0.28)';
-      context.beginPath();
-      context.moveTo(72, 1800);
-      context.lineTo(1008, 1800);
-      context.stroke();
-      context.fillStyle = '#ffffff';
-      context.font = '800 32px Arial, sans-serif';
+      context.fillStyle = '#55515b';
+      context.font = '500 24px Arial, sans-serif';
       context.textAlign = 'center';
-      context.fillText('LUDUS', 540, 1850);
-      context.fillStyle = 'rgba(255,255,255,0.66)';
-      context.font = '400 19px Arial, sans-serif';
-      context.fillText(window.location.host + window.location.pathname, 540, 1884);
+      context.fillText('@' + (review.profiles?.username || 'jogador'), 540, 1775);
+      context.fillStyle = '#96919b';
+      context.font = '400 18px Arial, sans-serif';
+      context.fillText('ludus', 540, 1820);
       const closeStoryModal = () => storyModal.remove();
       storyModal.addEventListener('click', (modalEvent) => {
         if (modalEvent.target === storyModal || modalEvent.target.closest('[data-story-close]')) closeStoryModal();
