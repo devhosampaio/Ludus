@@ -4248,3 +4248,34 @@ select {
   .review-detail__composer-avatar { width:32px !important; height:32px !important; }
   .review-detail__composer-footer > span { display:none !important; }
 }
+
+
+/* Garante que as ações da denúncia permaneçam visíveis e acessíveis. */
+.review-report-page__actions {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  flex-wrap: wrap !important;
+  gap: var(--space-sm) !important;
+}
+.review-report-page__actions .review-report-page__submit {
+  display: inline-flex !important;
+  flex: 0 0 auto !important;
+  align-items: center !important;
+  justify-content: center !important;
+  visibility: visible !important;
+  width: auto !important;
+  min-width: 152px !important;
+  min-height: 44px !important;
+  padding: var(--space-sm) var(--space-lg) !important;
+  border: var(--border-width) solid var(--color-accent) !important;
+  border-radius: var(--radius-md) !important;
+  background: var(--color-accent) !important;
+  color: #fff !important;
+  opacity: 1 !important;
+  position: relative !important;
+  z-index: 1 !important;
+}
+.review-report-page__actions .review-report-page__submit:disabled {
+  opacity: .65 !important;
+}

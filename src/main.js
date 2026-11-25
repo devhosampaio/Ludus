@@ -144,7 +144,7 @@ async function setupNotifications(user) {
     }
 
     list.innerHTML = rows.map((item) => {
-      const actor = item.profiles?.display_name || item.profiles?.username || 'Alguém';
+      const actor = item.profiles?.username || 'Alguém';
       const username = item.profiles?.username || '';
       const message = item.type === 'review_liked'
         ? 'curtiu sua avaliação.'
@@ -276,7 +276,7 @@ async function fetchCommentLikeRows(commentIds) {
 function renderReviewCommentMarkup(comment, user, likes, childrenByParent, nested = false) {
   const profile = comment.profiles || {};
   const username = profile.username || 'jogador';
-  const displayName = profile.display_name || username;
+  const displayName = username;
   const avatar = profile.avatar_url
     ? '<img src="' + escapeHTML(profile.avatar_url) + '" alt="" loading="lazy">'
     : profilePlaceholderMarkup();
@@ -323,7 +323,7 @@ function renderCommentsSection(reviewId, comments, likes, user) {
     '</section>';
 }
 function sharedSideMenuMarkup(user) {
-  const fallbackName = user.user_metadata?.display_name || user.email?.split('@')[0] || 'jogador';
+  const fallbackName = user.email?.split('@')[0] || 'jogador';
   return `  <header class="side-menu side-menu--left">
     <a class="topbar-brand side-menu__brand" href="#inicio" aria-label="Ludus — início">Ludus</a>
     <nav class="side-menu__navigation" aria-label="Navegação principal">
@@ -613,7 +613,7 @@ async function setupSharedSideMenu(user, profile = null) {
   setupMobileDrawer(user, profile);
   const username = root.querySelector('[data-side-username]');
   const avatar = root.querySelector('[data-side-avatar]');
-  if (username) username.textContent = profile?.display_name || profile?.username || user.user_metadata?.display_name || user.email?.split('@')[0] || 'jogador';
+  if (username) username.textContent = profile?.username || user.email?.split('@')[0] || 'jogador';
   if (avatar && profile?.avatar_url) avatar.innerHTML = '<img src="' + escapeHTML(profile.avatar_url) + '" alt="">';
   root.querySelector('[data-side-profile]')?.addEventListener('click', () => {
     if (profile?.username) navigateToProfile(user, profile.username);
@@ -641,7 +641,7 @@ async function renderSignedIn(user, initialFeedMode = 'home') {
   if (reportRouteId) { renderReviewReportPage(user, reportRouteId); return; }
   const reviewRouteId = getReviewIdFromLocation();
   if (reviewRouteId) { renderReviewPage(user, reviewRouteId); return; }
-  const fallbackName = user.user_metadata?.display_name || user.email?.split('@')[0] || 'jogador';
+  const fallbackName = user.email?.split('@')[0] || 'jogador';
   app.innerHTML = `
     <div class="feed-shell">
       ${sharedSideMenuMarkup(user)}
@@ -696,7 +696,7 @@ async function renderSignedIn(user, initialFeedMode = 'home') {
     if (username) username.textContent = profileResult.data.username || fallbackName;
     const sideUsername = app.querySelector('[data-side-username]');
     const sideAvatar = app.querySelector('[data-side-avatar]');
-    if (sideUsername) sideUsername.textContent = profileResult.data.display_name || profileResult.data.username || fallbackName;
+    if (sideUsername) sideUsername.textContent = profileResult.data.username || fallbackName;
     if (sideAvatar && profileResult.data.avatar_url) sideAvatar.innerHTML = '<img src="' + escapeHTML(profileResult.data.avatar_url) + '" alt="">';
     if (avatar && profileResult.data.avatar_url) {
       avatar.innerHTML = '<img src="' + escapeHTML(profileResult.data.avatar_url) + '" alt="">';
@@ -1693,7 +1693,7 @@ async function renderReviewReportPage(currentUser, reviewId) {
     return;
   }
   const game = review.games || {};
-  const author = review.profiles?.display_name || review.profiles?.username || 'Jogador';
+  const author = review.profiles?.username || 'jogador';
   const cover = game.cover_url
     ? '<img class="review-report-page__cover" src="' + escapeHTML(game.cover_url) + '" alt="">'
     : '<span class="review-report-page__cover review-report-page__cover--empty" aria-hidden="true"><i class="fa-solid fa-gamepad"></i></span>';
@@ -1782,7 +1782,7 @@ async function renderReviewPage(currentUser, reviewId) {
     ).join('') || '<p class="review-comments__empty">Ainda não há comentários. Comece a conversa.</p>';
   content.innerHTML = '<article class="review-detail"><div class="review-detail__main">' +
     (game.cover_url ? '<button class="review-detail__cover" type="button" data-detail-game="' + escapeHTML(review.game_id) + '"><img src="' + escapeHTML(game.cover_url) + '" alt="Capa de ' + escapeHTML(game.title || 'jogo') + '"></button>' : '') +
-    '<div class="review-detail__content"><div class="review-detail__author"><span class="review-detail__avatar">' + avatar + '</span><div><strong>' + escapeHTML(profile.display_name || profile.username || 'Jogador') + '</strong><small>' + escapeHTML(profile.username || '') + ' · ' + formatDate(review.created_at) + '</small></div></div>' +
+    '<div class="review-detail__content"><div class="review-detail__author"><span class="review-detail__avatar">' + avatar + '</span><div><strong>' + escapeHTML(profile.username || 'jogador') + '</strong><small>' + escapeHTML(profile.username || '') + ' · ' + formatDate(review.created_at) + '</small></div></div>' +
     '<h1>' + escapeHTML(game.title || 'Jogo') + (game.release_year ? ' <small>' + escapeHTML(game.release_year) + '</small>' : '') + '</h1><div class="review-detail__rating">' + '★'.repeat(review.rating) + '☆'.repeat(5-review.rating) + '</div><div class="review-detail__status">' + escapeHTML(statusLabel(review.status)) + (review.liked_game ? ' · Gostei deste jogo' : '') + '</div>' +
     (review.body ? '<p class="review-detail__body">' + escapeHTML(review.body) + '</p>' : '') + '</div></div><section class="review-detail__discussion"><header class="review-detail__discussion-header"><div><h2>Discussão</h2><p>Converse sobre esta avaliação</p></div><span class="review-detail__discussion-count">' + commentRows.length + (commentRows.length === 1 ? ' comentário' : ' comentários') + '</span></header><div class="review-detail__comments">' + commentsMarkup + '</div><form class="review-detail__form" data-detail-comment-form><span class="review-detail__composer-avatar">' + avatar + '</span><div class="review-detail__composer-content"><textarea rows="3" maxlength="1000" placeholder="Compartilhe sua opinião…" required></textarea><div class="review-detail__composer-footer"><span>Até 1.000 caracteres</span><button type="submit"><span>Comentar</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg></button></div></div></form></section></article>';
   content.querySelector('[data-detail-game]')?.addEventListener('click', () => navigateToGame(currentUser, review.game_id));
@@ -1939,7 +1939,7 @@ async function renderGamePage(currentUser, gameId) {
   const platforms = (game.platforms || []).slice(0, 5).map((item) => '<span>' + escapeHTML(item) + '</span>').join('');
   const reviewCards = (reviewsResult.data || []).map((review) => {
     const profile = review.profiles || {};
-    const author = profile.display_name || profile.username || 'Jogador';
+    const author = profile.username || 'jogador';
     const avatar = profile.avatar_url
       ? '<img src="' + escapeHTML(profile.avatar_url) + '" alt="">'
       : '<span class="game-page__review-avatar">' + profilePlaceholderMarkup() + '</span>';
@@ -2026,7 +2026,7 @@ async function renderSearchPage(currentUser, initialQuery = '') {
         ? '<img src="' + escapeHTML(profile.avatar_url) + '" alt="">'
         : profilePlaceholderMarkup();
       return '<button class="search-result search-result--user" type="button" data-search-username="' + escapeHTML(profile.username) + '">' +
-        '<span class="search-result__avatar">' + avatar + '</span><span class="search-result__info"><strong>' + escapeHTML(profile.display_name || profile.username) + '</strong><small>@' + escapeHTML(profile.username) + '</small></span></button>';
+        '<span class="search-result__avatar">' + avatar + '</span><span class="search-result__info"><strong>' + escapeHTML(profile.username) + '</strong><small>@' + escapeHTML(profile.username) + '</small></span></button>';
     }).join('');
     const gameMarkup = games.slice(0, 12).map((game) => {
       const date = Number(game.release_date);
