@@ -601,7 +601,7 @@ function setupDeveloperInspector() {
   observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class', 'style', 'hidden'] });
 }
 
-function setupSharedSideMenu(user, profile = null) {
+async function setupSharedSideMenu(user, profile = null) {
   setupBottomNavAutoHide();
   const root = app.querySelector('.side-menu--left');
   if (!root) return;
