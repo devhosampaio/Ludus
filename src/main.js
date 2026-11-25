@@ -510,7 +510,6 @@ function setupMobileDrawer(user, profile = null) {
   });
 }
 
-async 
 function setupDeveloperInspector() {
   if (document.querySelector('[data-dev-inspector-toggle]')) return;
   const button = document.createElement('button');
