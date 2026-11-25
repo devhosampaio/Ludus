@@ -1838,7 +1838,9 @@ select {
   }
 }
 
-/* Ponto separador entre o nome do usuário e a data da avaliação. */
-.review-card__timestamp-separator {
+/* Reduz o glifo do Font Awesome usado como separador da data. */
+.review-card__timestamp-separator,
+.review-card__timestamp-separator::before {
   font-size: var(--font-size-4) !important;
+  line-height: 1 !important;
 }
