@@ -2266,8 +2266,8 @@ async function renderProfilePage(currentUser, username) {
     '<span><strong data-profile-stat="lists">' + (savedListsCountResult.count ?? 0) + '</strong><span>Listas</span></span>' +
     '</div>' +
     '<section class="profile-page__favorites" aria-label="Jogos favoritos"><div class="profile-page__favorites-heading"><h2>Jogos favoritos</h2><div class="profile-page__favorites-actions" data-favorites-actions></div></div><div class="profile-page__favorites-list" data-profile-favorites></div></section>' +
-    '<section class="profile-page__published-reviews" aria-label="Avaliações publicadas"><div class="profile-page__reviews-heading"><h2>Avaliações</h2><span>' + (profileReviews || []).length + '</span></div><div class="profile-page__published-reviews-list" data-profile-reviews></div></section>' +
     '<section class="profile-page__lists" aria-label="Listas criadas"><div class="profile-page__lists-heading"><h2>Listas criadas</h2><div class="profile-page__lists-heading-actions" data-lists-heading-actions></div></div><div class="profile-page__lists-grid" data-profile-created-lists></div></section>' +
+    '<section class="profile-page__published-reviews" aria-label="Avaliações publicadas"><div class="profile-page__reviews-heading"><h2>Avaliações</h2><span>' + (profileReviews || []).length + '</span></div><div class="profile-page__published-reviews-list" data-profile-reviews></div></section>' +
     '</section>';
 
   app.querySelector('[data-profile-backtop]')?.addEventListener('click', () => navigateToFeed(currentUser));

@@ -2942,3 +2942,10 @@ select {
     padding: var(--space-sm) !important;
   }
 }
+
+
+/* Contraste do botão de nova avaliação na navbar inferior. */
+.bottom-nav__review i {
+  background: var(--color-text) !important;
+  color: var(--color-surface) !important;
+}
