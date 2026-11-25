@@ -3512,3 +3512,15 @@ select {
 .review-menu__panel button.is-danger {
   color: var(--color-danger) !important;
 }
+
+/* Botão de menu transparente; somente o ícone acompanha a cor do tema ativo. */
+.app-topbar .app-topbar__menu-button,
+.app-topbar .app-topbar__menu-button:hover,
+.app-topbar .app-topbar__menu-button:focus,
+.app-topbar .app-topbar__menu-button:active {
+  background: transparent !important;
+}
+.app-topbar .app-topbar__menu-button .fa-solid.fa-bars {
+  background: transparent !important;
+  color: var(--color-text) !important;
+}
