@@ -5392,3 +5392,15 @@ select {
 @media (prefers-reduced-motion: reduce) {
   .dev-inspector-panel { animation: none !important; }
 }
+
+
+/* O modo desenvolvedor existe somente na versão desktop. */
+@media (max-width: 767px) {
+  .dev-inspector-toggle,
+  .dev-inspector-panel,
+  .dev-inspector-layer {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+}
