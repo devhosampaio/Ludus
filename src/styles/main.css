@@ -4771,3 +4771,5 @@ select {
   .admin-activity__item { gap:9px; padding:11px; }
   .admin-activity__item time { font-size:9px; }
 }
+
+.admin-menu-open { overflow:hidden; }
