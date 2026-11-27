@@ -6234,3 +6234,30 @@ hr { border-color: var(--color-border); }
     align-self: start !important;
   }
 }
+
+
+/* Botão Avaliar: fundo branco e conteúdo centralizado no próprio botão. */
+.side-menu--left .side-menu__navigation > [data-side-review] {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 10px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  padding: 12px 16px !important;
+  background: #fff !important;
+  color: var(--color-bg) !important;
+  text-align: center !important;
+}
+
+.side-menu--left .side-menu__navigation > [data-side-review] svg {
+  flex: 0 0 var(--icon-size-md);
+  width: var(--icon-size-md);
+  height: var(--icon-size-md);
+  color: var(--color-bg) !important;
+  stroke: currentColor !important;
+}
+
+.side-menu--left .side-menu__navigation > [data-side-review] span {
+  color: var(--color-bg) !important;
+}
