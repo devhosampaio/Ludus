@@ -2,6 +2,7 @@
 # Preview styling and layout fixes are sourced from redesign/ui-ux-pro-max.
 # Latest feed header sticky-position fix included.
 # Latest desktop feed/sidebar top alignment fix included.
+# Restored full-width review interaction divider.
 name: Deploy Ludus to GitHub Pages
 
 on:
