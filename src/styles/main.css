@@ -6313,3 +6313,27 @@ hr { border-color: var(--color-border); }
 .review-card > .review-card__actions {
   padding-bottom: 14px !important;
 }
+
+
+/* Contraste do botão Avaliar: roxo escuro sobre o fundo branco. */
+.side-menu--left .side-menu__navigation > button[data-side-review],
+.side-menu--left .side-menu__navigation > button[data-side-review]:hover,
+.side-menu--left .side-menu__navigation > button[data-side-review]:focus,
+.side-menu--left .side-menu__navigation > button[data-side-review]:active,
+.side-menu--left .side-menu__navigation > button[data-side-review].is-active {
+  color: #211e2b !important;
+  background: #ffffff !important;
+}
+
+.side-menu--left .side-menu__navigation > button[data-side-review] > span {
+  color: #211e2b !important;
+}
+
+.side-menu--left .side-menu__navigation > button[data-side-review] > svg {
+  color: #211e2b !important;
+  stroke: #211e2b !important;
+}
+
+.side-menu--left .side-menu__navigation > button[data-side-review] > svg * {
+  stroke: #211e2b !important;
+}
