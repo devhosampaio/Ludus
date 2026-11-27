@@ -7,6 +7,7 @@
 # Feed header removed entirely on desktop and mobile.
 # Align sidebar top edge with the first feed card.
 # Added Avaliar action to desktop side navigation.
+# Corrected sidebar/feed alignment by removing the sticky top offset and negative margin.
 name: Deploy Ludus to GitHub Pages
 
 on:
