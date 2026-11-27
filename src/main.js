@@ -1791,7 +1791,7 @@ async function renderSignedIn(user, initialFeedMode = 'home') {
       const body = review.body || '';
       const reviewText = body ? '<div class="review-card__text-wrap"><p class="review-card__text" data-review-text>' + escapeHTML(body) + '</p></div>' : '';
       const rating = Math.max(0, Math.min(5, Math.round(Number(review.rating) || 0)));
-      const ratingStars = '<span class="review-card__rating-stars" role="img" aria-label="' + rating + ' de 5 estrelas">' + '<i class="fa-solid fa-star"></i>'.repeat(rating) + '<span class="review-card__stars-muted">' + '<i class="fa-solid fa-star"></i>'.repeat(5 - rating) + '</span></span>';
+      const ratingStars = '<span class="review-card__rating-stars" role="img" aria-label="' + rating + ' de 5 estrelas">' + '<i class="fa-solid fa-star"></i>'.repeat(rating) + '</span>';
       const reviewDetails = '<div class="review-card__details">' + ratingStars +
         (review.liked_game ? '<i class="fa-solid fa-heart review-card__liked" aria-label="Favorito" title="Favorito"></i>' : '') +
         (review.status === 'completed' ? '<i class="fa-solid fa-trophy review-card__completed" aria-label="Zerado" title="Zerado"></i>' : '') + '</div>';
