@@ -18,7 +18,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout production
         uses: actions/checkout@v5
 
       - name: Setup Node.js
@@ -26,11 +26,26 @@ jobs:
         with:
           node-version: 22
 
-      - name: Install dependencies
+      - name: Install production dependencies
         run: npm install
 
-      - name: Build
+      - name: Build production site
         run: npm run build
+        env:
+          VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_PUBLISHABLE_KEY: ${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY }}
+
+      - name: Checkout redesign preview
+        uses: actions/checkout@v5
+        with:
+          ref: redesign/ui-ux-pro-max
+          path: redesign-preview
+
+      - name: Install preview dependencies
+        run: npm install --prefix redesign-preview
+
+      - name: Build redesign preview
+        run: npm run build --prefix redesign-preview -- --base=/Ludus/preview/ --outDir=../dist/preview
         env:
           VITE_SUPABASE_URL: ${{ vars.VITE_SUPABASE_URL }}
           VITE_SUPABASE_PUBLISHABLE_KEY: ${{ vars.VITE_SUPABASE_PUBLISHABLE_KEY }}
