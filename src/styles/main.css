@@ -6368,3 +6368,9 @@ hr { border-color: var(--color-border); }
 .review-card > .review-card__actions > .review-card__social-actions {
   padding-top: 8px !important;
 }
+
+
+/* Reserva sempre o espaço da barra de rolagem para evitar deslocamentos horizontais entre páginas. */
+html {
+  scrollbar-gutter: stable;
+}
