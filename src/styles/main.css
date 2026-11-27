@@ -5961,3 +5961,43 @@ hr { border-color: var(--color-border); }
 @media (prefers-reduced-motion: reduce) {
   *,*::before,*::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
+
+
+/* Ajustes de alinhamento e largura do feed — revisão visual */
+@media (min-width: 1101px) {
+  .feed-shell {
+    grid-template-columns: 220px minmax(0, var(--content-max));
+    align-items: start;
+  }
+
+  .side-menu--left {
+    align-self: start;
+    top: 0;
+    margin-top: 0;
+  }
+
+  /* A coluna direita era apenas um espaço publicitário vazio. */
+  .side-menu--right,
+  .feed-ad--right {
+    display: none !important;
+  }
+}
+
+/* A divisória pertence à área inteira de ações, não apenas aos ícones. */
+.review-card__actions {
+  display: block;
+  width: 100%;
+  margin-top: 14px;
+  padding-top: 0;
+  border-top: 0;
+}
+
+.review-card__social-actions {
+  display: flex;
+  width: 100%;
+  box-sizing: border-box;
+  flex: 1 1 100%;
+  margin-top: 0;
+  padding-top: 12px;
+  border-top: 1px solid var(--color-border);
+}
