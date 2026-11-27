@@ -1770,8 +1770,9 @@ async function renderSignedIn(user, initialFeedMode = 'home') {
       const isSaved = savedReviewIds.has(review.id);
       const body = review.body || '';
       const reviewText = body ? '<div class="review-card__text-wrap"><p class="review-card__text" data-review-text>' + escapeHTML(body) + '</p></div>' : '';
-      const ratingValue = Number(review.rating).toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
-      const reviewDetails = '<div class="review-card__details"><span class="review-card__rating"><i class="fa-solid fa-star" aria-hidden="true"></i><span>' + ratingValue + '</span></span>' +
+      const rating = Math.max(0, Math.min(5, Math.round(Number(review.rating) || 0)));
+      const ratingStars = '<span class="review-card__rating-stars" role="img" aria-label="' + rating + ' de 5 estrelas">' + '★'.repeat(rating) + '<span class="review-card__stars-muted">' + '★'.repeat(5 - rating) + '</span></span>';
+      const reviewDetails = '<div class="review-card__details">' + ratingStars +
         (review.liked_game ? '<i class="fa-solid fa-heart review-card__liked" aria-label="Favorito" title="Favorito"></i>' : '') +
         (review.status === 'completed' ? '<i class="fa-solid fa-trophy review-card__completed" aria-label="Zerado" title="Zerado"></i>' : '') + '</div>';
       const reviewAuthor = '<div class="review-card__header"><div class="review-card__identity"><a class="review-card__author" href="#/perfil/' + encodeURIComponent(username) + '" data-profile-username="' + escapeHTML(username) + '"><span class="review-card__author-avatar">' + avatarMarkup + '</span><span class="review-card__author-name">' + escapeHTML(author) + '</span></a><i class="fa-solid fa-circle review-card__timestamp-separator" aria-hidden="true"></i><time class="review-card__timestamp" datetime="' + escapeHTML(review.created_at) + '">' + escapeHTML(relativeTime(review.created_at)) + '</time></div>' + menuMarkup + '</div>';
