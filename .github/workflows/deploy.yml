@@ -1,4 +1,5 @@
-# Rebuilds both production and the latest redesign preview on every main update.
+# Rebuilds production and the isolated redesign preview on every main update.
+# Preview styling and layout fixes are sourced from redesign/ui-ux-pro-max.
 name: Deploy Ludus to GitHub Pages
 
 on:
