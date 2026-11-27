@@ -1796,8 +1796,8 @@ async function renderSignedIn(user, initialFeedMode = 'home') {
         '<i class="fa-solid fa-star"></i>'.repeat(fullStars) + (halfStar ? '<i class="fa-solid fa-star-half-stroke"></i>' : '') + '<i class="fa-regular fa-star"></i>'.repeat(5 - fullStars - (halfStar ? 1 : 0)) + '</span>' +
         '<span class="review-card__rating-value">' + rating.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + '</span>';
       const statusLabels = { completed: 'Zerado', playing: 'Jogando', abandoned: 'Abandonado' };
-      const reviewBadges = (review.liked_game ? '<span class="review-card__badge">Curtiu</span>' : '') +
-        (statusLabels[review.status] ? '<span class="review-card__badge">' + statusLabels[review.status] + '</span>' : '');
+      const reviewBadges = (review.liked_game ? '<span class="review-card__badge review-card__badge--liked">Curtiu</span>' : '') +
+        (statusLabels[review.status] ? '<span class="review-card__badge review-card__badge--' + escapeHTML(review.status) + '">' + statusLabels[review.status] + '</span>' : '');
       const reviewDetails = '<div class="review-card__details">' + ratingStars + reviewBadges + '</div>';
       const reviewAuthor = '<div class="review-card__header"><div class="review-card__identity"><a class="review-card__author" href="#/perfil/' + encodeURIComponent(username) + '" data-profile-username="' + escapeHTML(username) + '"><span class="review-card__author-avatar">' + avatarMarkup + '</span><span class="review-card__author-name">' + escapeHTML(author) + '</span></a><i class="fa-solid fa-circle review-card__timestamp-separator" aria-hidden="true"></i><time class="review-card__timestamp" datetime="' + escapeHTML(review.created_at) + '">' + escapeHTML(relativeTime(review.created_at)) + '</time></div>' + menuMarkup + '</div>';
       const shareMenuItem = '<button type="button" data-share-review aria-label="Compartilhar avaliação"><i class="fa-solid fa-share" aria-hidden="true"></i><span>Compartilhar</span></button>';
