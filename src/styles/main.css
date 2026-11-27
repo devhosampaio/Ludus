@@ -6414,3 +6414,55 @@ html {
   gap: 2px;
   color: inherit;
 }
+
+
+/* Feed: refinamento exclusivo dos cards de avaliação. */
+.feed-list > .review-card {
+  display: block !important;
+  margin: 0 !important;
+  padding: var(--space-lg) var(--space-md) !important;
+  border: 0 !important;
+  border-bottom: 1px solid var(--color-border) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  transition: background-color .18s ease;
+}
+.feed-list > .review-card:hover { background: var(--color-surface-hover); }
+.feed-list .review-card__header { margin: 0 0 var(--space-md) !important; }
+.feed-list .review-card__author-name,
+.feed-list .review-card__timestamp { color: var(--color-text-subtle); font-size: var(--font-size-xs); font-weight: 400; }
+.feed-list .review-card__game-layout {
+  display: grid !important;
+  grid-template-columns: 100px minmax(0, 1fr) !important;
+  align-items: start;
+  gap: var(--space-md) !important;
+}
+.feed-list .review-card__game-heading { margin: 0 0 var(--space-xs); font-family: var(--font-family-display); font-size: var(--font-size-xl); line-height: 1.25; }
+.feed-list .review-card__game-link { color: var(--color-text); text-decoration: none; transition: color .18s ease; }
+.feed-list .review-card__game-link:hover { color: var(--color-accent); }
+.feed-list .review-card__cover-wrap { display: block; transition: opacity .18s ease, transform .18s ease; }
+.feed-list .review-card__cover-wrap:hover { opacity: .88; transform: translateY(-2px); }
+.feed-list .review-card__details { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-sm); margin: 0 0 var(--space-sm); }
+.feed-list .review-card__rating-stars { display: inline-flex; align-items: center; gap: 2px; color: #D5A64A; font-size: var(--font-size-sm); line-height: 1; }
+.feed-list .review-card__rating-stars .fa-star-half-stroke,
+.feed-list .review-card__rating-stars .fa-star { color: #D5A64A; }
+.feed-list .review-card__rating-stars .fa-regular { color: var(--color-text-muted); }
+.feed-list .review-card__rating-value { color: var(--color-text); font-size: var(--font-size-xs); font-weight: 600; }
+.feed-list .review-card__badge { display: inline-flex; align-items: center; padding: 2px 8px; border: 1px solid var(--color-border); border-radius: var(--radius-sm); color: var(--color-text-muted); font-size: var(--font-size-12); line-height: 1.4; }
+.feed-list .review-card__text-wrap { margin: var(--space-sm) 0 0 !important; padding: 0 !important; }
+.feed-list .review-card__text { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; overflow: hidden; margin: 0 !important; line-height: var(--line-height-normal); }
+.feed-list .review-card__text.is-expanded { display: block; overflow: visible; }
+.feed-list .review-card__read-more { margin-top: var(--space-xs); padding: 0; border: 0; background: transparent; color: var(--color-accent); font-size: var(--font-size-xs); }
+.feed-list .review-card__read-more[hidden] { display: none !important; }
+.feed-list .review-card__actions { margin: var(--space-sm) 0 0 !important; padding: 0 !important; border: 0 !important; }
+.feed-list .review-card__social-actions { display: flex; align-items: center; gap: var(--space-sm); }
+.feed-list .review-card__social-actions button { min-width: 42px; min-height: 40px; padding: var(--space-xs) !important; }
+.feed-list .review-card__social-actions button i { font-size: var(--font-size-14); }
+.feed-list .review-menu__panel [data-share-review] { display: flex; align-items: center; gap: var(--space-sm); width: 100%; padding: var(--space-sm); }
+@media (max-width: 767px) {
+  .feed-list .review-card__game-layout { display: flex !important; flex-direction: column; gap: var(--space-sm) !important; }
+  .feed-list .review-card__cover-wrap { align-self: flex-start; }
+  .feed-list .review-card__cover,
+  .feed-list .review-card__cover--empty { width: 96px; max-height: 140px; }
+}
