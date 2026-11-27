@@ -5972,7 +5972,8 @@ hr { border-color: var(--color-border); }
 
   .side-menu--left {
     align-self: start;
-    margin-top: 4px;
+    margin-top: 0 !important;
+    top: 24px;
   }
 
   /* Preserva a coluna direita; remove somente o traço decorativo do espaço vazio. */
@@ -6038,7 +6039,7 @@ hr { border-color: var(--color-border); }
 
 @media (min-width: 768px) {
   .app-topbar.app-topbar--feed {
-    top: 20px !important;
+    top: 24px !important;
   }
 }
 
