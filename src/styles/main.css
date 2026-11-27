@@ -6352,6 +6352,7 @@ hr { border-color: var(--color-border); }
   }
 
   .feed-shell > .side-menu--left {
+    margin-top: -16px !important;
     padding: var(--space-lg) !important;
   }
 }
