@@ -10,6 +10,7 @@
 # Corrected sidebar/feed alignment by removing the sticky top offset and negative margin.
 # Muted favorite and completed status icons to match game-year text color.
 # Removed top padding from the desktop left side menu.
+# Styled sidebar Avaliar button with white background and separator.
 name: Deploy Ludus to GitHub Pages
 
 on:
