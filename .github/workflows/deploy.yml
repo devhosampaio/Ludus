@@ -11,6 +11,7 @@
 # Muted favorite and completed status icons to match game-year text color.
 # Removed top padding from the desktop left side menu.
 # Styled sidebar Avaliar button with white background and separator.
+# Moved theme control into the Configurações screen.
 name: Deploy Ludus to GitHub Pages
 
 on:
