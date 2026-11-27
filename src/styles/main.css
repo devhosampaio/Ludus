@@ -6397,3 +6397,18 @@ html {
     top: var(--page-top-gap) !important;
   }
 }
+
+
+/* Nota das avaliações em estrelas, sem valor numérico. */
+.review-card__rating-stars {
+  display: inline-flex;
+  align-items: center;
+  color: var(--color-rating);
+  font-size: 14px;
+  letter-spacing: 1px;
+  line-height: 1;
+}
+
+.review-card__rating-stars .review-card__stars-muted {
+  color: var(--color-text-muted);
+}
