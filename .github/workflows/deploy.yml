@@ -1,3 +1,4 @@
+# Rebuilds both production and the latest redesign preview on every main update.
 name: Deploy Ludus to GitHub Pages
 
 on:
