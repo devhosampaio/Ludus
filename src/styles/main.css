@@ -6122,3 +6122,11 @@ hr { border-color: var(--color-border); }
 .app-topbar.app-topbar--feed {
   display: none !important;
 }
+
+
+/* Alinha o topo da navbar lateral ao topo do primeiro card do feed. */
+@media (min-width: 768px) {
+  .feed-shell > .side-menu--left {
+    margin-top: -8px !important;
+  }
+}
