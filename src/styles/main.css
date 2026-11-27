@@ -6403,12 +6403,14 @@ html {
 .review-card__rating-stars {
   display: inline-flex;
   align-items: center;
+  gap: 2px;
   color: var(--color-text-muted);
-  font-size: var(--font-size-xs);
-  letter-spacing: 0;
+  font-size: inherit;
   line-height: 1;
 }
 
 .review-card__rating-stars .review-card__stars-muted {
+  display: inline-flex;
+  gap: 2px;
   color: inherit;
 }
