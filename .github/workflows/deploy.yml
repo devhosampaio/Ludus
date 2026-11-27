@@ -1,5 +1,6 @@
 # Rebuilds production and the isolated redesign preview on every main update.
 # Preview styling and layout fixes are sourced from redesign/ui-ux-pro-max.
+# Latest feed header sticky-position fix included.
 name: Deploy Ludus to GitHub Pages
 
 on:
