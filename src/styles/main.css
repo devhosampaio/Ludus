@@ -6484,7 +6484,7 @@ html {
 .feed-list .review-card__badge--liked {
   color: var(--color-text-muted);
   border-color: var(--color-border);
-  background: var(--color-surface-hover);
+  background: var(--color-surface);
   font-weight: 600;
 }
 .feed-list .review-card__badge--completed {
