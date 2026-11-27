@@ -6275,3 +6275,17 @@ hr { border-color: var(--color-border); }
     margin-left: 0 !important;
   }
 }
+
+
+/* Alinha os dois containers removendo apenas o espaço superior do grid pai.
+   O padding interno da navbar e de seus elementos permanece intacto. */
+@media (min-width: 768px) {
+  .feed-shell {
+    padding-top: 0 !important;
+  }
+
+  .feed-shell > .side-menu--left {
+    margin-top: 0 !important;
+    padding: var(--space-lg) !important;
+  }
+}
