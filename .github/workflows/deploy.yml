@@ -16,7 +16,7 @@
 # Added sidebar notifications shortcut with unread red dot.
 # Sidebar sticky offset now matches its initial top position (26px).
 name: Deploy Ludus to GitHub Pages
-# Preview refresh: reduce and vertically center review interaction panel
+# Preview refresh: force dark purple Avaliar button label and icon
 # Preview refresh: restore sidebar container padding and align brand
 # Preview refresh: Avaliar button white background and centered content
 
