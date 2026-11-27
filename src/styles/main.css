@@ -6116,3 +6116,9 @@ hr { border-color: var(--color-border); }
     display: inline-grid !important;
   }
 }
+
+
+/* Remoção definitiva do cabeçalho do feed em todos os tamanhos de tela. */
+.app-topbar.app-topbar--feed {
+  display: none !important;
+}
