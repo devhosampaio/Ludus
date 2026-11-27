@@ -1541,7 +1541,7 @@ async function renderSignedIn(user, initialFeedMode = 'home') {
     openSettingsPage(user);
   });
   app.querySelector('[data-side-settings]')?.addEventListener('click', () => {
-    if (profileResult.data) openProfileEditor(user, profileResult.data);
+    openSettingsPage(user);
   });
   app.querySelector('[data-side-profile]')?.addEventListener('click', () => {
     if (profileResult.data?.username) navigateToProfile(user, profileResult.data.username);
@@ -3287,13 +3287,13 @@ async function openSettingsPage(user) {
   const existing = app.querySelector('.feed-main__container');
   if (!existing) return;
   existing.innerHTML = `
-    <section class="profile-editor profile-editor--page settings-page" aria-labelledby="settings-page-title">
+    <section class="settings-page" aria-labelledby="settings-page-title">
       <p class="eyebrow">PREFERÊNCIAS DO LUDUS</p>
       <h2 id="settings-page-title">Configurações<span>.</span></h2>
       <div class="settings-page__section">
         <h3>Aparência</h3>
         <p>Personalize a aparência do Ludus.</p>
-        <button class="side-menu__item settings-page__theme-toggle" type="button" data-theme-toggle aria-pressed="false">
+        <button class="settings-page__theme-toggle" type="button" data-theme-toggle aria-pressed="false">
           <i class="fa-solid fa-moon" aria-hidden="true"></i>
           <span data-theme-label>Tema escuro</span>
         </button>
