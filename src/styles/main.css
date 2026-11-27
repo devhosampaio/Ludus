@@ -6130,3 +6130,25 @@ hr { border-color: var(--color-border); }
     margin-top: -8px !important;
   }
 }
+
+
+/* Alinhamento real dos containers: ambos começam no mesmo topo do grid.
+   O offset sticky de 24px estava empurrando apenas a navbar para baixo. */
+@media (min-width: 768px) {
+  .feed-shell {
+    align-items: start !important;
+  }
+
+  .feed-shell > .side-menu--left {
+    position: sticky !important;
+    top: 0 !important;
+    align-self: start !important;
+    margin-top: 0 !important;
+  }
+
+  .feed-shell > .feed-center-column {
+    align-self: start !important;
+    margin-top: 0 !important;
+    padding-top: 0 !important;
+  }
+}
