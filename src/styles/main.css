@@ -6094,3 +6094,25 @@ hr { border-color: var(--color-border); }
   padding: 0 !important;
   border: 0 !important;
 }
+
+
+/* O cabeçalho fica no início do feed; não acompanha a rolagem da página. */
+.app-topbar.app-topbar--feed {
+  position: static !important;
+  top: auto !important;
+  z-index: auto !important;
+}
+
+/* Desktop: o menu lateral já está visível, então ocultar o botão hambúrguer do header. */
+@media (min-width: 768px) {
+  .app-topbar.app-topbar--feed .app-topbar__menu-button {
+    display: none !important;
+  }
+}
+
+/* Mobile: manter o botão de menu no header. */
+@media (max-width: 767px) {
+  .app-topbar.app-topbar--feed .app-topbar__menu-button {
+    display: inline-grid !important;
+  }
+}
