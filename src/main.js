@@ -331,7 +331,6 @@ function sharedSideMenuMarkup(user) {
       <button class="side-menu__item" type="button" data-open-search><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m15.8 15.8 5 5"/></svg><span>Buscar</span></button>
       <button class="side-menu__item" type="button" data-side-profile><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.7-3.6 3.1-5.5 7-5.5s6.3 1.9 7 5.5"/></svg><span>Perfil</span></button>
       <button class="side-menu__item" type="button" data-side-settings><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8.2a3.8 3.8 0 1 0 0 7.6 3.8 3.8 0 0 0 0-7.6Z"/><path d="M19.4 13.5a7.7 7.7 0 0 0 0-3l1.5-1.1-1.8-3.1-1.8.7a7.8 7.8 0 0 0-2.6-1.5L14.4 3h-4.8L9.3 5.5a7.8 7.8 0 0 0-2.6 1.5l-1.8-.7-1.8 3.1 1.5 1.1a7.7 7.7 0 0 0 0 3l-1.5 1.1 1.8 3.1 1.8-.7a7.8 7.8 0 0 0 2.6 1.5l.3 2.5h4.8l.3-2.5a7.8 7.8 0 0 0 2.6-1.5l1.8.7 1.8-3.1Z"/></svg><span>Configurações</span></button>
-      <button class="side-menu__item side-menu__theme-toggle" type="button" data-theme-toggle aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 15.2A8.5 8.5 0 0 1 8.8 3.5 8.5 8.5 0 1 0 20.5 15.2Z"/></svg><span data-theme-label>Tema escuro</span></button>
       <button class="side-menu__item" type="button" data-feed-mode="saved"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4.5A1.5 1.5 0 0 1 7.5 3h9A1.5 1.5 0 0 1 18 4.5V21l-6-4-6 4Z"/></svg><span>Listas salvas</span></button>
       <button class="side-menu__item" type="button" data-side-review><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>Avaliar</span></button>
     </nav>
@@ -380,7 +379,6 @@ function sharedFeedHeaderMarkup() {
         <button class="mobile-drawer__item" type="button" data-drawer-profile><i class="fa-solid fa-user" aria-hidden="true"></i><span>Meu Perfil</span></button>
         <button class="mobile-drawer__item" type="button" data-drawer-saved><i class="fa-solid fa-bookmark" aria-hidden="true"></i><span>Listas Salvas</span></button>
         <button class="mobile-drawer__item" type="button" data-drawer-settings><i class="fa-solid fa-gear" aria-hidden="true"></i><span>Configurações</span></button>
-        <button class="mobile-drawer__item" type="button" data-theme-toggle aria-pressed="false"><i class="fa-solid fa-moon" aria-hidden="true"></i><span data-theme-label>Tema escuro</span></button>
       </nav>
       <div class="mobile-drawer__review-container"><button class="btn btn-primary btn-block mobile-drawer__review" type="button" data-drawer-review>Avaliar</button></div>
     </aside>`;
@@ -476,7 +474,7 @@ function setupMobileDrawer(user, profile = null) {
   drawer.querySelector('[data-drawer-saved]')?.addEventListener('click', () => { close(); navigateToFeed(user, 'saved'); });
   drawer.querySelector('[data-drawer-settings]')?.addEventListener('click', () => {
     close();
-    if (profile) openProfileEditor(user, profile);
+    openSettingsPage(user);
   });
   drawer.querySelector('[data-drawer-review]')?.addEventListener('click', () => {
     close();
@@ -1108,7 +1106,7 @@ async function setupSharedSideMenu(user, profile = null) {
     if (profile?.username) navigateToProfile(user, profile.username);
   });
   root.querySelector('[data-side-settings]')?.addEventListener('click', () => {
-    if (profile) openProfileEditor(user, profile);
+    openSettingsPage(user);
   });
   root.querySelectorAll('[data-feed-mode]').forEach((button) => {
     button.addEventListener('click', () => navigateToFeed(user, button.dataset.feedMode || 'home'));
@@ -1509,7 +1507,7 @@ async function renderSignedIn(user, initialFeedMode = 'home') {
   });
   app.querySelector('[data-account-settings]')?.addEventListener('click', () => {
     closeAccountMenu();
-    if (profileResult.data) openProfileEditor(user, profileResult.data);
+    openSettingsPage(user);
   });
   app.querySelector('[data-side-settings]')?.addEventListener('click', () => {
     if (profileResult.data) openProfileEditor(user, profileResult.data);
@@ -3276,7 +3274,29 @@ async function renderProfilePage(currentUser, username) {
   }
 
 }
-async function openProfileEditor(user, profile) {
+async function openSettingsPage(user) {
+  const existing = app.querySelector('.feed-main__container');
+  if (!existing) return;
+  existing.innerHTML = `
+    <section class="profile-editor profile-editor--page settings-page" aria-labelledby="settings-page-title">
+      <p class="eyebrow">PREFERÊNCIAS DO LUDUS</p>
+      <h2 id="settings-page-title">Configurações<span>.</span></h2>
+      <div class="settings-page__section">
+        <h3>Aparência</h3>
+        <p>Personalize a aparência do Ludus.</p>
+        <button class="side-menu__item settings-page__theme-toggle" type="button" data-theme-toggle aria-pressed="false">
+          <i class="fa-solid fa-moon" aria-hidden="true"></i>
+          <span data-theme-label>Tema escuro</span>
+        </button>
+      </div>
+      <div class="profile-editor__actions">
+        <button type="button" data-settings-back>Voltar</button>
+      </div>
+    </section>`;
+  existing.querySelector('[data-settings-back]')?.addEventListener('click', () => navigateToFeed(user));
+}
+
+function openProfileEditor(user, profile) {
   const returnToProfile = window.location.hash.startsWith('#/perfil/');
   await renderSignedIn(user);
   const pageContainer = app.querySelector('.feed-main__container');
