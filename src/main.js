@@ -133,6 +133,8 @@ async function setupNotifications(user) {
 
     const rows = data || [];
     const unreadCount = rows.filter((item) => !item.read_at).length;
+    const sideNotificationDot = app.querySelector('[data-side-notification-dot]');
+    if (sideNotificationDot) sideNotificationDot.hidden = unreadCount === 0;
     if (badge) {
       badge.textContent = unreadCount > 99 ? '99+' : String(unreadCount);
       badge.hidden = unreadCount === 0;
@@ -327,20 +329,24 @@ function sharedSideMenuMarkup(user) {
   return `  <header class="side-menu side-menu--left">
     <a class="topbar-brand side-menu__brand" href="#inicio" aria-label="Ludus — início">Ludus</a>
     <nav class="side-menu__navigation" aria-label="Navegação principal">
-      <button class="side-menu__item is-active" type="button" data-feed-mode="home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z"/></svg><span>Página inicial</span></button>
-      <button class="side-menu__item" type="button" data-open-search><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m15.8 15.8 5 5"/></svg><span>Buscar</span></button>
-      <button class="side-menu__item" type="button" data-side-profile><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.7-3.6 3.1-5.5 7-5.5s6.3 1.9 7 5.5"/></svg><span>Perfil</span></button>
+      <button class="side-menu__item" type="button" data-feed-mode="home" data-nav-route="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z"/></svg><span>Página inicial</span></button>
+      <button class="side-menu__item" type="button" data-open-search data-nav-route="search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m15.8 15.8 5 5"/></svg><span>Buscar</span></button>
+      <button class="side-menu__item" type="button" data-side-profile data-nav-route="profile"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.7-3.6 3.1-5.5 7-5.5s6.3 1.9 7 5.5"/></svg><span>Perfil</span></button>
+      <button class="side-menu__item side-menu__notifications" type="button" data-side-notifications data-nav-route="notifications" aria-label="Notificações">
+        <span class="side-menu__notification-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg><span class="side-menu__notification-dot" data-side-notification-dot hidden></span></span>
+        <span>Notificações</span>
+      </button>
       <button class="side-menu__item" type="button" data-side-settings><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8.2a3.8 3.8 0 1 0 0 7.6 3.8 3.8 0 0 0 0-7.6Z"/><path d="M19.4 13.5a7.7 7.7 0 0 0 0-3l1.5-1.1-1.8-3.1-1.8.7a7.8 7.8 0 0 0-2.6-1.5L14.4 3h-4.8L9.3 5.5a7.8 7.8 0 0 0-2.6 1.5l-1.8-.7-1.8 3.1 1.5 1.1a7.7 7.7 0 0 0 0 3l-1.5 1.1 1.8 3.1 1.8-.7a7.8 7.8 0 0 0 2.6 1.5l.3 2.5h4.8l.3-2.5a7.8 7.8 0 0 0 2.6-1.5l1.8.7 1.8-3.1Z"/></svg><span>Configurações</span></button>
-      <button class="side-menu__item side-menu__theme-toggle" type="button" data-theme-toggle aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 15.2A8.5 8.5 0 0 1 8.8 3.5 8.5 8.5 0 1 0 20.5 15.2Z"/></svg><span data-theme-label>Tema escuro</span></button>
       <button class="side-menu__item" type="button" data-feed-mode="saved"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4.5A1.5 1.5 0 0 1 7.5 3h9A1.5 1.5 0 0 1 18 4.5V21l-6-4-6 4Z"/></svg><span>Listas salvas</span></button>
+      <button class="side-menu__item" type="button" data-side-review><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>Avaliar</span></button>
     </nav>
   </header>
   <nav class="bottom-nav" aria-label="Navegação inferior">
-    <button class="bottom-nav__item is-active" type="button" data-bottom-home aria-label="Início" title="Início"><i class="fa-solid fa-house" aria-hidden="true"></i></button>
-    <button class="bottom-nav__item" type="button" data-bottom-search aria-label="Pesquisar" title="Pesquisar"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></button>
+    <button class="bottom-nav__item" type="button" data-bottom-home data-bottom-route="home" aria-label="Início" title="Início"><i class="fa-solid fa-house" aria-hidden="true"></i></button>
+    <button class="bottom-nav__item" type="button" data-bottom-search data-bottom-route="search" aria-label="Pesquisar" title="Pesquisar"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></button>
     <button class="bottom-nav__item bottom-nav__review" type="button" data-bottom-review aria-label="Avaliar" title="Avaliar"><i class="fa-solid fa-plus" aria-hidden="true"></i></button>
     ${notificationControlMarkup()}
-    <button class="bottom-nav__item" type="button" data-bottom-profile aria-label="Perfil" title="Perfil"><span class="bottom-nav__profile-avatar" data-bottom-profile-avatar aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.5" r="3.5"></circle><path d="M5 19.5c.6-3.6 3.1-5.6 7-5.6s6.4 2 7 5.6"></path></svg></span></button>
+    <button class="bottom-nav__item" type="button" data-bottom-profile data-bottom-route="profile" aria-label="Perfil" title="Perfil"><span class="bottom-nav__profile-avatar" data-bottom-profile-avatar aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.5" r="3.5"></circle><path d="M5 19.5c.6-3.6 3.1-5.6 7-5.6s6.4 2 7 5.6"></path></svg></span></button>
   </nav>`;
 }
 
@@ -379,7 +385,6 @@ function sharedFeedHeaderMarkup() {
         <button class="mobile-drawer__item" type="button" data-drawer-profile><i class="fa-solid fa-user" aria-hidden="true"></i><span>Meu Perfil</span></button>
         <button class="mobile-drawer__item" type="button" data-drawer-saved><i class="fa-solid fa-bookmark" aria-hidden="true"></i><span>Listas Salvas</span></button>
         <button class="mobile-drawer__item" type="button" data-drawer-settings><i class="fa-solid fa-gear" aria-hidden="true"></i><span>Configurações</span></button>
-        <button class="mobile-drawer__item" type="button" data-theme-toggle aria-pressed="false"><i class="fa-solid fa-moon" aria-hidden="true"></i><span data-theme-label>Tema escuro</span></button>
       </nav>
       <div class="mobile-drawer__review-container"><button class="btn btn-primary btn-block mobile-drawer__review" type="button" data-drawer-review>Avaliar</button></div>
     </aside>`;
@@ -398,6 +403,8 @@ function setupBottomNavAutoHide() {
 function triggerPageTransition() {
   const shell = app.querySelector('.feed-shell');
   if (!shell) return;
+  // Toda navegação começa no topo, evitando que elementos sticky mudem de posição.
+  window.scrollTo(0, 0);
   shell.classList.remove('is-page-entering');
   void shell.offsetWidth;
   shell.classList.add('is-page-entering');
@@ -475,7 +482,7 @@ function setupMobileDrawer(user, profile = null) {
   drawer.querySelector('[data-drawer-saved]')?.addEventListener('click', () => { close(); navigateToFeed(user, 'saved'); });
   drawer.querySelector('[data-drawer-settings]')?.addEventListener('click', () => {
     close();
-    if (profile) openProfileEditor(user, profile);
+    openSettingsPage(user);
   });
   drawer.querySelector('[data-drawer-review]')?.addEventListener('click', () => {
     close();
@@ -494,6 +501,22 @@ function setupMobileDrawer(user, profile = null) {
 }
 
 function setupDeveloperInspector() {
+  // Remove qualquer botão legado com o rótulo textual, mantendo o botão flutuante da chave.
+  const removeLegacyDeveloperButton = () => {
+    document.querySelectorAll('button:not([data-dev-inspector-toggle])').forEach((candidate) => {
+      const label = candidate.textContent.replace(/\s+/g, ' ').trim().toLowerCase();
+      if (label.includes('modo desenvolvedor')) candidate.remove();
+    });
+  };
+  removeLegacyDeveloperButton();
+  if (!window.__ludusLegacyDevButtonObserver) {
+    window.__ludusLegacyDevButtonObserver = new MutationObserver(removeLegacyDeveloperButton);
+    window.__ludusLegacyDevButtonObserver.observe(document.documentElement, {
+      childList: true,
+      subtree: true,
+      characterData: true
+    });
+  }
   if (document.querySelector('[data-dev-inspector-toggle]')) return;
   const button = document.createElement('button');
   button.type = 'button';
@@ -1054,12 +1077,33 @@ function setupDeveloperInspector() {
   observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class', 'style', 'hidden'] });
 }
 
+function syncNavigationActiveState(root = app) {
+  const hash = window.location.hash || '#inicio';
+  const isActiveRoute = (route) => {
+    if (route === 'home') return hash === '#inicio';
+    if (route === 'profile') return hash.startsWith('#/perfil/');
+    if (route === 'search') return hash === '#/buscar';
+    if (route === 'notifications') return hash === '#/notificacoes';
+    return false;
+  };
+
+  root.querySelectorAll('[data-nav-route], [data-bottom-route]').forEach((item) => {
+    const route = item.dataset.navRoute || item.dataset.bottomRoute;
+    const active = isActiveRoute(route);
+    item.classList.toggle('is-active', active);
+    if (active) item.setAttribute('aria-current', 'page');
+    else item.removeAttribute('aria-current');
+  });
+}
+
 async function setupSharedSideMenu(user, profile = null) {
   setupBottomNavAutoHide();
+  syncNavigationActiveState();
   const root = app.querySelector('.side-menu--left');
   if (!root) return;
   // A navegação não deve depender da resposta da consulta de perfil.
   root.querySelector('[data-open-search]')?.addEventListener('click', () => navigateToSearch(user));
+  root.querySelector('[data-side-review]')?.addEventListener('click', () => openReviewComposer(user));
   app.querySelector('[data-bottom-home]')?.addEventListener('click', () => navigateToFeed(user));
   app.querySelector('[data-bottom-search]')?.addEventListener('click', () => navigateToSearch(user));
   app.querySelector('[data-bottom-review]')?.addEventListener('click', () => openReviewComposer(user));
@@ -1090,13 +1134,16 @@ async function setupSharedSideMenu(user, profile = null) {
     if (profile?.username) navigateToProfile(user, profile.username);
   });
   root.querySelector('[data-side-settings]')?.addEventListener('click', () => {
-    if (profile) openProfileEditor(user, profile);
+    openSettingsPage(user);
   });
   root.querySelectorAll('[data-feed-mode]').forEach((button) => {
     button.addEventListener('click', () => navigateToFeed(user, button.dataset.feedMode || 'home'));
   });
   app.querySelectorAll('.feed-center-column [data-feed-mode]').forEach((button) => {
     button.addEventListener('click', () => navigateToFeed(user));
+  });
+  root.querySelector('[data-side-notifications]')?.addEventListener('click', () => {
+    app.querySelector('[data-notifications-toggle]')?.click();
   });
   setupNotifications(user);
 }
@@ -1491,7 +1538,7 @@ async function renderSignedIn(user, initialFeedMode = 'home') {
   });
   app.querySelector('[data-account-settings]')?.addEventListener('click', () => {
     closeAccountMenu();
-    if (profileResult.data) openProfileEditor(user, profileResult.data);
+    openSettingsPage(user);
   });
   app.querySelector('[data-side-settings]')?.addEventListener('click', () => {
     if (profileResult.data) openProfileEditor(user, profileResult.data);
@@ -1721,15 +1768,14 @@ async function renderSignedIn(user, initialFeedMode = 'home') {
       const gameData = review.games || {};
       const game = gameData.title || 'Jogo';
       const gameYear = gameData.release_year ? String(gameData.release_year) : '';
-      const gameTitleMarkup = '<span class="review-card__game-title">' + escapeHTML(game) + '</span>' +
-        (gameYear ? '<span class="review-card__game-year">(' + escapeHTML(gameYear) + ')</span>' : '');
+      const gameTitleMarkup = '<a class="review-card__game-link" href="#/jogo/' + encodeURIComponent(review.game_id) + '" data-open-game="' + escapeHTML(review.game_id) + '"><span class="review-card__game-title">' + escapeHTML(game) + '</span>' +
+        (gameYear ? '<span class="review-card__game-year">(' + escapeHTML(gameYear) + ')</span>' : '') + '</a>';
       const platformList = Array.isArray(gameData.platforms) ? gameData.platforms : [];
       const platformText = platformList.map((item) => typeof item === 'string' ? item : item?.name).filter(Boolean).join(', ');
       const gameMeta = [platformText, gameYear, gameData.developer].filter(Boolean).map(escapeHTML).join(' <span aria-hidden="true">·</span> ');
       const cover = '<a class="review-card__cover-wrap" href="#/jogo/' + encodeURIComponent(review.game_id) + '" data-open-game="' + escapeHTML(review.game_id) + '" aria-label="Abrir página de ' + escapeHTML(game) + '">' + (gameData.cover_url
         ? '<img class="review-card__cover" src="' + escapeHTML(gameData.cover_url) + '" alt="Capa de ' + escapeHTML(game) + '" loading="lazy">'
         : '<span class="review-card__cover review-card__cover--empty">Sem capa</span>') + '</a>';
-      const stars = '★'.repeat(review.rating) + '<span class="review-card__stars-muted">' + '★'.repeat(5 - review.rating) + '</span>';
       const isLiked = likedReviewIds.has(review.id);
       const avatarMarkup = review.profiles?.avatar_url
         ? '<img src="' + escapeHTML(review.profiles.avatar_url) + '" alt="" loading="lazy">'
@@ -1742,23 +1788,35 @@ async function renderSignedIn(user, initialFeedMode = 'home') {
       const saveTotal = saveCounts[review.id] || 0;
       const isSaved = savedReviewIds.has(review.id);
       const body = review.body || '';
-      const reviewText = body ? '<div class="review-card__text-wrap"><p class="review-card__text" data-review-text>' + escapeHTML(body) + '</p></div>' : '';
-      const ratingValue = Number(review.rating).toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
-      const reviewDetails = '<div class="review-card__details"><span class="review-card__rating"><i class="fa-solid fa-star" aria-hidden="true"></i><span>' + ratingValue + '</span></span>' +
-        (review.liked_game ? '<i class="fa-solid fa-heart review-card__liked" aria-label="Favorito" title="Favorito"></i>' : '') +
-        (review.status === 'completed' ? '<i class="fa-solid fa-trophy review-card__completed" aria-label="Zerado" title="Zerado"></i>' : '') + '</div>';
+      const reviewText = body ? '<div class="review-card__text-wrap"><p class="review-card__text is-truncated" data-review-text>' + escapeHTML(body) + '</p><button type="button" class="review-card__read-more" data-read-more hidden>ver mais</button></div>' : '';
+      const rating = Math.max(0, Math.min(5, Math.round((Number(review.rating) || 0) * 2) / 2));
+      const fullStars = Math.floor(rating);
+      const halfStar = rating % 1 === 0.5;
+      const ratingStars = '<span class="review-card__rating-stars" role="img" aria-label="' + rating.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + ' de 5 estrelas">' +
+        '<i class="fa-solid fa-star"></i>'.repeat(fullStars) + (halfStar ? '<i class="fa-solid fa-star-half-stroke"></i>' : '') + '<i class="fa-regular fa-star"></i>'.repeat(5 - fullStars - (halfStar ? 1 : 0)) + '</span>' +
+        '<span class="review-card__rating-value">' + rating.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + '</span>';
+      const statusLabels = { completed: 'Zerado', playing: 'Jogando', abandoned: 'Abandonado' };
+      const reviewBadges = (review.liked_game ? '<span class="review-card__badge review-card__badge--liked">Curtiu</span>' : '') +
+        (statusLabels[review.status] ? '<span class="review-card__badge review-card__badge--' + escapeHTML(review.status) + '">' + statusLabels[review.status] + '</span>' : '');
+      const reviewDetails = '<div class="review-card__details">' + ratingStars + reviewBadges + '</div>';
       const reviewAuthor = '<div class="review-card__header"><div class="review-card__identity"><a class="review-card__author" href="#/perfil/' + encodeURIComponent(username) + '" data-profile-username="' + escapeHTML(username) + '"><span class="review-card__author-avatar">' + avatarMarkup + '</span><span class="review-card__author-name">' + escapeHTML(author) + '</span></a><i class="fa-solid fa-circle review-card__timestamp-separator" aria-hidden="true"></i><time class="review-card__timestamp" datetime="' + escapeHTML(review.created_at) + '">' + escapeHTML(relativeTime(review.created_at)) + '</time></div>' + menuMarkup + '</div>';
+      const shareMenuItem = '<button type="button" data-share-review aria-label="Compartilhar avaliação"><i class="fa-solid fa-share" aria-hidden="true"></i><span>Compartilhar</span></button>';
+      const menuMarkupWithShare = '<details class="review-menu"><summary aria-label="Mais opções da avaliação" title="Mais opções"><i class="fa-solid fa-ellipsis-vertical" aria-hidden="true"></i></summary><div class="review-menu__panel">' +
+        (isOwner ? '<button type="button" class="is-danger" data-review-action="delete"><i class="fa-solid fa-trash" aria-hidden="true"></i><span>Excluir avaliação</span></button>' : '<button type="button" data-review-action="report"><i class="fa-solid fa-flag" aria-hidden="true"></i><span>Denunciar avaliação</span></button>') + shareMenuItem + '</div></details>';
+      const reviewHeader = reviewAuthor.replace(menuMarkup, menuMarkupWithShare);
       const socialActions = '<div class="review-card__social-actions">' +
         '<button class="review-card__like' + (isLiked ? ' is-liked' : '') + '" type="button" data-like-review aria-label="Curtir avaliação" title="Curtir avaliação" aria-pressed="' + isLiked + '"><i class="' + (isLiked ? 'fa-solid' : 'fa-regular') + ' fa-heart" aria-hidden="true"></i><span class="review-card__like-count" data-like-count>' + String(likeTotal) + '</span></button>' +
-        '<button type="button" class="review-card__comments-toggle" data-open-review-comments aria-label="Comentar" title="Comentar"><i class="fa-regular fa-comment" aria-hidden="true"></i><span class="review-card__comment-count" data-comment-count>' + String(commentTotal) + '</span></button>' +
-        '<button type="button" class="review-card__bookmark' + (isSaved ? ' is-saved' : '') + '" data-save-review aria-label="Salvar avaliação" title="Salvar avaliação" aria-pressed="' + isSaved + '"><i class="' + (isSaved ? 'fa-solid' : 'fa-regular') + ' fa-bookmark" aria-hidden="true"></i><span class="review-card__save-count" data-save-count>' + String(saveTotal) + '</span></button>' +
-        '<button type="button" class="review-card__share" data-share-review aria-label="Compartilhar avaliação" title="Compartilhar avaliação"><i class="fa-solid fa-share" aria-hidden="true"></i></button></div>';
+        '<button type="button" class="review-card__comments-toggle" data-open-review-comments aria-label="Comentar" title="Comentar"><i class="fa-regular fa-comment" aria-hidden="true"></i><span class="review-card__comment-count" data-comment-count>' + String(commentTotal) + '</span></button></div>';
       return '<article class="review-card" data-review-id="' + review.id + '">' +
-        reviewAuthor +
+        reviewHeader +
         '<div class="review-card__game-layout"><div class="review-card__cover-column">' + cover + '</div>' +
-        '<div class="review-card__body"><h3 class="review-card__game-heading">' + gameTitleMarkup + '</h3>' + reviewDetails + '</div></div>' +
-        reviewText + '<div class="review-card__actions">' + socialActions + '</div></article>';
+        '<div class="review-card__body"><h3 class="review-card__game-heading">' + gameTitleMarkup + '</h3>' + reviewDetails + reviewText + '</div></div>' +
+        '<div class="review-card__actions">' + socialActions + '</div></article>';
     }).join('');
+      feedList.querySelectorAll('.review-card__text').forEach((text) => {
+        const readMore = text.parentElement?.querySelector('[data-read-more]');
+        if (readMore && text.scrollHeight > text.clientHeight + 1) readMore.hidden = false;
+      });
     } catch (renderError) {
       console.error('[Ludus] Falha ao montar as publicações do feed:', renderError);
       feedList.classList.remove('feed-list--loading');
@@ -2222,39 +2280,6 @@ async function renderSignedIn(user, initialFeedMode = 'home') {
         }
       };
       document.addEventListener('keydown', closeOnEscape);
-      return;
-    }
-    const saveButton = event.target.closest('[data-save-review]');
-    if (saveButton) {
-      if (saveButton.disabled) return;
-      const saveCard = saveButton.closest('[data-review-id]');
-      const saveReviewId = saveCard?.dataset.reviewId;
-      if (!saveReviewId) return;
-      const wasSaved = savedReviewIds.has(saveReviewId);
-      saveButton.disabled = true;
-      const saveResult = wasSaved
-        ? await supabase.from('review_saves').delete().eq('review_id', saveReviewId).eq('user_id', user.id)
-        : await supabase.from('review_saves').insert({ review_id: saveReviewId, user_id: user.id });
-      if (saveResult.error) {
-        console.error('[Ludus] Falha ao atualizar Minha lista:', saveResult.error);
-        window.alert('Não foi possível atualizar sua lista. Tente novamente.');
-        saveButton.disabled = false;
-        return;
-      }
-      if (wasSaved) {
-        savedReviewIds.delete(saveReviewId);
-        savedAtByReview.delete(saveReviewId);
-        saveCounts[saveReviewId] = Math.max(0, (saveCounts[saveReviewId] || 0) - 1);
-        const savedIndex = savedReviewRows.findIndex((saved) => saved.review_id === saveReviewId);
-        if (savedIndex >= 0) savedReviewRows.splice(savedIndex, 1);
-      } else {
-        const savedAt = new Date().toISOString();
-        savedReviewIds.add(saveReviewId);
-        savedAtByReview.set(saveReviewId, savedAt);
-        saveCounts[saveReviewId] = (saveCounts[saveReviewId] || 0) + 1;
-        savedReviewRows.unshift({ review_id: saveReviewId, created_at: savedAt });
-      }
-      renderFeed(activeFeedMode);
       return;
     }
     const button = event.target.closest('[data-like-review]');
@@ -3258,6 +3283,28 @@ async function renderProfilePage(currentUser, username) {
   }
 
 }
+async function openSettingsPage(user) {
+  const existing = app.querySelector('.feed-main__container');
+  if (!existing) return;
+  existing.innerHTML = `
+    <section class="profile-editor profile-editor--page settings-page" aria-labelledby="settings-page-title">
+      <p class="eyebrow">PREFERÊNCIAS DO LUDUS</p>
+      <h2 id="settings-page-title">Configurações<span>.</span></h2>
+      <div class="settings-page__section">
+        <h3>Aparência</h3>
+        <p>Personalize a aparência do Ludus.</p>
+        <button class="side-menu__item settings-page__theme-toggle" type="button" data-theme-toggle aria-pressed="false">
+          <i class="fa-solid fa-moon" aria-hidden="true"></i>
+          <span data-theme-label>Tema escuro</span>
+        </button>
+      </div>
+      <div class="profile-editor__actions">
+        <button type="button" data-settings-back>Voltar</button>
+      </div>
+    </section>`;
+  existing.querySelector('[data-settings-back]')?.addEventListener('click', () => navigateToFeed(user));
+}
+
 async function openProfileEditor(user, profile) {
   const returnToProfile = window.location.hash.startsWith('#/perfil/');
   await renderSignedIn(user);
