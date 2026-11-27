@@ -6518,15 +6518,10 @@ html {
   font-weight: 600;
 }
 
-:root:not([data-theme="dark"]) .feed-list .review-card__badge--liked {
-  color: var(--color-text);
-}
 .feed-list .review-card__badge--completed {
   color: var(--color-status-completed-text);
   border-color: var(--color-status-completed-border);
   background: var(--color-status-completed-background);
-}
-:root:not([data-theme="dark"]) .feed-list .review-card__badge--completed {
 }
 
 .feed-list .review-card__badge--playing {
