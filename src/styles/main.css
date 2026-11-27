@@ -185,11 +185,11 @@ img { max-width: 100%; }
 .section-heading { margin: var(--space-xl) 0 var(--space-md); }
 .section-heading h2 { font-size: var(--font-size-xl); }
 .feed-list { min-width: 0; }
-.review-card { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: var(--space-lg); padding: var(--space-sm) 0; border-bottom: var(--border-width) solid var(--color-border); }
+
 .review-card__cover { width: 96px; max-height: 140px; object-fit: cover; }
 .review-card__body { min-width: 0; }
-.review-card__meta, .review-card__actions { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-sm); }
-.review-card__actions { margin-top: var(--space-md); }
+.review-card__meta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-sm); }
+
 .review-card__body p { overflow-wrap: anywhere; }
 .notifications { position: relative; }
 .notifications__panel { position: absolute; z-index: 300; top: 100%; left: 0; width: min(340px, 85vw); max-height: 420px; overflow: auto; padding: 12px; border: var(--border-width) solid var(--color-border); background: var(--color-surface); box-shadow: 0 3px 8px rgba(0,0,0,.12); }
@@ -293,7 +293,7 @@ img { max-width: 100%; }
   .side-menu__item { width: auto; }
   .feed-tabs { gap: 2px; }
   .feed-tabs__button { padding: 7px 8px; }
-  .review-card { grid-template-columns: 76px minmax(0, 1fr); gap: 12px; }
+
   .review-card__cover { width: 76px; }
   .profile-editor__uploads { grid-template-columns: 1fr; }
 }
@@ -605,11 +605,7 @@ img { max-width: 100%; }
 
 
 /* Estrutura das avaliações no feed. */
-.review-card {
-  display: block;
-  padding: var(--space-8) 0;
-  border-bottom: 0;
-}
+
 .review-card__header {
   display: flex;
   align-items: center;
@@ -746,7 +742,7 @@ img { max-width: 100%; }
   border-bottom: 0;
 }
 .review-card__text { margin: 0; overflow-wrap: anywhere; white-space: pre-wrap; }
-.review-card__actions { margin-top: 10px; padding-bottom: 20px; border-bottom: var(--border-width) solid var(--color-border); }
+
 .review-card__social-actions {
   display: flex;
   flex-wrap: wrap;
@@ -988,30 +984,13 @@ img { max-width: 100%; }
 
 
 /* Avaliação ocupa toda a largura disponível do container */
-.review-card {
-  width: 100%;
-  max-width: none;
-  box-sizing: border-box;
-}
+
 
 
 /* Borda inferior das avaliações em largura total da tela */
-.review-card {
-  position: relative;
-}
-.review-card::after {
-  position: absolute;
-  right: auto;
-  bottom: 0;
-  left: 50%;
-  width: 100vw;
-  border-bottom: var(--border-width) solid var(--color-border);
-  content: "";
-  transform: translateX(-50%);
-}
-.review-card__actions {
-  border-bottom: 0;
-}
+
+
+
 
 /* Mantém as ações das avaliações sem fundo ao interagir */
 .review-card__social-actions button,
@@ -1026,13 +1005,8 @@ img { max-width: 100%; }
 
 
 /* Espaçamento vertical uniforme entre avaliações */
-.review-card {
-  padding-top: var(--space-sm);
-  padding-bottom: var(--space-sm);
-}
-.review-card__actions {
-  padding-bottom: 0;
-}
+
+
 
 
 /* Estados visuais das ações sociais das avaliações */
@@ -1046,12 +1020,7 @@ img { max-width: 100%; }
 }
 
 
-.review-card__game-year {
-  margin-left: var(--space-sm);
-  color: var(--color-text-muted);
-  font-size: var(--font-size-14);
-  font-weight: 400;
-}
+
 
 
 /* Alinha o início do feed ao fim da navegação fixa no mobile. */
@@ -1161,7 +1130,7 @@ select {
 .review-card__details,
 .review-card__liked,
 .review-card__completed { font-size: var(--font-size-xs); }
-.review-card__game-year { font-size: var(--font-size-16); }
+
 
 .profile-crop-dialog__header h3 { font-size: var(--font-size-20); }
 
@@ -1337,24 +1306,9 @@ select {
 }
 
 /* Avaliações sem bordas nos containers; a separação é feita pela linha inferior. */
-.review-card {
-  border: 0 !important;
-  position: relative;
-}
-.review-card::after {
-  position: absolute;
-  right: auto;
-  bottom: 0;
-  left: 50%;
-  width: 100vw;
-  border: 0;
-  border-bottom: var(--border-width) solid var(--color-border);
-  content: "";
-  transform: translateX(-50%);
-}
-.review-card__actions {
-  border: 0 !important;
-}
+
+
+
 
 
 
@@ -1432,9 +1386,7 @@ select {
   from { opacity: .94; }
   to { opacity: 1; }
 }
-.review-card__game-year {
-  font-size: var(--font-size-lg);
-}
+
 @media (prefers-reduced-motion: reduce) {
   .bottom-nav { transition-duration: 1ms; }
   .feed-shell.is-page-entering { animation-duration: 1ms; }
@@ -1796,19 +1748,9 @@ select {
   box-shadow: none !important;
 }
 
-/* Reset global solicitado: remove margens, paddings e gaps de todos os elementos. */
+/* Reset mínimo de dimensionamento. */
 *, *::before, *::after {
-  margin: 0 !important;
-  padding: 0 !important;
-  gap: 0 !important;
-  row-gap: 0 !important;
-  column-gap: 0 !important;
-  grid-gap: 0 !important;
-}
-
-/* Todos os textos e glifos usam o tamanho-base normal da escala semântica. */
-*, *::before, *::after {
-  font-size: var(--font-size-base) !important;
+  box-sizing: border-box;
 }
 
 
@@ -1935,22 +1877,8 @@ select {
 }
 
 /* Cada avaliação passa a ser um card independente. */
-.review-card {
-  display: block;
-  width: 100%;
-  min-width: 0;
-  margin: 0 !important;
-  padding: var(--space-lg) !important;
-  border: var(--border-width) solid var(--color-border) !important;
-  border-radius: var(--radius-xl) !important;
-  background: var(--color-surface);
-  box-sizing: border-box;
-  overflow: visible;
-}
-.review-card::after {
-  content: none !important;
-  display: none !important;
-}
+
+
 .review-card__header {
   display: flex;
   align-items: center;
@@ -2029,11 +1957,7 @@ select {
   white-space: pre-wrap;
   line-height: var(--line-height-normal);
 }
-.review-card__actions {
-  margin: var(--space-lg) 0 0 !important;
-  padding: 0 !important;
-  border: 0 !important;
-}
+
 .review-card__social-actions {
   display: flex;
   flex-wrap: wrap;
@@ -2072,10 +1996,7 @@ select {
   .feed-list {
     gap: 0 !important;
   }
-  .review-card {
-    padding: var(--space-md) !important;
-    border-radius: var(--radius-xl) !important;
-  }
+
   .review-card__game-layout {
     grid-template-columns: 76px minmax(0, 1fr);
     gap: var(--space-md) !important;
@@ -5681,17 +5602,8 @@ hr { border-color: var(--color-border); }
 .feed-welcome p { margin: 0; color: var(--color-text-muted); }
 .section-heading { margin: 26px 0 14px; }
 .section-heading h2 { margin: 0; font-size: 20px; }
-.review-card {
-  display: block;
-  margin: 0 0 14px;
-  padding: 18px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  background: var(--color-surface);
-  box-shadow: var(--shadow-card);
-  transition: border-color .2s ease, box-shadow .2s ease;
-}
-.review-card:hover { border-color: color-mix(in srgb, var(--color-accent) 28%, var(--color-border)); box-shadow: 0 8px 26px rgba(34,26,58,.08); }
+
+
 .review-card__header { margin-bottom: 14px; }
 .review-card__identity { gap: 9px; }
 .review-card__author-avatar,.review-card__author-avatar img { width: 38px; height: 38px; border-radius: 50%; }
@@ -5700,11 +5612,11 @@ hr { border-color: var(--color-border); }
 .review-card__game-layout { display: grid; grid-template-columns: 100px minmax(0,1fr); gap: 16px; align-items: start; }
 .review-card__cover,.review-card__cover--empty { width: 100px; max-height: 148px; border-radius: 10px; object-fit: cover; background: var(--color-neutral-light); box-shadow: 0 4px 12px rgba(0,0,0,.12); }
 .review-card__game-heading { margin: 0 0 7px; font-family: var(--font-family-display); font-size: 18px; font-weight: 700; line-height: 1.25; }
-.review-card__game-year { color: var(--color-text-muted); font-size: inherit; font-weight: 500; }
+
 .review-card__rating { color: var(--color-rating); font-weight: 800; }
 .review-card__details { display: flex; flex-wrap: wrap; align-items: center; gap: 9px; margin: 8px 0; color: var(--color-text-muted); font-size: 12px; }
 .review-card__text { margin: 13px 0 0; color: var(--color-text); font-size: 14px; line-height: 1.7; overflow-wrap: anywhere; }
-.review-card__actions,.review-card__social-actions { display: flex; align-items: center; gap: 8px; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--color-border); }
+
 .review-card__like,.review-card__bookmark,.review-card__share,.review-card__comments-toggle {
   display: inline-flex !important;
   align-items: center;
@@ -5916,13 +5828,13 @@ hr { border-color: var(--color-border); }
   .feed-welcome { margin: 10px 0 18px; padding: 18px; border-radius: 15px; }
   .feed-welcome h1 { font-size: 21px; }
   .section-heading { margin: 20px 0 12px; }
-  .review-card { margin-bottom: 10px; padding: 14px; border-radius: 15px; }
+
   .review-card__game-layout { grid-template-columns: 82px minmax(0,1fr); gap: 12px; }
   .review-card__cover,.review-card__cover--empty { width: 82px; max-height: 122px; border-radius: 8px; }
   .review-card__game-heading { font-size: 16px; }
   .review-card__text { font-size: 13px; }
   .review-card__author-avatar,.review-card__author-avatar img { width: 34px; height: 34px; }
-  .review-card__actions,.review-card__social-actions { margin-top: 12px; padding-top: 9px; }
+
   .profile-page__content,.review-page,.game-page,.notifications-page__content,.search-page__container { width: calc(100% - 24px); }
   .profile-page__banner { width: calc(100% + 24px); margin-left: -12px; border-radius: 0; }
   .profile-page__avatar { left: 12px; width: 88px; height: 88px; bottom: -34px; }
@@ -5953,7 +5865,7 @@ hr { border-color: var(--color-border); }
   .profile-editor { padding: 18px; }
 }
 @media (max-width: 390px) {
-  .review-card { padding: 12px; }
+
   .review-card__game-layout { grid-template-columns: 72px minmax(0,1fr); gap: 10px; }
   .review-card__cover,.review-card__cover--empty { width: 72px; max-height: 108px; }
   .review-card__game-heading { font-size: 15px; }
@@ -5961,7 +5873,15 @@ hr { border-color: var(--color-border); }
   .bottom-nav__item { font-size: 9px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  *,*::before,*::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+  .bottom-nav,
+  .feed-shell.is-page-entering,
+  .review-card,
+  .app-topbar,
+  .side-menu {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
 }
 
 
@@ -6005,14 +5925,7 @@ hr { border-color: var(--color-border); }
 }
 
 /* Divisória em toda a largura do card, acima dos controles sociais. */
-.review-card__actions {
-  display: block;
-  width: 100%;
-  box-sizing: border-box;
-  margin-top: 14px;
-  padding-top: 12px;
-  border-top: 1px solid var(--color-border);
-}
+
 
 .review-card__social-actions {
   display: flex;
@@ -6069,30 +5982,11 @@ hr { border-color: var(--color-border); }
 
 
 /* Restaura a divisória de largura total entre o texto e as interações. */
-.review-card > .review-card__actions {
-  display: block !important;
-  position: relative;
-  width: 100% !important;
-  min-width: 0;
-  box-sizing: border-box;
-  margin-top: 14px !important;
-  padding-top: 8px !important;
-  padding-bottom: 8px !important;
-  border: 0 !important;
-}
 
-.review-card > .review-card__actions::before {
-  content: none !important;
-  display: none !important;
-}
 
-.review-card > .review-card__actions > .review-card__social-actions {
-  display: flex !important;
-  width: 100% !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  border: 0 !important;
-}
+
+
+
 
 
 /* O cabeçalho fica no início do feed; não acompanha a rolagem da página. */
@@ -6289,15 +6183,9 @@ hr { border-color: var(--color-border); }
 
 
 /* Reduz a altura da faixa social e a centraliza no espaço abaixo da divisória. */
-.review-card > .review-card__actions::before {
-  margin-bottom: 14px !important;
-}
 
-.review-card > .review-card__actions > .review-card__social-actions {
-  min-height: 24px !important;
-  height: 24px !important;
-  align-items: center !important;
-}
+
+
 
 .review-card > .review-card__actions > .review-card__social-actions > button {
   min-height: 24px !important;
@@ -6307,9 +6195,7 @@ hr { border-color: var(--color-border); }
   line-height: 1 !important;
 }
 
-.review-card > .review-card__actions {
-  padding-bottom: 8px !important;
-}
+
 
 
 /* Contraste do botão Avaliar: roxo escuro sobre o fundo branco. */
@@ -6362,9 +6248,7 @@ hr { border-color: var(--color-border); }
 
 
 /* Aumenta o padding superior da faixa de botões, afastando-os da divisória. */
-.review-card > .review-card__actions > .review-card__social-actions {
-  padding-top: 0 !important;
-}
+
 
 
 /* Reserva sempre o espaço da barra de rolagem para evitar deslocamentos horizontais entre páginas. */
@@ -6546,4 +6430,68 @@ html {
     height: 112px !important;
     max-height: 112px !important;
   }
+}
+
+ 
+/* Feed — regras consolidadas do componente de avaliação. */
+.review-card {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  margin: 0 0 14px;
+  padding: 18px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-card);
+  box-sizing: border-box;
+  overflow: visible;
+  transition: border-color .2s ease, box-shadow .2s ease;
+}
+
+.review-card:hover {
+  border-color: color-mix(in srgb, var(--color-accent) 28%, var(--color-border));
+  box-shadow: 0 8px 26px rgba(34,26,58,.08);
+}
+
+.feed-list > .review-card {
+  margin: 0;
+  padding: var(--space-lg) var(--space-md);
+  border: 0;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.feed-list > .review-card:hover {
+  background: rgba(255,255,255,0.02);
+  box-shadow: none;
+}
+
+.feed-list .review-card__game-year {
+  margin-left: 6px;
+  color: var(--color-text-muted);
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.feed-list .review-card__actions {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 14px 0 0;
+  padding: 8px 0;
+  border: 0;
+}
+
+.feed-list .review-card__social-actions {
+  display: flex;
+  width: 100%;
+  box-sizing: border-box;
+  align-items: center;
+  gap: var(--space-sm);
+  margin: 0;
+  padding: 0;
+  border: 0;
 }
