@@ -6374,3 +6374,26 @@ hr { border-color: var(--color-border); }
 html {
   scrollbar-gutter: stable;
 }
+
+
+/* Espaçamento superior único para as duas colunas do feed. */
+:root {
+  --page-top-gap: var(--space-lg);
+}
+
+@media (min-width: 768px) {
+  .feed-shell {
+    padding-top: var(--page-top-gap) !important;
+  }
+
+  .feed-shell > .side-menu--left,
+  .feed-shell > .feed-center-column {
+    align-self: start !important;
+    margin-top: 0 !important;
+  }
+
+  .feed-shell > .side-menu--left {
+    position: sticky !important;
+    top: var(--page-top-gap) !important;
+  }
+}
