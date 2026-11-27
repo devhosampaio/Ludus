@@ -329,7 +329,7 @@ function sharedSideMenuMarkup(user) {
   return `  <header class="side-menu side-menu--left">
     <a class="topbar-brand side-menu__brand" href="#inicio" aria-label="Ludus — início">Ludus</a>
     <nav class="side-menu__navigation" aria-label="Navegação principal">
-      <button class="side-menu__item" type="button" data-feed-mode="home" data-nav-route="home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z"/></svg><span>Página inicial</span></button>
+      <button class="side-menu__item" type="button" data-feed-mode="home" data-nav-route="home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z"/></svg><span>Página inicial</span></button>
       <button class="side-menu__item" type="button" data-open-search data-nav-route="search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m15.8 15.8 5 5"/></svg><span>Buscar</span></button>
       <button class="side-menu__item" type="button" data-side-profile data-nav-route="profile"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.7-3.6 3.1-5.5 7-5.5s6.3 1.9 7 5.5"/></svg><span>Perfil</span></button>
       <button class="side-menu__item side-menu__notifications" type="button" data-side-notifications data-nav-route="notifications" aria-label="Notificações">
