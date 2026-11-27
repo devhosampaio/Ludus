@@ -329,10 +329,10 @@ function sharedSideMenuMarkup(user) {
   return `  <header class="side-menu side-menu--left">
     <a class="topbar-brand side-menu__brand" href="#inicio" aria-label="Ludus — início">Ludus</a>
     <nav class="side-menu__navigation" aria-label="Navegação principal">
-      <button class="side-menu__item is-active" type="button" data-feed-mode="home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z"/></svg><span>Página inicial</span></button>
-      <button class="side-menu__item" type="button" data-open-search><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m15.8 15.8 5 5"/></svg><span>Buscar</span></button>
-      <button class="side-menu__item" type="button" data-side-profile><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.7-3.6 3.1-5.5 7-5.5s6.3 1.9 7 5.5"/></svg><span>Perfil</span></button>
-      <button class="side-menu__item side-menu__notifications" type="button" data-side-notifications aria-label="Notificações">
+      <button class="side-menu__item" type="button" data-feed-mode="home" data-nav-route="home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z"/></svg><span>Página inicial</span></button>
+      <button class="side-menu__item" type="button" data-open-search data-nav-route="search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m15.8 15.8 5 5"/></svg><span>Buscar</span></button>
+      <button class="side-menu__item" type="button" data-side-profile data-nav-route="profile"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.7-3.6 3.1-5.5 7-5.5s6.3 1.9 7 5.5"/></svg><span>Perfil</span></button>
+      <button class="side-menu__item side-menu__notifications" type="button" data-side-notifications data-nav-route="notifications" aria-label="Notificações">
         <span class="side-menu__notification-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg><span class="side-menu__notification-dot" data-side-notification-dot hidden></span></span>
         <span>Notificações</span>
       </button>
@@ -342,11 +342,11 @@ function sharedSideMenuMarkup(user) {
     </nav>
   </header>
   <nav class="bottom-nav" aria-label="Navegação inferior">
-    <button class="bottom-nav__item is-active" type="button" data-bottom-home aria-label="Início" title="Início"><i class="fa-solid fa-house" aria-hidden="true"></i></button>
-    <button class="bottom-nav__item" type="button" data-bottom-search aria-label="Pesquisar" title="Pesquisar"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></button>
+    <button class="bottom-nav__item" type="button" data-bottom-home data-bottom-route="home" aria-label="Início" title="Início"><i class="fa-solid fa-house" aria-hidden="true"></i></button>
+    <button class="bottom-nav__item" type="button" data-bottom-search data-bottom-route="search" aria-label="Pesquisar" title="Pesquisar"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i></button>
     <button class="bottom-nav__item bottom-nav__review" type="button" data-bottom-review aria-label="Avaliar" title="Avaliar"><i class="fa-solid fa-plus" aria-hidden="true"></i></button>
     ${notificationControlMarkup()}
-    <button class="bottom-nav__item" type="button" data-bottom-profile aria-label="Perfil" title="Perfil"><span class="bottom-nav__profile-avatar" data-bottom-profile-avatar aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.5" r="3.5"></circle><path d="M5 19.5c.6-3.6 3.1-5.6 7-5.6s6.4 2 7 5.6"></path></svg></span></button>
+    <button class="bottom-nav__item" type="button" data-bottom-profile data-bottom-route="profile" aria-label="Perfil" title="Perfil"><span class="bottom-nav__profile-avatar" data-bottom-profile-avatar aria-hidden="true"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8.5" r="3.5"></circle><path d="M5 19.5c.6-3.6 3.1-5.6 7-5.6s6.4 2 7 5.6"></path></svg></span></button>
   </nav>`;
 }
 
@@ -1077,8 +1077,28 @@ function setupDeveloperInspector() {
   observer.observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ['class', 'style', 'hidden'] });
 }
 
+function syncNavigationActiveState(root = app) {
+  const hash = window.location.hash || '#inicio';
+  const isActiveRoute = (route) => {
+    if (route === 'home') return hash === '#inicio';
+    if (route === 'profile') return hash.startsWith('#/perfil/');
+    if (route === 'search') return hash === '#/buscar';
+    if (route === 'notifications') return hash === '#/notificacoes';
+    return false;
+  };
+
+  root.querySelectorAll('[data-nav-route], [data-bottom-route]').forEach((item) => {
+    const route = item.dataset.navRoute || item.dataset.bottomRoute;
+    const active = isActiveRoute(route);
+    item.classList.toggle('is-active', active);
+    if (active) item.setAttribute('aria-current', 'page');
+    else item.removeAttribute('aria-current');
+  });
+}
+
 async function setupSharedSideMenu(user, profile = null) {
   setupBottomNavAutoHide();
+  syncNavigationActiveState();
   const root = app.querySelector('.side-menu--left');
   if (!root) return;
   // A navegação não deve depender da resposta da consulta de perfil.
