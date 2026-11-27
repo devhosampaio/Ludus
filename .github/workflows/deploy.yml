@@ -14,6 +14,7 @@
 # Moved theme control into the Configurações screen.
 # Restored the left sidebar's original top padding.
 # Added sidebar notifications shortcut with unread red dot.
+# Sidebar sticky offset now matches its initial top position (26px).
 name: Deploy Ludus to GitHub Pages
 
 on:
