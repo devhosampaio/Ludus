@@ -133,6 +133,8 @@ async function setupNotifications(user) {
 
     const rows = data || [];
     const unreadCount = rows.filter((item) => !item.read_at).length;
+    const sideNotificationDot = app.querySelector('[data-side-notification-dot]');
+    if (sideNotificationDot) sideNotificationDot.hidden = unreadCount === 0;
     if (badge) {
       badge.textContent = unreadCount > 99 ? '99+' : String(unreadCount);
       badge.hidden = unreadCount === 0;
@@ -330,6 +332,10 @@ function sharedSideMenuMarkup(user) {
       <button class="side-menu__item is-active" type="button" data-feed-mode="home"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z"/></svg><span>Página inicial</span></button>
       <button class="side-menu__item" type="button" data-open-search><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m15.8 15.8 5 5"/></svg><span>Buscar</span></button>
       <button class="side-menu__item" type="button" data-side-profile><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.7-3.6 3.1-5.5 7-5.5s6.3 1.9 7 5.5"/></svg><span>Perfil</span></button>
+      <button class="side-menu__item side-menu__notifications" type="button" data-side-notifications aria-label="Notificações">
+        <span class="side-menu__notification-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9M10 21h4"/></svg><span class="side-menu__notification-dot" data-side-notification-dot hidden></span></span>
+        <span>Notificações</span>
+      </button>
       <button class="side-menu__item" type="button" data-side-settings><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8.2a3.8 3.8 0 1 0 0 7.6 3.8 3.8 0 0 0 0-7.6Z"/><path d="M19.4 13.5a7.7 7.7 0 0 0 0-3l1.5-1.1-1.8-3.1-1.8.7a7.8 7.8 0 0 0-2.6-1.5L14.4 3h-4.8L9.3 5.5a7.8 7.8 0 0 0-2.6 1.5l-1.8-.7-1.8 3.1 1.5 1.1a7.7 7.7 0 0 0 0 3l-1.5 1.1 1.8 3.1 1.8-.7a7.8 7.8 0 0 0 2.6 1.5l.3 2.5h4.8l.3-2.5a7.8 7.8 0 0 0 2.6-1.5l1.8.7 1.8-3.1Z"/></svg><span>Configurações</span></button>
       <button class="side-menu__item" type="button" data-feed-mode="saved"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4.5A1.5 1.5 0 0 1 7.5 3h9A1.5 1.5 0 0 1 18 4.5V21l-6-4-6 4Z"/></svg><span>Listas salvas</span></button>
       <button class="side-menu__item" type="button" data-side-review><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>Avaliar</span></button>
@@ -1113,6 +1119,9 @@ async function setupSharedSideMenu(user, profile = null) {
   });
   app.querySelectorAll('.feed-center-column [data-feed-mode]').forEach((button) => {
     button.addEventListener('click', () => navigateToFeed(user));
+  });
+  root.querySelector('[data-side-notifications]')?.addEventListener('click', () => {
+    app.querySelector('[data-notifications-toggle]')?.click();
   });
   setupNotifications(user);
 }
