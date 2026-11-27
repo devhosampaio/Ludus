@@ -6245,6 +6245,7 @@ hr { border-color: var(--color-border); }
   width: 100% !important;
   box-sizing: border-box !important;
   padding: 12px 16px !important;
+  border-radius: 18px !important;
   background: #fff !important;
   color: var(--color-bg) !important;
   text-align: center !important;
