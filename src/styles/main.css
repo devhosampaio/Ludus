@@ -6261,3 +6261,16 @@ hr { border-color: var(--color-border); }
 .side-menu--left .side-menu__navigation > [data-side-review] span {
   color: var(--color-bg) !important;
 }
+
+
+/* Restaura o respiro interno da navbar lateral; a marca não deve compensar
+   o padding do container com uma margem própria. */
+@media (min-width: 768px) {
+  .feed-shell > .side-menu--left {
+    padding: var(--space-lg) !important;
+  }
+
+  .feed-shell > .side-menu--left .side-menu__brand {
+    margin-left: 0 !important;
+  }
+}
