@@ -6359,7 +6359,7 @@ hr { border-color: var(--color-border); }
 
 /* Dá respiro entre a divisória e o botão Avaliar, sem alterar o restante da navegação. */
 .side-menu--left .side-menu__navigation > button[data-side-review] {
-  margin-top: 10px !important;
+  margin-top: 16px !important;
 }
 
 
