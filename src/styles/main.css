@@ -1830,7 +1830,7 @@ select {
 /* Reformulação do feed com a escala semântica de layout. */
 .feed-shell {
   display: grid !important;
-  grid-template-columns: 210px minmax(0, 760px);
+  grid-template-columns: 232px minmax(0, 760px);
   gap: var(--space-xl) !important;
   width: 100%;
   max-width: 1120px;
