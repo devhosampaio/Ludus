@@ -1915,7 +1915,7 @@ select {
 .feed-list {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: var(--space-md) !important;
+  gap: 0 !important;
   width: 100%;
   min-width: 0;
 }
@@ -2070,7 +2070,7 @@ select {
     padding: var(--space-md) !important;
   }
   .feed-list {
-    gap: var(--space-md) !important;
+    gap: 0 !important;
   }
   .review-card {
     padding: var(--space-md) !important;
@@ -6422,13 +6422,13 @@ html {
   margin: 0 !important;
   padding: var(--space-lg) var(--space-md) !important;
   border: 0 !important;
-  border-bottom: 1px solid var(--color-border) !important;
+  border-bottom: 1px solid rgba(255,255,255,0.08) !important;
   border-radius: 0 !important;
   background: transparent !important;
   box-shadow: none !important;
   transition: background-color .18s ease;
 }
-.feed-list > .review-card:hover { background: var(--color-surface-hover); }
+.feed-list > .review-card:hover { background: rgba(255,255,255,0.02) !important; box-shadow: none !important; }
 .feed-list .review-card__header { margin: 0 0 var(--space-md) !important; }
 .feed-list .review-card__author-name,
 .feed-list .review-card__timestamp { color: var(--color-text-subtle); font-size: var(--font-size-xs); font-weight: 400; }
@@ -6477,10 +6477,10 @@ html {
 }
 .feed-list > .review-card:hover { background: var(--color-surface-hover); }
 .feed-list .review-card__badge {
-  padding: 2px 8px !important;
+  padding: 3px 10px !important;
   border: 1px solid var(--color-border);
   border-radius: 6px !important;
-  font-size: var(--font-size-10) !important;
+  font-size: 12px !important;
   line-height: 1.4;
 }
 .feed-list .review-card__badge--liked {
@@ -6504,25 +6504,25 @@ html {
   background: rgba(217, 108, 85, .12);
 }
 .feed-list .review-card__game-heading {
-  font-size: var(--font-size-20) !important;
+  font-size: 18px !important;
   font-weight: 700 !important;
 }
-.feed-list .review-card__game-title { font-weight: 700; }
+.feed-list .review-card__game-title { font-size: 18px !important; font-weight: 700 !important; }
 .feed-list .review-card__game-year {
   margin-left: 5px;
   color: var(--color-text-muted);
-  font-size: var(--font-size-sm);
-  font-weight: 400;
+  font-size: 14px !important;
+  font-weight: 400 !important;
 }
 .feed-list .review-card__author-name {
-  color: var(--color-text-subtle) !important;
-  font-weight: 500 !important;
+  color: #D8D4E0 !important;
+  font-weight: 600 !important;
 }
-.feed-list .review-card__timestamp { color: var(--color-text-muted) !important; }
+.feed-list .review-card__timestamp { color: #8A8699 !important; }
 .feed-list .review-card__actions {
   margin-bottom: 0 !important;
-  padding-top: 0 !important;
-  padding-bottom: 10px !important;
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
   border-top: 0 !important;
 }
 .feed-list .review-card__cover-column { width: 80px; }
