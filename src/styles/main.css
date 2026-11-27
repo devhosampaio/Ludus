@@ -6162,3 +6162,36 @@ hr { border-color: var(--color-border); }
     padding-top: 0 !important;
   }
 }
+
+
+/* Botão Avaliar destacado e separado dos demais itens do menu lateral. */
+.side-menu--left [data-side-review] {
+  position: relative;
+  margin-top: 16px !important;
+  padding-top: 14px !important;
+  background: #ffffff !important;
+  color: var(--color-bg) !important;
+  border: 0 !important;
+}
+
+.side-menu--left [data-side-review]::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -9px;
+  height: 1px;
+  background: var(--color-border);
+}
+
+.side-menu--left [data-side-review] svg,
+.side-menu--left [data-side-review] i,
+.side-menu--left [data-side-review] span {
+  color: var(--color-bg) !important;
+}
+
+.side-menu--left [data-side-review]:hover,
+.side-menu--left [data-side-review].is-active {
+  background: #ffffff !important;
+  color: var(--color-bg) !important;
+}
