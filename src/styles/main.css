@@ -6076,17 +6076,14 @@ hr { border-color: var(--color-border); }
   min-width: 0;
   box-sizing: border-box;
   margin-top: 14px !important;
-  padding-top: 12px !important;
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
   border: 0 !important;
 }
 
 .review-card > .review-card__actions::before {
-  content: "";
-  display: block;
-  width: 100%;
-  height: 1px;
-  margin: 0 0 16px;
-  background: var(--color-border, rgba(255, 255, 255, 0.16));
+  content: none !important;
+  display: none !important;
 }
 
 .review-card > .review-card__actions > .review-card__social-actions {
@@ -6311,7 +6308,7 @@ hr { border-color: var(--color-border); }
 }
 
 .review-card > .review-card__actions {
-  padding-bottom: 14px !important;
+  padding-bottom: 8px !important;
 }
 
 
@@ -6366,7 +6363,7 @@ hr { border-color: var(--color-border); }
 
 /* Aumenta o padding superior da faixa de botões, afastando-os da divisória. */
 .review-card > .review-card__actions > .review-card__social-actions {
-  padding-top: 8px !important;
+  padding-top: 0 !important;
 }
 
 
@@ -6415,6 +6412,14 @@ html {
   color: inherit;
 }
 
+
+.feed-shell .feed-center-column,
+.feed-shell .feed-main,
+.feed-shell .feed-main__container,
+.feed-shell .feed-content,
+.feed-shell .feed-list {
+  background: transparent !important;
+}
 
 /* Feed: refinamento exclusivo dos cards de avaliação. */
 .feed-list > .review-card {
@@ -6472,10 +6477,11 @@ html {
 .feed-list > .review-card {
   background: transparent !important;
   border: 0 !important;
-  border-bottom: 1px solid var(--color-border) !important;
+  border-bottom: 1px solid rgba(255,255,255,0.08) !important;
   border-radius: 0 !important;
+  box-shadow: none !important;
 }
-.feed-list > .review-card:hover { background: var(--color-surface-hover); }
+.feed-list > .review-card:hover { background: rgba(255,255,255,0.02) !important; box-shadow: none !important; }
 .feed-list .review-card__badge {
   padding: 3px 10px !important;
   border: 1px solid var(--color-border);
@@ -6509,7 +6515,7 @@ html {
 }
 .feed-list .review-card__game-title { font-size: 18px !important; font-weight: 700 !important; }
 .feed-list .review-card__game-year {
-  margin-left: 5px;
+  margin-left: 6px;
   color: var(--color-text-muted);
   font-size: 14px !important;
   font-weight: 400 !important;
