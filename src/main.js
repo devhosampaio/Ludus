@@ -333,6 +333,7 @@ function sharedSideMenuMarkup(user) {
       <button class="side-menu__item" type="button" data-side-settings><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8.2a3.8 3.8 0 1 0 0 7.6 3.8 3.8 0 0 0 0-7.6Z"/><path d="M19.4 13.5a7.7 7.7 0 0 0 0-3l1.5-1.1-1.8-3.1-1.8.7a7.8 7.8 0 0 0-2.6-1.5L14.4 3h-4.8L9.3 5.5a7.8 7.8 0 0 0-2.6 1.5l-1.8-.7-1.8 3.1 1.5 1.1a7.7 7.7 0 0 0 0 3l-1.5 1.1 1.8 3.1 1.8-.7a7.8 7.8 0 0 0 2.6 1.5l.3 2.5h4.8l.3-2.5a7.8 7.8 0 0 0 2.6-1.5l1.8.7 1.8-3.1Z"/></svg><span>Configurações</span></button>
       <button class="side-menu__item side-menu__theme-toggle" type="button" data-theme-toggle aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.5 15.2A8.5 8.5 0 0 1 8.8 3.5 8.5 8.5 0 1 0 20.5 15.2Z"/></svg><span data-theme-label>Tema escuro</span></button>
       <button class="side-menu__item" type="button" data-feed-mode="saved"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4.5A1.5 1.5 0 0 1 7.5 3h9A1.5 1.5 0 0 1 18 4.5V21l-6-4-6 4Z"/></svg><span>Listas salvas</span></button>
+      <button class="side-menu__item" type="button" data-side-review><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg><span>Avaliar</span></button>
     </nav>
   </header>
   <nav class="bottom-nav" aria-label="Navegação inferior">
@@ -1076,6 +1077,7 @@ async function setupSharedSideMenu(user, profile = null) {
   if (!root) return;
   // A navegação não deve depender da resposta da consulta de perfil.
   root.querySelector('[data-open-search]')?.addEventListener('click', () => navigateToSearch(user));
+  root.querySelector('[data-side-review]')?.addEventListener('click', () => openReviewComposer(user));
   app.querySelector('[data-bottom-home]')?.addEventListener('click', () => navigateToFeed(user));
   app.querySelector('[data-bottom-search]')?.addEventListener('click', () => navigateToSearch(user));
   app.querySelector('[data-bottom-review]')?.addEventListener('click', () => openReviewComposer(user));
