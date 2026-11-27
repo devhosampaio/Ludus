@@ -6361,3 +6361,9 @@ hr { border-color: var(--color-border); }
 .side-menu--left .side-menu__navigation > button[data-side-review] {
   margin-top: 10px !important;
 }
+
+
+/* Aumenta o padding superior da faixa de botões, afastando-os da divisória. */
+.review-card > .review-card__actions > .review-card__social-actions {
+  padding-top: 8px !important;
+}
