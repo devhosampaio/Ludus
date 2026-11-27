@@ -6485,6 +6485,7 @@ html {
   color: var(--color-text-muted);
   border-color: var(--color-border);
   background: var(--color-surface-hover);
+  font-weight: 600;
 }
 .feed-list .review-card__badge--completed {
   color: #668C78;
