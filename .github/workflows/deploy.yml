@@ -20,6 +20,7 @@ name: Deploy Ludus to GitHub Pages
 # Preview refresh: restore sidebar container padding and align brand
 # Preview refresh: Avaliar button white background and centered content
 # Preview refresh: increase spacing above sidebar Avaliar button
+# Preview refresh: align sidebar navigation top with feed column
 
 on:
   push:
