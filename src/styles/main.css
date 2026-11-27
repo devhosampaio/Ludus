@@ -6047,3 +6047,19 @@ hr { border-color: var(--color-border); }
     top: 0 !important;
   }
 }
+
+
+/* Alinha o cabeçalho do feed ao topo do menu lateral esquerdo. */
+@media (min-width: 768px) {
+  .feed-shell > .feed-center-column,
+  .feed-shell > .feed-main,
+  .feed-shell .feed-center-column > .feed-main,
+  .feed-shell .feed-center-column > .feed-main__container {
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+  }
+
+  .feed-shell > .side-menu--left {
+    margin-top: 0 !important;
+  }
+}
