@@ -403,6 +403,8 @@ function setupBottomNavAutoHide() {
 function triggerPageTransition() {
   const shell = app.querySelector('.feed-shell');
   if (!shell) return;
+  // Toda navegação começa no topo, evitando que elementos sticky mudem de posição.
+  window.scrollTo(0, 0);
   shell.classList.remove('is-page-entering');
   void shell.offsetWidth;
   shell.classList.add('is-page-entering');
