@@ -1768,15 +1768,14 @@ async function renderSignedIn(user, initialFeedMode = 'home') {
       const gameData = review.games || {};
       const game = gameData.title || 'Jogo';
       const gameYear = gameData.release_year ? String(gameData.release_year) : '';
-      const gameTitleMarkup = '<span class="review-card__game-title">' + escapeHTML(game) + '</span>' +
-        (gameYear ? '<span class="review-card__game-year">(' + escapeHTML(gameYear) + ')</span>' : '');
+      const gameTitleMarkup = '<a class="review-card__game-link" href="#/jogo/' + encodeURIComponent(review.game_id) + '" data-open-game="' + escapeHTML(review.game_id) + '"><span class="review-card__game-title">' + escapeHTML(game) + '</span>' +
+        (gameYear ? '<span class="review-card__game-year">(' + escapeHTML(gameYear) + ')</span>' : '') + '</a>';
       const platformList = Array.isArray(gameData.platforms) ? gameData.platforms : [];
       const platformText = platformList.map((item) => typeof item === 'string' ? item : item?.name).filter(Boolean).join(', ');
       const gameMeta = [platformText, gameYear, gameData.developer].filter(Boolean).map(escapeHTML).join(' <span aria-hidden="true">·</span> ');
       const cover = '<a class="review-card__cover-wrap" href="#/jogo/' + encodeURIComponent(review.game_id) + '" data-open-game="' + escapeHTML(review.game_id) + '" aria-label="Abrir página de ' + escapeHTML(game) + '">' + (gameData.cover_url
         ? '<img class="review-card__cover" src="' + escapeHTML(gameData.cover_url) + '" alt="Capa de ' + escapeHTML(game) + '" loading="lazy">'
         : '<span class="review-card__cover review-card__cover--empty">Sem capa</span>') + '</a>';
-      const stars = '★'.repeat(review.rating) + '<span class="review-card__stars-muted">' + '★'.repeat(5 - review.rating) + '</span>';
       const isLiked = likedReviewIds.has(review.id);
       const avatarMarkup = review.profiles?.avatar_url
         ? '<img src="' + escapeHTML(review.profiles.avatar_url) + '" alt="" loading="lazy">'
@@ -1789,23 +1788,35 @@ async function renderSignedIn(user, initialFeedMode = 'home') {
       const saveTotal = saveCounts[review.id] || 0;
       const isSaved = savedReviewIds.has(review.id);
       const body = review.body || '';
-      const reviewText = body ? '<div class="review-card__text-wrap"><p class="review-card__text" data-review-text>' + escapeHTML(body) + '</p></div>' : '';
-      const rating = Math.max(0, Math.min(5, Math.round(Number(review.rating) || 0)));
-      const ratingStars = '<span class="review-card__rating-stars" role="img" aria-label="' + rating + ' de 5 estrelas">' + '<i class="fa-solid fa-star"></i>'.repeat(rating) + '</span>';
-      const reviewDetails = '<div class="review-card__details">' + ratingStars +
-        (review.liked_game ? '<i class="fa-solid fa-heart review-card__liked" aria-label="Favorito" title="Favorito"></i>' : '') +
-        (review.status === 'completed' ? '<i class="fa-solid fa-trophy review-card__completed" aria-label="Zerado" title="Zerado"></i>' : '') + '</div>';
+      const reviewText = body ? '<div class="review-card__text-wrap"><p class="review-card__text is-truncated" data-review-text>' + escapeHTML(body) + '</p><button type="button" class="review-card__read-more" data-read-more hidden>ver mais</button></div>' : '';
+      const rating = Math.max(0, Math.min(5, Math.round((Number(review.rating) || 0) * 2) / 2));
+      const fullStars = Math.floor(rating);
+      const halfStar = rating % 1 === 0.5;
+      const ratingStars = '<span class="review-card__rating-stars" role="img" aria-label="' + rating.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + ' de 5 estrelas">' +
+        '<i class="fa-solid fa-star"></i>'.repeat(fullStars) + (halfStar ? '<i class="fa-solid fa-star-half-stroke"></i>' : '') + '<i class="fa-regular fa-star"></i>'.repeat(5 - fullStars - (halfStar ? 1 : 0)) + '</span>' +
+        '<span class="review-card__rating-value">' + rating.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + '</span>';
+      const statusLabels = { completed: 'Zerado', playing: 'Jogando', abandoned: 'Abandonado' };
+      const reviewBadges = (review.liked_game ? '<span class="review-card__badge">Curtiu</span>' : '') +
+        (statusLabels[review.status] ? '<span class="review-card__badge">' + statusLabels[review.status] + '</span>' : '');
+      const reviewDetails = '<div class="review-card__details">' + ratingStars + reviewBadges + '</div>';
       const reviewAuthor = '<div class="review-card__header"><div class="review-card__identity"><a class="review-card__author" href="#/perfil/' + encodeURIComponent(username) + '" data-profile-username="' + escapeHTML(username) + '"><span class="review-card__author-avatar">' + avatarMarkup + '</span><span class="review-card__author-name">' + escapeHTML(author) + '</span></a><i class="fa-solid fa-circle review-card__timestamp-separator" aria-hidden="true"></i><time class="review-card__timestamp" datetime="' + escapeHTML(review.created_at) + '">' + escapeHTML(relativeTime(review.created_at)) + '</time></div>' + menuMarkup + '</div>';
+      const shareMenuItem = '<button type="button" data-share-review aria-label="Compartilhar avaliação"><i class="fa-solid fa-share" aria-hidden="true"></i><span>Compartilhar</span></button>';
+      const menuMarkupWithShare = '<details class="review-menu"><summary aria-label="Mais opções da avaliação" title="Mais opções"><i class="fa-solid fa-ellipsis-vertical" aria-hidden="true"></i></summary><div class="review-menu__panel">' +
+        (isOwner ? '<button type="button" class="is-danger" data-review-action="delete"><i class="fa-solid fa-trash" aria-hidden="true"></i><span>Excluir avaliação</span></button>' : '<button type="button" data-review-action="report"><i class="fa-solid fa-flag" aria-hidden="true"></i><span>Denunciar avaliação</span></button>') + shareMenuItem + '</div></details>';
+      const reviewHeader = reviewAuthor.replace(menuMarkup, menuMarkupWithShare);
       const socialActions = '<div class="review-card__social-actions">' +
         '<button class="review-card__like' + (isLiked ? ' is-liked' : '') + '" type="button" data-like-review aria-label="Curtir avaliação" title="Curtir avaliação" aria-pressed="' + isLiked + '"><i class="' + (isLiked ? 'fa-solid' : 'fa-regular') + ' fa-heart" aria-hidden="true"></i><span class="review-card__like-count" data-like-count>' + String(likeTotal) + '</span></button>' +
-        '<button type="button" class="review-card__comments-toggle" data-open-review-comments aria-label="Comentar" title="Comentar"><i class="fa-regular fa-comment" aria-hidden="true"></i><span class="review-card__comment-count" data-comment-count>' + String(commentTotal) + '</span></button>' +
-        '<button type="button" class="review-card__share" data-share-review aria-label="Compartilhar avaliação" title="Compartilhar avaliação"><i class="fa-solid fa-share" aria-hidden="true"></i></button></div>';
+        '<button type="button" class="review-card__comments-toggle" data-open-review-comments aria-label="Comentar" title="Comentar"><i class="fa-regular fa-comment" aria-hidden="true"></i><span class="review-card__comment-count" data-comment-count>' + String(commentTotal) + '</span></button></div>';
       return '<article class="review-card" data-review-id="' + review.id + '">' +
-        reviewAuthor +
+        reviewHeader +
         '<div class="review-card__game-layout"><div class="review-card__cover-column">' + cover + '</div>' +
-        '<div class="review-card__body"><h3 class="review-card__game-heading">' + gameTitleMarkup + '</h3>' + reviewDetails + '</div></div>' +
-        reviewText + '<div class="review-card__actions">' + socialActions + '</div></article>';
+        '<div class="review-card__body"><h3 class="review-card__game-heading">' + gameTitleMarkup + '</h3>' + reviewDetails + reviewText + '</div></div>' +
+        '<div class="review-card__actions">' + socialActions + '</div></article>';
     }).join('');
+      feedList.querySelectorAll('.review-card__text').forEach((text) => {
+        const readMore = text.parentElement?.querySelector('[data-read-more]');
+        if (readMore && text.scrollHeight > text.clientHeight + 1) readMore.hidden = false;
+      });
     } catch (renderError) {
       console.error('[Ludus] Falha ao montar as publicações do feed:', renderError);
       feedList.classList.remove('feed-list--loading');
