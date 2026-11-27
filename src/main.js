@@ -494,6 +494,30 @@ function setupMobileDrawer(user, profile = null) {
 }
 
 function setupDeveloperInspector() {
+  // Remove o botão textual legado, preservando o atalho flutuante com ícone de chave.
+  const removeLegacyDeveloperButton = (root = document) => {
+    root.querySelectorAll?.('button').forEach((candidate) => {
+      if (candidate.hasAttribute('data-dev-inspector-toggle')) return;
+      if (candidate.textContent.replace(/\s+/g, ' ').trim() === 'Modo desenvolvedor') {
+        candidate.remove();
+      }
+    });
+  };
+  removeLegacyDeveloperButton();
+  if (!window.__ludusLegacyDevButtonObserver) {
+    window.__ludusLegacyDevButtonObserver = new MutationObserver((records) => {
+      records.forEach((record) => record.addedNodes.forEach((node) => {
+        if (node.nodeType === Node.ELEMENT_NODE) {
+          if (node.matches?.('button')) {
+            if (!node.hasAttribute('data-dev-inspector-toggle') &&
+                node.textContent.replace(/\s+/g, ' ').trim() === 'Modo desenvolvedor') node.remove();
+          }
+          removeLegacyDeveloperButton(node);
+        }
+      }));
+    });
+    window.__ludusLegacyDevButtonObserver.observe(document.documentElement, { childList: true, subtree: true });
+  }
   if (document.querySelector('[data-dev-inspector-toggle]')) return;
   const button = document.createElement('button');
   button.type = 'button';
