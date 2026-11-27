@@ -6512,6 +6512,10 @@ html {
   background: var(--color-surface);
   font-weight: 600;
 }
+
+:root:not([data-theme="dark"]) .feed-list .review-card__badge--liked {
+  color: var(--color-text);
+}
 .feed-list .review-card__badge--completed {
   color: #668C78;
   border-color: rgba(102, 140, 120, .38);
