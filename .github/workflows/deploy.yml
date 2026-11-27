@@ -12,6 +12,7 @@
 # Removed top padding from the desktop left side menu.
 # Styled sidebar Avaliar button with white background and separator.
 # Moved theme control into the Configurações screen.
+# Restored the left sidebar's original top padding.
 name: Deploy Ludus to GitHub Pages
 
 on:
