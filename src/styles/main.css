@@ -6337,3 +6337,21 @@ hr { border-color: var(--color-border); }
 .side-menu--left .side-menu__navigation > button[data-side-review] > svg * {
   stroke: #211e2b !important;
 }
+
+
+/* Margem externa única para navbar e coluna de avaliações.
+   O padding interno da navbar permanece em var(--space-lg). */
+@media (min-width: 768px) {
+  .feed-shell {
+    padding-top: var(--space-lg) !important;
+  }
+
+  .feed-shell > .side-menu--left,
+  .feed-shell > .feed-center-column {
+    margin-top: 0 !important;
+  }
+
+  .feed-shell > .side-menu--left {
+    padding: var(--space-lg) !important;
+  }
+}
