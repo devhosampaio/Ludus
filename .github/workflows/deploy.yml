@@ -4,6 +4,7 @@
 # Latest desktop feed/sidebar top alignment fix included.
 # Restored full-width review interaction divider.
 # Feed header and left sidebar now share the same 24px sticky offset.
+# Header scrolls with the feed; desktop hamburger hidden, mobile retained.
 name: Deploy Ludus to GitHub Pages
 
 on:
