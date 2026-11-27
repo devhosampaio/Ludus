@@ -6223,3 +6223,14 @@ hr { border-color: var(--color-border); }
 .side-menu__notification-dot[hidden] {
   display: none !important;
 }
+
+
+/* Mantém a navbar lateral na posição em que aparece inicialmente.
+   O top: 0 fazia o sticky deslocá-la até encostar no topo da viewport. */
+@media (min-width: 768px) {
+  .feed-shell > .side-menu--left {
+    position: sticky !important;
+    top: 26px !important;
+    align-self: start !important;
+  }
+}
