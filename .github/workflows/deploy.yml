@@ -5,6 +5,7 @@
 # Restored full-width review interaction divider.
 # Feed header and left sidebar now share the same 24px sticky offset.
 # Feed header removed entirely on desktop and mobile.
+# Align sidebar top edge with the first feed card.
 name: Deploy Ludus to GitHub Pages
 
 on:
