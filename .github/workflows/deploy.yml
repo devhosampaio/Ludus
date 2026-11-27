@@ -8,6 +8,7 @@
 # Align sidebar top edge with the first feed card.
 # Added Avaliar action to desktop side navigation.
 # Corrected sidebar/feed alignment by removing the sticky top offset and negative margin.
+# Muted favorite and completed status icons to match game-year text color.
 name: Deploy Ludus to GitHub Pages
 
 on:
