@@ -3305,7 +3305,7 @@ async function openSettingsPage(user) {
   existing.querySelector('[data-settings-back]')?.addEventListener('click', () => navigateToFeed(user));
 }
 
-function openProfileEditor(user, profile) {
+async function openProfileEditor(user, profile) {
   const returnToProfile = window.location.hash.startsWith('#/perfil/');
   await renderSignedIn(user);
   const pageContainer = app.querySelector('.feed-main__container');
