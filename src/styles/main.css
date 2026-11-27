@@ -6289,3 +6289,27 @@ hr { border-color: var(--color-border); }
     padding: var(--space-lg) !important;
   }
 }
+
+
+/* Reduz a altura da faixa social e a centraliza no espaço abaixo da divisória. */
+.review-card > .review-card__actions::before {
+  margin-bottom: 14px !important;
+}
+
+.review-card > .review-card__actions > .review-card__social-actions {
+  min-height: 24px !important;
+  height: 24px !important;
+  align-items: center !important;
+}
+
+.review-card > .review-card__actions > .review-card__social-actions > button {
+  min-height: 24px !important;
+  height: 24px !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  line-height: 1 !important;
+}
+
+.review-card > .review-card__actions {
+  padding-bottom: 14px !important;
+}
