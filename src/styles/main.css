@@ -6190,3 +6190,36 @@ hr { border-color: var(--color-border); }
   background: #ffffff !important;
   color: var(--color-bg) !important;
 }
+
+
+/* Atalho de notificações na navegação lateral, abaixo do perfil. */
+.side-menu__notifications .side-menu__notification-icon {
+  position: relative;
+  display: inline-flex;
+  flex: 0 0 var(--icon-size-md);
+  width: var(--icon-size-md);
+  height: var(--icon-size-md);
+  align-items: center;
+  justify-content: center;
+}
+
+.side-menu__notifications .side-menu__notification-icon > svg {
+  width: 100%;
+  height: 100%;
+}
+
+.side-menu__notification-dot {
+  position: absolute;
+  right: -2px;
+  bottom: -1px;
+  width: 9px;
+  height: 9px;
+  border: 2px solid var(--color-surface);
+  border-radius: 50%;
+  background: var(--color-danger, #d94b55);
+  box-sizing: content-box;
+}
+
+.side-menu__notification-dot[hidden] {
+  display: none !important;
+}
