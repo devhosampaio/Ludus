@@ -3,6 +3,7 @@
 # Latest feed header sticky-position fix included.
 # Latest desktop feed/sidebar top alignment fix included.
 # Restored full-width review interaction divider.
+# Feed header and left sidebar now share the same 24px sticky offset.
 name: Deploy Ludus to GitHub Pages
 
 on:
