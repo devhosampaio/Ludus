@@ -6019,3 +6019,31 @@ hr { border-color: var(--color-border); }
   padding: 0;
   border: 0;
 }
+
+
+/* Mantém o cabeçalho completo do feed preso à sua posição durante a rolagem. */
+.app-topbar.app-topbar--feed {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 1100 !important;
+  align-self: start;
+}
+
+/* As abas fazem parte do cabeçalho fixado, sem criar uma segunda faixa sticky. */
+.app-topbar--feed .feed-navigation--header {
+  position: static !important;
+  top: auto !important;
+  z-index: auto !important;
+}
+
+@media (min-width: 768px) {
+  .app-topbar.app-topbar--feed {
+    top: 20px !important;
+  }
+}
+
+@media (max-width: 767px) {
+  .app-topbar.app-topbar--feed {
+    top: 0 !important;
+  }
+}
