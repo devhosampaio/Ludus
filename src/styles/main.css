@@ -6156,12 +6156,7 @@ hr { border-color: var(--color-border); }
 }
 
 
-/* Remove somente o padding superior do menu lateral esquerdo. */
-@media (min-width: 768px) {
-  .side-menu.side-menu--left {
-    padding-top: 0 !important;
-  }
-}
+
 
 
 /* Botão Avaliar destacado e separado dos demais itens do menu lateral. */
