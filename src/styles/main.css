@@ -15,6 +15,12 @@
   --color-danger-soft: #e56b83;
   --color-like: #e53945;
   --color-success: #2eaf65;
+  --color-status-completed-text: color-mix(in srgb, var(--color-success) 55%, var(--color-text));
+  --color-status-completed-border: color-mix(in srgb, var(--color-success) 30%, var(--color-border));
+  --color-status-completed-background: color-mix(in srgb, var(--color-success) 12%, var(--color-surface));
+  --color-status-playing-text: color-mix(in srgb, var(--color-accent) 55%, var(--color-text));
+  --color-status-playing-border: color-mix(in srgb, var(--color-accent) 30%, var(--color-border));
+  --color-status-playing-background: color-mix(in srgb, var(--color-accent) 12%, var(--color-surface));
   --color-neutral-light: #f1f1f1;
   --color-black: #111;
 
@@ -3701,7 +3707,6 @@ select {
 :root[data-theme="dark"] .profile-editor--page .profile-editor__upload,
 :root[data-theme="dark"] .landing-feature,
 :root[data-theme="dark"] .search-result,
-:root[data-theme="dark"] .review-card,
 :root[data-theme="dark"] .game-card,
 :root[data-theme="dark"] .notification-item {
   background-color: var(--color-surface) !important;
@@ -6507,7 +6512,7 @@ html {
   line-height: 1.4;
 }
 .feed-list .review-card__badge--liked {
-  color: var(--color-text-muted);
+  color: var(--color-text);
   border-color: var(--color-border);
   background: var(--color-surface);
   font-weight: 600;
@@ -6517,18 +6522,17 @@ html {
   color: var(--color-text);
 }
 .feed-list .review-card__badge--completed {
-  color: #668C78;
-  border-color: rgba(102, 140, 120, .38);
-  background: rgba(102, 140, 120, .12);
+  color: var(--color-status-completed-text);
+  border-color: var(--color-status-completed-border);
+  background: var(--color-status-completed-background);
 }
 :root:not([data-theme="dark"]) .feed-list .review-card__badge--completed {
-  color: var(--color-text);
 }
 
 .feed-list .review-card__badge--playing {
-  color: #7060AB;
-  border-color: rgba(112, 96, 171, .38);
-  background: rgba(112, 96, 171, .12);
+  color: var(--color-status-playing-text);
+  border-color: var(--color-status-playing-border);
+  background: var(--color-status-playing-background);
 }
 .feed-list .review-card__badge--abandoned {
   color: #D96C55;
