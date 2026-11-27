@@ -736,8 +736,10 @@ img { max-width: 100%; }
 .review-card__rating { display: inline-flex; align-items: center; gap: 4px; }
 .review-card__rating .fa-star { color: var(--color-rating); }
 .review-card__liked, .review-card__completed { font-size: var(--font-size-12); }
-.review-card__liked { color: var(--color-danger-soft); }
-.review-card__completed { color: var(--color-rating); }
+.review-card__liked,
+.review-card__completed {
+  color: var(--color-text-muted);
+}
 .review-card__text-wrap {
   margin-top: var(--space-12);
   padding-bottom: var(--space-12);
