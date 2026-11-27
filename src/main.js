@@ -1776,7 +1776,6 @@ async function renderSignedIn(user, initialFeedMode = 'home') {
       const socialActions = '<div class="review-card__social-actions">' +
         '<button class="review-card__like' + (isLiked ? ' is-liked' : '') + '" type="button" data-like-review aria-label="Curtir avaliação" title="Curtir avaliação" aria-pressed="' + isLiked + '"><i class="' + (isLiked ? 'fa-solid' : 'fa-regular') + ' fa-heart" aria-hidden="true"></i><span class="review-card__like-count" data-like-count>' + String(likeTotal) + '</span></button>' +
         '<button type="button" class="review-card__comments-toggle" data-open-review-comments aria-label="Comentar" title="Comentar"><i class="fa-regular fa-comment" aria-hidden="true"></i><span class="review-card__comment-count" data-comment-count>' + String(commentTotal) + '</span></button>' +
-        '<button type="button" class="review-card__bookmark' + (isSaved ? ' is-saved' : '') + '" data-save-review aria-label="Salvar avaliação" title="Salvar avaliação" aria-pressed="' + isSaved + '"><i class="' + (isSaved ? 'fa-solid' : 'fa-regular') + ' fa-bookmark" aria-hidden="true"></i><span class="review-card__save-count" data-save-count>' + String(saveTotal) + '</span></button>' +
         '<button type="button" class="review-card__share" data-share-review aria-label="Compartilhar avaliação" title="Compartilhar avaliação"><i class="fa-solid fa-share" aria-hidden="true"></i></button></div>';
       return '<article class="review-card" data-review-id="' + review.id + '">' +
         reviewAuthor +
@@ -2247,39 +2246,6 @@ async function renderSignedIn(user, initialFeedMode = 'home') {
         }
       };
       document.addEventListener('keydown', closeOnEscape);
-      return;
-    }
-    const saveButton = event.target.closest('[data-save-review]');
-    if (saveButton) {
-      if (saveButton.disabled) return;
-      const saveCard = saveButton.closest('[data-review-id]');
-      const saveReviewId = saveCard?.dataset.reviewId;
-      if (!saveReviewId) return;
-      const wasSaved = savedReviewIds.has(saveReviewId);
-      saveButton.disabled = true;
-      const saveResult = wasSaved
-        ? await supabase.from('review_saves').delete().eq('review_id', saveReviewId).eq('user_id', user.id)
-        : await supabase.from('review_saves').insert({ review_id: saveReviewId, user_id: user.id });
-      if (saveResult.error) {
-        console.error('[Ludus] Falha ao atualizar Minha lista:', saveResult.error);
-        window.alert('Não foi possível atualizar sua lista. Tente novamente.');
-        saveButton.disabled = false;
-        return;
-      }
-      if (wasSaved) {
-        savedReviewIds.delete(saveReviewId);
-        savedAtByReview.delete(saveReviewId);
-        saveCounts[saveReviewId] = Math.max(0, (saveCounts[saveReviewId] || 0) - 1);
-        const savedIndex = savedReviewRows.findIndex((saved) => saved.review_id === saveReviewId);
-        if (savedIndex >= 0) savedReviewRows.splice(savedIndex, 1);
-      } else {
-        const savedAt = new Date().toISOString();
-        savedReviewIds.add(saveReviewId);
-        savedAtByReview.set(saveReviewId, savedAt);
-        saveCounts[saveReviewId] = (saveCounts[saveReviewId] || 0) + 1;
-        savedReviewRows.unshift({ review_id: saveReviewId, created_at: savedAt });
-      }
-      renderFeed(activeFeedMode);
       return;
     }
     const button = event.target.closest('[data-like-review]');
