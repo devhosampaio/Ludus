@@ -6085,7 +6085,7 @@ hr { border-color: var(--color-border); }
   display: block;
   width: 100%;
   height: 1px;
-  margin: 0 0 8px;
+  margin: 0 0 16px;
   background: var(--color-border, rgba(255, 255, 255, 0.16));
 }
 
