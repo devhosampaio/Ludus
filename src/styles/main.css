@@ -6638,3 +6638,43 @@ html {
 .feed-list > .review-card:last-child {
   border-bottom: 0;
 }
+
+
+/* Notificações: reproduz o grid do feed no desktop sem limitar a coluna central. */
+@media (min-width: 768px) {
+  .feed-shell.notifications-page {
+    grid-template-columns: 232px minmax(0, 760px);
+    justify-content: start;
+  }
+
+  .notifications-page .app-topbar {
+    display: none !important;
+  }
+
+  .notifications-page .profile-page__back-button {
+    display: inline-flex !important;
+  }
+
+  .notifications-page__content {
+    max-width: 760px;
+    box-sizing: border-box;
+  }
+
+  .notifications-page__list,
+  .notifications-page__list .notifications__list,
+  .notifications-page__list .notifications__item-row {
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+  }
+}
+
+@media (max-width: 767px) {
+  .notifications-page .profile-page__back-button {
+    display: none !important;
+  }
+
+  .notifications-page .app-topbar {
+    display: block !important;
+  }
+}
