@@ -2785,6 +2785,8 @@ function navigateToNotifications(currentUser) {
 function renderNotificationsPage(currentUser) {
   app.innerHTML = `
     <div class="feed-shell notifications-page">
+      ${sharedSideMenuMarkup(currentUser)}
+      <button class="app-topbar__menu-button profile-page__back-button" type="button" data-notifications-back aria-label="Voltar ao feed" title="Voltar ao feed"><i class="fa-solid fa-arrow-left" aria-hidden="true"></i></button>
       <main class="feed-center-column feed-main notifications-page__main">
         ${sharedHeaderMarkup({ action: 'back', showBrand: false })}
         <section class="notifications-page__content">
@@ -2803,6 +2805,8 @@ function renderNotificationsPage(currentUser) {
     </div>`;
 
   app.querySelector('[data-header-back]')?.addEventListener('click', () => navigateToFeed(currentUser));
+  app.querySelector('[data-notifications-back]')?.addEventListener('click', () => navigateToFeed(currentUser));
+  setupSharedSideMenu(currentUser);
   setupNotifications(currentUser);
 }
 
