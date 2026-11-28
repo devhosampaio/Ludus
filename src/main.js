@@ -2807,7 +2807,6 @@ function renderNotificationsPage(currentUser) {
   app.querySelector('[data-header-back]')?.addEventListener('click', () => navigateToFeed(currentUser));
   app.querySelector('[data-notifications-back]')?.addEventListener('click', () => navigateToFeed(currentUser));
   setupSharedSideMenu(currentUser);
-  setupNotifications(currentUser);
 }
 
 function navigateToFeed(currentUser, mode = 'home') {
