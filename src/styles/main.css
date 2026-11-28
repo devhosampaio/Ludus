@@ -6640,6 +6640,10 @@ html {
 }
 
 
+.notifications-page .profile-page__back-button {
+  display: none !important;
+}
+
 /* Notificações: reproduz o grid do feed no desktop sem limitar a coluna central. */
 @media (min-width: 768px) {
   .feed-shell.notifications-page {
@@ -6669,12 +6673,3 @@ html {
   }
 }
 
-@media (max-width: 767px) {
-  .notifications-page .profile-page__back-button {
-    display: none !important;
-  }
-
-  .notifications-page .app-topbar {
-    display: block !important;
-  }
-}
